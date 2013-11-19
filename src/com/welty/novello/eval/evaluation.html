@@ -55,8 +55,12 @@ The evaluation function is used for three purposes:
     <b>orid</b> for instances which should have the same value - the orid is an equivalence class on instances.
 </p>
 
+<p>Each (feature, orid) needs its own coefficient. The coefficient calculator produces the coefficients as a double[],
+so to map the (feature, orid) to a coefficient we map each (feature, orid) to a distinct integer. This integer is
+    called the <b>coefficientIndex</b>.</p>
+
 <p>We obtain feature values by regression. The coefficient calculator takes in a set of position/value pairs.
-    For each pair, the orid is determined for each term. Currently we use a linear regression targeting the net game
+    For each pair, the coefficientId is determined for each term. Currently we use a linear regression targeting the net game
     result to obtain values for the orids.</p>
 
 <p>To determine the feature values for nEmpty empties, we currently examine only positions with nEmpty empties.

@@ -13,8 +13,11 @@ public abstract class Term {
 
     /**
      * Get the orid of the position.
+     * <p/>
+     * The moverMoves and enemyMoves can be calculated from mover and enemy; however
+     * this is an expensive calculation. As a result the caller calculates the moves once for all terms.
      *
-     * @return  orid
+     * @return orid
      */
     public int orid(long mover, long enemy, long moverMoves, long enemyMoves) {
         return getFeature().orid(instance(mover, enemy, moverMoves, enemyMoves));

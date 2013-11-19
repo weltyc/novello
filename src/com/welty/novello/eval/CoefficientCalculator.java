@@ -17,7 +17,7 @@ public class CoefficientCalculator {
      * those values to generate coefficients for the Evaluation function.
      */
     public static void main(String[] args) throws IOException {
-        final EvalStrategy strategy = EvalStrategy.eval1;
+        final EvalStrategy strategy = EvalStrategies.eval1;
 
         final List<PositionValue> pvs = loadPvs();
         System.out.println("a total of " + pvs.size() + " pvs are available.");
@@ -25,7 +25,7 @@ public class CoefficientCalculator {
             System.out.println("--- " + nEmpty + " ---");
             final Element[] elements = elementsFromPvs(pvs, nEmpty, strategy);
             System.out.println("estimating coefficients using " + elements.length + " positions");
-            final double[] coefficients = estimateCoefficients(elements, strategy.nOrids());
+            final double[] coefficients = estimateCoefficients(elements, strategy.nCoefficientIndices());
             strategy.dumpCoefficients(coefficients);
 
             // write to file
@@ -40,11 +40,11 @@ public class CoefficientCalculator {
 
     /**
      * @param elements indices for each position to match
-     * @param nIndices number of coefficients
+     * @param nCoefficientIndices number of coefficients
      * @return optimal coefficients
      */
-    static double[] estimateCoefficients(Element[] elements, int nIndices) {
-        final FunctionWithGradient f = new ErrorFunction(elements, nIndices);
+    static double[] estimateCoefficients(Element[] elements, int nCoefficientIndices) {
+        final FunctionWithGradient f = new ErrorFunction(elements, nCoefficientIndices);
         return ConjugateGradientMethod.minimize(f);
     }
 
@@ -113,7 +113,7 @@ public class CoefficientCalculator {
         final List<Element> res = new ArrayList<>();
         for (final PositionValue pv : pvs) {
             if (nEmpty == pv.nEmpty()) {
-                final int[] indices = strategy.oridsFromPosition(pv.mover, pv.enemy);
+                final int[] indices = strategy.coefficientIndices(pv.mover, pv.enemy);
                 res.add(new Element(indices, pv.value));
             }
         }
