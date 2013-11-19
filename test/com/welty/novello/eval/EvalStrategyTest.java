@@ -22,7 +22,13 @@ public class EvalStrategyTest extends ArrayTestCase {
     public void testFeatureCompression() {
 
         final EvalStrategy es = new EvalStrategy(
-                TermTest.term1
+                TermTest.term1,
+                TermTest.term1,
+                TermTest.term2
         );
+
+        final int nInstances = TermTest.feature1.nInstances() + TermTest.feature2.nInstances();
+        assertEquals(nInstances, es.nInstances());
+        assertEquals(TermTest.feature1.nOrids() + TermTest.feature2.nOrids(), es.nOrids());
     }
 }

@@ -69,13 +69,9 @@ class EvalStrategy {
     public int nInstances() {
         int nInstances = 0;
         for (Feature feature : features) {
-            nInstances += feature.nOrids();
+            nInstances += feature.nInstances();
         }
         return nInstances;
-    }
-
-    public int nFeatures() {
-        return features.length;
     }
 
     /**
