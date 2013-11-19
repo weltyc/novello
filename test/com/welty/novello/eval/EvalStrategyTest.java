@@ -6,7 +6,7 @@ import com.welty.novello.solver.BitBoard;
 /**
  */
 public class EvalStrategyTest extends ArrayTestCase {
-    public void testIndicesFromPosition() throws Exception {
+    public void testIndicesFromPosition() {
         final EvalStrategy ef = EvalStrategy.eval1;
 
         // a sample position.
@@ -17,5 +17,12 @@ public class EvalStrategyTest extends ArrayTestCase {
         System.out.println(new BitBoard(mover, enemy, true));
         final int[] expected = {2, 1, 5, 4};
         assertEquals(expected, ef.oridsFromPosition(mover, enemy));
+    }
+
+    public void testFeatureCompression() {
+
+        final EvalStrategy es = new EvalStrategy(
+                TermTest.term1
+        );
     }
 }

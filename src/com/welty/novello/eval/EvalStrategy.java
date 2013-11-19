@@ -20,12 +20,12 @@ class EvalStrategy {
 
     private final Feature[] features;
 
-    private EvalStrategy(Term... terms) {
+    EvalStrategy(Term... terms) {
         this.terms = terms;
 
         final ArrayList<Feature> features = new ArrayList<>();
         for (Term term : terms) {
-            final SoloFeature feature = term.getFeature();
+            final Feature feature = term.getFeature();
             if (!features.contains(feature)) {
                 features.add(feature);
             }

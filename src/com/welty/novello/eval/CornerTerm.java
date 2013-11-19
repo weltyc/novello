@@ -5,9 +5,11 @@ import static com.welty.novello.solver.BitBoardUtils.getBitAsInt;
 /**
  */
 public class CornerTerm extends Term {
+    private static final CornerFeature FEATURE = new CornerFeature();
     private final int sq;
 
     public CornerTerm(int sq) {
+        super(FEATURE);
         this.sq = sq;
     }
 
