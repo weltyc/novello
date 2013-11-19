@@ -1,6 +1,6 @@
 package com.welty.novello.selfplay;
 
-import com.welty.novello.eval.Eval1;
+import com.welty.novello.eval.StrategyBasedEval;
 import com.welty.novello.eval.PositionValue;
 import com.welty.novello.solver.BitBoard;
 
@@ -19,7 +19,7 @@ public class SelfPlaySet {
         final List<PositionValue> pvs = new ArrayList<>();
 
         final StartPosGenerator generator = new StartPosGenerator(9);
-        final Player white = new EvalPlayer(new Eval1());
+        final Player white = new EvalPlayer(new StrategyBasedEval());
         final Player black = new Bobby();
 
         final HashSet<BitBoard> alreadySeen = new HashSet<>();

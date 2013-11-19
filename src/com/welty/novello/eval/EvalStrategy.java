@@ -3,19 +3,35 @@ package com.welty.novello.eval;
 import com.orbanova.common.misc.Require;
 import com.welty.novello.solver.BitBoardUtils;
 
+import java.util.ArrayList;
+
 /**
  */
-public class EvalStrategy {
+class EvalStrategy {
     @SuppressWarnings("OctalInteger")
-    final Term[] terms = {
+    static final EvalStrategy eval1 = new EvalStrategy(
             new CornerTerm(000),
             new CornerTerm(007),
             new CornerTerm(070),
             new CornerTerm(077)
-    };
-    final Feature[] features = {
-            terms[0].getFeature()
-    };
+    );
+
+    private final Term[] terms;
+
+    private final Feature[] features;
+
+    private EvalStrategy(Term... terms) {
+        this.terms = terms;
+
+        final ArrayList<Feature> features = new ArrayList<>();
+        for (Term term : terms) {
+            final SoloFeature feature = term.getFeature();
+            if (!features.contains(feature)) {
+                features.add(feature);
+            }
+        }
+        this.features = features.toArray(new Feature[features.size()]);
+    }
 
     String getFilename(int nEmpty) {
         return "coefficients/" + getClass().getSimpleName() + "_" + nEmpty + ".coeff";

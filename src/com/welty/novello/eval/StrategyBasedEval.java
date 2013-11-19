@@ -13,14 +13,14 @@ import java.io.IOException;
  * It also connects the coefficient calculator to the features
  * by mapping feature orid &harr; coefficient calculator index.
  */
-public class Eval1 implements Eval {
+public class StrategyBasedEval implements Eval {
 
     final CoefficientSet coefficientSet;
-    private final EvalStrategy evalStrategy = new EvalStrategy();
+    private final EvalStrategy evalStrategy = EvalStrategy.eval1;
 
     /**
      */
-    public Eval1() {
+    public StrategyBasedEval() {
         coefficientSet = new CoefficientSet(evalStrategy);
     }
 
