@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Evaluation</title>
+</head>
+<body>
+The evaluation function is used for three purposes:
+<ul>
+    <li>Move ordering in the Solver</li>
+    <li>Choosing moves in self-play games (to generate a new evaluation function)</li>
+    <li>Evaluating positions in self-play games (to generate a new evaluation function)</li>
+</ul>
+<h2>Features and Patterns</h2>
+
+<p>The evaluation function is similar to <a href="https://skatgame.net/mburo/ps/evalfunc.pdf">Logistello's</a>.</p>
+
+<p style="margin-left:3em">Evaluation = &Sigma;<sub>t</sub> coefficient<sub>t</sub>[instance<sub>t</sub>(position)].</p>
+
+<p>The items that are summed to create the evaluation function are called <b>terms</b>.</p>
+
+<p>Each term maps a position to an <b>instance</b> which is an integer. Examples of terms are
+    "number of mover mobilities" and "configuration of disks along the North edge of the board".</p>
+
+<p>The instance is then mapped to a value by a <b>feature</b>. The value of the feature at a given instance and # of
+    empties is a <b>coefficient</b>. Multiple terms can share the same
+    feature; for example the North, South, East, and West edges of the board all use the same feature due to symmetry.
+    A feature values instances differently based on number of remaining empty squares; formally it is
+    a function(nEmpty, instance).
+</p>
+
+<p> Some terms use patterns. A <b>pattern</b> is a set of squares, e.g. A1..H1. A <b>configuration</b> is a
+    specific assignment of disks to a pattern, e.g. A1..A8 = *OOO-*OO*. The instance for a configuration is
+    the pattern viewed as a base-3 value, where empty = 0, mover = 1 and enemy = 2.</p>
+
+<p> Sometimes multiple instances should have the same value. For instance, by symmetry a North edge of
+    *OOO---- should have the same value as a North edge of ----OO*. The evaluation function doesn't need
+    to know this, but the feature needs to assign the same coefficient to each. In order to do so, the feature
+    maps each instance to an <b>orid</b>, where instances with the same orid have the same value. The orid is the
+    equivalence class for instances.
+</p>
+
+<h2>Determining coefficient values</h2>
+
+<p>We obtain feature values by regression. The coefficient calculator takes in a set of position/value pairs.
+    For each pair, the orid is determined for each term. Currently we use a linear regression targeting the net game
+    result to obtain values for the orids.</p>
+
+<p>To determine the feature values for nEmpty empties, we currently examine only positions with nEmpty empties.
+    Later on we will use nEmpty +/-2 in order to reduce instabilities in the evaluation function.</p>
+
+<p>To create the position/value pairs we use positions from self-play games with target value being the game result.</p>
+</body>
+</html>

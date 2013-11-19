@@ -1,0 +1,11 @@
+# Project
+coefficients/
+
+# Intellij
+.idea
+*.iml
+*.iws
+
+# Maven
+log/
+target/
