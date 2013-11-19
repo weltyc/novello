@@ -16,7 +16,6 @@ class EvalStrategy {
      */
     private final Feature[] features;
 
-
     /**
      * terms[i].getFeature() == features[iFeatures[i]]
      */

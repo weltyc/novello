@@ -3,6 +3,9 @@ package com.welty.novello.eval;
 import com.orbanova.common.misc.Require;
 import com.orbanova.common.misc.Vec;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  */
 interface Feature {
@@ -96,5 +99,80 @@ class SoloFeature implements Feature {
 
     @Override public int nInstances() {
         return nOrids();
+    }
+}
+
+/**
+ * A Feature that uses, as its instance, a base-3 representation of the disks in a line.
+ *
+ * 0 = empty, 1=mover, 2=enemy.
+ * Any disk pattern gives the same orid as reversing its disks.
+ *
+ * Disk patterns are displayed assuming black is the mover; * = mover, O = enemy.
+ */
+class LinePatternFeatureFactory {
+    static Feature of(int nDisks)  {
+        final int[] orids = new int[nInstances(nDisks)];
+        final List<String> oridDescList = new ArrayList<>();
+
+        int nOrids=0;
+        for (int instance = 0; instance < orids.length; instance++) {
+            final int reverse = reverse(instance, nDisks);
+            if (reverse<instance) {
+                orids[instance] = orids[reverse];
+            }
+            else {
+                oridDescList.add(oridDescription(instance, nDisks));
+                orids[instance] = nOrids++;
+            }
+        }
+
+        final String[] oridDescriptions = oridDescList.toArray(new String[oridDescList.size()]);
+        return new MultiFeature(orids, oridDescriptions);
+    }
+
+    /**
+     * Reverse the base 3 digits of instance
+     *
+     * @param instance initial input
+     * @return reversed instance
+     */
+    static int reverse(int instance, int digits) {
+        int reverse = 0;
+        for (int d=0; d<digits; d++) {
+            reverse*=3;
+            reverse += instance%3;
+            instance /=3;
+        }
+        return reverse;
+    }
+
+    private static final char[] output = ".*O".toCharArray();
+
+    /**
+     * Generate oridDescription from one of the orid's instances
+     *
+     * @param instance instance. NOT orid.
+     * @param nDisks number of disks.
+     * @return oridDescription
+     */
+    static String oridDescription(int instance, int nDisks) {
+        final StringBuilder sb = new StringBuilder();
+        while (instance>0) {
+            sb.append(output[instance%3]);
+            instance /= 3;
+        }
+        while (sb.length()<nDisks) {
+            sb.append(output[0]);
+        }
+        return sb.reverse().toString();
+    }
+
+    static int nInstances(int nDisks) {
+        int nInstances = 1;
+        for (int i=0; i<nDisks; i++) {
+            nInstances*=3;
+        }
+        return nInstances;
     }
 }
