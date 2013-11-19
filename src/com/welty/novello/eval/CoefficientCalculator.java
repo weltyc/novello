@@ -17,19 +17,19 @@ public class CoefficientCalculator {
      * those values to generate coefficients for the Evaluation function.
      */
     public static void main(String[] args) throws IOException {
-        final EvaluationFunction evaluationFunction = new EvaluationFunction(false);
+        final EvalStrategy strategy = new EvalStrategy();
 
         final List<PositionValue> pvs = loadPvs();
         System.out.println("a total of " + pvs.size() + " pvs are available.");
         for (int nEmpty = 0; nEmpty < 64; nEmpty++) {
             System.out.println("--- " + nEmpty + " ---");
-            final Element[] elements = elementsFromPvs(pvs, nEmpty, evaluationFunction);
+            final Element[] elements = elementsFromPvs(pvs, nEmpty, strategy);
             System.out.println("estimating coefficients using " + elements.length + " positions");
-            final double[] coefficients = estimateCoefficients(elements, evaluationFunction.nIndices());
-            evaluationFunction.dumpCoefficients(coefficients);
+            final double[] coefficients = estimateCoefficients(elements, strategy.nOrids());
+            strategy.dumpCoefficients(coefficients);
 
             // write to file
-            final String filename = evaluationFunction.getFilename(nEmpty);
+            final String filename = strategy.getFilename(nEmpty);
             try (final DataOutputStream out = new DataOutputStream(new FileOutputStream(filename))) {
                 for (double c : coefficients) {
                     out.writeInt((int)Math.round(c));
@@ -106,14 +106,14 @@ public class CoefficientCalculator {
      *
      * @param pvs                list of pvs at all empties
      * @param nEmpty             number of empties to generate coefficients for
-     * @param evaluationFunction EvaluationFunction that is producing Elements.
+     * @param strategy EvaluationFunction that is producing Elements.
      * @return list of selected Elements
      */
-    private static Element[] elementsFromPvs(List<PositionValue> pvs, int nEmpty, EvaluationFunction evaluationFunction) {
+    private static Element[] elementsFromPvs(List<PositionValue> pvs, int nEmpty, EvalStrategy strategy) {
         final List<Element> res = new ArrayList<>();
         for (final PositionValue pv : pvs) {
             if (nEmpty == pv.nEmpty()) {
-                final int[] indices = evaluationFunction.indicesFromPosition(pv.mover, pv.enemy);
+                final int[] indices = strategy.oridsFromPosition(pv.mover, pv.enemy);
                 res.add(new Element(indices, pv.value));
             }
         }

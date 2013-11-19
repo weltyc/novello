@@ -2,6 +2,9 @@
 <html>
 <head>
     <title>Evaluation</title>
+    <style>.equation {
+        margin-left: 3em
+    }</style>
 </head>
 <body>
 The evaluation function is used for three purposes:
@@ -10,36 +13,47 @@ The evaluation function is used for three purposes:
     <li>Choosing moves in self-play games (to generate a new evaluation function)</li>
     <li>Evaluating positions in self-play games (to generate a new evaluation function)</li>
 </ul>
-<h2>Features and Patterns</h2>
+<h2>Evaluation</h2>
 
-<p>The evaluation function is similar to <a href="https://skatgame.net/mburo/ps/evalfunc.pdf">Logistello's</a>.</p>
-
-<p style="margin-left:3em">Evaluation = &Sigma;<sub>t</sub> coefficient<sub>t</sub>[instance<sub>t</sub>(position)].</p>
-
-<p>The items that are summed to create the evaluation function are called <b>terms</b>.</p>
-
-<p>Each term maps a position to an <b>instance</b> which is an integer. Examples of terms are
-    "number of mover mobilities" and "configuration of disks along the North edge of the board".</p>
-
-<p>The instance is then mapped to a value by a <b>feature</b>. The value of the feature at a given instance and # of
-    empties is a <b>coefficient</b>. Multiple terms can share the same
-    feature; for example the North, South, East, and West edges of the board all use the same feature due to symmetry.
-    A feature values instances differently based on number of remaining empty squares; formally it is
-    a function(nEmpty, instance).
+<p>The evaluation function is a sum of term values similar to <a href="https://skatgame.net/mburo/ps/evalfunc.pdf">Logistello's</a>.
 </p>
+
+<p class="equation">Evaluation = &Sigma;<sub>t</sub> value<sub>t</sub>(position).</p>
+
+<p>Each value(position) is calculated by lookup table. The lookup table is called the <b>coefficientSet</b>: </p>
+
+<p class="equation">value(position) = coefficientSet[nEmpty][eval.iFeature(term)][term.instance(position)]</p>
+
+<p><b>nEmpty</b> is the number of empty squares in the position.</p>
+
+<p><b>term</b> is a Term object. Each Term implements a function instance() which maps a position to an integer.
+    That integer is called an <b>instance</b>. Examples of Terms are</p>
+<ul>
+    <li>"number of mover mobilities", which maps a position to the number of available moves for the mover.</li>
+    <li>"configuration of disks along the North edge of the board", which produces a distinct integer for
+        each pattern of disks along the north edge of the board.
+    </li>
+</ul>
+
+<p>A <b>Feature</b> is a set of Terms that share the same coefficients.For example the North, South,
+    East, and West edges of the board all use the same Feature due to symmetry.</p>
+
+<p><b>eval</b> is the evaluation function. eval.iFeature(term) maps each term's feature to an index in the lookup table. If there are multiple Terms with
+    the same Feature, eval.iFeature returns the same index for all of those Terms.</p>
+<h3>Patterns and Configurations</h3>
 
 <p> Some terms use patterns. A <b>pattern</b> is a set of squares, e.g. A1..H1. A <b>configuration</b> is a
-    specific assignment of disks to a pattern, e.g. A1..A8 = *OOO-*OO*. The instance for a configuration is
-    the pattern viewed as a base-3 value, where empty = 0, mover = 1 and enemy = 2.</p>
-
-<p> Sometimes multiple instances should have the same value. For instance, by symmetry a North edge of
-    *OOO---- should have the same value as a North edge of ----OO*. The evaluation function doesn't need
-    to know this, but the feature needs to assign the same coefficient to each. In order to do so, the feature
-    maps each instance to an <b>orid</b>, where instances with the same orid have the same value. The orid is the
-    equivalence class for instances.
-</p>
+    specific assignment of disks to a pattern, e.g. A1..A8 = *OO-*OO*. Each configuration is mapped to an
+    instance by viewing the pattern a base-3 value, where empty = 0, mover = 1 and enemy = 2.
+    So *OO-*OO* is mapped to 12201221<sub>3</sub> = 4183 if black is to move.</p>
 
 <h2>Determining coefficient values</h2>
+
+<p>
+    The Feature also determines which instances have the same value; for instance by symmetry a North edge of
+    *OOO---- should have the same value as a North edge of ----OOO*. int Feature.orid(instance) returns the same
+    <b>orid</b> for instances which should have the same value - the orid is an equivalence class on instances.
+</p>
 
 <p>We obtain feature values by regression. The coefficient calculator takes in a set of position/value pairs.
     For each pair, the orid is determined for each term. Currently we use a linear regression targeting the net game

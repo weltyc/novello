@@ -3,7 +3,7 @@ package com.welty.novello.eval;
 /**
  */
 public abstract class Term {
-    private final Feature feature = new CornerFeature();
+    private final SoloFeature feature = new CornerFeature();
 
     public abstract int instance(long mover, long enemy, long moverMoves, long enemyMoves);
 
@@ -16,7 +16,7 @@ public abstract class Term {
         return getFeature().orid(instance(mover, enemy, moverMoves, enemyMoves));
     }
 
-    public Feature getFeature() {
+    public SoloFeature getFeature() {
         return feature;
     }
 }

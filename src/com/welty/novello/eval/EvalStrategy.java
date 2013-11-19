@@ -1,0 +1,75 @@
+package com.welty.novello.eval;
+
+import com.orbanova.common.misc.Require;
+import com.welty.novello.solver.BitBoardUtils;
+
+/**
+ */
+public class EvalStrategy {
+    @SuppressWarnings("OctalInteger")
+    final Term[] terms = {
+            new CornerTerm(000),
+            new CornerTerm(007),
+            new CornerTerm(070),
+            new CornerTerm(077)
+    };
+    final Feature[] features = {
+            terms[0].getFeature()
+    };
+
+    String getFilename(int nEmpty) {
+        return "coefficients/" + getClass().getSimpleName() + "_" + nEmpty + ".coeff";
+    }
+
+    /**
+     * @param mover mover disks
+     * @param enemy enemy disks
+     * @return coefficient calculator indices for the position
+     */
+    public int[] oridsFromPosition(long mover, long enemy) {
+        final long moverMoves = BitBoardUtils.calcMoves(mover, enemy);
+        final long enemyMoves = BitBoardUtils.calcMoves(enemy, mover);
+        final int[] result = new int[terms.length];
+        for (int i = 0; i < terms.length; i++) {
+            result[i] = terms[i].orid(mover, enemy, moverMoves, enemyMoves);
+        }
+        return result;
+    }
+
+    /**
+     * Calculate the total number of possible orids for all features.
+     */
+    public int nOrids() {
+        int nOrids = 0;
+        for (Feature feature : features) {
+            nOrids += feature.nOrids();
+        }
+        return nOrids;
+    }
+
+    /**
+     * @return the total number of possible instances for all features
+     */
+    public int nInstances() {
+        int nInstances = 0;
+        for (Feature feature : features) {
+            nInstances += feature.nOrids();
+        }
+        return nInstances;
+    }
+
+    public int nFeatures() {
+        return features.length;
+    }
+
+    /**
+     * Print out the coefficients in human-readable form, with descriptions
+     * @param coefficients coefficients to print
+     */
+    public void dumpCoefficients(double[] coefficients) {
+        Require.eq(coefficients.length, "# coefficients", nOrids());
+        for (int i = 0; i < coefficients.length; i++) {
+            System.out.format("%5.1f  %s%n", coefficients[i], terms[0].getFeature().oridDescription(i));
+        }
+    }
+}

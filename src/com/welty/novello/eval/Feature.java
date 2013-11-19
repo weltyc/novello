@@ -1,20 +1,25 @@
 package com.welty.novello.eval;
 
 /**
- * A Feature is a class of Terms; each Term in the class uses the Feature to get its orids.
  */
-public abstract class Feature {
-    int orid(int instance) {
-        return instance;
-    }
-
+public interface Feature {
     /**
-     * @return  Number of orids (coefficients) that this feature uses
+     * @return  Number of orids (distinct instances) for this feature
      */
-    public abstract int nOrids();
+    int nOrids();
 
     /**
      * @return String description of the orid
      */
-    public abstract String oridDescription(int orid);
+    String oridDescription(int orid);
+
+    /**
+     * @return Number of instances for this feature
+     */
+    int nInstances();
+
+    /**
+     * @return equivalence class of the instance
+     */
+    int orid(int instance);
 }

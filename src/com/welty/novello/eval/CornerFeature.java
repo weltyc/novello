@@ -2,7 +2,7 @@ package com.welty.novello.eval;
 
 /**
 */
-class CornerFeature extends Feature {
+class CornerFeature extends SoloFeature {
     private static final String[] oridDescriptions = {
             "No access to corner",
             "Mover access to corner",

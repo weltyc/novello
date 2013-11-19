@@ -5,9 +5,9 @@ import com.welty.novello.solver.BitBoard;
 
 /**
  */
-public class EvaluationFunctionTest extends ArrayTestCase {
+public class Eval1Test extends ArrayTestCase {
     public void testIndicesFromPosition() throws Exception {
-        final EvaluationFunction ef = new EvaluationFunction(false);
+        final EvalStrategy ef = new EvalStrategy();
 
         // a sample position.
         // square 077 is mover, square 070 is enemy,
@@ -16,7 +16,7 @@ public class EvaluationFunctionTest extends ArrayTestCase {
         final long enemy = 0x0180808080808000L;
         System.out.println(new BitBoard(mover, enemy, true));
         final int[] expected = {2, 1, 5, 4};
-        assertEquals(expected, ef.indicesFromPosition(mover, enemy));
+        assertEquals(expected, ef.oridsFromPosition(mover, enemy));
     }
 
     public void testCoefficientErrorFunction() {
