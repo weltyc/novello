@@ -9,6 +9,7 @@ import java.util.ArrayList;
 /**
  */
 class EvalStrategy {
+    private final String name;
     private final Term[] terms;
 
     /**
@@ -21,7 +22,8 @@ class EvalStrategy {
      */
     private final int[] iFeatures;
 
-    EvalStrategy(Term... terms) {
+    EvalStrategy(String name, Term... terms) {
+        this.name = name;
         this.terms = terms;
         iFeatures = new int[terms.length];
 
@@ -40,7 +42,7 @@ class EvalStrategy {
     }
 
     String getFilename(int nEmpty) {
-        return "coefficients/" + getClass().getSimpleName() + "_" + nEmpty + ".coeff";
+        return "coefficients/" + name + "_" + nEmpty + ".coeff";
     }
 
     /**
@@ -128,10 +130,15 @@ class EvalStrategy {
  */
 class EvalStrategies {
     @SuppressWarnings("OctalInteger")
-    static final EvalStrategy eval1 = new EvalStrategy(
+    static final EvalStrategy eval1 = new EvalStrategy("Corner",
             new CornerTerm(000),
             new CornerTerm(007),
             new CornerTerm(070),
             new CornerTerm(077)
+    );
+
+    static final EvalStrategy edgeEval = new EvalStrategy("Diagonals",
+            new ULDRTerm(),
+            new URDLTerm()
     );
 }

@@ -7,11 +7,11 @@ import junit.framework.TestCase;
 public class LinePatternFeatureTest extends TestCase {
     @SuppressWarnings("PointlessArithmeticExpression")
     public void testReverse() {
-        assertEquals(0, LinePatternFeatureFactory.reverse(0, 1));
-        assertEquals(1, LinePatternFeatureFactory.reverse(1, 1));
-        assertEquals(2, LinePatternFeatureFactory.reverse(2, 1));
-        assertEquals("12", 2*3 + 1, LinePatternFeatureFactory.reverse(1*3 + 2, 2));
-        assertEquals("0120", 2*3*3 + 1*3, LinePatternFeatureFactory.reverse(1*3*3 + 2*3, 4));
+        assertEquals(0, Base3.reverse(0, 1));
+        assertEquals(1, Base3.reverse(1, 1));
+        assertEquals(2, Base3.reverse(2, 1));
+        assertEquals("12", 2*3 + 1, Base3.reverse(1 * 3 + 2, 2));
+        assertEquals("0120", 2*3*3 + 1*3, Base3.reverse(1 * 3 * 3 + 2 * 3, 4));
     }
 
     public void testNOrids() {

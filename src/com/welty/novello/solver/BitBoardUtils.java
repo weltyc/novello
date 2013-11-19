@@ -11,11 +11,15 @@ public class BitBoardUtils {
     static final long C_SQUARES = 0x4281000000008142L;
     static final long X_SQUARES = 0x0042000000004200L;
     public static final long CENTER_4 = 0x0000001818000000L;
-    static final long AFile = 0x8080808080808080L;
-    static final long HFile = AFile >>> 7;
+    public static final long AFile = 0x8080808080808080L;
+    public static final long BFile = AFile >>> 1;
+    public static final long CFile = AFile >>> 2;
+    public static final long DFile = AFile >>> 3;
+    public static final long EFile = AFile >>> 4;
+    public static final long FFile = AFile >>> 5;
+    public static final long GFile = AFile >>> 6;
+    public static final long HFile = AFile >>> 7;
     static final long AHFiles = AFile | HFile;
-    static final long CFile = AFile >>> 2;
-    static final long BFile = AFile >>> 1;
 
     /**
      * Column number of square.

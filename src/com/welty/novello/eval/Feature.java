@@ -42,6 +42,9 @@ class Features {
             "Mover occupies corner",
             "Enemy occupies corner"
     );
+
+    static final Feature edgeFeature = LinePatternFeatureFactory.of(8);
+    static final Feature mainDiagonalFeature = LinePatternFeatureFactory.of(8);
 }
 
 
@@ -112,17 +115,17 @@ class SoloFeature implements Feature {
  */
 class LinePatternFeatureFactory {
     static Feature of(int nDisks)  {
-        final int[] orids = new int[nInstances(nDisks)];
+        final int[] orids = new int[Base3.nInstances(nDisks)];
         final List<String> oridDescList = new ArrayList<>();
 
         int nOrids=0;
         for (int instance = 0; instance < orids.length; instance++) {
-            final int reverse = reverse(instance, nDisks);
+            final int reverse = Base3.reverse(instance, nDisks);
             if (reverse<instance) {
                 orids[instance] = orids[reverse];
             }
             else {
-                oridDescList.add(oridDescription(instance, nDisks));
+                oridDescList.add(Base3.description(instance, nDisks));
                 orids[instance] = nOrids++;
             }
         }
@@ -131,48 +134,4 @@ class LinePatternFeatureFactory {
         return new MultiFeature(orids, oridDescriptions);
     }
 
-    /**
-     * Reverse the base 3 digits of instance
-     *
-     * @param instance initial input
-     * @return reversed instance
-     */
-    static int reverse(int instance, int digits) {
-        int reverse = 0;
-        for (int d=0; d<digits; d++) {
-            reverse*=3;
-            reverse += instance%3;
-            instance /=3;
-        }
-        return reverse;
-    }
-
-    private static final char[] output = ".*O".toCharArray();
-
-    /**
-     * Generate oridDescription from one of the orid's instances
-     *
-     * @param instance instance. NOT orid.
-     * @param nDisks number of disks.
-     * @return oridDescription
-     */
-    static String oridDescription(int instance, int nDisks) {
-        final StringBuilder sb = new StringBuilder();
-        while (instance>0) {
-            sb.append(output[instance%3]);
-            instance /= 3;
-        }
-        while (sb.length()<nDisks) {
-            sb.append(output[0]);
-        }
-        return sb.reverse().toString();
-    }
-
-    static int nInstances(int nDisks) {
-        int nInstances = 1;
-        for (int i=0; i<nDisks; i++) {
-            nInstances*=3;
-        }
-        return nInstances;
-    }
 }

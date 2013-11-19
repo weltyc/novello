@@ -19,8 +19,9 @@ public class SelfPlaySet {
         final List<PositionValue> pvs = new ArrayList<>();
 
         final StartPosGenerator generator = new StartPosGenerator(9);
-        final Player white = new EvalPlayer(new StrategyBasedEval());
+//        final Player white = new EvalPlayer(new StrategyBasedEval());
         final Player black = new Bobby();
+        final Player white = new Bobby();
 
         final HashSet<BitBoard> alreadySeen = new HashSet<>();
 

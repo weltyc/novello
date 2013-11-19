@@ -24,7 +24,7 @@ public class EvalStrategyTest extends ArrayTestCase {
 
     public void testFeatureCompression() {
 
-        final EvalStrategy strategy = new EvalStrategy(
+        final EvalStrategy strategy = new EvalStrategy("test",
                 TermTest.term1,
                 TermTest.term1,
                 TermTest.term2
