@@ -1,15 +1,21 @@
 package com.welty.novello.selfplay;
 
+import com.welty.novello.eval.EvalStrategy;
+import com.welty.novello.eval.StrategyBasedEval;
 import com.welty.novello.solver.BitBoard;
 import org.jetbrains.annotations.NotNull;
 
 /**
  */
-class EvalPlayer extends EndgamePlayer {
+public class EvalPlayer extends EndgamePlayer {
     final Eval eval;
 
     EvalPlayer(Eval eval) {
         this.eval = eval;
+    }
+
+    public EvalPlayer(EvalStrategy strategy) {
+        this(new StrategyBasedEval(strategy));
     }
 
     @Override public int calcMove(@NotNull BitBoard board) {

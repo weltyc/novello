@@ -2,11 +2,13 @@ package com.welty.novello.eval;
 
 import com.orbanova.common.misc.Require;
 import com.orbanova.common.misc.Vec;
+import com.welty.novello.selfplay.Bobby;
+import com.welty.novello.selfplay.EvalPlayer;
+import com.welty.novello.selfplay.Player;
 import com.welty.novello.selfplay.SelfPlaySet;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -146,7 +148,13 @@ public class CoefficientCalculator {
      * @return the positionValues
      */
     public static List<PositionValue> loadPvs() {
-        return SelfPlaySet.call();
+        final Player bobby = new Bobby();
+        final Player diagonal = new EvalPlayer(EvalStrategies.diagonalStrategy);
+        final ArrayList<PositionValue> pvs = new ArrayList<PositionValue>();
+        pvs.addAll(new SelfPlaySet(bobby, diagonal).call());
+        pvs.addAll(new SelfPlaySet(bobby, bobby).call());
+        pvs.addAll(new SelfPlaySet(diagonal, diagonal).call());
+        return pvs;
     }
 }
 

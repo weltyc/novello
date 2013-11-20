@@ -22,7 +22,6 @@ public class EvalStrategyTest extends ArrayTestCase {
         // square 007 has mover access, square 000 has enemy access
         final long mover = 0x8001010101010100L;
         final long enemy = 0x0180808080808000L;
-        System.out.println(new BitBoard(mover, enemy, true));
         final int[] expected = {2, 1, 5, 4};
         assertEquals(expected, strategy.coefficientIndices(mover, enemy));
     }

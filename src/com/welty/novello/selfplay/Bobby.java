@@ -8,7 +8,7 @@ import static java.lang.Long.bitCount;
 /**
  */
 public class Bobby extends EvalPlayer {
-     Bobby() {
+     public Bobby() {
          super(bobbyEval);
      }
 

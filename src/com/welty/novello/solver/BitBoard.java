@@ -301,4 +301,13 @@ public class BitBoard implements Comparable<BitBoard> {
     public long calcMoves() {
         return BitBoardUtils.calcMoves(mover(), enemy());
     }
+
+    public static BitBoard ofMover(long mover, long enemy, boolean blackToMove) {
+        if (blackToMove) {
+            return new BitBoard(mover, enemy, blackToMove);
+        }
+        else {
+            return new BitBoard(enemy, mover, blackToMove);
+        }
+    }
 }

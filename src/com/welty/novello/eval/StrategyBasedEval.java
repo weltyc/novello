@@ -1,6 +1,7 @@
 package com.welty.novello.eval;
 
 import com.welty.novello.selfplay.Eval;
+import com.welty.novello.solver.BitBoard;
 import com.welty.novello.solver.BitBoardUtils;
 
 /**
@@ -10,18 +11,28 @@ import com.welty.novello.solver.BitBoardUtils;
  * by mapping feature orid &harr; coefficient calculator index.
  */
 public class StrategyBasedEval implements Eval {
-
     final CoefficientSet coefficientSet;
-    private final EvalStrategy evalStrategy = EvalStrategies.eval1;
+    private final EvalStrategy evalStrategy;
+
+    private static final boolean debug = false;
 
     /**
      */
-    public StrategyBasedEval() {
+    public StrategyBasedEval(EvalStrategy evalStrategy) {
+        this.evalStrategy = evalStrategy;
         coefficientSet = new CoefficientSet(evalStrategy);
     }
 
     @Override public int eval(long mover, long enemy) {
-        return evalStrategy.eval(mover, enemy, coefficientSet);
+        if (debug) {
+            System.out.println("....................");
+            System.out.println(BitBoard.ofMover(mover, enemy, false));
+        }
+        final int eval = evalStrategy.eval(mover, enemy, coefficientSet);
+        if (debug) {
+            System.out.println("Eval = " + eval);
+            System.out.println();
+        }
+        return eval;
     }
-
 }

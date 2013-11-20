@@ -12,9 +12,11 @@ import java.util.ArrayList;
 
 /**
  */
-class EvalStrategy {
+public class EvalStrategy {
     private final String name;
     private final Term[] terms;
+
+    private static final boolean debug = false;
 
     /**
      * Location of coefficient directory
@@ -196,7 +198,12 @@ class EvalStrategy {
 
             final int orid = term.orid(mover, enemy, moverMoves, enemyMoves);
 
-            eval += slice[iFeature][orid];
+            final int coeff = slice[iFeature][orid];
+            if (debug) {
+                final Feature feature = getFeature(iFeature);
+                System.out.println(feature+"["+feature.oridDescription(orid) + "] = " + coeff);
+            }
+            eval += coeff;
         }
         return eval;
     }
@@ -258,22 +265,4 @@ class EvalStrategy {
     @Override public String toString() {
         return name;
     }
-}
-
-/**
- * Utility class containing EvalStrategy instances
- */
-class EvalStrategies {
-    @SuppressWarnings("OctalInteger")
-    static final EvalStrategy eval1 = new EvalStrategy("eval1",
-            new CornerTerm(000),
-            new CornerTerm(007),
-            new CornerTerm(070),
-            new CornerTerm(077)
-    );
-
-    static final EvalStrategy diagonalStrategy = new EvalStrategy("diagonal",
-            new ULDRTerm(),
-            new URDLTerm()
-    );
 }

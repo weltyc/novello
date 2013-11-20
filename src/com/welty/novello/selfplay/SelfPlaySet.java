@@ -1,8 +1,9 @@
 package com.welty.novello.selfplay;
 
-import com.welty.novello.eval.StrategyBasedEval;
+import com.welty.novello.eval.EvalStrategies;
 import com.welty.novello.eval.PositionValue;
 import com.welty.novello.solver.BitBoard;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -12,16 +13,25 @@ import java.util.List;
  */
 public class SelfPlaySet {
     public static void main(String[] args) {
-        call();
+        final Player black = new Bobby();
+        final Player white = new EvalPlayer(EvalStrategies.diagonalStrategy);
+//        final Player white = new EvalPlayer(EvalStrategies.eval1);
+//        final Player white = new RandomPlayer();
+        new SelfPlaySet(black, white).call();
     }
 
-    public static List<PositionValue> call() {
+    private final @NotNull Player black;
+    private final @NotNull Player white;
+
+    public SelfPlaySet(@NotNull Player black, @NotNull Player white) {
+        this.black = black;
+        this.white = white;
+    }
+
+    public List<PositionValue> call() {
         final List<PositionValue> pvs = new ArrayList<>();
 
         final StartPosGenerator generator = new StartPosGenerator(9);
-//        final Player white = new EvalPlayer(new StrategyBasedEval());
-        final Player black = new Bobby();
-        final Player white = new Bobby();
 
         final HashSet<BitBoard> alreadySeen = new HashSet<>();
 
