@@ -42,6 +42,7 @@ public class CoefficientCalculatorTest extends ArrayTestCase {
         // the error function is now (8-4x)^2 + penalty*x^2.
         // Its minimum occurs when 0 = d error / dx = (4+p)x -8
         // so x = 8/(4+p)
+        final int nDimensions = 6;
         final Element[] elements = {
                 new Element(new int[]{2, 1, 5, 4}, 8)
         };
@@ -52,10 +53,10 @@ public class CoefficientCalculatorTest extends ArrayTestCase {
         final double err1 = -4.;   // err from target when x=x1.
 
         for (double penalty = 0; penalty < 4; penalty++) {
-            final CoefficientCalculator.ErrorFunction function = new CoefficientCalculator.ErrorFunction(elements, 6, penalty);
+            final CoefficientCalculator.ErrorFunction function = new CoefficientCalculator.ErrorFunction(elements, nDimensions, penalty);
 
             // at x0
-            assertEquals(6, function.nDimensions());
+            assertEquals(nDimensions, function.nDimensions());
             assertEquals("sum of squared errors", err0 * err0, function.y(x0), 1e-10);
             assertEquals("steepest descent", new double[]{0, 2 * err0, 2 * err0, 0, 2 * err0, 2 * err0}, function.minusGradient(x0), 1e-10);
 
@@ -64,6 +65,13 @@ public class CoefficientCalculatorTest extends ArrayTestCase {
             final double[] expectedNoPenalty = {0, 2 * err1, 2 * err1, 0, 2 * err1, 2 * err1};
             final double[] expected = Vec.plusTimes(expectedNoPenalty, x1, -2 * penalty);
             assertEquals("steepest descent", expected, function.minusGradient(x1), 1e-10);
+
+            // line function
+            final double[] dx =Vec.increasingDouble(1., 1., nDimensions);
+            for (int a=0; a<3; a++) {
+                final double[] xa = Vec.plusTimes(x1, dx, a);
+                assertEquals(function.y(xa), function.getLineFunction(x1, dx).y(a));
+            }
         }
     }
 }

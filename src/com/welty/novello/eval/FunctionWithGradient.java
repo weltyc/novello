@@ -49,7 +49,13 @@ public abstract class FunctionWithGradient {
         return Functions.minimize(line, 0, 1);
     }
 
-    protected @NotNull LineFunction getLineFunction(double[] x, double[] dx) {
+    /**
+     * Create a function whose values are this Function's values along a line
+     * @param x  initial point on the line
+     * @param dx direction of the line
+     * @return a function: a -> this.y(x + a * dx)
+     */
+    protected @NotNull Function getLineFunction(double[] x, double[] dx) {
         return new LineFunction(this, x, dx);
     }
 

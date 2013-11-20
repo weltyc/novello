@@ -1,11 +1,13 @@
 package com.welty.novello.eval;
 
+import com.orbanova.common.math.function.oned.Function;
 import com.orbanova.common.misc.Require;
 import com.orbanova.common.misc.Vec;
 import com.welty.novello.selfplay.Bobby;
 import com.welty.novello.selfplay.EvalPlayer;
 import com.welty.novello.selfplay.Player;
 import com.welty.novello.selfplay.SelfPlaySet;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -32,7 +34,7 @@ public class CoefficientCalculator {
             System.out.println("estimating coefficients using " + elements.length + " positions");
             final long t0 = System.currentTimeMillis();
             final double[] coefficients = estimateCoefficients(elements, strategy.nCoefficientIndices(), penalty);
-            final long dt = System.currentTimeMillis()-t0;
+            final long dt = System.currentTimeMillis() - t0;
             System.out.println(dt + " ms elapsed");
             System.out.println("sum of coefficients squared = " + Vec.sumSq(coefficients));
 
@@ -122,6 +124,48 @@ public class CoefficientCalculator {
             }
             return error;
         }
+
+        @NotNull @Override protected Function getLineFunction(double[] x, double[] dx) {
+            return new LineFunction(x, dx);
+        }
+
+        /**
+         * Precomputes some stuff to speed up line minimization
+         */
+        class LineFunction implements Function {
+            final double[] errors;
+            final double[] dErrors;
+            private final double[] x;
+            private final double[] dx;
+
+            public LineFunction(double[] x, double[] dx) {
+                this.x = x;
+                this.dx = dx;
+                errors = new double[elements.length];
+                dErrors = new double[elements.length];
+                for (int i = 0; i < elements.length; i++) {
+                    final Element element = elements[i];
+                    errors[i] = error(x, element);
+                    for (int j : element.indices) {
+                        dErrors[i] -= dx[j];
+                    }
+                }
+            }
+
+            @Override public double y(double a) {
+                double y = 0;
+                for (int i = 0; i < errors.length; i++) {
+                    final double error = errors[i] + dErrors[i] * a;
+                    y += error * error;
+                }
+                double p = 0;
+                for (int i = 0; i < x.length; i++) {
+                    final double coeff = x[i] + a * dx[i];
+                    p += coeff * coeff;
+                }
+                return y + penalty * p;
+            }
+        }
     }
 
     /**
@@ -151,8 +195,8 @@ public class CoefficientCalculator {
      */
     public static List<PositionValue> loadPvs(Player... players) {
         final ArrayList<PositionValue> pvs = new ArrayList<>();
-        for (int i=0; i<players.length; i++) {
-            for (int j=0; j<=i; j++) {
+        for (int i = 0; i < players.length; i++) {
+            for (int j = 0; j <= i; j++) {
                 pvs.addAll(new SelfPlaySet(players[i], players[j]).call());
             }
         }
