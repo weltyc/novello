@@ -6,6 +6,7 @@ import com.welty.novello.selfplay.SelfPlaySet;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -19,7 +20,7 @@ public class CoefficientCalculator {
      */
     public static void main(String[] args) throws IOException {
         final EvalStrategy strategy = EvalStrategies.diagonalStrategy;
-        final double penalty = 5;
+        final double penalty = 10;
 
         final List<PositionValue> pvs = loadPvs();
         System.out.println("a total of " + pvs.size() + " pvs are available.");
@@ -28,7 +29,9 @@ public class CoefficientCalculator {
             final Element[] elements = elementsFromPvs(pvs, nEmpty, strategy);
             System.out.println("estimating coefficients using " + elements.length + " positions");
             final double[] coefficients = estimateCoefficients(elements, strategy.nCoefficientIndices(), penalty);
-            strategy.dumpCoefficients(coefficients);
+//            strategy.dumpCoefficients(coefficients);
+//            System.out.println(Arrays.toString(Vec.last(coefficients, 4)));
+            System.out.println("sum of coefficients squared = " + Vec.sumSq(coefficients));
 
             // write to file
             strategy.writeSlice(nEmpty, coefficients);

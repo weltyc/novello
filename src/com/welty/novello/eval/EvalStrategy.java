@@ -137,6 +137,7 @@ class EvalStrategy {
     }
 
     void writeSlice(int nEmpty, double[] coefficients, Path coefficientDirectory) throws IOException {
+        int nNonZero = 0;
         Require.eq(coefficients.length, "# coefficients", nCoefficientIndices());
         Files.createDirectories(coefficientDirectory);
         final String filename = getFilename(nEmpty);
@@ -145,12 +146,13 @@ class EvalStrategy {
             for (double c : coefficients) {
                 final int intCoeff = (int) Math.round(c);
                 if (intCoeff != 0) {
-                    System.out.print("^");
+                    nNonZero++;
                 }
                 out.writeInt(intCoeff);
             }
             System.out.println();
         }
+        System.out.println(nNonZero + " non-zero coefficients written");
     }
 
     String getFilename(int nEmpty) {
