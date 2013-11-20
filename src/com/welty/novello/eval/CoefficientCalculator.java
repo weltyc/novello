@@ -1,6 +1,7 @@
 package com.welty.novello.eval;
 
 import com.orbanova.common.misc.Require;
+import com.orbanova.common.misc.Vec;
 import com.welty.novello.selfplay.SelfPlaySet;
 
 import java.io.*;
@@ -18,6 +19,7 @@ public class CoefficientCalculator {
      */
     public static void main(String[] args) throws IOException {
         final EvalStrategy strategy = EvalStrategies.diagonalStrategy;
+        final double penalty = 5;
 
         final List<PositionValue> pvs = loadPvs();
         System.out.println("a total of " + pvs.size() + " pvs are available.");
@@ -25,7 +27,7 @@ public class CoefficientCalculator {
             System.out.println("--- " + nEmpty + " ---");
             final Element[] elements = elementsFromPvs(pvs, nEmpty, strategy);
             System.out.println("estimating coefficients using " + elements.length + " positions");
-            final double[] coefficients = estimateCoefficients(elements, strategy.nCoefficientIndices());
+            final double[] coefficients = estimateCoefficients(elements, strategy.nCoefficientIndices(), penalty);
             strategy.dumpCoefficients(coefficients);
 
             // write to file
@@ -34,37 +36,57 @@ public class CoefficientCalculator {
     }
 
     /**
-     * @param elements indices for each position to match
+     * @param elements            indices for each position to match
      * @param nCoefficientIndices number of coefficients
      * @return optimal coefficients
      */
-    static double[] estimateCoefficients(Element[] elements, int nCoefficientIndices) {
-        final FunctionWithGradient f = new ErrorFunction(elements, nCoefficientIndices);
+    static double[] estimateCoefficients(Element[] elements, int nCoefficientIndices, double penalty) {
+        final FunctionWithGradient f = new ErrorFunction(elements, nCoefficientIndices, penalty);
         return ConjugateGradientMethod.minimize(f);
     }
 
     /**
      * The function we are trying to minimize.
      * <p/>
-     * We are minimizing the sum of squared errors of the elements.
-     * For each element, the error is calculated as
-     * target - sum over all indices of x[index]
+     * This function is the sum of two components: the sum of squared errors plus
+     * a penalty term which forces the coefficients to 0.
      * <p/>
-     * The gradient for index i is the sum over all elements e that contain index i of
-     * 2*error_e
+     * Let
+     * <ul>
+     * <li>i be an index into the coefficient array</li>
+     * <li>x[i] be the coefficient for index i</li>
+     * <li>e be an element in the elements list</li>
+     * <li>e.N[i] be the number of times pattern i occurs in the element</li>
+     * <li>p be the size of the penalty</li>
+     * </ul>
+     * An element's error, e.error = e.target - &Sigma;<sub>i</sub>e.N[i]x[i]
+     * <p/>
+     * The sum of squared errors is<br/>
+     * &Sigma;<sub>e</sub>e.error^2<br/>
+     * <p/>
+     * Its gradient for index i is
+     * -2 &Sigma;<sub>e</sub>error*e.N[i]
+     * <p/>
+     * The penalty term is<br/>
+     * p &Sigma;<sub>i</sub>x[i]^2
+     * <p/>
+     * Its gradient for index i is
+     * 2 p x[i]
      */
     static class ErrorFunction implements FunctionWithGradient {
         private final Element[] elements;
         private final int nIndices;
+        private final double penalty;
 
-        public ErrorFunction(Element[] elements, int nIndices) {
+        public ErrorFunction(Element[] elements, int nIndices, double penalty) {
             this.elements = elements;
             this.nIndices = nIndices;
+            this.penalty = penalty;
         }
 
         @Override public double[] minusGradient(double[] x) {
             Require.eq(x.length, "x length", nIndices);
-            final double[] minusGradient = new double[x.length];
+            final double[] minusGradient = Vec.times(x, -2 * penalty);
             for (final Element element : elements) {
                 final double error = error(x, element);
                 for (int i : element.indices) {
@@ -80,7 +102,7 @@ public class CoefficientCalculator {
                 final double error = error(x, element);
                 y += error * error;
             }
-            return y;
+            return y + penalty * Vec.sumSq(x);
         }
 
         @Override public int nDimensions() {
@@ -99,8 +121,8 @@ public class CoefficientCalculator {
     /**
      * Select the pvs that will be used to generate coefficients at the given number of nEmpties and generate their Elements
      *
-     * @param pvs                list of pvs at all empties
-     * @param nEmpty             number of empties to generate coefficients for
+     * @param pvs      list of pvs at all empties
+     * @param nEmpty   number of empties to generate coefficients for
      * @param strategy EvaluationFunction that is producing Elements.
      * @return list of selected Elements
      */
