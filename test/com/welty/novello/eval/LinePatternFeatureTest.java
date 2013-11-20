@@ -15,11 +15,11 @@ public class LinePatternFeatureTest extends TestCase {
     }
 
     public void testNOrids() {
-        assertEquals(3, LinePatternFeatureFactory.of(1).nOrids());
-        assertEquals((9+3)/2, LinePatternFeatureFactory.of(2).nOrids());
-        assertEquals((27+9)/2, LinePatternFeatureFactory.of(3).nOrids());
-        assertEquals((81+9)/2, LinePatternFeatureFactory.of(4).nOrids());
-        assertEquals((243+27)/2, LinePatternFeatureFactory.of(5).nOrids());
+        assertEquals(3, LinePatternFeatureFactory.of("test", 1).nOrids());
+        assertEquals((9+3)/2, LinePatternFeatureFactory.of("test", 2).nOrids());
+        assertEquals((27+9)/2, LinePatternFeatureFactory.of("test", 3).nOrids());
+        assertEquals((81+9)/2, LinePatternFeatureFactory.of("test", 4).nOrids());
+        assertEquals((243+27)/2, LinePatternFeatureFactory.of("test", 5).nOrids());
     }
 
     public void testOridDescription() {
@@ -32,14 +32,14 @@ public class LinePatternFeatureTest extends TestCase {
     }
 
     private static void testOridDescription(int nDisks, int orid, String expected) {
-        assertEquals(expected, LinePatternFeatureFactory.of(nDisks).oridDescription(orid));
+        assertEquals(expected, LinePatternFeatureFactory.of("test", nDisks).oridDescription(orid));
     }
 
     public void testNInstances() {
-        assertEquals(3, LinePatternFeatureFactory.of(1).nInstances());
-        assertEquals(9, LinePatternFeatureFactory.of(2).nInstances());
-        assertEquals(27, LinePatternFeatureFactory.of(3).nInstances());
-        assertEquals(81, LinePatternFeatureFactory.of(4).nInstances());
+        assertEquals(3, LinePatternFeatureFactory.of("test", 1).nInstances());
+        assertEquals(9, LinePatternFeatureFactory.of("test", 2).nInstances());
+        assertEquals(27, LinePatternFeatureFactory.of("test", 3).nInstances());
+        assertEquals(81, LinePatternFeatureFactory.of("test", 4).nInstances());
     }
 
     public void testOrid() {
@@ -59,6 +59,6 @@ public class LinePatternFeatureTest extends TestCase {
     }
 
     private void testOrid(int nDisks, int instance, int orid) {
-        assertEquals(orid, LinePatternFeatureFactory.of(nDisks).orid(instance));
+        assertEquals(orid, LinePatternFeatureFactory.of("test", nDisks).orid(instance));
     }
 }

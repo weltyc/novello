@@ -6,7 +6,7 @@ import junit.framework.TestCase;
  */
 public class TermTest extends TestCase {
     static final Feature feature1 = new SoloFeature("orid 1", "orid 2", "orid 3");
-    static final Feature feature2 = new MultiFeature(new int[]{0,1,0}, new String[]{"orid 0", "orid 1"});
+    static final Feature feature2 = new MultiFeature("test", new int[]{0,1,0}, new String[]{"orid 0", "orid 1"});
 
     /**
      * A sample term whose instance is mover%3 and whose orid is mover%3

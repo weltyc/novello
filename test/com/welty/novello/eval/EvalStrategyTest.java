@@ -44,7 +44,7 @@ public class EvalStrategyTest extends ArrayTestCase {
     public void testWriteRead() throws IOException {
         // specific strategy doesn't matter too much for this test, just want it to have
         // multiple terms and features.
-        final EvalStrategy strategy = EvalStrategies.edgeEval;
+        final EvalStrategy strategy = EvalStrategies.diagonalStrategy;
         final int nFeatures = strategy.nFeatures();
 
         final double[] coeffs = Vec.increasing(0., 1., strategy.nCoefficientIndices());
@@ -69,7 +69,7 @@ public class EvalStrategyTest extends ArrayTestCase {
     }
 
     public void testDecompress() {
-        final EvalStrategy strategy = EvalStrategies.edgeEval;
+        final EvalStrategy strategy = EvalStrategies.diagonalStrategy;
         final int nFeatures = strategy.nFeatures();
 
         // compressed data. coefficient = orid

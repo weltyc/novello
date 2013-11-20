@@ -10,7 +10,7 @@ import java.util.List;
  */
 interface Feature {
     /**
-     * @return  Number of orids (distinct instances) for this feature
+     * @return Number of orids (distinct instances) for this feature
      */
     int nOrids();
 
@@ -43,8 +43,46 @@ class Features {
             "Enemy occupies corner"
     );
 
-    static final Feature edgeFeature = LinePatternFeatureFactory.of(8);
-    static final Feature mainDiagonalFeature = LinePatternFeatureFactory.of(8);
+    static final Feature edgeFeature = LinePatternFeatureFactory.of("edges", 8);
+    static final Feature mainDiagonalFeature = LinePatternFeatureFactory.of("main diagonal", 8);
+
+    /**
+     * Convert coeffsByOrid (as read from a file) to coeffsByInstance (as used in the eval)
+     *
+     * @param feature      feature to map instances to orids
+     * @param coeffsByOrid array containing coefficients for each orid
+     * @return array containing coefficients for each instance.
+     */
+    static int[] coeffsByInstance(Feature feature, int[] coeffsByOrid) {
+        final int n = feature.nInstances();
+        final int[] coeffsByInstance = new int[n];
+        for (int i = 0; i < n; i++) {
+            coeffsByInstance[i] = coeffsByOrid[feature.orid(i)];
+        }
+        return coeffsByInstance;
+    }
+
+    /**
+     * Print a human-readable description of the coefficients to System.out
+     *
+     * @param feature      feature used to interpret the coefficients
+     * @param coefficients coefficients to print
+     */
+    static void dumpCoefficients(Feature feature, int[] coefficients) {
+        Require.eq(coefficients.length, "# coefficients", feature.nInstances());
+
+        System.out.println(feature+":");
+        int nNonZero = 0;
+        for (int instance = 0; instance < coefficients.length; instance++) {
+            final int coefficient = coefficients[instance];
+            if (coefficient != 0) {
+                final String desc = feature.oridDescription(feature.orid(instance));
+                System.out.format("%4d  %s%n", coefficient, desc);
+                nNonZero++;
+            }
+        }
+        System.out.println("(" + nNonZero + " non-zero coefficients out of " + feature.nInstances() + " total coefficients)");
+    }
 }
 
 
@@ -54,8 +92,10 @@ class Features {
 class MultiFeature implements Feature {
     private final int[] orids;
     private final String[] oridDescriptions;
+    private final String name;
 
-    public MultiFeature(int[] orids, String[] oridDescriptions) {
+    public MultiFeature(String name, int[] orids, String[] oridDescriptions) {
+        this.name = name;
         Require.lt(Vec.max(orids), "maximum orid value", oridDescriptions.length, "number of orid descriptions");
         this.orids = orids;
         this.oridDescriptions = oridDescriptions;
@@ -75,6 +115,10 @@ class MultiFeature implements Feature {
 
     @Override public int orid(int instance) {
         return orids[instance];
+    }
+
+    @Override public String toString() {
+        return name;
     }
 }
 
@@ -107,31 +151,30 @@ class SoloFeature implements Feature {
 
 /**
  * A Feature that uses, as its instance, a base-3 representation of the disks in a line.
- *
+ * <p/>
  * 0 = empty, 1=mover, 2=enemy.
  * Any disk pattern gives the same orid as reversing its disks.
- *
+ * <p/>
  * Disk patterns are displayed assuming black is the mover; * = mover, O = enemy.
  */
 class LinePatternFeatureFactory {
-    static Feature of(int nDisks)  {
+    static Feature of(String name, int nDisks) {
         final int[] orids = new int[Base3.nInstances(nDisks)];
         final List<String> oridDescList = new ArrayList<>();
 
-        int nOrids=0;
+        int nOrids = 0;
         for (int instance = 0; instance < orids.length; instance++) {
             final int reverse = Base3.reverse(instance, nDisks);
-            if (reverse<instance) {
+            if (reverse < instance) {
                 orids[instance] = orids[reverse];
-            }
-            else {
+            } else {
                 oridDescList.add(Base3.description(instance, nDisks));
                 orids[instance] = nOrids++;
             }
         }
 
         final String[] oridDescriptions = oridDescList.toArray(new String[oridDescList.size()]);
-        return new MultiFeature(orids, oridDescriptions);
+        return new MultiFeature(name, orids, oridDescriptions);
     }
 
 }

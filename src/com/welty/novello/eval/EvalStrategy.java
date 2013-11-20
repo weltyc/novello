@@ -82,7 +82,7 @@ class EvalStrategy {
     void decompressSlice(int[][] slice) {
         for (int iFeature = 0; iFeature<nFeatures(); iFeature++) {
             final Feature feature = getFeature(iFeature);
-            slice[iFeature]=coeffsByInstance(slice[iFeature], feature);
+            slice[iFeature]= Features.coeffsByInstance(feature, slice[iFeature]);
         }
     }
 
@@ -111,22 +111,6 @@ class EvalStrategy {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    /**
-     * Convert coeffsByOrid (as read from a file) to coeffsByInstance (as used in the eval)
-     *
-     * @param coeffsByOrid array containing coefficients for each orid
-     * @param feature      feature to map instances to orids
-     * @return array containing coefficients for each instance.
-     */
-    private static int[] coeffsByInstance(int[] coeffsByOrid, Feature feature) {
-        final int n = feature.nInstances();
-        final int[] coeffsByInstance = new int[n];
-        for (int i = 0; i < n; i++) {
-            coeffsByInstance[i] = coeffsByOrid[feature.orid(i)];
-        }
-        return coeffsByInstance;
     }
 
     private static int[] readInts(DataInputStream in, int nOrids) throws IOException {
@@ -251,19 +235,9 @@ class EvalStrategy {
      */
     public void dumpCoefficients(int[][] slice) {
         Require.eq(slice.length, "slice length", nFeatures());
-        for (int i = 0; i < nFeatures(); i++) {
-            Require.eq(slice[i].length, "slice[" + i + "].length", getFeature(i).nInstances());
-        }
         for (int iFeature = 0; iFeature < nFeatures(); iFeature++) {
             final Feature feature = getFeature(iFeature);
-            final int[] coefficients = slice[iFeature];
-            for (int instance = 0; instance < coefficients.length; instance++) {
-                final int coefficient = coefficients[iFeature];
-                if (coefficient != 0) {
-                    final String desc = feature.oridDescription(feature.orid(instance));
-                    System.out.format("%4d  %s%n", coefficient, desc);
-                }
-            }
+            Features.dumpCoefficients(feature, slice[iFeature]);
         }
     }
 
@@ -278,6 +252,10 @@ class EvalStrategy {
     public int nCoefficientIndices() {
         return Vec.sum(nOridsByFeature());
     }
+
+    @Override public String toString() {
+        return name;
+    }
 }
 
 /**
@@ -285,14 +263,14 @@ class EvalStrategy {
  */
 class EvalStrategies {
     @SuppressWarnings("OctalInteger")
-    static final EvalStrategy eval1 = new EvalStrategy("Corner",
+    static final EvalStrategy eval1 = new EvalStrategy("eval1",
             new CornerTerm(000),
             new CornerTerm(007),
             new CornerTerm(070),
             new CornerTerm(077)
     );
 
-    static final EvalStrategy edgeEval = new EvalStrategy("Diagonals",
+    static final EvalStrategy diagonalStrategy = new EvalStrategy("diagonal",
             new ULDRTerm(),
             new URDLTerm()
     );
