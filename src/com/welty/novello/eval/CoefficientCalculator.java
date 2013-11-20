@@ -134,7 +134,8 @@ public class CoefficientCalculator {
     private static Element[] elementsFromPvs(List<PositionValue> pvs, int nEmpty, EvalStrategy strategy) {
         final List<Element> res = new ArrayList<>();
         for (final PositionValue pv : pvs) {
-            if (nEmpty == pv.nEmpty()) {
+            final int diff = nEmpty - pv.nEmpty();
+            if (diff == 0 || diff == 2 || diff == -2) {
                 final int[] indices = strategy.coefficientIndices(pv.mover, pv.enemy);
                 res.add(new Element(indices, pv.value));
             }
@@ -150,7 +151,7 @@ public class CoefficientCalculator {
     public static List<PositionValue> loadPvs() {
         final Player bobby = new Bobby();
         final Player diagonal = new EvalPlayer(EvalStrategies.diagonalStrategy);
-        final ArrayList<PositionValue> pvs = new ArrayList<PositionValue>();
+        final ArrayList<PositionValue> pvs = new ArrayList<>();
         pvs.addAll(new SelfPlaySet(bobby, diagonal).call());
         pvs.addAll(new SelfPlaySet(bobby, bobby).call());
         pvs.addAll(new SelfPlaySet(diagonal, diagonal).call());
