@@ -79,7 +79,7 @@ public class CoefficientCalculator {
      * Its gradient for index i is
      * 2 p x[i]
      */
-    static class ErrorFunction implements FunctionWithGradient {
+    static class ErrorFunction extends FunctionWithGradient {
         private final Element[] elements;
         private final int nIndices;
         private final double penalty;

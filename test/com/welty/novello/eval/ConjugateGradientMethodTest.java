@@ -30,7 +30,7 @@ public class ConjugateGradientMethodTest extends ArrayTestCase {
      *
      * Given a root in R^n and an nxn array A, this is 1/2 (x-root)<sup>T</sup>A(x-root).
      */
-    public static class QForm implements FunctionWithGradient {
+    public static class QForm extends FunctionWithGradient {
         private final double[][] a;
         private final double[] root;
 
