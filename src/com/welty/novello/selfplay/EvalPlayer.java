@@ -38,4 +38,8 @@ public class EvalPlayer extends EndgamePlayer {
             return solveMove(board);
         }
     }
+
+    @Override public String toString() {
+        return eval.toString();
+    }
 }

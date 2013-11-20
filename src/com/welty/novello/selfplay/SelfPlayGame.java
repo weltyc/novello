@@ -32,7 +32,14 @@ class SelfPlayGame implements Callable<SelfPlayGame.Result> {
     @Override public Result call() {
         while (true) {
             if (printGame) {
+                final Player enemyPlayer = player(!board.blackToMove);
+                if (enemyPlayer instanceof EvalPlayer) {
+                    final EvalPlayer ep = (EvalPlayer) enemyPlayer;
+                    final int eval = ep.eval.eval(board.mover(), board.enemy());
+                    System.out.println("Enemy evaluation: " + eval);
+                }
                 System.out.println(board);
+                System.out.println(player(board.blackToMove) + " to move");
             }
             if (!moveIfLegal()) {
                 board = board.pass();

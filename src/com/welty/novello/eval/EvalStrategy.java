@@ -152,7 +152,7 @@ public class EvalStrategy {
         final Path path = dir.resolve(filename(nEmpty));
         try (final DataOutputStream out = new DataOutputStream(Files.newOutputStream(path))) {
             for (double c : coefficients) {
-                final int intCoeff = (int) Math.round(c);
+                final int intCoeff = (int) Math.round(c*100);
                 if (intCoeff != 0) {
                     nNonZero++;
                 }

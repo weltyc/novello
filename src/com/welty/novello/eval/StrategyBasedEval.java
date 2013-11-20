@@ -35,4 +35,8 @@ public class StrategyBasedEval implements Eval {
         }
         return eval;
     }
+
+    @Override public String toString() {
+        return evalStrategy.toString();
+    }
 }

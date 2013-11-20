@@ -20,5 +20,9 @@ public class Bobby extends EvalPlayer {
             final int cornerCan = bitCount(moverMoves & BitBoardUtils.CORNERS) - bitCount(enemyMoves & BitBoardUtils.CORNERS);
             return 2 * corners + cornerCan;
         }
+
+        @Override public String toString() {
+            return "Bobby";
+        }
     };
 }

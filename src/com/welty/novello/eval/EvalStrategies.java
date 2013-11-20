@@ -12,7 +12,7 @@ public class EvalStrategies {
             new CornerTerm(077)
     );
 
-    public static final EvalStrategy diagonalStrategy = new EvalStrategy("diagonal",
+    public static final EvalStrategy diagonal = new EvalStrategy("diagonal",
             new ULDRTerm(),
             new URDLTerm()
     );

@@ -26,8 +26,8 @@ public class CoefficientCalculator {
         final EvalStrategy strategy = EvalStrategies.eval2;
         final double penalty = 10;
 
-        final List<PositionValue> pvs = loadPvs(new Bobby());
-        System.out.println("a total of " + pvs.size() + " pvs are available.");
+        final List<PositionValue> pvs = loadPvs(new Bobby(), new EvalPlayer(EvalStrategies.eval2));
+        System.out.format("a total of %,d pvs are available.", pvs.size());
         for (int nEmpty = 0; nEmpty < 64; nEmpty++) {
             System.out.println("--- " + nEmpty + " ---");
             final Element[] elements = elementsFromPvs(pvs, nEmpty, strategy);

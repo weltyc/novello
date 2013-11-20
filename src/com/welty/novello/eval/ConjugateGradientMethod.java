@@ -55,7 +55,7 @@ public class ConjugateGradientMethod {
                 // check for stopping criterion
                 double fx = optimum.getFx();
                 final double improvement = prevFx - fx;
-                System.out.format("improvement: %.4g to %.4g%n", improvement, fx);
+//                System.out.format("improvement: %.4g to %.4g%n", improvement, fx);
                 if (improvement < 0) {
                     System.out.println("WARNING: improvement was negative");
                 }
