@@ -4,6 +4,10 @@ import com.orbanova.common.misc.Require;
 import com.orbanova.common.misc.Vec;
 import com.welty.novello.solver.BitBoardUtils;
 
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 
 /**
@@ -11,6 +15,11 @@ import java.util.ArrayList;
 class EvalStrategy {
     private final String name;
     private final Term[] terms;
+
+    /**
+     * Location of coefficient directory
+     */
+    static final Path defaultCoefficientDirectory = Paths.get("coefficients");
 
     /**
      * Distinct features of terms, in order of their first appearance in terms
@@ -41,8 +50,127 @@ class EvalStrategy {
         this.features = features.toArray(new Feature[features.size()]);
     }
 
+    /**
+     * Read all coefficients for the strategy at a given nEmpty.
+     * <p/>
+     * This version reads from the default coefficient directory
+     *
+     * @return slice
+     */
+    int[][] readSlice(int nEmpty) {
+        return readSlice(nEmpty, defaultCoefficientDirectory);
+    }
+
+    /**
+     * Read all coefficients for the strategy at a given nEmpty.
+     *
+     * @param coefficientDirectory location of coefficient files
+     * @return slice
+     */
+    int[][] readSlice(int nEmpty, Path coefficientDirectory) {
+        final int[][] slice = readCompressedSlice(nEmpty, coefficientDirectory);
+        decompressSlice(slice);
+        return slice;
+    }
+
+    /**
+     * Convert a compressed slice into a decompressed slice.
+     *
+     * This happens in-place; each element of the slice array is replaced by a longer int[].
+     * @param slice slice to decompress
+     */
+    void decompressSlice(int[][] slice) {
+        for (int iFeature = 0; iFeature<nFeatures(); iFeature++) {
+            final Feature feature = getFeature(iFeature);
+            slice[iFeature]=coeffsByInstance(slice[iFeature], feature);
+        }
+    }
+
+    /**
+     * Read coefficients from a file.
+     *
+     * The "compressed" means that the index into the slice data is an orid rather than an instance.
+     * Since there are fewer orids than instances, this leads to less data.
+     *
+     * @param nEmpty # of empties of file to read
+     * @param coefficientDirectory location to read from
+     * @return  compressed slice.
+     */
+    int[][] readCompressedSlice(int nEmpty, Path coefficientDirectory) {
+        final String filename = getFilename(nEmpty);
+        final Path path = coefficientDirectory.resolve(filename);
+        try (DataInputStream in = new DataInputStream(Files.newInputStream(path))) {
+            final int nFeatures = nFeatures();
+            final int[][] slice = new int[nFeatures][];
+
+            for (int iFeature = 0; iFeature < nFeatures; iFeature++) {
+                final Feature feature = getFeature(iFeature);
+                slice[iFeature] = readInts(in, feature.nOrids());
+            }
+            return slice;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Convert coeffsByOrid (as read from a file) to coeffsByInstance (as used in the eval)
+     *
+     * @param coeffsByOrid array containing coefficients for each orid
+     * @param feature      feature to map instances to orids
+     * @return array containing coefficients for each instance.
+     */
+    private static int[] coeffsByInstance(int[] coeffsByOrid, Feature feature) {
+        final int n = feature.nInstances();
+        final int[] coeffsByInstance = new int[n];
+        for (int i = 0; i < n; i++) {
+            coeffsByInstance[i] = coeffsByOrid[feature.orid(i)];
+        }
+        return coeffsByInstance;
+    }
+
+    private static int[] readInts(DataInputStream in, int nOrids) throws IOException {
+        final int[] coeffsByOrid = new int[nOrids];
+        for (int i = 0; i < nOrids; i++) {
+            coeffsByOrid[i] = in.readInt();
+        }
+        return coeffsByOrid;
+    }
+
+    /**
+     * Write a slice to file.
+     * <p/>
+     * The input coefficients are a double[] rather than the more common int[][].
+     * The file format is simply a list of integers back-to-back; this converts the doubles to ints and
+     * writes them out.
+     *
+     * @param nEmpty       # of empties on board for this slice
+     * @param coefficients coefficients, as a double[]
+     * @throws java.io.IOException if can't open file output stream
+     */
+    void writeSlice(int nEmpty, double[] coefficients) throws IOException {
+        writeSlice(nEmpty, coefficients, defaultCoefficientDirectory);
+    }
+
+    void writeSlice(int nEmpty, double[] coefficients, Path coefficientDirectory) throws IOException {
+        Require.eq(coefficients.length, "# coefficients", nCoefficientIndices());
+        Files.createDirectories(coefficientDirectory);
+        final String filename = getFilename(nEmpty);
+        final Path path = coefficientDirectory.resolve(filename);
+        try (final DataOutputStream out = new DataOutputStream(Files.newOutputStream(path))) {
+            for (double c : coefficients) {
+                final int intCoeff = (int) Math.round(c);
+                if (intCoeff != 0) {
+                    System.out.print("^");
+                }
+                out.writeInt(intCoeff);
+            }
+            System.out.println();
+        }
+    }
+
     String getFilename(int nEmpty) {
-        return "coefficients/" + name + "_" + nEmpty + ".coeff";
+        return name + "_" + nEmpty + ".coeff";
     }
 
     /**
@@ -102,13 +230,40 @@ class EvalStrategy {
 
     /**
      * Print out the coefficients in human-readable form, with descriptions
+     * <p/>
+     * This version takes coefficients as they are produced by the coefficient calculator.
      *
      * @param coefficients coefficients to print
      */
     public void dumpCoefficients(double[] coefficients) {
-        Require.eq(coefficients.length, "# coefficients", nOridsByFeature());
+        Require.eq(coefficients.length, "# coefficients", nCoefficientIndices());
         for (int i = 0; i < coefficients.length; i++) {
             System.out.format("%5.1f  %s%n", coefficients[i], terms[0].getFeature().oridDescription(i));
+        }
+    }
+
+    /**
+     * Print out the coefficients in human-readable form, with descriptions
+     * <p/>
+     * This version takes coefficients as they are stored in the CoeffSet.
+     *
+     * @param slice coefficients to print
+     */
+    public void dumpCoefficients(int[][] slice) {
+        Require.eq(slice.length, "slice length", nFeatures());
+        for (int i = 0; i < nFeatures(); i++) {
+            Require.eq(slice[i].length, "slice[" + i + "].length", getFeature(i).nInstances());
+        }
+        for (int iFeature = 0; iFeature < nFeatures(); iFeature++) {
+            final Feature feature = getFeature(iFeature);
+            final int[] coefficients = slice[iFeature];
+            for (int instance = 0; instance < coefficients.length; instance++) {
+                final int coefficient = coefficients[iFeature];
+                if (coefficient != 0) {
+                    final String desc = feature.oridDescription(feature.orid(instance));
+                    System.out.format("%4d  %s%n", coefficient, desc);
+                }
+            }
         }
     }
 

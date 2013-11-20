@@ -29,12 +29,7 @@ public class CoefficientCalculator {
             strategy.dumpCoefficients(coefficients);
 
             // write to file
-            final String filename = strategy.getFilename(nEmpty);
-            try (final DataOutputStream out = new DataOutputStream(new FileOutputStream(filename))) {
-                for (double c : coefficients) {
-                    out.writeInt((int)Math.round(c));
-                }
-            }
+            strategy.writeSlice(nEmpty, coefficients);
         }
     }
 
