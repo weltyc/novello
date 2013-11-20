@@ -46,17 +46,23 @@ public class SelfPlaySet {
             // this means we won't get 8 of each game.
             if (alreadySeen.add(startPosition.minimalReflection())) {
                 if (startPosition.hasLegalMove()) {
+                    final int netResult;
                     final SelfPlayGame.Result result = new SelfPlayGame(startPosition, black, white, nComplete < 2).call();
-                    final SelfPlayGame.Result result2 = new SelfPlayGame(startPosition, white, black, false).call();
-                    final int netResult = (result.netScore - result2.netScore);
+                    pvs.addAll(result.getPositionValues());
+                    if (white != black) {
+                        final SelfPlayGame.Result result2 = new SelfPlayGame(startPosition, white, black, false).call();
+                        pvs.addAll(result2.getPositionValues());
+                        netResult = (result.netScore - result2.netScore);
+                    } else {
+                        // if the same player plays both sides we don't need to play the return games
+                        netResult = result.netScore;
+                    }
                     sum += netResult;
                     sumSq += netResult * netResult;
                     nComplete++;
                     if (nComplete % 1000 == 0) {
                         printStats(nComplete, sum, sumSq);
                     }
-                    pvs.addAll(result.getPositionValues());
-                    pvs.addAll(result2.getPositionValues());
                 }
             }
 
@@ -71,6 +77,6 @@ public class SelfPlaySet {
         final double stdErr = Math.sqrt(variance);
         final double tStat = sum / stdErr;
         System.out.format("after %,6d matches, average result = %.3g +/- %.2g. T ~ %5.3g%n"
-                , nComplete, sum/nComplete, stdErr/nComplete, tStat);
+                , nComplete, sum / nComplete, stdErr / nComplete, tStat);
     }
 }

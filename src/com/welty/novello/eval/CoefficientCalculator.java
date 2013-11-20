@@ -24,15 +24,16 @@ public class CoefficientCalculator {
         final EvalStrategy strategy = EvalStrategies.eval2;
         final double penalty = 10;
 
-        final List<PositionValue> pvs = loadPvs();
+        final List<PositionValue> pvs = loadPvs(new Bobby());
         System.out.println("a total of " + pvs.size() + " pvs are available.");
         for (int nEmpty = 0; nEmpty < 64; nEmpty++) {
             System.out.println("--- " + nEmpty + " ---");
             final Element[] elements = elementsFromPvs(pvs, nEmpty, strategy);
             System.out.println("estimating coefficients using " + elements.length + " positions");
+            final long t0 = System.currentTimeMillis();
             final double[] coefficients = estimateCoefficients(elements, strategy.nCoefficientIndices(), penalty);
-//            strategy.dumpCoefficients(coefficients);
-//            System.out.println(Arrays.toString(Vec.last(coefficients, 4)));
+            final long dt = System.currentTimeMillis()-t0;
+            System.out.println(dt + " ms elapsed");
             System.out.println("sum of coefficients squared = " + Vec.sumSq(coefficients));
 
             // write to file
@@ -148,13 +149,13 @@ public class CoefficientCalculator {
      *
      * @return the positionValues
      */
-    public static List<PositionValue> loadPvs() {
-        final Player bobby = new Bobby();
-        final Player diagonal = new EvalPlayer(EvalStrategies.diagonalStrategy);
+    public static List<PositionValue> loadPvs(Player... players) {
         final ArrayList<PositionValue> pvs = new ArrayList<>();
-        pvs.addAll(new SelfPlaySet(bobby, diagonal).call());
-        pvs.addAll(new SelfPlaySet(bobby, bobby).call());
-        pvs.addAll(new SelfPlaySet(diagonal, diagonal).call());
+        for (int i=0; i<players.length; i++) {
+            for (int j=0; j<=i; j++) {
+                pvs.addAll(new SelfPlaySet(players[i], players[j]).call());
+            }
+        }
         return pvs;
     }
 }
