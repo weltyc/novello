@@ -3,7 +3,6 @@ package com.welty.novello.eval;
 import com.orbanova.common.misc.ArrayTestCase;
 import com.orbanova.common.misc.Vec;
 import com.orbanova.common.ramfs.RamFileSystem;
-import com.welty.novello.solver.BitBoard;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -46,7 +45,7 @@ public class EvalStrategyTest extends ArrayTestCase {
         final EvalStrategy strategy = EvalStrategies.diagonalStrategy;
         final int nFeatures = strategy.nFeatures();
 
-        final double[] coeffs = Vec.increasing(0., 1., strategy.nCoefficientIndices());
+        final double[] coeffs = Vec.increasingDouble(0., 1., strategy.nCoefficientIndices());
         final RamFileSystem fs = new RamFileSystem();
         final Path coefficientDirectory = fs.getPath("coefficients");
         final int nEmpty = 12;
@@ -60,7 +59,7 @@ public class EvalStrategyTest extends ArrayTestCase {
         for (int iFeature = 0; iFeature < nFeatures; iFeature++) {
             final Feature feature = strategy.getFeature(iFeature);
             final int nOrids=  feature.nOrids();
-            int[] expected=increasing(value, 1, nOrids);
+            int[] expected= Vec.increasingInt(value, 1, nOrids);
             value += nOrids;
 
             assertEquals(expected, slice[iFeature]);
@@ -75,7 +74,7 @@ public class EvalStrategyTest extends ArrayTestCase {
         final int[][] slice = new int[nFeatures][];
         for (int iFeature=0; iFeature<nFeatures; iFeature++) {
             final Feature feature = strategy.getFeature(iFeature);
-            slice[iFeature] = increasing(0, 1, feature.nOrids());
+            slice[iFeature] = Vec.increasingInt(0, 1, feature.nOrids());
         }
 
         // decompress slice. This happens in place, so no return value.
@@ -91,11 +90,4 @@ public class EvalStrategyTest extends ArrayTestCase {
 
     }
 
-    private int[] increasing(int start, int increment, int length) {
-        final int[] ints = new int[length];
-        for (int i=0, j=start; i<length; i++, j+=increment) {
-            ints[i]=j;
-        }
-        return ints;
-    }
 }

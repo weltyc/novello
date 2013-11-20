@@ -57,6 +57,8 @@ public class EvalStrategy {
      * <p/>
      * This version reads from the default coefficient directory
      *
+     * The file location is the same as in {@link #writeSlice(int, double[])}
+     *
      * @return slice
      */
     int[][] readSlice(int nEmpty) {
@@ -77,30 +79,32 @@ public class EvalStrategy {
 
     /**
      * Convert a compressed slice into a decompressed slice.
-     *
+     * <p/>
      * This happens in-place; each element of the slice array is replaced by a longer int[].
+     *
      * @param slice slice to decompress
      */
     void decompressSlice(int[][] slice) {
-        for (int iFeature = 0; iFeature<nFeatures(); iFeature++) {
+        for (int iFeature = 0; iFeature < nFeatures(); iFeature++) {
             final Feature feature = getFeature(iFeature);
-            slice[iFeature]= Features.coeffsByInstance(feature, slice[iFeature]);
+            slice[iFeature] = Features.coeffsByInstance(feature, slice[iFeature]);
         }
     }
 
     /**
      * Read coefficients from a file.
-     *
+     * <p/>
      * The "compressed" means that the index into the slice data is an orid rather than an instance.
      * Since there are fewer orids than instances, this leads to less data.
      *
-     * @param nEmpty # of empties of file to read
+     * The file location is the same as in {@link #writeSlice(int, double[])}
+     *
+     * @param nEmpty               # of empties of file to read
      * @param coefficientDirectory location to read from
-     * @return  compressed slice.
+     * @return compressed slice.
      */
     int[][] readCompressedSlice(int nEmpty, Path coefficientDirectory) {
-        final String filename = getFilename(nEmpty);
-        final Path path = coefficientDirectory.resolve(filename);
+        final Path path = coefficientDirectory.resolve(name).resolve(filename(nEmpty));
         try (DataInputStream in = new DataInputStream(Files.newInputStream(path))) {
             final int nFeatures = nFeatures();
             final int[][] slice = new int[nFeatures][];
@@ -129,6 +133,8 @@ public class EvalStrategy {
      * The input coefficients are a double[] rather than the more common int[][].
      * The file format is simply a list of integers back-to-back; this converts the doubles to ints and
      * writes them out.
+     * <p/>
+     * The file location is {defaultCoefficientDirectory}/{eval name}/{nEmpty}.coeff
      *
      * @param nEmpty       # of empties on board for this slice
      * @param coefficients coefficients, as a double[]
@@ -141,9 +147,9 @@ public class EvalStrategy {
     void writeSlice(int nEmpty, double[] coefficients, Path coefficientDirectory) throws IOException {
         int nNonZero = 0;
         Require.eq(coefficients.length, "# coefficients", nCoefficientIndices());
-        Files.createDirectories(coefficientDirectory);
-        final String filename = getFilename(nEmpty);
-        final Path path = coefficientDirectory.resolve(filename);
+        final Path dir = coefficientDirectory.resolve(name);
+        Files.createDirectories(dir);
+        final Path path = dir.resolve(filename(nEmpty));
         try (final DataOutputStream out = new DataOutputStream(Files.newOutputStream(path))) {
             for (double c : coefficients) {
                 final int intCoeff = (int) Math.round(c);
@@ -157,8 +163,8 @@ public class EvalStrategy {
         System.out.println(nNonZero + " non-zero coefficients written");
     }
 
-    String getFilename(int nEmpty) {
-        return name + "_" + nEmpty + ".coeff";
+    static String filename(int nEmpty) {
+        return nEmpty + ".coeff";
     }
 
     /**
@@ -201,7 +207,7 @@ public class EvalStrategy {
             final int coeff = slice[iFeature][orid];
             if (debug) {
                 final Feature feature = getFeature(iFeature);
-                System.out.println(feature+"["+feature.oridDescription(orid) + "] = " + coeff);
+                System.out.println(feature + "[" + feature.oridDescription(orid) + "] = " + coeff);
             }
             eval += coeff;
         }

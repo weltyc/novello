@@ -13,8 +13,8 @@ import java.util.List;
  */
 public class SelfPlaySet {
     public static void main(String[] args) {
-        final Player black = new Bobby();
-        final Player white = new EvalPlayer(EvalStrategies.diagonalStrategy);
+        final Player black = new EvalPlayer(EvalStrategies.eval1);
+        final Player white = new EvalPlayer(EvalStrategies.eval2);
 //        final Player white = new EvalPlayer(EvalStrategies.eval1);
 //        final Player white = new RandomPlayer();
         new SelfPlaySet(black, white).call();

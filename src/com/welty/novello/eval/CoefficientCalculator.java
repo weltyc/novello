@@ -21,7 +21,7 @@ public class CoefficientCalculator {
      * those values to generate coefficients for the Evaluation function.
      */
     public static void main(String[] args) throws IOException {
-        final EvalStrategy strategy = EvalStrategies.diagonalStrategy;
+        final EvalStrategy strategy = EvalStrategies.eval2;
         final double penalty = 10;
 
         final List<PositionValue> pvs = loadPvs();

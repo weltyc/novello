@@ -16,4 +16,13 @@ public class EvalStrategies {
             new ULDRTerm(),
             new URDLTerm()
     );
+
+    public static final EvalStrategy eval2 = new EvalStrategy("eval2",
+            new ULDRTerm(),
+            new URDLTerm(),
+            new RowTerm(0),
+            new RowTerm(7),
+            new ColTerm(0),
+            new ColTerm(7)
+    );
 }

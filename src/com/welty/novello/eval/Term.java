@@ -146,3 +146,42 @@ class URDLTerm extends Term {
                 ((bb & BitBoardUtils.AFile));
     }
 }
+
+class RowTerm extends Term {
+    private static final Feature[] features = {
+            LinePatternFeatureFactory.of("row 0", 8),
+            LinePatternFeatureFactory.of("row 1", 8),
+            LinePatternFeatureFactory.of("row 2", 8),
+            LinePatternFeatureFactory.of("row 3", 8)
+    };
+
+    static Feature getRowFeature(int row) {
+        return features[row < 4 ? row : 7 - row];
+    }
+
+    private final int shift;
+
+    RowTerm(int row) {
+        super(getRowFeature(row));
+        shift = row * 8;
+    }
+
+    @Override public int instance(long mover, long enemy, long moverMoves, long enemyMoves) {
+        return Base3.base2ToBase3(0xFF & (int) (mover >>> shift), 0xFF & (int) (enemy >>> shift));
+    }
+}
+
+class ColTerm extends Term {
+    private final int shift;
+
+    ColTerm(int col) {
+        super(RowTerm.getRowFeature(col));
+        shift = col * 8;
+    }
+
+    @Override public int instance(long mover, long enemy, long moverMoves, long enemyMoves) {
+        final long rMover = BitBoardUtils.reflectDiagonally(mover);
+        final long rEnemy= BitBoardUtils.reflectDiagonally(enemy);
+        return Base3.base2ToBase3(0xFF & (int) (rMover >>> shift), 0xFF & (int) (rEnemy >>> shift));
+    }
+}
