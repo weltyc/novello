@@ -5,6 +5,7 @@ import com.orbanova.common.math.function.oned.Functions;
 import com.orbanova.common.math.function.oned.Optimum;
 import com.orbanova.common.misc.Require;
 import com.orbanova.common.misc.Vec;
+import org.jetbrains.annotations.NotNull;
 
 /**
  */
@@ -37,16 +38,19 @@ public abstract class FunctionWithGradient {
      * <p/>
      * This searches over values of a to find the minimum value of f(x + a*dx).
      *
-     * @param f  function to minimize
      * @param x  initial point on the line
      * @param dx direction of the line
      * @return An Optimum containing (a, f(x+a*da)) at the minimum
      */
-    static Optimum findOptimum(FunctionWithGradient f, double[] x, double[] dx) {
+    Optimum findOptimum(double[] x, double[] dx) {
         Require.finite(dx);
         Require.finite(x);
-        final Function line = new LineFunction(f, x, dx);
+        final Function line = getLineFunction(x, dx);
         return Functions.minimize(line, 0, 1);
+    }
+
+    protected @NotNull LineFunction getLineFunction(double[] x, double[] dx) {
+        return new LineFunction(this, x, dx);
     }
 
     private static class LineFunction implements Function {
