@@ -39,6 +39,10 @@ public class CoefficientCalculator {
     public static void main(String[] args) throws IOException {
         final double penalty = 10000;
 
+        // better to learn this now than after all the computations
+        if (STRATEGY.coefficientsExist(COEFF_SET_NAME)) {
+            System.err.println("Coefficient set already exists.\n\nOverwriting coefficient files is not allowed.");
+        }
         final List<PositionValue> pvs = loadPvs(Players.eval4A());
         System.out.format("a total of %,d pvs are available.%n", pvs.size());
         for (int nEmpty = 0; nEmpty < 64; nEmpty++) {

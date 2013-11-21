@@ -3,9 +3,10 @@ package com.welty.novello.eval;
 import com.orbanova.common.misc.Require;
 import com.orbanova.common.misc.Vec;
 import com.welty.novello.solver.BitBoardUtils;
-import org.jetbrains.annotations.NotNull;
 
-import java.io.*;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -163,6 +164,16 @@ public class EvalStrategy {
     }
 
     /**
+     * @param coeffSetName name of the coefficient set. This is used as a directory name. So that it works on all
+     *                     systems it is required to be alphanumeric.
+     * @return true if the given coefficient set exists on disk
+     * @throws IllegalArgumentException if  the coeffSetName is not alphanumeric
+     */
+    public boolean coefficientsExist(String coeffSetName) {
+        final Path dir = coeffDir(coeffSetName);
+        return Files.exists(dir) && Files.isDirectory(dir);
+    }
+    /**
      * Write a slice to disk.
      * <p/>
      * This function will not allow files to be overwritten, because coefficient sets need to be stable so that experiments can
@@ -264,20 +275,6 @@ public class EvalStrategy {
             nOrids[i] = features[i].nOrids();
         }
         return nOrids;
-    }
-
-    /**
-     * Print out the coefficients in human-readable form, with descriptions
-     * <p/>
-     * This version takes coefficients as they are produced by the coefficient calculator.
-     *
-     * @param coefficients coefficients to print
-     */
-    public void dumpCoefficients(double[] coefficients) {
-        Require.eq(coefficients.length, "# coefficients", nCoefficientIndices());
-        for (int i = 0; i < coefficients.length; i++) {
-            System.out.format("%5.1f  %s%n", coefficients[i], terms[0].getFeature().oridDescription(i));
-        }
     }
 
     /**
