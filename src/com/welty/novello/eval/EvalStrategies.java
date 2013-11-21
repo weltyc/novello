@@ -58,4 +58,15 @@ public class EvalStrategies {
             Terms.moverMobilities,
             Terms.enemyMobilities
     );
+
+    public static EvalStrategy strategy(String name) {
+        switch (name) {
+            case "4":
+                return eval4;
+            case "5":
+                return eval5;
+            default:
+                throw new IllegalArgumentException("unknown strategy name : " + name);
+        }
+    }
 }

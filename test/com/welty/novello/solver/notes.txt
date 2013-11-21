@@ -235,3 +235,36 @@ r2187: Add Negascout
   Move ordering idea based on time/success chance tradeoff:
   let k = eval - (beta+4). If k >= 0 sort based on enemy mobility ("n"), otherwise based on a combination of mobility and eval.
   Specifically, sort score = -ln(n) + k*constant * (k<0 ? 1 : 0.001).  Tune constant by depth I think.
+
+Coefficient calculation
+-----------------------
+  Trying to figure out the best way to generate coefficients.
+  Currently using linear regression on score of playouts. Playout uses Eval4/A (current best bot). Playout positions
+  are random positions with 9 empties.
+  On top of that, choose 10% of those playout positions and do another playout from that position, adding only the first
+  two positions. This is vital for evaluation functions with more than about 10 coefficients, otherwise the results are
+  horrible.
+
+  Eval4 (corner mobility and access).
+    Coefficients A generated from self-play of Bobby bot with no random subpositions.
+  Eval5 (corner mobility and access, # mobilities, # disks)
+    All coefficients generated from self-play of Eval4/A, with random subpositions except for A.
+    Coefficients A: no random subpositions, penalty = 10k
+    Coefficients B: penalty = 10k
+    Coefficients C: penalty = 1k
+    Coefficients D: penalty = 100
+    Coefficients E: penalty = 10
+
+  Tournament results (just top 4 players)
+     +2.4  eval5/D
+     +1.8  eval5/E
+     +0.1  eval5/C
+     -4.3  eval4/A
+
+  Tournament results (bottom 4 players)
+      +15.7  eval4/A
+      +14.5  eval5/C
+       +4.2  eval5/B
+      -34.4  eval5/A
+
+  From the difference between eval5/A and eval5/B it's clear the random subpositions help a lot.

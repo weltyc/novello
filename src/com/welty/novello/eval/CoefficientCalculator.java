@@ -28,7 +28,8 @@ public class CoefficientCalculator {
      */
     public static final int DISK_VALUE = 100;
     public static final EvalStrategy STRATEGY = EvalStrategies.eval5;
-    public static final String COEFF_SET_NAME = "B";
+    public static final String COEFF_SET_NAME = "E";
+    public static final double PENALTY = 10;
 
     /**
      * Generate coefficients for evaluation.
@@ -37,11 +38,11 @@ public class CoefficientCalculator {
      * those values to generate coefficients for the Evaluation function.
      */
     public static void main(String[] args) throws IOException {
-        final double penalty = 10000;
 
         // better to learn this now than after all the computations
         if (STRATEGY.coefficientsExist(COEFF_SET_NAME)) {
             System.err.println("Coefficient set already exists.\n\nOverwriting coefficient files is not allowed.");
+            System.exit(-1);
         }
         final List<PositionValue> pvs = loadPvs(Players.eval4A());
         System.out.format("a total of %,d pvs are available.%n", pvs.size());
@@ -51,7 +52,7 @@ public class CoefficientCalculator {
             final Element[] elements = elementsFromPvs(pvs, nEmpty, STRATEGY);
             System.out.println("estimating coefficients using " + elements.length + " positions");
             final long t0 = System.currentTimeMillis();
-            final double[] coefficients = estimateCoefficients(elements, STRATEGY.nCoefficientIndices(), penalty);
+            final double[] coefficients = estimateCoefficients(elements, STRATEGY.nCoefficientIndices(), PENALTY);
             final long dt = System.currentTimeMillis() - t0;
             System.out.println(dt + " ms elapsed");
             System.out.println("sum of coefficients squared = " + Vec.sumSq(coefficients));
@@ -75,7 +76,7 @@ public class CoefficientCalculator {
      * The function we are trying to minimize.
      * <p/>
      * This function is the sum of two components: the sum of squared errors plus
-     * a penalty term which forces the coefficients to 0.
+     * a PENALTY term which forces the coefficients to 0.
      * <p/>
      * Let
      * <ul>
@@ -83,7 +84,7 @@ public class CoefficientCalculator {
      * <li>x[i] be the coefficient for index i</li>
      * <li>e be an element in the elements list</li>
      * <li>e.N[i] be the number of times pattern i occurs in the element</li>
-     * <li>p be the size of the penalty</li>
+     * <li>p be the size of the PENALTY</li>
      * </ul>
      * An element's error, e.error = e.target - &Sigma;<sub>i</sub>e.N[i]x[i]
      * <p/>
@@ -93,7 +94,7 @@ public class CoefficientCalculator {
      * Its gradient for index i is
      * -2 &Sigma;<sub>e</sub>error*e.N[i]
      * <p/>
-     * The penalty term is<br/>
+     * The PENALTY term is<br/>
      * p &Sigma;<sub>i</sub>x[i]^2
      * <p/>
      * Its gradient for index i is
@@ -215,7 +216,7 @@ public class CoefficientCalculator {
         final ArrayList<PositionValue> pvs = new ArrayList<>();
         for (int i = 0; i < players.length; i++) {
             for (int j = 0; j <= i; j++) {
-                pvs.addAll(new SelfPlaySet(players[i], players[j], 0).call());
+                pvs.addAll(new SelfPlaySet(players[i], players[j], 0, true).call().pvs);
             }
         }
 

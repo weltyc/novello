@@ -1,6 +1,8 @@
 package com.welty.novello.selfplay;
 
+import com.welty.novello.eval.EvalStrategies;
 import com.welty.novello.eval.PositionValue;
+import com.welty.novello.eval.StrategyBasedEval;
 import com.welty.novello.solver.BitBoard;
 import org.jetbrains.annotations.NotNull;
 
@@ -8,21 +10,20 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-import static com.welty.novello.eval.EvalStrategies.eval4;
-
 /**
  */
 public class SelfPlaySet {
     public static void main(String[] args) {
-//        final Player black = new EvalPlayer(EvalStrategies.current);
-        final Player black = new Bobby();
-        final Player white = new EvalPlayer(eval4, "A");
-        new SelfPlaySet(black, white, 2).call();
+        final Player black = new EvalPlayer(new StrategyBasedEval(EvalStrategies.eval5, "D"));
+        final Player white = new EvalPlayer(new StrategyBasedEval(EvalStrategies.eval5, "C"));
+//        final Player white = Players.eval4A();
+        new SelfPlaySet(black, white, 2, true).call();
     }
 
     private final @NotNull Player black;
     private final @NotNull Player white;
     private final int nToPrint;
+    private final boolean printUpdates;
 
     /**
      * Construct a SelfPlaySet.
@@ -32,14 +33,16 @@ public class SelfPlaySet {
      * @param black black player
      * @param white white player
      * @param nToPrint print the first nToPrint games to System.out.
+     * @param printUpdates  if true, print out statistics during the course of the set
      */
-    public SelfPlaySet(@NotNull Player black, @NotNull Player white, int nToPrint) {
+    public SelfPlaySet(@NotNull Player black, @NotNull Player white, int nToPrint, boolean printUpdates) {
         this.black = black;
         this.white = white;
         this.nToPrint = nToPrint;
+        this.printUpdates = printUpdates;
     }
 
-    public List<PositionValue> call() {
+    public Result call() {
         final List<PositionValue> pvs = new ArrayList<>();
 
         final StartPosGenerator generator = new StartPosGenerator(9);
@@ -71,7 +74,7 @@ public class SelfPlaySet {
                     sum += netResult;
                     sumSq += netResult * netResult;
                     nComplete++;
-                    if (nComplete % 5000 == 0) {
+                    if (printUpdates && nComplete % 5000 == 0) {
                         printStats(nComplete, sum, sumSq);
                     }
                 }
@@ -79,8 +82,10 @@ public class SelfPlaySet {
 
         }
 
-        printStats(nComplete, sum, sumSq);
-        return pvs;
+        if (printUpdates) {
+            printStats(nComplete, sum, sumSq);
+        }
+        return new Result(pvs, sum/nComplete);
     }
 
     private static void printStats(int nComplete, double sum, double sumSq) {
@@ -89,5 +94,15 @@ public class SelfPlaySet {
         final double tStat = sum / stdErr;
         System.out.format("after %,6d matches, average result = %.3g +/- %.2g. T ~ %5.3g%n"
                 , nComplete, sum / nComplete, stdErr / nComplete, tStat);
+    }
+
+    public static class Result {
+        public final List<PositionValue> pvs;
+        final double averageResult;
+
+        Result(List<PositionValue> pvs, double averageResult) {
+            this.pvs = pvs;
+            this.averageResult = averageResult;
+        }
     }
 }
