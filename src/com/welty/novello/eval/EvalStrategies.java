@@ -58,6 +58,4 @@ public class EvalStrategies {
             Terms.moverMobilities,
             Terms.enemyMobilities
     );
-
-    public static final EvalStrategy current = eval5;
 }

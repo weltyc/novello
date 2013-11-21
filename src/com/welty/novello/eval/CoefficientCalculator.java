@@ -27,6 +27,8 @@ public class CoefficientCalculator {
      * 1 disk is worth how many evaluation points?
      */
     public static final int DISK_VALUE = 100;
+    public static final EvalStrategy STRATEGY = EvalStrategies.eval5;
+    public static final String COEFF_SET_NAME = "A";
 
     /**
      * Generate coefficients for evaluation.
@@ -35,25 +37,23 @@ public class CoefficientCalculator {
      * those values to generate coefficients for the Evaluation function.
      */
     public static void main(String[] args) throws IOException {
-        final EvalStrategy strategy = EvalStrategies.eval5;
         final double penalty = 10000;
-        final String coeffSetName = "A";
 
         final List<PositionValue> pvs = loadPvs(Players.eval4);
         System.out.format("a total of %,d pvs are available.%n", pvs.size());
         for (int nEmpty = 0; nEmpty < 64; nEmpty++) {
             System.out.println();
             System.out.println("--- " + nEmpty + " ---");
-            final Element[] elements = elementsFromPvs(pvs, nEmpty, strategy);
+            final Element[] elements = elementsFromPvs(pvs, nEmpty, STRATEGY);
             System.out.println("estimating coefficients using " + elements.length + " positions");
             final long t0 = System.currentTimeMillis();
-            final double[] coefficients = estimateCoefficients(elements, strategy.nCoefficientIndices(), penalty);
+            final double[] coefficients = estimateCoefficients(elements, STRATEGY.nCoefficientIndices(), penalty);
             final long dt = System.currentTimeMillis() - t0;
             System.out.println(dt + " ms elapsed");
             System.out.println("sum of coefficients squared = " + Vec.sumSq(coefficients));
 
             // write to file
-            strategy.writeSlice(nEmpty, coefficients, coeffSetName);
+            STRATEGY.writeSlice(nEmpty, coefficients, COEFF_SET_NAME);
         }
     }
 
