@@ -152,7 +152,7 @@ public class EvalStrategy {
         final Path path = dir.resolve(filename(nEmpty));
         try (final DataOutputStream out = new DataOutputStream(Files.newOutputStream(path))) {
             for (double c : coefficients) {
-                final int intCoeff = (int) Math.round(c*100);
+                final int intCoeff = (int) Math.round(c*CoefficientCalculator.DISK_VALUE);
                 if (intCoeff != 0) {
                     nNonZero++;
                 }
@@ -190,7 +190,15 @@ public class EvalStrategy {
         return coefficientIndices;
     }
 
+    /**
+     * Evaluate a position.
+     *
+     * Precondition: mover can move. It is the caller's job to switch sides if no moves are available.
+     * @return position value, in centi-disks
+     */
     public int eval(long mover, long enemy, long moverMoves, long enemyMoves, CoefficientSet coefficientSet) {
+        assert moverMoves!=0;
+
         final int[][] slice = coefficientSet.slice(BitBoardUtils.nEmpty(mover, enemy));
 
         int eval = 0;

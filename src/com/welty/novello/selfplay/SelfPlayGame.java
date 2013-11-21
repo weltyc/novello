@@ -11,7 +11,7 @@ import java.util.concurrent.Callable;
 
 /**
  */
-class SelfPlayGame implements Callable<SelfPlayGame.Result> {
+public class SelfPlayGame implements Callable<SelfPlayGame.Result> {
     private @NotNull BitBoard board;
     private final @NotNull Player black;
     private final @NotNull Player white;
@@ -22,7 +22,7 @@ class SelfPlayGame implements Callable<SelfPlayGame.Result> {
     private final @NotNull List<BitBoard> blackToMovePositions = new ArrayList<>();
     private final @NotNull List<BitBoard> whiteToMovePositions = new ArrayList<>();
 
-    SelfPlayGame(@NotNull BitBoard board, @NotNull Player black, @NotNull Player white, boolean printGame) {
+    public SelfPlayGame(@NotNull BitBoard board, @NotNull Player black, @NotNull Player white, boolean printGame) {
         this.board = board;
         this.black = black;
         this.white = white;

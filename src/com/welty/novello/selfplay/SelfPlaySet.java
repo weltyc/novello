@@ -14,8 +14,8 @@ import java.util.List;
 public class SelfPlaySet {
     public static void main(String[] args) {
         final Player black = new EvalPlayer(EvalStrategies.current);
-        final Player white = new EvalPlayer(EvalStrategies.eval4);
-//        final Player white = new Bobby();
+        final Player white = new Bobby();
+//        final Player white = new EvalPlayer(EvalStrategies.eval4);
         new SelfPlaySet(black, white, 2).call();
     }
 
@@ -70,7 +70,7 @@ public class SelfPlaySet {
                     sum += netResult;
                     sumSq += netResult * netResult;
                     nComplete++;
-                    if (nComplete % 1000 == 0) {
+                    if (nComplete % 5000 == 0) {
                         printStats(nComplete, sum, sumSq);
                     }
                 }

@@ -36,7 +36,7 @@ public class EvalStrategyTest extends ArrayTestCase {
         assertEquals(2, strategy.nFeatures());
         assertEquals(new int[]{3, 2}, strategy.nOridsByFeature());
         assertEquals(TermTest.feature1.nOrids() + TermTest.feature2.nOrids(), strategy.nCoefficientIndices());
-        assertEquals(new int[] {2, 2, 3}, strategy.coefficientIndices(2, 0));
+        assertEquals(new int[]{2, 2, 3}, strategy.coefficientIndices(2, 0));
     }
 
     public void testWriteRead() throws IOException {
@@ -45,7 +45,7 @@ public class EvalStrategyTest extends ArrayTestCase {
         final EvalStrategy strategy = EvalStrategies.diagonal;
         final int nFeatures = strategy.nFeatures();
 
-        final double[] coeffs = Vec.increasingDouble(0., .01, strategy.nCoefficientIndices());
+        final double[] coeffs = Vec.increasingDouble(0., 1. / CoefficientCalculator.DISK_VALUE, strategy.nCoefficientIndices());
         final RamFileSystem fs = new RamFileSystem();
         final Path coefficientDirectory = fs.getPath("coefficients");
         final int nEmpty = 12;
@@ -55,11 +55,11 @@ public class EvalStrategyTest extends ArrayTestCase {
         assertEquals(nFeatures, slice.length);
 
         // test expected result for each feature
-        int value=0;
+        int value = 0;
         for (int iFeature = 0; iFeature < nFeatures; iFeature++) {
             final Feature feature = strategy.getFeature(iFeature);
-            final int nOrids=  feature.nOrids();
-            int[] expected= Vec.increasingInt(value, 1, nOrids);
+            final int nOrids = feature.nOrids();
+            int[] expected = Vec.increasingInt(value, 1, nOrids);
             value += nOrids;
 
             assertEquals(expected, slice[iFeature]);
@@ -72,18 +72,18 @@ public class EvalStrategyTest extends ArrayTestCase {
 
         // compressed data. coefficient = orid
         final int[][] slice = new int[nFeatures][];
-        for (int iFeature=0; iFeature<nFeatures; iFeature++) {
+        for (int iFeature = 0; iFeature < nFeatures; iFeature++) {
             final Feature feature = strategy.getFeature(iFeature);
             slice[iFeature] = Vec.increasingInt(0, 1, feature.nOrids());
         }
 
         // decompress slice. This happens in place, so no return value.
         strategy.decompressSlice(slice);
-        for (int iFeature=0; iFeature<nFeatures; iFeature++) {
+        for (int iFeature = 0; iFeature < nFeatures; iFeature++) {
             final Feature feature = strategy.getFeature(iFeature);
             final int nInstances = feature.nInstances();
             assertEquals(nInstances, slice[iFeature].length);
-            for (int i=0; i< nInstances; i++) {
+            for (int i = 0; i < nInstances; i++) {
                 assertEquals(feature.orid(i), slice[iFeature][i]);
             }
         }

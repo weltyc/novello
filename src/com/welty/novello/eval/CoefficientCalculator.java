@@ -1,22 +1,34 @@
 package com.welty.novello.eval;
 
 import com.orbanova.common.math.function.oned.Function;
+import com.orbanova.common.misc.Logger;
 import com.orbanova.common.misc.Require;
 import com.orbanova.common.misc.Utils;
 import com.orbanova.common.misc.Vec;
-import com.welty.novello.selfplay.Bobby;
-import com.welty.novello.selfplay.EvalPlayer;
-import com.welty.novello.selfplay.Player;
-import com.welty.novello.selfplay.SelfPlaySet;
+import com.welty.novello.selfplay.*;
+import com.welty.novello.solver.BitBoard;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 /**
  */
 public class CoefficientCalculator {
+    private static final Logger log = Logger.logger(CoefficientCalculator.class);
+
+    /**
+     * 1/randomFraction of the self-play positions will have all subpositions valued and used in the regression
+     */
+    private static final int randomFraction = 10;
+    /**
+     * 1 disk is worth how many evaluation points?
+     */
+    public static final int DISK_VALUE = 100;
+
     /**
      * Generate coefficients for evaluation.
      * <p/>
@@ -24,10 +36,10 @@ public class CoefficientCalculator {
      * those values to generate coefficients for the Evaluation function.
      */
     public static void main(String[] args) throws IOException {
-        final EvalStrategy strategy = EvalStrategies.current;
+        final EvalStrategy strategy = EvalStrategies.eval5;
         final double penalty = 10000;
 
-        final List<PositionValue> pvs = loadPvs(new Bobby(), new EvalPlayer(EvalStrategies.eval1));
+        final List<PositionValue> pvs = loadPvs(new EvalPlayer(EvalStrategies.eval4));
         System.out.format("a total of %,d pvs are available.%n", pvs.size());
         for (int nEmpty = 0; nEmpty < 64; nEmpty++) {
             System.out.println();
@@ -182,7 +194,7 @@ public class CoefficientCalculator {
         final List<Element> res = new ArrayList<>();
         for (final PositionValue pv : pvs) {
             final int diff = nEmpty - pv.nEmpty();
-            if (!Utils.isOdd(diff) && diff >=-6 && diff <=6) {
+            if (!Utils.isOdd(diff) && diff >= -6 && diff <= 6) {
                 final int[] indices = strategy.coefficientIndices(pv.mover, pv.enemy);
                 res.add(new Element(indices, pv.value));
             }
@@ -202,7 +214,56 @@ public class CoefficientCalculator {
                 pvs.addAll(new SelfPlaySet(players[i], players[j], 0).call());
             }
         }
+
+        pvs.addAll(randomSubpositions(pvs));
         return pvs;
+    }
+
+    /**
+     * Pick a random selection of positions from the list; for each chosen position, play a game from that
+     * position and add the first two positions from that game to the result.
+     * <p/>
+     * The positions are valued by the playout. The playout is played by eval4, which is the current best
+     * evaluator.
+     * <p/>
+     * 1/randomFraction of the positions will be chosen
+     *
+     * @param pvs positions that might get chosen
+     * @return random selection
+     */
+    private static List<PositionValue> randomSubpositions(List<PositionValue> pvs) {
+        final Player player = new EvalPlayer(EvalStrategies.eval4);
+        final Random random = new Random(1337);
+        int nextMessage = 50000;
+
+        log.info(String.format("%,d original positions", pvs.size()));
+        final List<PositionValue> result = new ArrayList<>();
+        for (PositionValue pv : pvs) {
+            if (random.nextInt(randomFraction)==0) {
+                addSubPositions(result, pv.mover, pv.enemy, player);
+            }
+            if (result.size() >= nextMessage) {
+                log.info(String.format(" Added %,d random positions", result.size()));
+                nextMessage += 50000;
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Add all subpositions of this position to the result list
+     */
+    private static void addSubPositions(List<PositionValue> result, long mover, long enemy, Player player) {
+        final BitBoard pos = new BitBoard(mover, enemy, true);
+        long moves = pos.calcMoves();
+        while (moves != 0) {
+            final int sq = Long.numberOfTrailingZeros(moves);
+            moves ^= 1L<<sq;
+            final BitBoard subPos = pos.play(sq);
+            final SelfPlayGame.Result gameResult = new SelfPlayGame(subPos, player, player, false).call();
+            final List<PositionValue> gamePvs = gameResult.getPositionValues();
+            result.addAll(gamePvs.subList(0, Math.min(2, gamePvs.size())));
+        }
     }
 }
 
@@ -216,4 +277,3 @@ class Element {
         this.target = target;
     }
 }
-

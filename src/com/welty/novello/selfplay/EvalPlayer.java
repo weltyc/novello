@@ -1,5 +1,6 @@
 package com.welty.novello.selfplay;
 
+import com.welty.novello.eval.CoefficientCalculator;
 import com.welty.novello.eval.EvalStrategy;
 import com.welty.novello.eval.StrategyBasedEval;
 import com.welty.novello.solver.BitBoard;
@@ -53,7 +54,7 @@ public class EvalPlayer extends EndgamePlayer {
             moveScore = -eval.eval(enemy, mover, enemyMoves, moverMoves);
         }
         else {
-            moveScore = Long.bitCount(mover)-Long.bitCount(enemy);
+            moveScore = CoefficientCalculator.DISK_VALUE*(Long.bitCount(mover)-Long.bitCount(enemy));
         }
         return moveScore;
     }
