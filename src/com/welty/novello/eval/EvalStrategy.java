@@ -158,7 +158,6 @@ public class EvalStrategy {
                 }
                 out.writeInt(intCoeff);
             }
-            System.out.println();
         }
         System.out.println(nNonZero + " non-zero coefficients written");
     }
@@ -191,9 +190,7 @@ public class EvalStrategy {
         return coefficientIndices;
     }
 
-    public int eval(long mover, long enemy, CoefficientSet coefficientSet) {
-        final long moverMoves = BitBoardUtils.calcMoves(mover, enemy);
-        final long enemyMoves = BitBoardUtils.calcMoves(enemy, mover);
+    public int eval(long mover, long enemy, long moverMoves, long enemyMoves, CoefficientSet coefficientSet) {
         final int[][] slice = coefficientSet.slice(BitBoardUtils.nEmpty(mover, enemy));
 
         int eval = 0;

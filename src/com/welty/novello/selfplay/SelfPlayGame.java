@@ -35,8 +35,8 @@ class SelfPlayGame implements Callable<SelfPlayGame.Result> {
                 final Player enemyPlayer = player(!board.blackToMove);
                 if (enemyPlayer instanceof EvalPlayer) {
                     final EvalPlayer ep = (EvalPlayer) enemyPlayer;
-                    final int eval = ep.eval.eval(board.mover(), board.enemy());
-                    System.out.println("Enemy evaluation: " + eval);
+                    final int eval = ep.eval.eval(board.mover(), board.enemy(), board.mover(), board.enemy());
+                    System.out.println(ep + "(Enemy) evaluation: " + eval);
                 }
                 System.out.println(board);
                 System.out.println(player(board.blackToMove) + " to move");

@@ -13,10 +13,8 @@ public class Bobby extends EvalPlayer {
      }
 
     private static final Eval bobbyEval = new Eval() {
-        public int eval(long mover, long enemy) {
+        public int eval(long mover, long enemy, long moverMoves, long enemyMoves) {
             final int corners = bitCount((mover & BitBoardUtils.CORNERS)) - bitCount(enemy & BitBoardUtils.CORNERS);
-            final long moverMoves = calcMoves(mover, enemy);
-            final long enemyMoves = calcMoves(enemy, mover);
             final int cornerCan = bitCount(moverMoves & BitBoardUtils.CORNERS) - bitCount(enemyMoves & BitBoardUtils.CORNERS);
             return 2 * corners + cornerCan;
         }

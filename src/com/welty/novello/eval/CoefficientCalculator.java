@@ -2,6 +2,7 @@ package com.welty.novello.eval;
 
 import com.orbanova.common.math.function.oned.Function;
 import com.orbanova.common.misc.Require;
+import com.orbanova.common.misc.Utils;
 import com.orbanova.common.misc.Vec;
 import com.welty.novello.selfplay.Bobby;
 import com.welty.novello.selfplay.EvalPlayer;
@@ -23,12 +24,13 @@ public class CoefficientCalculator {
      * those values to generate coefficients for the Evaluation function.
      */
     public static void main(String[] args) throws IOException {
-        final EvalStrategy strategy = EvalStrategies.eval2;
-        final double penalty = 10;
+        final EvalStrategy strategy = EvalStrategies.current;
+        final double penalty = 10000;
 
-        final List<PositionValue> pvs = loadPvs(new Bobby(), new EvalPlayer(EvalStrategies.eval2));
-        System.out.format("a total of %,d pvs are available.", pvs.size());
+        final List<PositionValue> pvs = loadPvs(new Bobby(), new EvalPlayer(EvalStrategies.eval1));
+        System.out.format("a total of %,d pvs are available.%n", pvs.size());
         for (int nEmpty = 0; nEmpty < 64; nEmpty++) {
+            System.out.println();
             System.out.println("--- " + nEmpty + " ---");
             final Element[] elements = elementsFromPvs(pvs, nEmpty, strategy);
             System.out.println("estimating coefficients using " + elements.length + " positions");
@@ -180,7 +182,7 @@ public class CoefficientCalculator {
         final List<Element> res = new ArrayList<>();
         for (final PositionValue pv : pvs) {
             final int diff = nEmpty - pv.nEmpty();
-            if (diff == 0 || diff == 2 || diff == -2) {
+            if (!Utils.isOdd(diff) && diff >=-6 && diff <=6) {
                 final int[] indices = strategy.coefficientIndices(pv.mover, pv.enemy);
                 res.add(new Element(indices, pv.value));
             }
@@ -197,7 +199,7 @@ public class CoefficientCalculator {
         final ArrayList<PositionValue> pvs = new ArrayList<>();
         for (int i = 0; i < players.length; i++) {
             for (int j = 0; j <= i; j++) {
-                pvs.addAll(new SelfPlaySet(players[i], players[j]).call());
+                pvs.addAll(new SelfPlaySet(players[i], players[j], 0).call());
             }
         }
         return pvs;

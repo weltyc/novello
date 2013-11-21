@@ -23,12 +23,12 @@ public class StrategyBasedEval implements Eval {
         coefficientSet = new CoefficientSet(evalStrategy);
     }
 
-    @Override public int eval(long mover, long enemy) {
+    @Override public int eval(long mover, long enemy, long moverMoves, long enemyMoves) {
         if (debug) {
             System.out.println("....................");
             System.out.println(BitBoard.ofMover(mover, enemy, false));
         }
-        final int eval = evalStrategy.eval(mover, enemy, coefficientSet);
+        final int eval = evalStrategy.eval(mover, enemy, moverMoves, enemyMoves, coefficientSet);
         if (debug) {
             System.out.println("Eval = " + eval);
             System.out.println();

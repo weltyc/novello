@@ -4,8 +4,8 @@ package com.welty.novello.eval;
  */
 public class CoefficientViewer {
     public static void main(String[] args) {
-        final EvalStrategy strategy = EvalStrategies.eval2;
-        final int nEmpty = 10;
+        final EvalStrategy strategy = EvalStrategies.current;
+        final int nEmpty = 20;
 
         final int[][] slice = strategy.readSlice(nEmpty);
         System.out.println("=== Coefficients for " + strategy + " with " + nEmpty + " empties ===");

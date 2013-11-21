@@ -13,19 +13,29 @@ import java.util.List;
  */
 public class SelfPlaySet {
     public static void main(String[] args) {
-        final Player black = new Bobby();
-        final Player white = new EvalPlayer(EvalStrategies.eval2);
-//        final Player white = new EvalPlayer(EvalStrategies.eval1);
-//        final Player white = new RandomPlayer();
-        new SelfPlaySet(black, white).call();
+        final Player black = new EvalPlayer(EvalStrategies.current);
+        final Player white = new EvalPlayer(EvalStrategies.eval4);
+//        final Player white = new Bobby();
+        new SelfPlaySet(black, white, 2).call();
     }
 
     private final @NotNull Player black;
     private final @NotNull Player white;
+    private final int nToPrint;
 
-    public SelfPlaySet(@NotNull Player black, @NotNull Player white) {
+    /**
+     * Construct a SelfPlaySet.
+     *
+     * call() plays the games.
+     *
+     * @param black black player
+     * @param white white player
+     * @param nToPrint print the first nToPrint games to System.out.
+     */
+    public SelfPlaySet(@NotNull Player black, @NotNull Player white, int nToPrint) {
         this.black = black;
         this.white = white;
+        this.nToPrint = nToPrint;
     }
 
     public List<PositionValue> call() {
@@ -47,7 +57,7 @@ public class SelfPlaySet {
             if (alreadySeen.add(startPosition.minimalReflection())) {
                 if (startPosition.hasLegalMove()) {
                     final int netResult;
-                    final SelfPlayGame.Result result = new SelfPlayGame(startPosition, black, white, nComplete < 2).call();
+                    final SelfPlayGame.Result result = new SelfPlayGame(startPosition, black, white, nComplete < nToPrint).call();
                     pvs.addAll(result.getPositionValues());
                     if (white != black) {
                         final SelfPlayGame.Result result2 = new SelfPlayGame(startPosition, white, black, false).call();

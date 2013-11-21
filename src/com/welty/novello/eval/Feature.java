@@ -34,7 +34,7 @@ interface Feature {
  * Utility class containing Features that can be used for evaluation
  */
 class Features {
-    static final SoloFeature cornerFeature = new SoloFeature(
+    static final SoloFeature cornerFeature = new SoloFeature("Corner Mobility",
             "No access to corner",
             "Mover access to corner",
             "Enemy access to corner",
@@ -42,6 +42,23 @@ class Features {
             "Mover occupies corner",
             "Enemy occupies corner"
     );
+
+    static final SoloFeature corner2Feature = new SoloFeature("Corner Mobility",
+            "No access to corner",
+            "Mover access to corner",
+            "Enemy access to corner",
+            "Both access to corner",
+            "Mover occupies corner",
+            "Enemy occupies corner",
+            "Mover x-square",
+            "Enemy x-square"
+    );
+
+    static final SoloFeature moverDisks = new GridFeature("Mover Disks");
+    static final SoloFeature enemyDisks = new GridFeature("Enemy Disks");
+    static final SoloFeature moverMobilities = new GridFeature("Mover Mobilities");
+    static final SoloFeature enemyMobilities = new GridFeature("Enemy Mobilities");
+
 
     static final Feature edgeFeature = LinePatternFeatureFactory.of("edges", 8);
     static final Feature mainDiagonalFeature = LinePatternFeatureFactory.of("main diagonal", 8);
@@ -71,13 +88,14 @@ class Features {
     static void dumpCoefficients(Feature feature, int[] coefficients) {
         Require.eq(coefficients.length, "# coefficients", feature.nInstances());
 
+        System.out.println();
         System.out.println(feature+":");
         int nNonZero = 0;
         for (int instance = 0; instance < coefficients.length; instance++) {
             final int coefficient = coefficients[instance];
             if (coefficient != 0) {
                 final String desc = feature.oridDescription(feature.orid(instance));
-                System.out.format("%4d  %s%n", coefficient, desc);
+                System.out.format("%+5d  %s%n", coefficient, desc);
                 nNonZero++;
             }
         }
@@ -126,9 +144,11 @@ class MultiFeature implements Feature {
  * A Feature that has a 1-to-1 mapping between instances and orids.
  */
 class SoloFeature implements Feature {
+    private final String name;
     private final String[] oridDescriptions;
 
-    public SoloFeature(String... oridDescriptions) {
+    public SoloFeature(String name, String... oridDescriptions) {
+        this.name = name;
         this.oridDescriptions = oridDescriptions;
     }
 
@@ -146,6 +166,25 @@ class SoloFeature implements Feature {
 
     @Override public int nInstances() {
         return nOrids();
+    }
+
+    @Override public String toString() {
+        return name;
+    }
+}
+
+class GridFeature extends SoloFeature {
+    public GridFeature(String name) {
+        super(name, grid(name));
+    }
+
+
+    private static String[] grid(String name) {
+        final String[] result = new String[65];
+        for (int i=0; i<=64; i++) {
+            result[i] = String.format("%2d %s", i, name);
+        }
+        return result;
     }
 }
 

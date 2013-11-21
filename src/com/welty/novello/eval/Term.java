@@ -66,6 +66,90 @@ class CornerTerm extends Term {
     }
 }
 
+class CornerTerm2 extends Term {
+    private final int sq;
+    private final int xSq;
+
+    public CornerTerm2(int sq) {
+        super(Features.corner2Feature);
+        this.sq = sq;
+        this.xSq = sq^011;
+    }
+
+    /**
+     * Instance =
+     * 4 mover occupies corner
+     * 5 enemy occupies corner
+     * <p/>
+     * if corner is empty,
+     * 1 mover has access
+     * 2 enemy has access
+     * 3 both players have access
+     * <p/>
+     * if nobody has access,
+     * 0 = empty x-square
+     * 6 = mover on x-square,
+     * 7 = enemy on x-square
+     *
+     * @return the instance for this term
+     */
+    @Override public int instance(long mover, long enemy, long moverMoves, long enemyMoves) {
+        final int cornerOccupier = bit(mover) + 2 * bit(enemy);
+        if (cornerOccupier > 0) {
+            return cornerOccupier + 3;
+        }
+        final int cornerMobility = bit(moverMoves) + 2 * bit(enemyMoves);
+        if (cornerMobility > 0) {
+            return cornerMobility;
+        }
+        else {
+            final int xSquareOccupier = BitBoardUtils.getBitAsInt(mover, xSq) + 2*BitBoardUtils.getBitAsInt(enemy, xSq);
+            if (xSquareOccupier>0) {
+                return xSquareOccupier + 5;
+            }
+            else {
+                return 0;
+            }
+        }
+    }
+
+    private int bit(long mover) {
+        return getBitAsInt(mover, sq);
+    }
+}
+
+class MoverMobilityTerm extends Term {
+    protected MoverMobilityTerm() {
+        super(Features.moverMobilities);
+    }
+
+    @Override public int instance(long mover, long enemy, long moverMoves, long enemyMoves) {
+        return Long.bitCount(moverMoves);
+    }
+}
+
+class Terms {
+    static final Term moverDisks = new Term(Features.moverDisks) {
+        @Override public int instance(long mover, long enemy, long moverMoves, long enemyMoves) {
+            return Long.bitCount(mover);
+        }
+    };
+    static final Term enemyDisks = new Term(Features.enemyDisks) {
+        @Override public int instance(long mover, long enemy, long moverMoves, long enemyMoves) {
+            return Long.bitCount(enemy);
+        }
+    };
+    static final Term moverMobilities = new Term(Features.moverMobilities) {
+        @Override public int instance(long mover, long enemy, long moverMoves, long enemyMoves) {
+            return Long.bitCount(moverMoves);
+        }
+    };
+    static final Term enemyMobilities = new Term(Features.enemyMobilities) {
+        @Override public int instance(long mover, long enemy, long moverMoves, long enemyMoves) {
+            return Long.bitCount(enemyMoves);
+        }
+    };
+}
 /**
  * A Term that gets its value from the disk pattern on the Upper Left / Down Right main diagonal
  */
