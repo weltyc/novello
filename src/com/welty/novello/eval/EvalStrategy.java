@@ -162,13 +162,27 @@ public class EvalStrategy {
         }
     }
 
+    /**
+     * Write a slice to disk.
+     * <p/>
+     * This function will not allow files to be overwritten, because coefficient sets need to be stable so that experiments can
+     * be repeated.
+     *
+     * @param nEmpty       # of empties this slice is for
+     * @param coefficients coefficients for the slice
+     * @param dir          directory of the coefficient set, typically as described in {@link #writeSlice(int, double[], String)}
+     * @throws IOException
+     */
     void writeSlice(int nEmpty, double[] coefficients, Path dir) throws IOException {
         Require.eq(coefficients.length, "# coefficients", nCoefficientIndices());
+        final Path path = dir.resolve(filename(nEmpty));
+        if (Files.exists(path)) {
+            throw new IllegalArgumentException("Coefficient set already exists: " + path);
+        }
 
         Files.createDirectories(dir);
 
         int nNonZero = 0;
-        final Path path = dir.resolve(filename(nEmpty));
         try (final DataOutputStream out = new DataOutputStream(Files.newOutputStream(path))) {
             for (double c : coefficients) {
                 final int intCoeff = (int) Math.round(c * CoefficientCalculator.DISK_VALUE);
