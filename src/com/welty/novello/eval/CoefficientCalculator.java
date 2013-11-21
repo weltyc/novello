@@ -28,7 +28,7 @@ public class CoefficientCalculator {
      */
     public static final int DISK_VALUE = 100;
     public static final EvalStrategy STRATEGY = EvalStrategies.eval5;
-    public static final String COEFF_SET_NAME = "A";
+    public static final String COEFF_SET_NAME = "B";
 
     /**
      * Generate coefficients for evaluation.
@@ -39,7 +39,7 @@ public class CoefficientCalculator {
     public static void main(String[] args) throws IOException {
         final double penalty = 10000;
 
-        final List<PositionValue> pvs = loadPvs(Players.eval4);
+        final List<PositionValue> pvs = loadPvs(Players.eval4A());
         System.out.format("a total of %,d pvs are available.%n", pvs.size());
         for (int nEmpty = 0; nEmpty < 64; nEmpty++) {
             System.out.println();
@@ -232,7 +232,7 @@ public class CoefficientCalculator {
      * @return random selection
      */
     private static List<PositionValue> randomSubpositions(List<PositionValue> pvs) {
-        final Player player = Players.eval4;
+        final Player player = Players.eval4A();
         final Random random = new Random(1337);
         int nextMessage = 50000;
 
