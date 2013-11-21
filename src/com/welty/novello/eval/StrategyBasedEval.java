@@ -2,7 +2,6 @@ package com.welty.novello.eval;
 
 import com.welty.novello.selfplay.Eval;
 import com.welty.novello.solver.BitBoard;
-import com.welty.novello.solver.BitBoardUtils;
 
 /**
  * The evaluation function evaluates positions.

@@ -5,10 +5,7 @@ import com.orbanova.common.misc.Logger;
 import com.orbanova.common.misc.Require;
 import com.orbanova.common.misc.Utils;
 import com.orbanova.common.misc.Vec;
-import com.welty.novello.selfplay.EvalPlayer;
-import com.welty.novello.selfplay.Player;
-import com.welty.novello.selfplay.SelfPlayGame;
-import com.welty.novello.selfplay.SelfPlaySet;
+import com.welty.novello.selfplay.*;
 import com.welty.novello.solver.BitBoard;
 import org.jetbrains.annotations.NotNull;
 
@@ -42,7 +39,7 @@ public class CoefficientCalculator {
         final double penalty = 10000;
         final String coeffSetName = "A";
 
-        final List<PositionValue> pvs = loadPvs(new EvalPlayer(EvalStrategies.eval4,"A"));
+        final List<PositionValue> pvs = loadPvs(Players.eval4);
         System.out.format("a total of %,d pvs are available.%n", pvs.size());
         for (int nEmpty = 0; nEmpty < 64; nEmpty++) {
             System.out.println();
@@ -235,7 +232,7 @@ public class CoefficientCalculator {
      * @return random selection
      */
     private static List<PositionValue> randomSubpositions(List<PositionValue> pvs) {
-        final Player player = new EvalPlayer(EvalStrategies.eval4, "A");
+        final Player player = Players.eval4;
         final Random random = new Random(1337);
         int nextMessage = 50000;
 
