@@ -16,8 +16,8 @@ public class EvalPlayer extends EndgamePlayer {
         this.eval = eval;
     }
 
-    public EvalPlayer(EvalStrategy strategy) {
-        this(new StrategyBasedEval(strategy));
+    public EvalPlayer(EvalStrategy strategy, String coeffSetName) {
+        this(new StrategyBasedEval(strategy, coeffSetName));
     }
 
     @Override public int calcMove(@NotNull BitBoard board) {

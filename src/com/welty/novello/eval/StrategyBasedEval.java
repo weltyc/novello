@@ -18,9 +18,9 @@ public class StrategyBasedEval implements Eval {
 
     /**
      */
-    public StrategyBasedEval(EvalStrategy evalStrategy) {
+    public StrategyBasedEval(EvalStrategy evalStrategy, String coeffSetName) {
         this.evalStrategy = evalStrategy;
-        coefficientSet = new CoefficientSet(evalStrategy);
+        coefficientSet = new CoefficientSet(evalStrategy, coeffSetName);
     }
 
     @Override public int eval(long mover, long enemy, long moverMoves, long enemyMoves) {

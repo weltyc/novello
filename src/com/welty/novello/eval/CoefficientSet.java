@@ -10,9 +10,9 @@ package com.welty.novello.eval;
 class CoefficientSet {
     private final int[][][] slices = new int[64][][];
 
-    public CoefficientSet(EvalStrategy strategy) {
+    public CoefficientSet(EvalStrategy strategy, String coeffSetName) {
         for (int nEmpty = 0; nEmpty < 64; nEmpty++) {
-            slices[nEmpty] = strategy.readSlice(nEmpty);
+            slices[nEmpty] = strategy.readSlice(nEmpty, coeffSetName);
         }
     }
 

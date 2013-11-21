@@ -5,13 +5,15 @@ import com.orbanova.common.misc.Logger;
 import com.orbanova.common.misc.Require;
 import com.orbanova.common.misc.Utils;
 import com.orbanova.common.misc.Vec;
-import com.welty.novello.selfplay.*;
+import com.welty.novello.selfplay.EvalPlayer;
+import com.welty.novello.selfplay.Player;
+import com.welty.novello.selfplay.SelfPlayGame;
+import com.welty.novello.selfplay.SelfPlaySet;
 import com.welty.novello.solver.BitBoard;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.*;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
@@ -38,8 +40,9 @@ public class CoefficientCalculator {
     public static void main(String[] args) throws IOException {
         final EvalStrategy strategy = EvalStrategies.eval5;
         final double penalty = 10000;
+        final String coeffSetName = "A";
 
-        final List<PositionValue> pvs = loadPvs(new EvalPlayer(EvalStrategies.eval4));
+        final List<PositionValue> pvs = loadPvs(new EvalPlayer(EvalStrategies.eval4,"A"));
         System.out.format("a total of %,d pvs are available.%n", pvs.size());
         for (int nEmpty = 0; nEmpty < 64; nEmpty++) {
             System.out.println();
@@ -53,7 +56,7 @@ public class CoefficientCalculator {
             System.out.println("sum of coefficients squared = " + Vec.sumSq(coefficients));
 
             // write to file
-            strategy.writeSlice(nEmpty, coefficients);
+            strategy.writeSlice(nEmpty, coefficients, coeffSetName);
         }
     }
 
@@ -223,7 +226,7 @@ public class CoefficientCalculator {
      * Pick a random selection of positions from the list; for each chosen position, play a game from that
      * position and add the first two positions from that game to the result.
      * <p/>
-     * The positions are valued by the playout. The playout is played by eval4, which is the current best
+     * The positions are valued by the playout. The playout is played by eval4/A, which is the current best
      * evaluator.
      * <p/>
      * 1/randomFraction of the positions will be chosen
@@ -232,7 +235,7 @@ public class CoefficientCalculator {
      * @return random selection
      */
     private static List<PositionValue> randomSubpositions(List<PositionValue> pvs) {
-        final Player player = new EvalPlayer(EvalStrategies.eval4);
+        final Player player = new EvalPlayer(EvalStrategies.eval4, "A");
         final Random random = new Random(1337);
         int nextMessage = 50000;
 

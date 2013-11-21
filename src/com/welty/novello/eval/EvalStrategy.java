@@ -3,6 +3,7 @@ package com.welty.novello.eval;
 import com.orbanova.common.misc.Require;
 import com.orbanova.common.misc.Vec;
 import com.welty.novello.solver.BitBoardUtils;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -19,9 +20,9 @@ public class EvalStrategy {
     private static final boolean debug = false;
 
     /**
-     * Location of coefficient directory
+     * Directory containing all coefficients
      */
-    static final Path defaultCoefficientDirectory = Paths.get("coefficients");
+    static final Path rootDirectory = Paths.get("coefficients");
 
     /**
      * Distinct features of terms, in order of their first appearance in terms
@@ -56,13 +57,15 @@ public class EvalStrategy {
      * Read all coefficients for the strategy at a given nEmpty.
      * <p/>
      * This version reads from the default coefficient directory
+     * <p/>
+     * The file location is the same as in {@link #writeSlice(int, double[], String)}
      *
-     * The file location is the same as in {@link #writeSlice(int, double[])}
-     *
+     * @param coeffSetName name of the coefficient set. This is used as a directory name so it can't contain
+     *                     characters such as *?:
      * @return slice
      */
-    int[][] readSlice(int nEmpty) {
-        return readSlice(nEmpty, defaultCoefficientDirectory);
+    int[][] readSlice(int nEmpty, String coeffSetName) {
+        return readSlice(nEmpty, coeffDir(coeffSetName));
     }
 
     /**
@@ -96,15 +99,15 @@ public class EvalStrategy {
      * <p/>
      * The "compressed" means that the index into the slice data is an orid rather than an instance.
      * Since there are fewer orids than instances, this leads to less data.
-     *
-     * The file location is the same as in {@link #writeSlice(int, double[])}
+     * <p/>
+     * The file location is the same as in {@link #writeSlice(int, double[], String)}
      *
      * @param nEmpty               # of empties of file to read
      * @param coefficientDirectory location to read from
      * @return compressed slice.
      */
     int[][] readCompressedSlice(int nEmpty, Path coefficientDirectory) {
-        final Path path = coefficientDirectory.resolve(name).resolve(filename(nEmpty));
+        final Path path = coefficientDirectory.resolve(filename(nEmpty));
         try (DataInputStream in = new DataInputStream(Files.newInputStream(path))) {
             final int nFeatures = nFeatures();
             final int[][] slice = new int[nFeatures][];
@@ -128,31 +131,47 @@ public class EvalStrategy {
     }
 
     /**
-     * Write a slice to file.
+     * Write a slice to disk, in the default location.
      * <p/>
      * The input coefficients are a double[] rather than the more common int[][].
      * The file format is simply a list of integers back-to-back; this converts the doubles to ints and
      * writes them out.
      * <p/>
-     * The file location is {defaultCoefficientDirectory}/{eval name}/{nEmpty}.coeff
+     * The file location is {rootDirectory}/{eval name}/{coeffSetName}/{nEmpty}.coeff
      *
      * @param nEmpty       # of empties on board for this slice
      * @param coefficients coefficients, as a double[]
+     * @param coeffSetName name of the coefficient set. This is used as a directory name so it can't contain
+     *                     characters such as *?:
      * @throws java.io.IOException if can't open file output stream
      */
-    void writeSlice(int nEmpty, double[] coefficients) throws IOException {
-        writeSlice(nEmpty, coefficients, defaultCoefficientDirectory);
+    void writeSlice(int nEmpty, double[] coefficients, String coeffSetName) throws IOException {
+        writeSlice(nEmpty, coefficients, coeffDir(coeffSetName));
     }
 
-    void writeSlice(int nEmpty, double[] coefficients, Path coefficientDirectory) throws IOException {
-        int nNonZero = 0;
+    /**
+     * @param coeffSetName name of the coefficient set. This is used as a directory name. So that it works on all
+     *                     systems it is required to be alphanumeric.
+     * @return location where this coeffSet is stored
+     */
+    private Path coeffDir(String coeffSetName) {
+        if (coeffSetName.matches("[a-zA-Z0-9]")) {
+            return rootDirectory.resolve(name).resolve(coeffSetName);
+        } else {
+            throw new IllegalArgumentException("Coeff set name must be alphanumeric, was " + coeffSetName);
+        }
+    }
+
+    void writeSlice(int nEmpty, double[] coefficients, Path dir) throws IOException {
         Require.eq(coefficients.length, "# coefficients", nCoefficientIndices());
-        final Path dir = coefficientDirectory.resolve(name);
+
         Files.createDirectories(dir);
+
+        int nNonZero = 0;
         final Path path = dir.resolve(filename(nEmpty));
         try (final DataOutputStream out = new DataOutputStream(Files.newOutputStream(path))) {
             for (double c : coefficients) {
-                final int intCoeff = (int) Math.round(c*CoefficientCalculator.DISK_VALUE);
+                final int intCoeff = (int) Math.round(c * CoefficientCalculator.DISK_VALUE);
                 if (intCoeff != 0) {
                     nNonZero++;
                 }
@@ -192,12 +211,13 @@ public class EvalStrategy {
 
     /**
      * Evaluate a position.
-     *
+     * <p/>
      * Precondition: mover can move. It is the caller's job to switch sides if no moves are available.
+     *
      * @return position value, in centi-disks
      */
     public int eval(long mover, long enemy, long moverMoves, long enemyMoves, CoefficientSet coefficientSet) {
-        assert moverMoves!=0;
+        assert moverMoves != 0;
 
         final int[][] slice = coefficientSet.slice(BitBoardUtils.nEmpty(mover, enemy));
 
