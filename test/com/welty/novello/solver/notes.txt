@@ -268,3 +268,20 @@ Coefficient calculation
       -34.4  eval5/A
 
   From the difference between eval5/A and eval5/B it's clear the random subpositions help a lot.
+  Trying subpositions with eval4. With penalty 100, this is coefficient set B.
+
+  Tournament results:
+      +10.4  eval4/B
+       -0.3  eval5/D
+       -1.0  eval5/E
+       -2.5  eval5/C
+       -6.6  eval4/A
+
+  If random subpositions are good, are more better? Trying new evals with 20% random subpositions instead of 10%.
+  These are eval4/C and eval5/F, both with penalty 100.
+
+  Tournament results:
+     +10.7  eval4/C
+      +2.0  eval4/B
+      -5.0  eval5/F
+      -7.7  eval5/D

@@ -10,6 +10,11 @@ import com.welty.novello.solver.BitBoard;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -22,14 +27,14 @@ public class CoefficientCalculator {
     /**
      * 1/randomFraction of the self-play positions will have all subpositions valued and used in the regression
      */
-    private static final int randomFraction = 10;
+    private static final int randomFraction = 1;
     /**
      * 1 disk is worth how many evaluation points?
      */
     public static final int DISK_VALUE = 100;
     public static final EvalStrategy STRATEGY = EvalStrategies.eval5;
-    public static final String COEFF_SET_NAME = "E";
-    public static final double PENALTY = 10;
+    public static final String COEFF_SET_NAME = "G";
+    public static final double PENALTY = 100;
 
     /**
      * Generate coefficients for evaluation.
@@ -37,14 +42,16 @@ public class CoefficientCalculator {
      * This program generates a large number of PositionValues by self-play, then uses
      * those values to generate coefficients for the Evaluation function.
      */
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws Exception {
 
         // better to learn this now than after all the computations
         if (STRATEGY.coefficientsExist(COEFF_SET_NAME)) {
             System.err.println("Coefficient set already exists.\n\nOverwriting coefficient files is not allowed.");
             System.exit(-1);
         }
-        final List<PositionValue> pvs = loadPvs(Players.eval4A());
+
+        final List<PositionValue> pvs = loadOrCreatePvs();
+
         System.out.format("a total of %,d pvs are available.%n", pvs.size());
         for (int nEmpty = 0; nEmpty < 64; nEmpty++) {
             System.out.println();
@@ -60,6 +67,24 @@ public class CoefficientCalculator {
             // write to file
             STRATEGY.writeSlice(nEmpty, coefficients, COEFF_SET_NAME);
         }
+    }
+
+    private static List<PositionValue> loadOrCreatePvs() throws IOException, ClassNotFoundException {
+        final Path pvFile = Paths.get("c:/temp/novello.pvs");
+        final List<PositionValue> pvs;
+        if (!Files.exists(pvFile)) {
+            pvs = createPvs(Players.eval4A());
+            try (final ObjectOutputStream os = new ObjectOutputStream(Files.newOutputStream(pvFile))) {
+                os.writeObject(pvs);
+            }
+        }
+        else {
+            try (final ObjectInputStream in = new ObjectInputStream(Files.newInputStream(pvFile))) {
+                //noinspection unchecked
+                pvs = (List<PositionValue>)in.readObject();
+            }
+        }
+        return pvs;
     }
 
     /**
@@ -212,11 +237,12 @@ public class CoefficientCalculator {
      *
      * @return the positionValues
      */
-    public static List<PositionValue> loadPvs(Player... players) {
+    public static List<PositionValue> createPvs(Player... players) {
+        log.info("Creating Pvs...");
         final ArrayList<PositionValue> pvs = new ArrayList<>();
         for (int i = 0; i < players.length; i++) {
             for (int j = 0; j <= i; j++) {
-                pvs.addAll(new SelfPlaySet(players[i], players[j], 0, true).call().pvs);
+                pvs.addAll(new SelfPlaySet(players[i], players[j], 0, false).call().pvs);
             }
         }
 
