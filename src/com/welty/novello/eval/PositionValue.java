@@ -3,6 +3,10 @@ package com.welty.novello.eval;
 import com.welty.novello.solver.BitBoard;
 import com.welty.novello.solver.BitBoardUtils;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+
 /**
  * Position tagged with a value, for use in coefficient calcs
  */
@@ -34,4 +38,20 @@ public class PositionValue {
     public int nEmpty() {
         return BitBoardUtils.nEmpty(mover, enemy);
     }
+
+    public void write(DataOutputStream out) throws IOException {
+        out.writeLong(mover);
+        out.writeLong(enemy);
+        out.writeInt(value);
+    }
+
+    public static final ObjectFeed.Deserializer<PositionValue> deserializer = new ObjectFeed.Deserializer<PositionValue>() {
+        @Override public PositionValue read(DataInputStream in) throws IOException {
+            final long mover = in.readLong();
+            final long enemy = in.readLong();
+            final int value = in.readInt();
+
+            return new PositionValue(mover, enemy, value);
+        }
+    };
 }

@@ -5,13 +5,15 @@ import com.orbanova.common.misc.Logger;
 import com.orbanova.common.misc.Require;
 import com.orbanova.common.misc.Utils;
 import com.orbanova.common.misc.Vec;
-import com.welty.novello.selfplay.*;
+import com.welty.novello.selfplay.Player;
+import com.welty.novello.selfplay.Players;
+import com.welty.novello.selfplay.SelfPlayGame;
+import com.welty.novello.selfplay.SelfPlaySet;
 import com.welty.novello.solver.BitBoard;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -73,16 +75,9 @@ public class CoefficientCalculator {
         final Path pvFile = Paths.get("c:/temp/novello.pvs");
         final List<PositionValue> pvs;
         if (!Files.exists(pvFile)) {
-            pvs = createPvs(Players.eval4A());
-            try (final ObjectOutputStream os = new ObjectOutputStream(Files.newOutputStream(pvFile))) {
-                os.writeObject(pvs);
-            }
-        }
-        else {
-            try (final ObjectInputStream in = new ObjectInputStream(Files.newInputStream(pvFile))) {
-                //noinspection unchecked
-                pvs = (List<PositionValue>)in.readObject();
-            }
+            pvs = createPvs(pvFile, Players.eval4A());
+        } else {
+            pvs = new ObjectFeed<>(pvFile, PositionValue.deserializer).asList();
         }
         return pvs;
     }
@@ -233,11 +228,12 @@ public class CoefficientCalculator {
     }
 
     /**
-     * Get a set of PositionValues for analysis
+     * Generate a set of PositionValues for analysis and write them to a file.
      *
+     * @param pvFile path to the file to be written. The
      * @return the positionValues
      */
-    public static List<PositionValue> createPvs(Player... players) {
+    public static List<PositionValue> createPvs(Path pvFile, Player... players) throws IOException {
         log.info("Creating Pvs...");
         final ArrayList<PositionValue> pvs = new ArrayList<>();
         for (int i = 0; i < players.length; i++) {
@@ -245,56 +241,73 @@ public class CoefficientCalculator {
                 pvs.addAll(new SelfPlaySet(players[i], players[j], 0, false).call().pvs);
             }
         }
+        try (final DataOutputStream out = new DataOutputStream(Files.newOutputStream(pvFile))) {
+            for (PositionValue pv : pvs) {
+                pv.write(out);
+            }
+            writeRandomSubpositions(pvs, out);
+        }
 
-        pvs.addAll(randomSubpositions(pvs));
         return pvs;
     }
 
     /**
+     * Value randomly selected positions and write out their pvs.
+     * <p/>
      * Pick a random selection of positions from the list; for each chosen position, play a game from that
-     * position and add the first two positions from that game to the result.
+     * position and append the first two positions from that game to out.
      * <p/>
      * The positions are valued by the playout. The playout is played by eval4/A, which is the current best
      * evaluator.
      * <p/>
      * 1/randomFraction of the positions will be chosen
+     * <p/>
+     * This function does NOT close the DataOutputStream.
      *
      * @param pvs positions that might get chosen
-     * @return random selection
+     * @return number of positions written
      */
-    private static List<PositionValue> randomSubpositions(List<PositionValue> pvs) {
+    private static int writeRandomSubpositions(List<PositionValue> pvs, DataOutputStream out) throws IOException {
         final Player player = Players.eval4A();
         final Random random = new Random(1337);
         int nextMessage = 50000;
+        int nWritten = 0;
 
         log.info(String.format("%,d original positions", pvs.size()));
-        final List<PositionValue> result = new ArrayList<>();
         for (PositionValue pv : pvs) {
-            if (random.nextInt(randomFraction)==0) {
-                addSubPositions(result, pv.mover, pv.enemy, player);
+            if (random.nextInt(randomFraction) == 0) {
+                nWritten += writeSubPositions(out, pv.mover, pv.enemy, player);
             }
-            if (result.size() >= nextMessage) {
-                log.info(String.format(" Added %,d random positions", result.size()));
+            if (nWritten >= nextMessage) {
+                log.info(String.format(" Added %,d random positions", nWritten));
                 nextMessage += 50000;
             }
         }
-        return result;
+        return nWritten;
     }
 
     /**
-     * Add all subpositions of this position to the result list
+     * Write the first two positions of this game to out.
+     *
+     * @return number of positions written
      */
-    private static void addSubPositions(List<PositionValue> result, long mover, long enemy, Player player) {
+    private static int writeSubPositions(DataOutputStream out, long mover, long enemy, Player player) throws IOException {
+        int nWritten = 0;
         final BitBoard pos = new BitBoard(mover, enemy, true);
         long moves = pos.calcMoves();
         while (moves != 0) {
             final int sq = Long.numberOfTrailingZeros(moves);
-            moves ^= 1L<<sq;
+            moves ^= 1L << sq;
             final BitBoard subPos = pos.play(sq);
             final SelfPlayGame.Result gameResult = new SelfPlayGame(subPos, player, player, false).call();
             final List<PositionValue> gamePvs = gameResult.getPositionValues();
-            result.addAll(gamePvs.subList(0, Math.min(2, gamePvs.size())));
+            final List<PositionValue> toAdd = gamePvs.subList(0, Math.min(2, gamePvs.size()));
+            for (PositionValue pv : toAdd) {
+                pv.write(out);
+                nWritten++;
+            }
         }
+        return nWritten;
     }
 }
 
