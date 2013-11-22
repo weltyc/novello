@@ -124,8 +124,8 @@ public class EvalPlayer extends EndgamePlayer {
     private int searchScore(long mover, long enemy, long moverMoves, int alpha, int beta, int depth) {
         int result = NO_MOVE;
 
-        final String indent = indent(depth);
-        System.out.format("%s[%d] (%+5d,%+5d) -->\n", indent, depth, alpha, beta);
+//        final String indent = indent(depth);
+//        System.out.format("%s[%d] (%+5d,%+5d) -->\n", indent, depth, alpha, beta);
 
         while (moverMoves != 0) {
             final int sq = Long.numberOfTrailingZeros(moverMoves);
@@ -136,7 +136,7 @@ public class EvalPlayer extends EndgamePlayer {
             final long subEnemy = mover | placement | flips;
             final long subMover = enemy & ~flips;
             final int subScore = -searchScore(subMover, subEnemy, -beta, -alpha, depth - 1);
-            System.out.format("%s[%d] (%+5d,%+5d) score(%s)=%+5d\n", indent, depth, -beta, -alpha, BitBoardUtils.sqToText(sq), subScore);
+//            System.out.format("%s[%d] (%+5d,%+5d) score(%s)=%+5d\n", indent, depth, -beta, -alpha, BitBoardUtils.sqToText(sq), subScore);
             if (subScore >= beta) {
                 return subScore;
             }

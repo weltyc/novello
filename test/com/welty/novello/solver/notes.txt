@@ -311,6 +311,14 @@ Tournament results:
 
 Clearly there is a problem here.
 
+### search depth
+
+Played Charlie:depth 1 vs Charlie:depth 2. average result = -21.0 +/- 0.14. T ~  -152.
+
+4D:1 vs 4D:2. average result -4.93 +/- 0.14. T ~ -36.4
+
+4D:2 can more effectively take x-squares, which is hurting its performance (I think).
+
 ### Non-random positions
 
 Are the non-random positions hurting? Try generating positions without the main line: 4-E and 5-I

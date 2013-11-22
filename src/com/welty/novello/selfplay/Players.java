@@ -26,10 +26,10 @@ public class Players {
         }
     };
 
-    private static Map<String, Player> namedPlayers = new HashMap<>();
+    private static Map<String, Eval> namedEvals = new HashMap<>();
     static {
-        namedPlayers.put("Bobby", new EvalPlayer(bobbyEval));
-        namedPlayers.put("Charlie", new Charlie());
+        namedEvals.put("Bobby", bobbyEval);
+        namedEvals.put("Charlie", Charlie.charlieEval);
     }
 
     private static Player eval4A;
@@ -41,15 +41,21 @@ public class Players {
         return eval4A;
     }
 
-    static Player player(String name) {
-        final Player player = namedPlayers.get(name);
-        if (null!=player) {
-            return player;
+    static Eval eval(String name) {
+        final Eval eval = namedEvals.get(name);
+        if (null!=eval) {
+            return eval;
         } else {
             EvalStrategy strategy = EvalStrategies.strategy(name.substring(0, 1));
-            final StrategyBasedEval eval = new StrategyBasedEval(strategy, name.substring(1));
-            return new EvalPlayer(eval);
+            return new StrategyBasedEval(strategy, name.substring(1));
         }
+    }
+
+    static Player player(String name) {
+        final String [] parts = name.split(":",2);
+        final int depth = parts.length > 1 ? Integer.parseInt(parts[1]):1;
+        final Eval eval = eval(parts[0]);
+        return new EvalPlayer(eval, depth);
     }
 
     /**

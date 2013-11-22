@@ -15,7 +15,7 @@ import java.util.List;
 public class SelfPlaySet {
     public static void main(String[] args) {
         final Player black = Players.player("4D");
-        final Player white = Players.player("Charlie");
+        final Player white = Players.player("4D:2");
         new SelfPlaySet(black, white, 2, true).call();
     }
 

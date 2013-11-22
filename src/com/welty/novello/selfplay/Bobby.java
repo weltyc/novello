@@ -12,7 +12,7 @@ class Charlie extends EvalPlayer {
         super(charlieEval);
     }
 
-    private static final Eval charlieEval = new StrategyBasedEval(EvalStrategies.eval4, createCoeffSet());
+    static final Eval charlieEval = new StrategyBasedEval(EvalStrategies.eval4, createCoeffSet());
 
     private static CoefficientSet createCoeffSet() {
         // coefficients  from eval4-D at 30 empties
