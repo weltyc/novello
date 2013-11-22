@@ -1,25 +1,39 @@
 package com.welty.novello.selfplay;
 
-import com.welty.novello.solver.BitBoardUtils;
-
-import static java.lang.Long.bitCount;
+import com.welty.novello.eval.CoefficientSet;
+import com.welty.novello.eval.EvalStrategies;
+import com.welty.novello.eval.StrategyBasedEval;
 
 /**
  */
-public class Bobby extends EvalPlayer {
-     public Bobby() {
-         super(bobbyEval);
-     }
 
-    private static final Eval bobbyEval = new Eval() {
-        public int eval(long mover, long enemy, long moverMoves, long enemyMoves) {
-            final int corners = bitCount((mover & BitBoardUtils.CORNERS)) - bitCount(enemy & BitBoardUtils.CORNERS);
-            final int cornerCan = bitCount(moverMoves & BitBoardUtils.CORNERS) - bitCount(enemyMoves & BitBoardUtils.CORNERS);
-            return 2 * corners + cornerCan;
+class Charlie extends EvalPlayer {
+    public Charlie() {
+        super(charlieEval);
+    }
+
+    private static final Eval charlieEval = new StrategyBasedEval(EvalStrategies.eval4, createCoeffSet());
+
+    private static CoefficientSet createCoeffSet() {
+        // coefficients  from eval4-D at 30 empties
+        //    +24  No access to corner
+        //    +2164  Mover access to corner
+        //    -853  Enemy access to corner
+        //    +171  Both access to corner
+        //    +2177  Mover occupies corner
+        //    -2138  Enemy occupies corner
+        //    -1249  Mover x-square
+        //    +1156  Enemy x-square
+
+        final int[] coeffs = {
+                24, 2164, -853, 171, 2177, -2138, -1249, 1156
+        };
+
+        int[][][] slices = new int[64][1][];
+        for (int[][] slice : slices) {
+            slice[0] = coeffs;
         }
 
-        @Override public String toString() {
-            return "Bobby";
-        }
-    };
+        return new CoefficientSet(slices, "Charlie");
+    }
 }

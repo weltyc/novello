@@ -14,9 +14,8 @@ import java.util.List;
  */
 public class SelfPlaySet {
     public static void main(String[] args) {
-        final Player black = new EvalPlayer(new StrategyBasedEval(EvalStrategies.eval4, "C"), 2);
-        final Player white = new EvalPlayer(new StrategyBasedEval(EvalStrategies.eval4, "C"));
-//        final Player white = Players.eval4A();
+        final Player black = Players.player("4D");
+        final Player white = Players.player("Charlie");
         new SelfPlaySet(black, white, 2, true).call();
     }
 

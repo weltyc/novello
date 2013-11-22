@@ -36,7 +36,7 @@ public class CoefficientCalculator {
      */
     public static final int DISK_VALUE = 100;
     public static final EvalStrategy STRATEGY = EvalStrategies.eval4;
-    public static final String COEFF_SET_NAME = "D";
+    public static final String COEFF_SET_NAME = "E";
     public static final double PENALTY = 100;
     public static final Player PLAYOUT_PLAYER = Players.eval4A();
 
@@ -249,9 +249,9 @@ public class CoefficientCalculator {
             }
         }
         try (final DataOutputStream out = new DataOutputStream(new BufferedOutputStream(Files.newOutputStream(pvFile)))) {
-            for (PositionValue pv : pvs) {
-                pv.write(out);
-            }
+//            for (PositionValue pv : pvs) {
+//                pv.write(out);
+//            }
             writeRandomSubpositions(pvs, out);
         }
     }

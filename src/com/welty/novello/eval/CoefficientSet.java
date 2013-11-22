@@ -7,15 +7,25 @@ package com.welty.novello.eval;
  *
  * slices[nEmpty] is called a "slice"
 */
-class CoefficientSet {
-    private final int[][][] slices = new int[64][][];
+public class CoefficientSet {
+    private final int[][][] slices;
     private final String name;
 
     public CoefficientSet(EvalStrategy strategy, String name) {
+        this (readSlices(strategy, name), name);
+    }
+
+    public CoefficientSet(int[][][] slices, String name) {
+        this.slices = slices;
         this.name = name;
+    }
+
+    private static int[][][] readSlices(EvalStrategy strategy, String name) {
+        int[][][] slices = new int[64][][];
         for (int nEmpty = 0; nEmpty < 64; nEmpty++) {
             slices[nEmpty] = strategy.readSlice(nEmpty, name);
         }
+        return slices;
     }
 
     /**

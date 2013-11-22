@@ -286,4 +286,32 @@ Coefficient calculation
       -5.0  eval5/F
       -7.7  eval5/D
 
-Now 100% random subpositions. 4-D and 5-F.
+Now 100% random subpositions. 4-D and 5-H.
+
+    Tournament results:
+    +12.0  eval4-D-1
+     +6.3  eval4-C-1
+     -9.1  eval5-H-1
+     -9.2  eval5-F-1
+
+More seems better, at least for eval4-D.
+
+### X-square coefficients
+
+Eval4 coefficients are positive for x-squares at depths < approximately 22. This is stupid.
+
+Tried a tournament with "Charlie", a coefficient set for eval4 that has negative values for x-squares (in fact, I just copied eval4-D's coefficients from 30 empties to all empties).
+
+Tournament results:
++20.1  eval4-Charlie-1
+ +5.9  eval4-D-1
+ +1.6  eval4-C-1
+-13.7  eval5-H-1
+-13.9  eval5-F-1
+
+Clearly there is a problem here.
+
+### Non-random positions
+
+Are the non-random positions hurting? Try generating positions without the main line: 4-E and 5-I
+
