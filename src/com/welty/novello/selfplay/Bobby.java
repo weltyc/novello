@@ -2,7 +2,6 @@ package com.welty.novello.selfplay;
 
 import com.welty.novello.solver.BitBoardUtils;
 
-import static com.welty.novello.solver.BitBoardUtils.calcMoves;
 import static java.lang.Long.bitCount;
 
 /**

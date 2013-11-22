@@ -7,7 +7,7 @@ import static com.welty.novello.solver.BitBoardUtils.*;
  * <p/>
  * All methods assume that the bitboard is currently empty in its square
  */
-class Square {
+public class Square {
     private static final Square[] squares = new Square[64];
     static {
         for (int i = 0; i < 64; i++) {
@@ -68,7 +68,7 @@ class Square {
      *
      * @return a bitboard of disks that will be flipped.
      */
-    long calcFlips(long mover, long enemy) {
+    public long calcFlips(long mover, long enemy) {
         long flips = KindergartenEastWest.flips(sq, mover, enemy) | KindergartenUpDown.flips(sq, mover, enemy)
                 | flipperURDL.flips(mover, enemy) | flipperULDR.flips(mover, enemy);
         return flips;

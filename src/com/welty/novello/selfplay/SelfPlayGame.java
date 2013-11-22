@@ -16,28 +16,25 @@ public class SelfPlayGame implements Callable<SelfPlayGame.Result> {
     private final @NotNull Player black;
     private final @NotNull Player white;
     private final boolean printGame;
+    private final int searchFlags;
 
     // store positions encountered in the game, but only positions with a legal move.
     // the evaluator will only evaluate positions where the mover has a legal move.
     private final @NotNull List<BitBoard> blackToMovePositions = new ArrayList<>();
     private final @NotNull List<BitBoard> whiteToMovePositions = new ArrayList<>();
 
-    public SelfPlayGame(@NotNull BitBoard board, @NotNull Player black, @NotNull Player white, boolean printGame) {
+    public SelfPlayGame(@NotNull BitBoard board, @NotNull Player black, @NotNull Player white, boolean printGame
+            , int searchFlags) {
         this.board = board;
         this.black = black;
         this.white = white;
         this.printGame = printGame;
+        this.searchFlags = searchFlags;
     }
 
     @Override public Result call() {
         while (true) {
             if (printGame) {
-                final Player enemyPlayer = player(!board.blackToMove);
-                if (enemyPlayer instanceof EvalPlayer) {
-                    final EvalPlayer ep = (EvalPlayer) enemyPlayer;
-                    final int eval = ep.eval.eval(board.mover(), board.enemy(), board.mover(), board.enemy());
-                    System.out.println(ep + "(Enemy) evaluation: " + eval);
-                }
                 System.out.println(board);
                 System.out.println(player(board.blackToMove) + " to move");
             }
@@ -59,10 +56,11 @@ public class SelfPlayGame implements Callable<SelfPlayGame.Result> {
     }
 
     private boolean moveIfLegal() {
-        final boolean result = board.hasLegalMove();
+        final long moverMoves = board.calcMoves();
+        final boolean result = moverMoves!=0;
         if (result) {
             (board.blackToMove ? blackToMovePositions : whiteToMovePositions).add(board);
-            final int sq = player(board.blackToMove).calcMove(board);
+            final int sq = player(board.blackToMove).calcMove(board, moverMoves, searchFlags);
             board = board.play(sq);
             if (printGame) {
                 System.out.println("play " + BitBoardUtils.sqToText(sq));

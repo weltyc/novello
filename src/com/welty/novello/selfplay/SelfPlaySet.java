@@ -14,8 +14,8 @@ import java.util.List;
  */
 public class SelfPlaySet {
     public static void main(String[] args) {
-        final Player black = new EvalPlayer(new StrategyBasedEval(EvalStrategies.eval5, "D"));
-        final Player white = new EvalPlayer(new StrategyBasedEval(EvalStrategies.eval5, "C"));
+        final Player black = new EvalPlayer(new StrategyBasedEval(EvalStrategies.eval4, "C"), 2);
+        final Player white = new EvalPlayer(new StrategyBasedEval(EvalStrategies.eval4, "C"));
 //        final Player white = Players.eval4A();
         new SelfPlaySet(black, white, 2, true).call();
     }
@@ -61,10 +61,12 @@ public class SelfPlaySet {
             if (alreadySeen.add(startPosition.minimalReflection())) {
                 if (startPosition.hasLegalMove()) {
                     final int netResult;
-                    final SelfPlayGame.Result result = new SelfPlayGame(startPosition, black, white, nComplete < nToPrint).call();
+                    final boolean printDetails = nComplete < nToPrint;
+                    final int searchFlags = printDetails ? -1 : 0;
+                    final SelfPlayGame.Result result = new SelfPlayGame(startPosition, black, white, printDetails, searchFlags).call();
                     pvs.addAll(result.getPositionValues());
                     if (white != black) {
-                        final SelfPlayGame.Result result2 = new SelfPlayGame(startPosition, white, black, false).call();
+                        final SelfPlayGame.Result result2 = new SelfPlayGame(startPosition, white, black, printDetails, searchFlags).call();
                         pvs.addAll(result2.getPositionValues());
                         netResult = (result.netScore - result2.netScore);
                     } else {

@@ -15,12 +15,12 @@ public class EndgamePlayer extends RandomPlayer {
         }
     };
 
-    @Override public int calcMove(@NotNull BitBoard board) {
+    @Override public int calcMove(@NotNull BitBoard board, long moverMoves, int flags) {
         if (board.nEmpty() <= 8) {
             return solveMove(board);
         }
         else {
-            return super.calcMove(board);
+            return super.calcMove(board, moverMoves, flags);
         }
     }
 

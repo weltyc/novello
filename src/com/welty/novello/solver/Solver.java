@@ -172,9 +172,9 @@ public class Solver {
             return solve2(mover, enemy, alpha, beta, first.square, first.next.square);
         }
         if (nEmpty < MIN_PARITY_DEPTH) {
-            return solveN(mover, enemy, alpha, beta, empties, nEmpty);
+            return solveNoParity(mover, enemy, alpha, beta, empties, nEmpty);
         }
-        return solveWithParity(mover, enemy, alpha, beta, nEmpty, calcParity(), NODE_PV, -1L);
+        return solveDeep(mover, enemy, alpha, beta, nEmpty, calcParity(), NODE_PV, -1L);
     }
 
     private long calcParity() {
@@ -205,15 +205,15 @@ public class Solver {
      * @param nodeType     one of NODE_CUT, NODE_PV, or NODE_ALL
      * @param movesToCheck bitBoard containing moves to check (if the mover moves).
      */
-    private int solveWithParity(long mover, long enemy, int alpha, int beta, int nEmpties, long parity, int nodeType
+    private int solveDeep(long mover, long enemy, int alpha, int beta, int nEmpties, long parity, int nodeType
             , long movesToCheck) {
         if (nEmpties < MIN_PARITY_DEPTH) {
-            return solveN(mover, enemy, alpha, beta, empties, nEmpties);
+            return solveNoParity(mover, enemy, alpha, beta, empties, nEmpties);
         }
         nodeCounts.update(nEmpties, nodeType);
-        final int result = moverResultWithParity(mover, enemy, alpha, beta, nEmpties, parity, nodeType, movesToCheck);
+        final int result = moverResultDeep(mover, enemy, alpha, beta, nEmpties, parity, nodeType, movesToCheck);
         if (result == NO_MOVE) {
-            final int enemyResult = moverResultWithParity(enemy, mover, -beta, -alpha, nEmpties, parity, -nodeType, -1L);
+            final int enemyResult = moverResultDeep(enemy, mover, -beta, -alpha, nEmpties, parity, -nodeType, -1L);
             if (enemyResult == NO_MOVE) {
                 return terminalScore(mover, enemy);
             } else {
@@ -229,84 +229,92 @@ public class Solver {
      *
      * @return solve value according to fail-soft alpha/beta, unless there are no legal moves in which case it returns NO_MOVE.
      */
-    private int moverResultWithParity(long mover, long enemy, int alpha, int beta, int nEmpties, long parity
+    private int moverResultDeep(long mover, long enemy, int alpha, int beta, int nEmpties, long parity
             , int nodeType, long movesToCheck) {
         if (nEmpties < MIN_SORT_DEPTH) {
-            int result = NO_MOVE;
-            int subNodeType = -nodeType;
-            // sort by parity only
-            for (int desiredParity = 1; desiredParity >= 0; desiredParity--) {
-                for (ListOfEmpties.Node node = empties.first(); node != empties.end; node = node.next) {
-                    // parity nodes first
-                    final Square square = node.square;
-                    if (BitBoardUtils.isBitClear(movesToCheck, square.sq)) {
-                        continue;
-                    }
-                    if (BitBoardUtils.getBit(parity, square.sq) == desiredParity) {
-                        long flips = square.calcFlips(mover, enemy);
-                        if (flips != 0) {
-                            final long subMover = enemy & ~flips;
-                            final long subEnemy = mover | flips | square.placement();
-                            node.remove();
-                            final int subResult = -solveWithParity(subMover, subEnemy, -beta, -alpha, nEmpties - 1
-                                    , parity ^ square.parityRegion, subNodeType, -1L);
-                            node.restore();
-                            if (subResult > result) {
-                                result = subResult;
-                                if (subResult > alpha) {
-                                    if (subResult >= beta) {
-                                        return result;
-                                    }
-                                    alpha = subResult;
-                                }
-                            }
-                            subNodeType = NODE_CUT;
-                        }
-                    }
-                }
-            }
-            return result;
+            return moverResultNoSort(mover, enemy, alpha, beta, nEmpties, parity, nodeType, movesToCheck);
         } else {
-            // searchAlpha and searchBeta are the alpha and beta used for the search.
-            // They are normally equal to the original alpha and beta.
-            //
-            // If there is a hash hit, that doesn't cut off, though, the hash information will be used to update
-            // searchAlpha and searchBeta. When this happens we need to save the original alpha and beta
-            // so we can correctly update the hash entry at the end of the search.
-            int searchAlpha = alpha;
-            int searchBeta = beta;
-            if (nEmpties >= MIN_HASH_DEPTH) {
-                HashTable.Entry entry = hashTable.find(mover, enemy);
-                if (entry != null) {
-                    if (entry.min >= beta) {
-                        hashTable.nBetaCuts++;
-                        return entry.min;
+            return moverResultWithHash(mover, enemy, alpha, beta, nEmpties, parity, nodeType, movesToCheck);
+        }
+    }
+
+    private int moverResultNoSort(long mover, long enemy, int alpha, int beta, int nEmpties, long parity, int nodeType, long movesToCheck) {
+        int result = NO_MOVE;
+        int subNodeType = -nodeType;
+        // sort by parity only
+        for (int desiredParity = 1; desiredParity >= 0; desiredParity--) {
+            for (ListOfEmpties.Node node = empties.first(); node != empties.end; node = node.next) {
+                // parity nodes first
+                final Square square = node.square;
+                if (BitBoardUtils.isBitClear(movesToCheck, square.sq)) {
+                    continue;
+                }
+                if (BitBoardUtils.getBit(parity, square.sq) == desiredParity) {
+                    long flips = square.calcFlips(mover, enemy);
+                    if (flips != 0) {
+                        final long subMover = enemy & ~flips;
+                        final long subEnemy = mover | flips | square.placement();
+                        node.remove();
+                        final int subResult = -solveDeep(subMover, subEnemy, -beta, -alpha, nEmpties - 1
+                                , parity ^ square.parityRegion, subNodeType, -1L);
+                        node.restore();
+                        if (subResult > result) {
+                            result = subResult;
+                            if (subResult > alpha) {
+                                if (subResult >= beta) {
+                                    return result;
+                                }
+                                alpha = subResult;
+                            }
+                        }
+                        subNodeType = NODE_CUT;
                     }
-                    if (entry.max <= alpha) {
-                        hashTable.nAlphaCuts++;
-                        return entry.max;
-                    }
-                    if (entry.min == entry.max) {
-                        hashTable.nPvCuts++;
-                        return entry.min;
-                    }
-                    if (entry.min > searchAlpha) {
-                        searchAlpha = entry.min;
-                    }
-                    if (entry.max < searchBeta) {
-                        searchBeta = entry.max;
-                    }
-                    hashTable.nUselessFind++;
                 }
             }
-            final TreeSearchResult result = treeSearchResults[nEmpties];
-            moverResultWithSorting(result, mover, enemy, searchAlpha, searchBeta, nEmpties, parity, nodeType
-                    , movesToCheck);
-            if (nEmpties >= MIN_HASH_DEPTH) {
-                hashTable.store(mover, enemy, alpha, beta, result.score);
-            }
-            return result.score;
         }
+        return result;
+    }
+
+    private int moverResultWithHash(long mover, long enemy, int alpha, int beta, int nEmpties, long parity, int nodeType, long movesToCheck) {
+        // searchAlpha and searchBeta are the alpha and beta used for the search.
+        // They are normally equal to the original alpha and beta.
+        //
+        // If there is a hash hit, that doesn't cut off, though, the hash information will be used to update
+        // searchAlpha and searchBeta. When this happens we need to save the original alpha and beta
+        // so we can correctly update the hash entry at the end of the search.
+        int searchAlpha = alpha;
+        int searchBeta = beta;
+        if (nEmpties >= MIN_HASH_DEPTH) {
+            HashTable.Entry entry = hashTable.find(mover, enemy);
+            if (entry != null) {
+                if (entry.min >= beta) {
+                    hashTable.nBetaCuts++;
+                    return entry.min;
+                }
+                if (entry.max <= alpha) {
+                    hashTable.nAlphaCuts++;
+                    return entry.max;
+                }
+                if (entry.min == entry.max) {
+                    hashTable.nPvCuts++;
+                    return entry.min;
+                }
+                if (entry.min > searchAlpha) {
+                    searchAlpha = entry.min;
+                }
+                if (entry.max < searchBeta) {
+                    searchBeta = entry.max;
+                }
+                hashTable.nUselessFind++;
+            }
+        }
+        final TreeSearchResult result = treeSearchResults[nEmpties];
+        moverResultWithSorting(result, mover, enemy, searchAlpha, searchBeta, nEmpties, parity, nodeType
+                , movesToCheck);
+        if (nEmpties >= MIN_HASH_DEPTH) {
+            hashTable.store(mover, enemy, alpha, beta, result.score);
+        }
+        return result.score;
     }
 
     /**
@@ -341,7 +349,7 @@ public class Solver {
                 // the value of the first node; thus we can save nodes by searching in a window (alpha, alpha+1).
                 // If we were correct, this value < alpha and we saved some nodes. If we were wrong, this value >= alpha
                 // and we need to re-search the position at full width.
-                subResult = -solveWithParity(subMover, subEnemy, -alpha - 1, -alpha, nEmpties - 1
+                subResult = -solveDeep(subMover, subEnemy, -alpha - 1, -alpha, nEmpties - 1
                         , parity ^ square.parityRegion, subNodeType, move.enemyMoves);
 
                 // Re-search if the score ended up between alpha and beta.
@@ -350,11 +358,11 @@ public class Solver {
                 //
                 // This re-search can't be a CUT node because it can't fail low. We'll predict ALL.
                 if (subResult > alpha && subResult < beta) {
-                    subResult = -solveWithParity(subMover, subEnemy, -beta, -subResult, nEmpties - 1
+                    subResult = -solveDeep(subMover, subEnemy, -beta, -subResult, nEmpties - 1
                             , parity ^ square.parityRegion, NODE_ALL, move.enemyMoves);
                 }
             } else {
-                subResult = -solveWithParity(subMover, subEnemy, -beta, -alpha, nEmpties - 1
+                subResult = -solveDeep(subMover, subEnemy, -beta, -alpha, nEmpties - 1
                         , parity ^ square.parityRegion, subNodeType, move.enemyMoves);
             }
             move.node.restore();
@@ -379,14 +387,14 @@ public class Solver {
         assert iBestMove >= 0 || score==NO_MOVE;
     }
 
-    private int solveN(long mover, long enemy, int alpha, int beta, ListOfEmpties empties, int nEmpties) {
+    private int solveNoParity(long mover, long enemy, int alpha, int beta, ListOfEmpties empties, int nEmpties) {
         if (nEmpties == 3) {
             return solve3(mover, enemy, alpha, beta, empties);
         }
         nodeCounts.update(nEmpties);
-        final int result = moverResultN(empties, mover, enemy, alpha, beta, nEmpties);
+        final int result = moverResultNoParity(empties, mover, enemy, alpha, beta, nEmpties);
         if (result == NO_MOVE) {
-            final int enemyResult = moverResultN(empties, enemy, mover, -beta, -alpha, nEmpties);
+            final int enemyResult = moverResultNoParity(empties, enemy, mover, -beta, -alpha, nEmpties);
             if (enemyResult == NO_MOVE) {
                 return terminalScore(mover, enemy);
             } else {
@@ -402,7 +410,7 @@ public class Solver {
      *
      * @return solve value according to fail-soft alpha/beta, unless there are no legal moves in which case it returns NO_MOVE.
      */
-    private int moverResultN(ListOfEmpties empties, long mover, long enemy, int alpha, int beta, int nEmpties) {
+    private int moverResultNoParity(ListOfEmpties empties, long mover, long enemy, int alpha, int beta, int nEmpties) {
         int result = NO_MOVE;
         for (ListOfEmpties.Node node = empties.first(); node != empties.end; node = node.next) {
             final Square square = node.square;
@@ -411,7 +419,7 @@ public class Solver {
                 final long subMover = enemy & ~flips;
                 final long subEnemy = mover | flips | square.placement();
                 node.remove();
-                final int subResult = -solveN(subMover, subEnemy, -beta, -alpha, empties, nEmpties - 1);
+                final int subResult = -solveNoParity(subMover, subEnemy, -beta, -alpha, empties, nEmpties - 1);
                 node.restore();
                 if (subResult > result) {
                     result = subResult;

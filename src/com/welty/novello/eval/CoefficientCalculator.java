@@ -12,6 +12,7 @@ import com.welty.novello.selfplay.SelfPlaySet;
 import com.welty.novello.solver.BitBoard;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -34,9 +35,10 @@ public class CoefficientCalculator {
      * 1 disk is worth how many evaluation points?
      */
     public static final int DISK_VALUE = 100;
-    public static final EvalStrategy STRATEGY = EvalStrategies.eval5;
-    public static final String COEFF_SET_NAME = "eraseMe";
+    public static final EvalStrategy STRATEGY = EvalStrategies.eval4;
+    public static final String COEFF_SET_NAME = "D";
     public static final double PENALTY = 100;
+    public static final Player PLAYOUT_PLAYER = Players.eval4A();
 
     /**
      * Generate coefficients for evaluation.
@@ -59,12 +61,12 @@ public class CoefficientCalculator {
             System.out.println();
             System.out.println("--- " + nEmpty + " ---");
             final Element[] elements = elementsFromPvs(pvs, nEmpty, STRATEGY);
-            System.out.println("estimating coefficients using " + elements.length + " positions");
+            System.out.format("estimating coefficients using %,d positions\n", elements.length);
             final long t0 = System.currentTimeMillis();
             final double[] coefficients = estimateCoefficients(elements, STRATEGY.nCoefficientIndices(), PENALTY);
             final long dt = System.currentTimeMillis() - t0;
-            System.out.println(dt + " ms elapsed");
-            System.out.println("sum of coefficients squared = " + Vec.sumSq(coefficients));
+            System.out.format("%,d ms elapsed\n", dt);
+            System.out.format("sum of coefficients squared = %.3g\n", Vec.sumSq(coefficients));
 
             // write to file
             STRATEGY.writeSlice(nEmpty, coefficients, COEFF_SET_NAME);
@@ -72,17 +74,19 @@ public class CoefficientCalculator {
     }
 
     private static List<PositionValue> loadOrCreatePvs() throws IOException, ClassNotFoundException {
-        final Path pvFile = Paths.get("c:/temp/novello+"+randomFraction+".pvs");
-        final List<PositionValue> pvs;
+        final Path pvFile = Paths.get("c:/temp/novello-" + randomFraction + "_" + PLAYOUT_PLAYER + ".pvs");
         if (!Files.exists(pvFile)) {
-            pvs = createPvs(pvFile, Players.eval4A());
-        } else {
-            System.out.println("Loading pvs from " + pvFile + "...");
-            final long t0 = System.currentTimeMillis();
-            pvs = new ObjectFeed<>(pvFile, PositionValue.deserializer).asList();
-            final long dt = System.currentTimeMillis()-t0;
-            System.out.println(dt + " ms elapsed while loading");
+            createPvs(pvFile, PLAYOUT_PLAYER);
         }
+        System.out.println("Loading pvs from " + pvFile + "...");
+        final List<PositionValue> pvs;
+        final long t0 = System.currentTimeMillis();
+        pvs = new ObjectFeed<>(pvFile, PositionValue.deserializer).asList();
+        // Ram is tight... free some up
+        ((ArrayList) pvs).trimToSize();
+
+        final long dt = System.currentTimeMillis() - t0;
+        System.out.format("...  loaded %,d pvs in %.3f s\n", pvs.size(), dt * .001);
         return pvs;
     }
 
@@ -234,25 +238,22 @@ public class CoefficientCalculator {
     /**
      * Generate a set of PositionValues for analysis and write them to a file.
      *
-     * @param pvFile path to the file to be written. The
-     * @return the positionValues
+     * @param pvFile path to the file to be written.
      */
-    public static List<PositionValue> createPvs(Path pvFile, Player... players) throws IOException {
-        log.info("Creating Pvs...");
+    public static void createPvs(Path pvFile, Player... players) throws IOException {
+        log.info("Creating Pvs in " + pvFile + " ...");
         final ArrayList<PositionValue> pvs = new ArrayList<>();
         for (int i = 0; i < players.length; i++) {
             for (int j = 0; j <= i; j++) {
                 pvs.addAll(new SelfPlaySet(players[i], players[j], 0, false).call().pvs);
             }
         }
-        try (final DataOutputStream out = new DataOutputStream(Files.newOutputStream(pvFile))) {
+        try (final DataOutputStream out = new DataOutputStream(new BufferedOutputStream(Files.newOutputStream(pvFile)))) {
             for (PositionValue pv : pvs) {
                 pv.write(out);
             }
             writeRandomSubpositions(pvs, out);
         }
-
-        return pvs;
     }
 
     /**
@@ -272,7 +273,7 @@ public class CoefficientCalculator {
      * @return number of positions written
      */
     private static int writeRandomSubpositions(List<PositionValue> pvs, DataOutputStream out) throws IOException {
-        final Player player = Players.eval4A();
+        final Player player = PLAYOUT_PLAYER;
         final Random random = new Random(1337);
         int nextMessage = 50000;
         int nWritten = 0;
@@ -303,7 +304,7 @@ public class CoefficientCalculator {
             final int sq = Long.numberOfTrailingZeros(moves);
             moves ^= 1L << sq;
             final BitBoard subPos = pos.play(sq);
-            final SelfPlayGame.Result gameResult = new SelfPlayGame(subPos, player, player, false).call();
+            final SelfPlayGame.Result gameResult = new SelfPlayGame(subPos, player, player, false, 0).call();
             final List<PositionValue> gamePvs = gameResult.getPositionValues();
             final List<PositionValue> toAdd = gamePvs.subList(0, Math.min(2, gamePvs.size()));
             for (PositionValue pv : toAdd) {

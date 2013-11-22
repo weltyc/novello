@@ -285,3 +285,5 @@ Coefficient calculation
       +2.0  eval4/B
       -5.0  eval5/F
       -7.7  eval5/D
+
+Now 100% random subpositions. 4-D and 5-F.

@@ -68,28 +68,33 @@ public final class MoveSorter {
 
         for (ListOfEmpties.Node node = empties.first(); node != empties.end; node = node.next) {
             final Square square = node.square;
-            if (isBitClear(movesToCheck, square.sq)) {
+            final int sq = square.sq;
+            if (isBitClear(movesToCheck, sq)) {
                 continue;
             }
 
             final long flips = square.calcFlips(mover, enemy);
             if (flips != 0) {
-                final long placement = 1L << square.sq;
+                final long placement = 1L << sq;
                 final long nextEnemy = mover | flips | placement;
                 final long nextMover = enemy & ~flips;
                 final long enemyMoves = calcMoves(nextMover, nextEnemy);
-                final int nMobs = Long.bitCount(enemyMoves);
-                int score = (FixedMoveOrdering.getValue(square.sq) << FIXED_ORDERING_WEIGHT)
-                        + (BitBoardUtils.getBitAsInt(parity, square.sq) << PARITY_WEIGHT)
-                        - (sortWeightFromMobility[nMobs] << MOBILITY_WEIGHT);
+                int score = eval(parity, sq, enemyMoves);
                 final HashTable.Entry entry = hashTable.find(nextMover, nextEnemy);
                 if (entry != null && entry.cutsOff(-beta, -alpha)) {
                     score += 1 << ETC_WEIGHT;
                 }
 
-                insert(square.sq, score, flips, enemyMoves, node);
+                insert(sq, score, flips, enemyMoves, node);
             }
         }
+    }
+
+    private static int eval(long parity, int sq, long enemyMoves) {
+        final int nMobs = Long.bitCount(enemyMoves);
+        return (FixedMoveOrdering.getValue(sq) << FIXED_ORDERING_WEIGHT)
+                + (BitBoardUtils.getBitAsInt(parity, sq) << PARITY_WEIGHT)
+                - (sortWeightFromMobility[nMobs] << MOBILITY_WEIGHT);
     }
 
     /**
@@ -118,10 +123,7 @@ public final class MoveSorter {
                 final long nextEnemy = mover | flips | placement;
                 final long nextMover = enemy & ~flips;
                 final long enemyMoves = calcMoves(nextMover, nextEnemy);
-                final int nMobs = Long.bitCount(enemyMoves);
-                int score = (FixedMoveOrdering.getValue(square.sq) << FIXED_ORDERING_WEIGHT)
-                        + (BitBoardUtils.getBitAsInt(parity, square.sq) << PARITY_WEIGHT)
-                        - (sortWeightFromMobility[nMobs] << MOBILITY_WEIGHT);
+                int score = eval(parity, square.sq, enemyMoves);
                 insert(square.sq, score, flips, enemyMoves, node);
             }
         }
