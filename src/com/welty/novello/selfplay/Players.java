@@ -51,7 +51,7 @@ public class Players {
         }
     }
 
-    static Player player(String name) {
+    public static Player player(String name) {
         final String [] parts = name.split(":",2);
         final int depth = parts.length > 1 ? Integer.parseInt(parts[1]):1;
         final Eval eval = eval(parts[0]);

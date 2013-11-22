@@ -35,10 +35,10 @@ public class CoefficientCalculator {
      * 1 disk is worth how many evaluation points?
      */
     public static final int DISK_VALUE = 100;
-    public static final EvalStrategy STRATEGY = EvalStrategies.eval4;
-    public static final String COEFF_SET_NAME = "E";
+    public static final EvalStrategy STRATEGY = EvalStrategies.eval5;
+    public static final String COEFF_SET_NAME = "J";
     public static final double PENALTY = 100;
-    public static final Player PLAYOUT_PLAYER = Players.eval4A();
+    public static final Player PLAYOUT_PLAYER = Players.player("Charlie");
 
     /**
      * Generate coefficients for evaluation.

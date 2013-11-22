@@ -321,5 +321,22 @@ Played Charlie:depth 1 vs Charlie:depth 2. average result = -21.0 +/- 0.14. T ~ 
 
 ### Non-random positions
 
-Are the non-random positions hurting? Try generating positions without the main line: 4-E and 5-I
+Are the non-random positions hurting? Try generating positions without the main line: 4-E and 5-I.
+Figuring out the coefficients is a lot faster with the non-random positions; perhaps the many copies of each game position cause a lot of off-diagonal entries in the conjugate gradient matrix?
 
+4E still wants to take x-squares around 20 empty.
+
+    Tournament results:
+    +19.0  eval4-Charlie-1
+     +4.2  eval4-E-1
+     +3.4  eval4-D-1
+    -11.2  eval5-I-1
+    -15.5  eval5-H-1
+
+So removing the non-random positions helps! We'll do that.
+
+### Bad Playouts?
+
+Possibly part of the x-square problem is that Eval4-A, which generates the playouts, is messed up. Try again using Charlie to generate the playouts.
+
+New players: 5J, 4F.
