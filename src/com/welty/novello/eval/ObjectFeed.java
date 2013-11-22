@@ -4,6 +4,7 @@ import com.orbanova.common.feed.Feed;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -23,7 +24,7 @@ public class ObjectFeed<T> extends Feed<T> implements AutoCloseable {
 
     public ObjectFeed(Path path, @NotNull Deserializer<T> deserializer) throws IOException {
         this.deserializer = deserializer;
-        in = new DataInputStream(Files.newInputStream(path));
+        in = new DataInputStream(new BufferedInputStream(Files.newInputStream(path)));
     }
 
     @Nullable @Override public T next() {

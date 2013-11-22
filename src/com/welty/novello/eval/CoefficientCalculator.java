@@ -35,7 +35,7 @@ public class CoefficientCalculator {
      */
     public static final int DISK_VALUE = 100;
     public static final EvalStrategy STRATEGY = EvalStrategies.eval5;
-    public static final String COEFF_SET_NAME = "G";
+    public static final String COEFF_SET_NAME = "eraseMe";
     public static final double PENALTY = 100;
 
     /**
@@ -72,12 +72,16 @@ public class CoefficientCalculator {
     }
 
     private static List<PositionValue> loadOrCreatePvs() throws IOException, ClassNotFoundException {
-        final Path pvFile = Paths.get("c:/temp/novello.pvs");
+        final Path pvFile = Paths.get("c:/temp/novello+"+randomFraction+".pvs");
         final List<PositionValue> pvs;
         if (!Files.exists(pvFile)) {
             pvs = createPvs(pvFile, Players.eval4A());
         } else {
+            System.out.println("Loading pvs from " + pvFile + "...");
+            final long t0 = System.currentTimeMillis();
             pvs = new ObjectFeed<>(pvFile, PositionValue.deserializer).asList();
+            final long dt = System.currentTimeMillis()-t0;
+            System.out.println(dt + " ms elapsed while loading");
         }
         return pvs;
     }

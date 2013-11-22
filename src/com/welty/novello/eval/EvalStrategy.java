@@ -156,7 +156,7 @@ public class EvalStrategy {
      * @return location where this coeffSet is stored
      */
     private Path coeffDir(String coeffSetName) {
-        if (coeffSetName.matches("[a-zA-Z0-9]")) {
+        if (coeffSetName.matches("[a-zA-Z0-9]+")) {
             return rootDirectory.resolve(name).resolve(coeffSetName);
         } else {
             throw new IllegalArgumentException("Coeff set name must be alphanumeric, was " + coeffSetName);
