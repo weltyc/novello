@@ -65,22 +65,6 @@ class Features {
     static final Feature mainDiagonalFeature = LinePatternFeatureFactory.of("main diagonal", 8);
 
     /**
-     * Convert coeffsByOrid (as read from a file) to coeffsByInstance (as used in the eval)
-     *
-     * @param feature      feature to map instances to orids
-     * @param coeffsByOrid array containing coefficients for each orid
-     * @return array containing coefficients for each instance.
-     */
-    static int[] coeffsByInstance(Feature feature, int[] coeffsByOrid) {
-        final int n = feature.nInstances();
-        final int[] coeffsByInstance = new int[n];
-        for (int i = 0; i < n; i++) {
-            coeffsByInstance[i] = coeffsByOrid[feature.orid(i)];
-        }
-        return coeffsByInstance;
-    }
-
-    /**
      * Print a human-readable description of the coefficients to System.out
      *
      * @param feature      feature used to interpret the coefficients
@@ -88,21 +72,16 @@ class Features {
      * @param minValue     minimum absolute value to print a coefficient
      */
     static void dumpCoefficients(Feature feature, int[] coefficients, int minValue) {
-        Require.eq(coefficients.length, "# coefficients", feature.nInstances());
-        boolean[] printedOrids = new boolean[feature.nOrids()];
+        Require.eq(coefficients.length, "# coefficients", feature.nOrids());
 
         System.out.println();
         System.out.println(feature + ":");
         int nLarge = 0;
-        for (int instance = 0; instance < coefficients.length; instance++) {
-            final int coefficient = coefficients[instance];
+        for (int orid = 0; orid < coefficients.length; orid++) {
+            final int coefficient = coefficients[orid];
             if (Math.abs(coefficient) >= minValue) {
-                final int orid = feature.orid(instance);
-                if (!printedOrids[orid]) {
-                    final String desc = feature.oridDescription(orid);
-                    System.out.format("%+5d  %s (i=%d, o=%d)%n", coefficient, desc, instance, orid);
-                    printedOrids[orid]=true;
-                }
+                final String desc = feature.oridDescription(orid);
+                System.out.format("%+5d  %s (i=%d, o=%d)%n", coefficient, desc, orid, orid);
                 nLarge++;
             }
         }
