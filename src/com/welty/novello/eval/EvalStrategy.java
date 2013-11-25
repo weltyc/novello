@@ -72,42 +72,15 @@ public class EvalStrategy {
     /**
      * Read all coefficients for the strategy at a given nEmpty.
      *
-     * @param coefficientDirectory location of coefficient files
-     * @return slice
-     */
-    int[][] readSlice(int nEmpty, Path coefficientDirectory) {
-        final int[][] slice = readCompressedSlice(nEmpty, coefficientDirectory);
-        decompressSlice(slice);
-        return slice;
-    }
-
-    /**
-     * Convert a compressed slice into a decompressed slice.
-     * <p/>
-     * This happens in-place; each element of the slice array is replaced by a longer int[].
-     *
-     * @param slice slice to decompress
-     */
-    void decompressSlice(int[][] slice) {
-        for (int iFeature = 0; iFeature < nFeatures(); iFeature++) {
-            final Feature feature = getFeature(iFeature);
-            slice[iFeature] = Features.coeffsByInstance(feature, slice[iFeature]);
-        }
-    }
-
-    /**
-     * Read coefficients from a file.
-     * <p/>
-     * The "compressed" means that the index into the slice data is an orid rather than an instance.
-     * Since there are fewer orids than instances, this leads to less data.
+     * Coefficients for feature 0 are written first, then feature 1, etc.
+     * Coefficients for each feature are indexed by orid.
      * <p/>
      * The file location is the same as in {@link #writeSlice(int, double[], String)}
      *
      * @param nEmpty               # of empties of file to read
      * @param coefficientDirectory location to read from
-     * @return compressed slice.
      */
-    int[][] readCompressedSlice(int nEmpty, Path coefficientDirectory) {
+    int[][] readSlice(int nEmpty, Path coefficientDirectory) {
         final Path path = coefficientDirectory.resolve(filename(nEmpty));
         try (DataInputStream in = new DataInputStream(Files.newInputStream(path))) {
             final int nFeatures = nFeatures();

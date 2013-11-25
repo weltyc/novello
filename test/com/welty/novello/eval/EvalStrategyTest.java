@@ -54,7 +54,7 @@ public class EvalStrategyTest extends ArrayTestCase {
         final int nEmpty = 12;
         strategy.writeSlice(nEmpty, coeffs, coefficientDirectory);
 
-        final int[][] slice = strategy.readCompressedSlice(nEmpty, coefficientDirectory);
+        final int[][] slice = strategy.readSlice(nEmpty, coefficientDirectory);
         assertEquals(nFeatures, slice.length);
 
         // test expected result for each feature
@@ -92,29 +92,4 @@ public class EvalStrategyTest extends ArrayTestCase {
             assertEquals(expected, reflection.eval(eval));
         }
     }
-
-    public void testDecompress() {
-        final EvalStrategy strategy = EvalStrategies.diagonal;
-        final int nFeatures = strategy.nFeatures();
-
-        // compressed data. coefficient = orid
-        final int[][] slice = new int[nFeatures][];
-        for (int iFeature = 0; iFeature < nFeatures; iFeature++) {
-            final Feature feature = strategy.getFeature(iFeature);
-            slice[iFeature] = Vec.increasingInt(0, 1, feature.nOrids());
-        }
-
-        // decompress slice. This happens in place, so no return value.
-        strategy.decompressSlice(slice);
-        for (int iFeature = 0; iFeature < nFeatures; iFeature++) {
-            final Feature feature = strategy.getFeature(iFeature);
-            final int nInstances = feature.nInstances();
-            assertEquals(nInstances, slice[iFeature].length);
-            for (int i = 0; i < nInstances; i++) {
-                assertEquals(feature.orid(i), slice[iFeature][i]);
-            }
-        }
-
-    }
-
 }
