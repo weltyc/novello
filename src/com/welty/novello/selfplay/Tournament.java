@@ -18,7 +18,7 @@ public class Tournament implements Runnable {
 
     private final Player[] players;
 
-    public Tournament(Player[] players) throws Exception {
+    public Tournament(Player[] players) {
         this.players = players;
     }
 

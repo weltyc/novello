@@ -62,7 +62,6 @@ class Features {
     static final SoloFeature enemyPotMobs = new GridFeature("Enemy PotMobs");
 
 
-    static final Feature edgeFeature = LinePatternFeatureFactory.of("edges", 8);
     static final Feature mainDiagonalFeature = LinePatternFeatureFactory.of("main diagonal", 8);
 
     /**
@@ -223,5 +222,4 @@ class LinePatternFeatureFactory {
         final String[] oridDescriptions = oridDescList.toArray(new String[oridDescList.size()]);
         return new MultiFeature(name, orids, oridDescriptions);
     }
-
 }

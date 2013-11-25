@@ -11,9 +11,6 @@ public class CoefficientViewer {
 
     /**
      * Print out all coefficients with absolute value >= minValue
-     * @param eval
-     * @param nEmpty
-     * @param minValue
      */
     static void dumpSlice(String eval, int nEmpty, int minValue) {
         final EvalStrategy strategy = EvalStrategies.strategy(eval.substring(0, 1));

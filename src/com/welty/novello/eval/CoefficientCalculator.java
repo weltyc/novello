@@ -109,7 +109,7 @@ public class CoefficientCalculator {
         return min + "-" + max + " times";
     }
 
-    private static List<PositionValue> loadOrCreatePvs() throws IOException, ClassNotFoundException {
+    private static List<PositionValue> loadOrCreatePvs() throws IOException {
         final String  playerComponent = PLAYOUT_PLAYER.toString().replace(':','-');
         final Path pvFile = Paths.get("c:/temp/novello/" + playerComponent + ".pvs");
         if (!Files.exists(pvFile)) {

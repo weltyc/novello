@@ -229,6 +229,7 @@ public class SolverTest extends TestCase {
         final Solver solver = new Solver();
         final Result result = solver.solveWithMove(bb.mover(), bb.enemy());
         // A8, F8, C5 all win by 64.
+        //noinspection OctalInteger
         assertTrue(result.bestMoveSq==007 || result.bestMoveSq==002 || result.bestMoveSq == 035);
     }
 }

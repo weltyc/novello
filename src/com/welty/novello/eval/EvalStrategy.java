@@ -306,7 +306,7 @@ public class EvalStrategy {
      * This version takes coefficients as they are stored in the CoeffSet.
      *
      * @param slice    coefficients to print
-     * @param minValue
+     * @param minValue minimum value of coefficients to print
      */
     public void dumpCoefficients(int[][] slice, int minValue) {
         Require.eq(slice.length, "slice length", nFeatures());

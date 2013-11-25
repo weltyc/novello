@@ -6,7 +6,7 @@ import junit.framework.TestCase;
  */
 public class CornerTermTest extends TestCase {
     public void testInstance() {
-        final Term term = new CornerTerm(000);
+        @SuppressWarnings("OctalInteger") final Term term = new CornerTerm(000);
         assertEquals(0, term.instance(0, 0, 0, 0));
         assertEquals(1, term.instance(0xFC, 0x2, 0x1, 0));
         assertEquals(2, term.instance(0x2, 0xFC, 0, 0x1));
