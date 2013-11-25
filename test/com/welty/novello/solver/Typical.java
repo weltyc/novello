@@ -13,7 +13,7 @@ class Typical {
     /**
      * mean of middle 50% of the data
      */
-    final double value;
+    private final double value;
     /**
      * first quartile value; min after lowest 1/4 is tossed
      */

@@ -144,9 +144,6 @@ public class HashTable {
         }
 
         /**
-         *
-         * @param alpha
-         * @param beta
          * @return true if the value in this node would cause an immediate return due to alpha or beta cutoff
          */
         public boolean cutsOff(int alpha, int beta) {

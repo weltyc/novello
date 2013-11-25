@@ -22,14 +22,14 @@ public class Solver {
      * At this depth and above, the search will use NEGASCOUT,
      * but only when move sorting is enabled.
      */
-    static final int MIN_NEGASCOUT_DEPTH = 10;
+    private static final int MIN_NEGASCOUT_DEPTH = 10;
 
     /**
      * Only check for ETC at this depth or higher.
      * <p/>
      * if depth is Solver.MIN_HASH_DEPTH or below, the children will never be in hash.
      */
-    static final int MIN_ETC_DEPTH = MIN_HASH_DEPTH + 1;
+    private static final int MIN_ETC_DEPTH = MIN_HASH_DEPTH + 1;
 
     /**
      * At this depth and above, the search will do a full sort of the remaining moves

@@ -8,7 +8,7 @@ import com.orbanova.common.misc.Vec;
  * <p/>
  * algorithm copied from http://en.wikipedia.org/wiki/Nonlinear_conjugate_gradient_method
  */
-public class ConjugateGradientMethod {
+class ConjugateGradientMethod {
 
     /**
      * Return the location of an approximate minimum of f

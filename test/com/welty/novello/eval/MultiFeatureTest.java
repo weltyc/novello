@@ -6,7 +6,7 @@ import junit.framework.TestCase;
  */
 public class MultiFeatureTest extends TestCase {
 
-    static final MultiFeature multiFeature = new MultiFeature("test", new int[]{0, 1, 0}, new String[]{"orid 0", "orid 1"});
+    private static final MultiFeature multiFeature = new MultiFeature("test", new int[]{0, 1, 0}, new String[]{"orid 0", "orid 1"});
 
     public void testOrid() {
         assertEquals(0, multiFeature.orid(0));

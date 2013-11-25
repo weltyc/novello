@@ -6,10 +6,10 @@ import static com.welty.novello.solver.BitBoardUtils.getBitAsInt;
 
 /**
  */
-public abstract class Term {
+abstract class Term {
     private final Feature feature;
 
-    protected Term(Feature feature) {
+    Term(Feature feature) {
         this.feature = feature;
     }
 
@@ -222,7 +222,7 @@ class URDLTerm extends Term {
      * @return shifted board.
      */
     @SuppressWarnings("OctalInteger")
-    static long shift(long bb) {
+    private static long shift(long bb) {
         return ((bb & BitBoardUtils.HFile) >>> 070) |
                 ((bb & BitBoardUtils.GFile) >>> 060) |
                 ((bb & BitBoardUtils.FFile) >>> 050) |

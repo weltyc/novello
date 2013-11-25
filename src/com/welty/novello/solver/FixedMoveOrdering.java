@@ -5,7 +5,7 @@ package com.welty.novello.solver;
  * <p/>
  * This is used at low heights and also when breaking ties at higher heights.
  */
-public class FixedMoveOrdering {
+class FixedMoveOrdering {
     private static final int[] squareValueTable = new int[64];
 
     /**
@@ -37,7 +37,7 @@ public class FixedMoveOrdering {
             type_B2
     };
 
-    static final int[] values = {
+    private static final int[] values = {
             24,
             17,
             15,

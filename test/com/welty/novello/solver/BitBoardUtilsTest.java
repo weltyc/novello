@@ -80,10 +80,6 @@ public class BitBoardUtilsTest extends BitBoardTestCase {
         }
     }
 
-    public void testAdjacent() {
-        assertBitBoardEquals(0x05070E0A0EC040C0L, adjacent(0x0200000400008000L));
-    }
-
     public void testPotMobs() {
         assertBitBoardEquals("no empties", 0, potMobs(0, 0));
 

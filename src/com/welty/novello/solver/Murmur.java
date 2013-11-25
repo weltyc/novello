@@ -2,8 +2,8 @@ package com.welty.novello.solver;
 
 /**
  */
-public class Murmur {
-    static long murmurMix(long h) {
+class Murmur {
+    private static long murmurMix(long h) {
         h *= 0xc6a4a7935bd1e995L;
         h ^= h >>> 47 | h << 17;
         h *= 0xc6a4a7935bd1e995L;

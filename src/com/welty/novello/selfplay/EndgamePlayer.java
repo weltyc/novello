@@ -28,7 +28,7 @@ public class EndgamePlayer extends RandomPlayer {
      * @param board board to move from
      * @return the perfect-play move
      */
-    protected int solveMove(BitBoard board) {
+    int solveMove(BitBoard board) {
         final Result result = solvers.get().solveWithMove(board.mover(), board.enemy());
         return result.bestMoveSq;
     }

@@ -13,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
  * This generates positions with a fixed number of disks, for instance 9.
  * All disks will be placed in the center 16 squares. It generates all such positions once each.
  */
-public class StartPosGenerator extends Feed<BitBoard> {
+class StartPosGenerator extends Feed<BitBoard> {
     private int i = 0;
     private final int nDisks;
     private final static int I_MAX = 6561 * 6561; // 3^16

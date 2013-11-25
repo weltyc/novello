@@ -10,7 +10,7 @@ import static java.lang.Long.bitCount;
  * Bitboard representation of an Othello board
  */
 public class BitBoard implements Comparable<BitBoard> {
-    static final String header = "  A B C D E F G H  \n";
+    private static final String header = "  A B C D E F G H  \n";
     public final long black;
     public final long white;
     public final boolean blackToMove;
@@ -109,7 +109,7 @@ public class BitBoard implements Comparable<BitBoard> {
      * @param square move to make, or null to pass
      * @return a new BitBoard containing the board position after the move
      */
-    public BitBoard play(@Nullable Square square) {
+    BitBoard play(@Nullable Square square) {
         if (square == null) {
             return pass();
         }
@@ -199,7 +199,7 @@ public class BitBoard implements Comparable<BitBoard> {
     /**
      * @return bitboard of legal moves from this position
      */
-    public long legalMoves() {
+    long legalMoves() {
         return BitBoardUtils.calcMoves(mover(), enemy());
     }
 

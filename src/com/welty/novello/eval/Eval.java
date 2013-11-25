@@ -10,7 +10,7 @@ import com.welty.novello.solver.BitBoardUtils;
  * by mapping feature orid &harr; coefficient calculator index.
  */
 public class Eval {
-    final CoefficientSet coefficientSet;
+    private final CoefficientSet coefficientSet;
     private final EvalStrategy evalStrategy;
 
     private static final boolean debug = false;
@@ -21,7 +21,7 @@ public class Eval {
         this(evalStrategy, new CoefficientSet(evalStrategy, coeffSetName));
     }
 
-    public Eval(EvalStrategy evalStrategy, CoefficientSet coeffSet) {
+    private Eval(EvalStrategy evalStrategy, CoefficientSet coeffSet) {
         this.evalStrategy = evalStrategy;
         coefficientSet = coeffSet;
     }

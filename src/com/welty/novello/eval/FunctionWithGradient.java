@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  */
-public abstract class FunctionWithGradient {
+abstract class FunctionWithGradient {
     /**
      * Calculate the direction of steepest descent (negative of the gradient)
      * <p/>
@@ -55,7 +55,7 @@ public abstract class FunctionWithGradient {
      * @param dx direction of the line
      * @return a function: a -> this.y(x + a * dx)
      */
-    protected @NotNull Function getLineFunction(double[] x, double[] dx) {
+    @NotNull Function getLineFunction(double[] x, double[] dx) {
         return new LineFunction(this, x, dx);
     }
 

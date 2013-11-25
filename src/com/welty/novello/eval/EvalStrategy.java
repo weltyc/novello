@@ -23,7 +23,7 @@ public class EvalStrategy {
     /**
      * Directory containing all coefficients
      */
-    static final Path rootDirectory = Paths.get("coefficients");
+    private static final Path rootDirectory = Paths.get("coefficients");
 
     /**
      * Distinct features of terms, in order of their first appearance in terms
@@ -180,7 +180,7 @@ public class EvalStrategy {
         System.out.println(nNonZero + " non-zero coefficients written");
     }
 
-    static String filename(int nEmpty) {
+    private static String filename(int nEmpty) {
         return nEmpty + ".coeff";
     }
 

@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  */
 public class EvalPlayer extends EndgamePlayer {
-    final Eval eval;
+    private final Eval eval;
     private final int searchDepth;
 
     public EvalPlayer(Eval eval, int searchDepth) {

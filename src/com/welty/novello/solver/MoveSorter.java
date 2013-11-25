@@ -6,38 +6,38 @@ import static java.lang.Long.bitCount;
 /**
  * Calculates and sorts legal moves
  */
-public final class MoveSorter {
+final class MoveSorter {
     /**
      * fixed ordering value << FIXED_ORDERING_WEIGHT is added to the move sort score.
      */
-    static final int FIXED_ORDERING_WEIGHT = 1;
+    private static final int FIXED_ORDERING_WEIGHT = 1;
 
     /**
      * mobility value << MOBILITY_WEIGHT is added to the move sort score
      */
-    static final int MOBILITY_WEIGHT = 4;
+    private static final int MOBILITY_WEIGHT = 4;
 
     /**
      * 1 << ETC_WEIGHT is added to the move sort score if the position is in the hash table and will immediately cut off.
      */
-    static final int ETC_WEIGHT = 11;
+    private static final int ETC_WEIGHT = 11;
 
     /**
      * If the move plays into an odd region, 1<< PARITY_WEIGHT is added to the score
      */
-    static final int PARITY_WEIGHT = 1;
+    private static final int PARITY_WEIGHT = 1;
 
     /**
      * net potential mobility << POT_MOB_WEIGHT is added to the move sort score
      */
-    static final int MOVER_POT_MOB_WEIGHT = 0;
-    static final int ENEMY_POT_MOB_WEIGHT = 4;
+    private static final int MOVER_POT_MOB_WEIGHT = 0;
+    private static final int ENEMY_POT_MOB_WEIGHT = 4;
 
     /**
      * lookup table to get sort weight from mobility.
      * This allows for nonlinear parameters.
      */
-    static final int[] sortWeightFromMobility = new int[64];
+    private static final int[] sortWeightFromMobility = new int[64];
 
     static {
         for (int i = 0; i < 64; i++) {

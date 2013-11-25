@@ -15,18 +15,18 @@ public class BitBoardUtils {
     public static final long FFile = AFile >>> 5;
     public static final long GFile = AFile >>> 6;
     public static final long HFile = AFile >>> 7;
-    static final long FilesAH = AFile | HFile;
+    private static final long FilesAH = AFile | HFile;
 
-    static final long Rank1 = 0xFF;
-    static final long Rank8 = 0xFFL << 56;
-    static final long Ranks18 = Rank1 | Rank8;
+    private static final long Rank1 = 0xFF;
+    private static final long Rank8 = 0xFFL << 56;
+    private static final long Ranks18 = Rank1 | Rank8;
 
     public static final long CORNERS = 0x8100000000000081L;
     static final long C_SQUARES = 0x4281000000008142L;
     static final long X_SQUARES = 0x0042000000004200L;
 
-    static final long EDGES = FilesAH | Ranks18;
-    static final long CENTER_36 = ~EDGES;
+    private static final long EDGES = FilesAH | Ranks18;
+    private static final long CENTER_36 = ~EDGES;
     public static final long CENTER_4 = 0x0000001818000000L;
 
 
@@ -192,7 +192,7 @@ public class BitBoardUtils {
      * <p/>
      * The bits of g are smeared, but only along set bits of p.
      */
-    static long fillUpRight(long g, long p) {
+    private static long fillUpRight(long g, long p) {
         p &= ~AFile;
         g |= p & (g << 7);
         p &= (p << 7);
@@ -207,7 +207,7 @@ public class BitBoardUtils {
      * <p/>
      * The bits of g are smeared, but only along set bits of p.
      */
-    static long fillDownLeft(long g, long p) {
+    private static long fillDownLeft(long g, long p) {
         p &= ~HFile;
         g |= p & (g >>> 7);
         p &= (p >>> 7);
@@ -300,7 +300,7 @@ public class BitBoardUtils {
      * @param col index of col
      * @return square index
      */
-    public static int square(int row, int col) {
+    private static int square(int row, int col) {
         return row * 8 + col;
     }
 
@@ -385,23 +385,10 @@ public class BitBoardUtils {
      * @param row index of row. "8" = 0, "1" = 7
      * @return text, for instance "D5"
      */
-    public static String rowColToText(int col, int row) {
+    private static String rowColToText(int col, int row) {
         final char colChar = (char) ('H' - col);
         final char rowChar = (char) ('8' - row);
         return "" + colChar + rowChar;
-    }
-
-    /**
-     * Find all squares adjacent to the given squares (including diagonally).
-     *
-     * @param bb set of bits
-     * @return adjacent bits
-     */
-    static long adjacent(long bb) {
-        final long lr = ((bb & ~HFile) >>> 1) | ((bb & ~AFile) << 1);
-        final long ud = (bb << 8) | (bb >>> 8);
-
-        return lr | (lr << 8) | (lr >>> 8) | ud;
     }
 
     /**

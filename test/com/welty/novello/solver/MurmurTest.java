@@ -8,12 +8,12 @@ import java.util.Random;
  */
 public class MurmurTest extends TestCase {
     // counts[byte index 0-7][byte] = number of times a collision has appeared.
-    long nHashes = 0;
-    final int[][] counts = new int[8][256];
-    final Random r = new Random(1337);
-    final long empty = r.nextLong() & r.nextLong();
-    final long mover = ~empty & r.nextLong();
-    final long enemy = ~(mover | empty);
+    private long nHashes = 0;
+    private final int[][] counts = new int[8][256];
+    private final Random r = new Random(1337);
+    private final long empty = r.nextLong() & r.nextLong();
+    private final long mover = ~empty & r.nextLong();
+    private final long enemy = ~(mover | empty);
 
     private void insert(long mover, long enemy) {
         final long hash = Murmur.hash(mover, enemy);

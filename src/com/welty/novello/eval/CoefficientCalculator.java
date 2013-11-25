@@ -35,11 +35,11 @@ public class CoefficientCalculator {
      * 1 disk is worth how many evaluation points?
      */
     public static final int DISK_VALUE = 100;
-    public static final String target = "7B";
-    public static final EvalStrategy STRATEGY =  EvalStrategies.strategy(target.substring(0, 1));
-    public static final String COEFF_SET_NAME = target.substring(1);
-    public static final double PENALTY = 100;
-    public static final Player PLAYOUT_PLAYER = Players.player("7A:2");
+    private static final String target = "7B";
+    private static final EvalStrategy STRATEGY = EvalStrategies.strategy(target.substring(0, 1));
+    private static final String COEFF_SET_NAME = target.substring(1);
+    private static final double PENALTY = 100;
+    private static final Player PLAYOUT_PLAYER = Players.player("7A:2");
 
     /**
      * Generate coefficients for evaluation.
@@ -78,19 +78,19 @@ public class CoefficientCalculator {
     private static void dumpElementDistribution(Element[] elements, int nIndices) {
         final int[] counts = new int[nIndices];
         for (Element element : elements) {
-            for (int index :element.indices) {
+            for (int index : element.indices) {
                 counts[index]++;
             }
         }
         final int[] histogram = new int[32];
         for (int count : counts) {
-            final int lg = 32-Integer.numberOfLeadingZeros(count);
+            final int lg = 32 - Integer.numberOfLeadingZeros(count);
             histogram[lg]++;
         }
         System.out.println("== instance counts ==");
-        for (int i=0; i<histogram.length; i++) {
+        for (int i = 0; i < histogram.length; i++) {
             final int h = histogram[i];
-            if (h>0) {
+            if (h > 0) {
                 System.out.format("%,8d coefficients occurred %s%n", h, rangeText(i));
             }
         }
@@ -98,22 +98,22 @@ public class CoefficientCalculator {
     }
 
     private static String rangeText(int i) {
-        if (i==0) {
+        if (i == 0) {
             return "0 times";
         }
-        if (i==1) {
+        if (i == 1) {
             return "1 time";
         }
-        int min = 1<<(i-1);
-        int max = (1<<i)-1;
+        int min = 1 << (i - 1);
+        int max = (1 << i) - 1;
         return min + "-" + max + " times";
     }
 
     private static List<PositionValue> loadOrCreatePvs() throws IOException {
-        final String  playerComponent = PLAYOUT_PLAYER.toString().replace(':','-');
+        final String playerComponent = PLAYOUT_PLAYER.toString().replace(':', '-');
         final Path pvFile = Paths.get("c:/temp/novello/" + playerComponent + ".pvs");
         if (!Files.exists(pvFile)) {
-            createPvs(pvFile, PLAYOUT_PLAYER);
+            createPvs(pvFile);
         }
         System.out.println("Loading pvs from " + pvFile + "...");
         final List<PositionValue> pvs;
@@ -209,7 +209,7 @@ public class CoefficientCalculator {
             return error;
         }
 
-        @NotNull @Override protected Function getLineFunction(double[] x, double[] dx) {
+        @NotNull @Override Function getLineFunction(double[] x, double[] dx) {
             return new LineFunction(x, dx);
         }
 
@@ -255,9 +255,8 @@ public class CoefficientCalculator {
     /**
      * Select the pvs that will be used to generate coefficients at the given number of nEmpties and generate their Elements
      *
-     *
-     * @param pvs      list of pvs at all empties
-     * @param nEmpty   number of empties to generate coefficients for
+     * @param pvs    list of pvs at all empties
+     * @param nEmpty number of empties to generate coefficients for
      * @return list of selected Elements
      */
     private static Element[] elementsFromPvs(List<PositionValue> pvs, int nEmpty) {
@@ -277,18 +276,11 @@ public class CoefficientCalculator {
      *
      * @param pvFile path to the file to be written.
      */
-    public static void createPvs(Path pvFile, Player... players) throws IOException {
+    private static void createPvs(Path pvFile) throws IOException {
         log.info("Creating Pvs in " + pvFile + " ...");
         final ArrayList<PositionValue> pvs = new ArrayList<>();
-        for (int i = 0; i < players.length; i++) {
-            for (int j = 0; j <= i; j++) {
-                pvs.addAll(new SelfPlaySet(players[i], players[j], 0, false).call().pvs);
-            }
-        }
+        pvs.addAll(new SelfPlaySet(PLAYOUT_PLAYER, PLAYOUT_PLAYER, 0, false).call().pvs);
         try (final DataOutputStream out = new DataOutputStream(new BufferedOutputStream(Files.newOutputStream(pvFile)))) {
-//            for (PositionValue pv : pvs) {
-//                pv.write(out);
-//            }
             writeRandomSubpositions(pvs, out);
         }
     }
@@ -306,10 +298,10 @@ public class CoefficientCalculator {
      * <p/>
      * This function does NOT close the DataOutputStream.
      *
+     *
      * @param pvs positions that might get chosen
-     * @return number of positions written
      */
-    private static int writeRandomSubpositions(List<PositionValue> pvs, DataOutputStream out) throws IOException {
+    private static void writeRandomSubpositions(List<PositionValue> pvs, DataOutputStream out) throws IOException {
         final Player player = PLAYOUT_PLAYER;
         final Random random = new Random(1337);
         int nextMessage = 50000;
@@ -325,7 +317,6 @@ public class CoefficientCalculator {
                 nextMessage += 50000;
             }
         }
-        return nWritten;
     }
 
     /**

@@ -4,7 +4,7 @@ import com.orbanova.common.misc.Vec;
 
 /**
  */
-public class NodeCounts {
+class NodeCounts {
     private final long[] nNodes = new long[64];
     private final long[][] nNodesByDepthAndType = new long[64][3];
     private final long[][] nNodesByCutIndex = new long[64][64];
@@ -96,7 +96,7 @@ public class NodeCounts {
     /**
      * Update the stats with the nodeIndex of a cut
      *
-     * @param nEmpties
+     * @param nEmpties number of empties in the parent position
      * @param nodeIndex 0 for first node, 1 for second node, etc.
      */
     public void updateCut(int nEmpties, int nodeIndex) {

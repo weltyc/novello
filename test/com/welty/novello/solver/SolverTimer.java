@@ -19,8 +19,8 @@ public class SolverTimer {
         Typical typical = timeRound(solver, nIters);
         final long nNodes = solver.nodeCounts.getNNodes();
         final double Mnps = nNodes / typical.sum * 0.001;
-        final double nspn = 1000 / Mnps;
-        System.out.format("Typical %s ms. %.3g Mn; %.3g Mn/s; %.3g ns/n%n", typical, 1e-6 * nNodes / nIters, Mnps, nspn);
+        final double nsPerNode = 1000 / Mnps;
+        System.out.format("Typical %s ms. %.3g Mn; %.3g Mn/s; %.3g ns/n%n", typical, 1e-6 * nNodes / nIters, Mnps, nsPerNode);
         System.out.println(solver.nodeCounts.getNodeCountsByDepth());
         System.out.println(solver.hashTable.stats());
     }

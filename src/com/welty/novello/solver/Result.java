@@ -7,7 +7,7 @@ public class Result {
     /**
      * Net score to mover
      */
-    public final int score;
+    private final int score;
 
     /**
      * Index of best move in the search. For instance the first move searched is 0, the second move searched is 1, etc.

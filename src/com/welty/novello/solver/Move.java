@@ -6,7 +6,7 @@ package com.welty.novello.solver;
  *  Some information about the move (e.g. flip bitboard) is stored to
  *  save time compared to recalculating it.
  */
-public class Move {
+class Move {
     int sq;
     int score;
     long flips;

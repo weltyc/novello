@@ -70,7 +70,7 @@ public class Square {
         return 1L << sq;
     }
 
-    Square(int sq) {
+    private Square(int sq) {
         this.sq = sq;
         if (isBitSet(TOP_LEFT, sq)) {
             parityRegion = TOP_LEFT;

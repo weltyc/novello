@@ -12,7 +12,7 @@ public class CoefficientViewer {
     /**
      * Print out all coefficients with absolute value >= minValue
      */
-    static void dumpSlice(String eval, int nEmpty, int minValue) {
+    private static void dumpSlice(String eval, int nEmpty, int minValue) {
         final EvalStrategy strategy = EvalStrategies.strategy(eval.substring(0, 1));
         final String coeffSetName = eval.substring(1);
         final int[][] slice = strategy.readSlice(nEmpty, coeffSetName);
