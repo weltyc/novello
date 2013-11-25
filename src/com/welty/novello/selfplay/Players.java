@@ -32,15 +32,6 @@ public class Players {
         namedEvals.put("Charlie", Charlie.charlieEval);
     }
 
-    private static Player eval4A;
-
-    public static Player eval4A() {
-        if (eval4A == null) {
-            eval4A = new EvalPlayer(new StrategyBasedEval(EvalStrategies.eval4, "A"));
-        }
-        return eval4A;
-    }
-
     static Eval eval(String name) {
         final Eval eval = namedEvals.get(name);
         if (null!=eval) {

@@ -7,10 +7,6 @@ public class BitBoardUtils {
     //
     // Sort order for checking squares
     //
-    public static final long CORNERS = 0x8100000000000081L;
-    static final long C_SQUARES = 0x4281000000008142L;
-    static final long X_SQUARES = 0x0042000000004200L;
-    public static final long CENTER_4 = 0x0000001818000000L;
     public static final long AFile = 0x8080808080808080L;
     public static final long BFile = AFile >>> 1;
     public static final long CFile = AFile >>> 2;
@@ -19,7 +15,21 @@ public class BitBoardUtils {
     public static final long FFile = AFile >>> 5;
     public static final long GFile = AFile >>> 6;
     public static final long HFile = AFile >>> 7;
-    static final long AHFiles = AFile | HFile;
+    static final long FilesAH = AFile | HFile;
+
+    static final long Rank1 = 0xFF;
+    static final long Rank8 = 0xFFL << 56;
+    static final long Ranks18 = Rank1 | Rank8;
+
+    public static final long CORNERS = 0x8100000000000081L;
+    static final long C_SQUARES = 0x4281000000008142L;
+    static final long X_SQUARES = 0x0042000000004200L;
+
+    static final long EDGES = FilesAH | Ranks18;
+    static final long CENTER_36 = ~EDGES;
+    public static final long CENTER_4 = 0x0000001818000000L;
+
+
 
     /**
      * Column number of square.
@@ -421,5 +431,20 @@ public class BitBoardUtils {
      */
     public static int nEmpty(long mover, long enemy) {
         return Long.bitCount(~(mover|enemy));
+    }
+
+    /**
+     * Calculate potential mobilities.
+     *
+     * A potential mobility is a disk on the border of the playing field: there's at least one direction where
+     * it's adjacent to an enemy square and not on the edge of the board in that direction.
+     *
+     * @return location of potMobs.
+     */
+    public static long potMobs(long player, long empty) {
+        final long upDown =  ((empty>>>8)|(empty<<8))&(player&~Ranks18);
+        final long leftRight = ((empty>>>1 | empty<<1))&(player&~FilesAH);
+        final long diagonal = ((empty>>7)|(empty>>9)|(empty<<7)|(empty<<9))&(player&CENTER_36);
+        return upDown | leftRight | diagonal;
     }
 }

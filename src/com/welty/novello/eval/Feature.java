@@ -58,6 +58,8 @@ class Features {
     static final SoloFeature enemyDisks = new GridFeature("Enemy Disks");
     static final SoloFeature moverMobilities = new GridFeature("Mover Mobilities");
     static final SoloFeature enemyMobilities = new GridFeature("Enemy Mobilities");
+    static final SoloFeature moverPotMobs = new GridFeature("Mover PotMobs");
+    static final SoloFeature enemyPotMobs = new GridFeature("Enemy PotMobs");
 
 
     static final Feature edgeFeature = LinePatternFeatureFactory.of("edges", 8);

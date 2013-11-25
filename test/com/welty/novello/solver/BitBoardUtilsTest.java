@@ -87,4 +87,39 @@ public class BitBoardUtilsTest extends BitBoardTestCase {
     public void testSingletons() {
         assertBitBoardEquals(0x810000000000L, singletons(0x8100C3008181L));
     }
+
+    public void testPotMobs() {
+        assertBitBoardEquals("no empties", 0, potMobs(0, 0));
+
+        assertBitBoardEquals("empty above", 0x100, potMobs(0x100, 0x10000));
+        assertBitBoardEquals("no empty above", 0, potMobs(0x100, 0));
+        assertBitBoardEquals("empty above but disk on bottom edge", 0, potMobs(0x1, 0x100));
+
+        assertBitBoardEquals("empty below", 0x100, potMobs(0x100, 0x1));
+        assertBitBoardEquals("no empty below", 0, potMobs(0x100, 0));
+        assertBitBoardEquals("empty below but disk on top edge", 0, potMobs(1L << 56, 1L << 48));
+
+        assertBitBoardEquals("empty left", 0x40, potMobs(0x40, 0x80));
+        assertBitBoardEquals("empty left but disk on right edge", 0, potMobs(0x01, 0x02));
+
+        assertBitBoardEquals("empty right", 0x40, potMobs(0x40, 0x20));
+        assertBitBoardEquals("empty right but disk on left edge", 0, potMobs(0x80, 0x40));
+
+        assertBitBoardEquals("empty up left", 0x4000, potMobs(0x4000, 0x800000));
+        assertBitBoardEquals("empty up left but disk on right edge", 0, potMobs(0x0100, 0x020000));
+        assertBitBoardEquals("empty up left but disk on bottom edge", 0, potMobs(0x02, 0x0400));
+
+        assertBitBoardEquals("empty up right", 0x4000, potMobs(0x4000, 0x200000));
+        assertBitBoardEquals("empty up right but disk on left edge", 0, potMobs(0x8000, 0x400000));
+        assertBitBoardEquals("empty up right but disk on bottom edge", 0, potMobs(0x40, 0x2000));
+
+        assertBitBoardEquals("empty down left", 0x4000, potMobs(0x4000, 0x80));
+        assertBitBoardEquals("empty down left but disk on right edge", 0, potMobs(0x0100, 0x02));
+        assertBitBoardEquals("empty down left but disk on top edge", 0, potMobs(0x02L<<56, 0x04L<<48));
+
+        assertBitBoardEquals("empty down right", 0x4000, potMobs(0x4000, 0x20));
+        assertBitBoardEquals("empty down right but disk on left edge", 0, potMobs(0x8000, 0x40));
+        assertBitBoardEquals("empty down right but disk on top edge", 0, potMobs(0x40L<<56, 0x20L<<48));
+
+    }
 }
