@@ -15,18 +15,7 @@ public class Square {
         }
     }
 
-    // names for the squares
-    public static final Square A1 = squares[63];
-    public static final Square H1 = squares[56];
-
-    public static final Square H2 = squares[48];
-    public static final Square H3 = squares[40];
-
-    public static final Square B7 = squares[14];
     public static final Square H7 = squares[8];
-
-    public static final Square A8 = squares[7];
-    public static final Square H8 = squares[0];
 
     // bitboard parity regions
     private static final long BOTTOM_RIGHT = 0x0F0F0F0F;

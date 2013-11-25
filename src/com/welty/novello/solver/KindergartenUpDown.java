@@ -30,7 +30,7 @@ class KindergartenUpDown {
         return index(row, bitBoardToRow(mover, col), bitBoardToRow(enemy, col));
     }
 
-    private static long[] flipTable = createFlipTable();
+    private static final long[] flipTable = createFlipTable();
 
     private static long[] createFlipTable() {
         long[] flipTable = new long[8 * 256 * 256];

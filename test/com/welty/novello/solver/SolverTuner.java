@@ -7,6 +7,7 @@ import java.lang.reflect.Modifier;
 
 /**
  */
+@SuppressWarnings("UnusedDeclaration")
 public class SolverTuner {
     /**
      * Tune a single parameter.

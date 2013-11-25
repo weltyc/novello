@@ -10,7 +10,7 @@ import static java.lang.Long.bitCount;
  * Bitboard representation of an Othello board
  */
 public class BitBoard implements Comparable<BitBoard> {
-    static String header = "  A B C D E F G H  \n";
+    static final String header = "  A B C D E F G H  \n";
     public final long black;
     public final long white;
     public final boolean blackToMove;
@@ -140,13 +140,6 @@ public class BitBoard implements Comparable<BitBoard> {
         return blackToMove ? white : black;
     }
 
-
-    /**
-     * @return value of the game to the mover.
-     */
-    public int solve() {
-        return new Solver().solve(mover(), enemy());
-    }
 
     /**
      * @return Text of the contents of the board, without player-to-move.

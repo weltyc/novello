@@ -37,7 +37,7 @@ public final class MoveSorter {
      * lookup table to get sort weight from mobility.
      * This allows for nonlinear parameters.
      */
-    static int[] sortWeightFromMobility = new int[64];
+    static final int[] sortWeightFromMobility = new int[64];
 
     static {
         for (int i = 0; i < 64; i++) {

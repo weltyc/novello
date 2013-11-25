@@ -5,9 +5,9 @@ import com.orbanova.common.misc.Vec;
 /**
  */
 public class NodeCounts {
-    private long[] nNodes = new long[64];
-    private long[][] nNodesByDepthAndType = new long[64][3];
-    private long[][] nNodesByCutIndex = new long[64][64];
+    private final long[] nNodes = new long[64];
+    private final long[][] nNodesByDepthAndType = new long[64][3];
+    private final long[][] nNodesByCutIndex = new long[64][64];
 
     /**
      * @return number of nodes since application startup. Passes do not count as nodes.

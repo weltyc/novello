@@ -26,21 +26,6 @@ class ListOfEmpties {
     }
 
     /**
-     * This is slow... O(n).
-     *
-     * @return size of the linked list.
-     */
-    int size() {
-        int size = 0;
-        Node node= end.next;
-        while (node!=end) {
-            size++;
-            node = node.next;
-        }
-        return size;
-    }
-
-    /**
      * @return first node in the list
      */
     public Node first() {

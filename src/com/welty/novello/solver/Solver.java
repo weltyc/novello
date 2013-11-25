@@ -16,25 +16,25 @@ public class Solver {
      * At this depth and above, the search will check in the hash table,
      * but only if move sorting is enabled.
      */
-    static int MIN_HASH_DEPTH = 6;
+    static final int MIN_HASH_DEPTH = 6;
 
     /**
      * At this depth and above, the search will use NEGASCOUT,
      * but only when move sorting is enabled.
      */
-    static int MIN_NEGASCOUT_DEPTH = 10;
+    static final int MIN_NEGASCOUT_DEPTH = 10;
 
     /**
      * Only check for ETC at this depth or higher.
      * <p/>
      * if depth is Solver.MIN_HASH_DEPTH or below, the children will never be in hash.
      */
-    static int MIN_ETC_DEPTH = MIN_HASH_DEPTH + 1;
+    static final int MIN_ETC_DEPTH = MIN_HASH_DEPTH + 1;
 
     /**
      * At this depth and above, the search will do a full sort of the remaining moves
      */
-    static int MIN_SORT_DEPTH = 6;
+    static final int MIN_SORT_DEPTH = 6;
 
     /**
      * A MoveSorter is created for each search tree depth.
@@ -139,7 +139,7 @@ public class Solver {
         }
     }
 
-    private static int NO_MOVE = -65;
+    private static final int NO_MOVE = -65;
 
     /**
      * Solve the position with fail-soft alpha-beta.

@@ -11,9 +11,9 @@ public class MurmurTest extends TestCase {
     long nHashes = 0;
     final int[][] counts = new int[8][256];
     final Random r = new Random(1337);
-    long empty = r.nextLong() & r.nextLong();
-    long mover = ~empty & r.nextLong();
-    long enemy = ~(mover | empty);
+    final long empty = r.nextLong() & r.nextLong();
+    final long mover = ~empty & r.nextLong();
+    final long enemy = ~(mover | empty);
 
     private void insert(long mover, long enemy) {
         final long hash = Murmur.hash(mover, enemy);
