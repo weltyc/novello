@@ -511,3 +511,12 @@ Reran the previous tournament:
     -20.9  7A:1
     -43.9  6A:1
 
+Midgame Speed
+=============
+It's getting painfully slow even at 2 ply.
+
+Check node count of a SelfPlaySet, 7A:1 vs 7A:1
+    110,538,379 position evaluations performed.
+
+Try corners first, x-squares last:
+    95,340,441 position evaluations performed.

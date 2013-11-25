@@ -15,6 +15,13 @@ public class Eval {
 
     private static final boolean debug = false;
 
+    // todo WARNING - this will not work multithreaded.
+    private static int nEvals = 0;
+
+    public static int nEvals() {
+        return nEvals;
+    }
+
     /**
      */
     public Eval(EvalStrategy evalStrategy, String coeffSetName) {
@@ -66,6 +73,7 @@ public class Eval {
             System.out.println(BitBoard.ofMover(mover, enemy, false));
         }
         final int eval = evalStrategy.eval(mover, enemy, moverMoves, enemyMoves, coefficientSet);
+        nEvals++;
         if (debug) {
             System.out.println("Eval = " + eval);
             System.out.println();

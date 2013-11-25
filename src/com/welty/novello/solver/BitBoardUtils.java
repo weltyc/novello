@@ -23,7 +23,7 @@ public class BitBoardUtils {
 
     public static final long CORNERS = 0x8100000000000081L;
     static final long C_SQUARES = 0x4281000000008142L;
-    static final long X_SQUARES = 0x0042000000004200L;
+    public static final long X_SQUARES = 0x0042000000004200L;
 
     private static final long EDGES = FilesAH | Ranks18;
     private static final long CENTER_36 = ~EDGES;

@@ -26,6 +26,11 @@ public class EvalPlayer extends EndgamePlayer {
         }
     }
 
+    private static class BA {
+        int bestMove;
+        int alpha;
+    }
+
     /**
      * Find the best move in a position using tree search.
      * <p/>
@@ -38,10 +43,27 @@ public class EvalPlayer extends EndgamePlayer {
      * @return index of square of best move
      */
     private int searchMove(long mover, long enemy, long moverMoves, int depth, int flags) {
-        int bestMove = -1;
-        int alpha = NO_MOVE;
+        BA ba = new BA();
+        ba.bestMove = -1;
+        ba.alpha = NO_MOVE;
         final String indent = indent(depth);
 
+        final long corners = mover & BitBoardUtils.CORNERS;
+        final long xSquares = mover & BitBoardUtils.X_SQUARES;
+        final long rest = mover &~(BitBoardUtils.CORNERS | BitBoardUtils.X_SQUARES);
+
+        searchMoves(corners, enemy, moverMoves, depth, flags, ba, indent);
+        searchMoves(rest, enemy, moverMoves, depth, flags, ba, indent);
+        searchMoves(xSquares, enemy, moverMoves, depth, flags, ba, indent);
+
+        if (0 != (flags & FLAG_PRINT_SCORE)) {
+            System.out.println();
+            System.out.format("%s score = %+5d (%s)\n", this, ba.alpha, BitBoardUtils.sqToText(ba.bestMove));
+        }
+        return ba.bestMove;
+    }
+
+    private void searchMoves(long mover, long enemy, long moverMoves, int depth, int flags, BA ba, String indent) {
         while (moverMoves != 0) {
             final int sq = Long.numberOfTrailingZeros(moverMoves);
             final long placement = 1L << sq;
@@ -51,23 +73,17 @@ public class EvalPlayer extends EndgamePlayer {
             final long subEnemy = mover | placement | flips;
             final long subMover = enemy & ~flips;
             if (0 != (flags & FLAG_PRINT_SEARCH)) {
-                System.out.format("%s[%d] (%+5d,%+5d) scoring(%s):\n", indent, depth, NO_MOVE, -alpha, BitBoardUtils.sqToText(sq));
+                System.out.format("%s[%d] (%+5d,%+5d) scoring(%s):\n", indent, depth, NO_MOVE, -ba.alpha, BitBoardUtils.sqToText(sq));
             }
-            final int subScore = -searchScore(subMover, subEnemy, NO_MOVE, -alpha, depth - 1);
+            final int subScore = -searchScore(subMover, subEnemy, NO_MOVE, -ba.alpha, depth - 1);
             if (0 != (flags & FLAG_PRINT_SEARCH)) {
-                System.out.format("%s[%d] (%+5d,%+5d) score(%s)=%+5d\n", indent, depth, NO_MOVE, -alpha, BitBoardUtils.sqToText(sq), subScore);
+                System.out.format("%s[%d] (%+5d,%+5d) score(%s)=%+5d\n", indent, depth, NO_MOVE, -ba.alpha, BitBoardUtils.sqToText(sq), subScore);
             }
-            if (subScore > alpha) {
-                bestMove = sq;
-                alpha = subScore;
+            if (subScore > ba.alpha) {
+                ba.bestMove = sq;
+                ba.alpha = subScore;
             }
         }
-
-        if (0 != (flags & FLAG_PRINT_SCORE)) {
-            System.out.println();
-            System.out.format("%s score = %+5d (%s)\n", this, alpha, BitBoardUtils.sqToText(bestMove));
-        }
-        return bestMove;
     }
 
     /**

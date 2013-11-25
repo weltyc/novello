@@ -1,5 +1,6 @@
 package com.welty.novello.selfplay;
 
+import com.welty.novello.eval.Eval;
 import com.welty.novello.eval.PositionValue;
 import com.welty.novello.solver.BitBoard;
 import org.jetbrains.annotations.NotNull;
@@ -12,9 +13,10 @@ import java.util.List;
  */
 public class SelfPlaySet {
     public static void main(String[] args) {
-        final Player black = Players.player("6A:2");
-        final Player white = Players.player("7A:1");
-        new SelfPlaySet(black, white, 2, true).call();
+        final Player black = Players.player("7A:2");
+//        final Player white = Players.player("7A:2");
+        new SelfPlaySet(black, black, 2, true).call();
+        System.out.format("%,d position evaluations performed.\n" , Eval.nEvals());
     }
 
     private final @NotNull Player black;
