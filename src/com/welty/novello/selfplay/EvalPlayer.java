@@ -13,11 +13,11 @@ public class EvalPlayer extends EndgamePlayer {
     final Eval eval;
     private final int searchDepth;
 
-    EvalPlayer(Eval eval) {
+    public EvalPlayer(Eval eval) {
         this(eval, 1);
     }
 
-    EvalPlayer(Eval eval, int searchDepth) {
+    public EvalPlayer(Eval eval, int searchDepth) {
         this.eval = eval;
         this.searchDepth = searchDepth;
     }
@@ -154,7 +154,7 @@ public class EvalPlayer extends EndgamePlayer {
 
     private int score(long mover, long enemy) {
         final long moverMoves = BitBoardUtils.calcMoves(mover, enemy);
-        final long enemyMoves = BitBoardUtils.calcMoves(mover, enemy);
+        final long enemyMoves = BitBoardUtils.calcMoves(enemy, mover);
         final int moveScore;
         if (moverMoves != 0) {
             moveScore = eval.eval(mover, enemy, moverMoves, enemyMoves);

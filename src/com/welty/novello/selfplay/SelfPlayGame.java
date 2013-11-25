@@ -35,6 +35,8 @@ public class SelfPlayGame implements Callable<SelfPlayGame.Result> {
     @Override public Result call() {
         while (true) {
             if (printGame) {
+                System.out.println(board.boardString());
+                System.out.println();
                 System.out.println(board);
                 System.out.println(player(board.blackToMove) + " to move");
             }

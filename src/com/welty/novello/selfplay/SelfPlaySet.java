@@ -13,7 +13,7 @@ import java.util.List;
 public class SelfPlaySet {
     public static void main(String[] args) {
         final Player black = Players.player("6A:2");
-        final Player white = Players.player("7A:2");
+        final Player white = Players.player("7A:1");
         new SelfPlaySet(black, white, 2, true).call();
     }
 

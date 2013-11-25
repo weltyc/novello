@@ -151,7 +151,7 @@ public class BitBoard implements Comparable<BitBoard> {
     /**
      * @return Text of the contents of the board, without player-to-move.
      */
-    String boardString() {
+    public String boardString() {
         StringBuilder sb = new StringBuilder();
         long b = black;
         long w = white;

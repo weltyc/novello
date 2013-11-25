@@ -487,3 +487,15 @@ These seem to bounce around a lot, so not sure how much all this is helping.
     [12] ALL  0%, PV 100%, CUT  0%
 
     31,106,608 finds and 9,049,840 stores. 269,440 / 718,992 / 1,664 alpha/beta/pv cuts. 703,504 useless finds.
+
+Eval
+====
+
+Try using edge patterns for eval: this is eval 7A. Compare to older non-edge-pattern evals 6A and 5K.
+
+    Tournament results:
+    +46.2  7A:2
+    +16.5  6A:2
+    -13.0  7A:1
+    -15.2  5K:2
+    -34.5  6A:1
