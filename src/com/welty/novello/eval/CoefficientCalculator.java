@@ -35,11 +35,11 @@ public class CoefficientCalculator {
      * 1 disk is worth how many evaluation points?
      */
     public static final int DISK_VALUE = 100;
-    public static final String target = "7A";
+    public static final String target = "7B";
     public static final EvalStrategy STRATEGY =  EvalStrategies.strategy(target.substring(0, 1));
     public static final String COEFF_SET_NAME = target.substring(1);
     public static final double PENALTY = 100;
-    public static final Player PLAYOUT_PLAYER = Players.player("5J:2");
+    public static final Player PLAYOUT_PLAYER = Players.player("7A:2");
 
     /**
      * Generate coefficients for evaluation.
@@ -61,7 +61,7 @@ public class CoefficientCalculator {
         for (int nEmpty = 0; nEmpty < 64; nEmpty++) {
             System.out.println();
             System.out.println("--- " + nEmpty + " ---");
-            final Element[] elements = elementsFromPvs(pvs, nEmpty, STRATEGY);
+            final Element[] elements = elementsFromPvs(pvs, nEmpty);
             dumpElementDistribution(elements, STRATEGY.nCoefficientIndices());
             System.out.format("estimating coefficients using %,d positions\n", elements.length);
             final long t0 = System.currentTimeMillis();
@@ -255,17 +255,17 @@ public class CoefficientCalculator {
     /**
      * Select the pvs that will be used to generate coefficients at the given number of nEmpties and generate their Elements
      *
+     *
      * @param pvs      list of pvs at all empties
      * @param nEmpty   number of empties to generate coefficients for
-     * @param strategy EvaluationFunction that is producing Elements.
      * @return list of selected Elements
      */
-    private static Element[] elementsFromPvs(List<PositionValue> pvs, int nEmpty, EvalStrategy strategy) {
+    private static Element[] elementsFromPvs(List<PositionValue> pvs, int nEmpty) {
         final List<Element> res = new ArrayList<>();
         for (final PositionValue pv : pvs) {
             final int diff = nEmpty - pv.nEmpty();
             if (!Utils.isOdd(diff) && diff >= -6 && diff <= 6) {
-                final int[] indices = strategy.coefficientIndices(pv.mover, pv.enemy);
+                final int[] indices = CoefficientCalculator.STRATEGY.coefficientIndices(pv.mover, pv.enemy);
                 res.add(new Element(indices, pv.value));
             }
         }

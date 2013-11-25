@@ -4,26 +4,13 @@ import com.welty.novello.eval.Eval;
 import com.welty.novello.eval.EvalStrategies;
 import com.welty.novello.eval.EvalStrategy;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * Utility class containing Othello players
  */
 public class Players {
-    private static Map<String, Eval> namedEvals = new HashMap<>();
-    static {
-        namedEvals.put("Charlie", Charlie.charlieEval);
-    }
-
     public static Eval eval(String name) {
-        final Eval eval = namedEvals.get(name);
-        if (null!=eval) {
-            return eval;
-        } else {
-            EvalStrategy strategy = EvalStrategies.strategy(name.substring(0, 1));
-            return new Eval(strategy, name.substring(1));
-        }
+        EvalStrategy strategy = EvalStrategies.strategy(name.substring(0, 1));
+        return new Eval(strategy, name.substring(1));
     }
 
     public static Player player(String name) {

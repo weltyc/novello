@@ -81,7 +81,7 @@ public class Eval {
      * @param moverMoves legal moves for mover
      * @param enemyMoves legal moves for enemy
      */
-    public void explain(long mover, long enemy, long moverMoves, long enemyMoves) {
+    void explain(long mover, long enemy, long moverMoves, long enemyMoves) {
         evalStrategy.explain(mover, enemy, moverMoves, enemyMoves, coefficientSet);
     }
 

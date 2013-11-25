@@ -392,24 +392,6 @@ public class BitBoardUtils {
     }
 
     /**
-     * Generate a mask for nonzero values - can be quicker than using an if statement
-     *
-     * @param x long value to test
-     * @return -1 if x is nonzero, 0 if x is zero
-     */
-    static long nonZeroMask(long x) {
-        return (x | -x) >> 63;
-    }
-
-    /**
-     * @param bb set of bits
-     * @return all set bits that have no other set bit adjacent to them horizontally, vertically, or diagonally.
-     */
-    static long singletons(long bb) {
-        return ~adjacent(bb) & bb;
-    }
-
-    /**
      * Find all squares adjacent to the given squares (including diagonally).
      *
      * @param bb set of bits

@@ -102,6 +102,7 @@ public final class MoveSorter {
         return score;
     }
 
+    @SuppressWarnings("PointlessBitwiseExpression")
     private static int eval(long parity, int sq, long enemyMoves, long mover, long enemy) {
         final long empty = ~(mover | enemy);
         final int nMobs = bitCount(enemyMoves);

@@ -13,10 +13,6 @@ public class EvalPlayer extends EndgamePlayer {
     final Eval eval;
     private final int searchDepth;
 
-    public EvalPlayer(Eval eval) {
-        this(eval, 1);
-    }
-
     public EvalPlayer(Eval eval, int searchDepth) {
         this.eval = eval;
         this.searchDepth = searchDepth;

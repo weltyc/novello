@@ -215,7 +215,7 @@ public class EvalStrategy {
      *
      * @return position value, in centi-disks
      */
-    public int eval(long mover, long enemy, long moverMoves, long enemyMoves, CoefficientSet coefficientSet) {
+    int eval(long mover, long enemy, long moverMoves, long enemyMoves, CoefficientSet coefficientSet) {
         assert moverMoves != 0;
 
         final int[][] slice = coefficientSet.slice(BitBoardUtils.nEmpty(mover, enemy));
@@ -229,17 +229,13 @@ public class EvalStrategy {
             final int orid = term.orid(mover, enemy, moverMoves, enemyMoves);
 
             final int coeff = slice[iFeature][orid];
-            if (debug) {
-                final Feature feature = getFeature(iFeature);
-                System.out.println(feature + "[" + feature.oridDescription(orid) + "] = " + coeff);
-            }
             eval += coeff;
         }
         return eval;
     }
 
 
-    public void explain(long mover, long enemy, long moverMoves, long enemyMoves, CoefficientSet coefficientSet) {
+    void explain(long mover, long enemy, long moverMoves, long enemyMoves, CoefficientSet coefficientSet) {
         assert moverMoves != 0;
 
         final int[][] slice = coefficientSet.slice(BitBoardUtils.nEmpty(mover, enemy));

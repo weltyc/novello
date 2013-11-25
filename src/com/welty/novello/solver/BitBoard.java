@@ -267,6 +267,7 @@ public class BitBoard implements Comparable<BitBoard> {
         return Boolean.compare(blackToMove, o.blackToMove);
     }
 
+    @SuppressWarnings("RedundantIfStatement")
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
