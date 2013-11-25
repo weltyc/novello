@@ -315,11 +315,15 @@ public class BitBoard implements Comparable<BitBoard> {
         }
     }
 
+    /**
+     * Evaluate a position
+     *
+     * This function will check for passes and return the terminal value if the game is over.
+     *
+     * @param eval Eval to use
+     * @return value of position.
+     */
     public int eval(Eval eval) {
-        final long mover = mover();
-        final long enemy = enemy();
-        final long moverMoves = BitBoardUtils.calcMoves(mover, enemy);
-        final long enemyMoves = BitBoardUtils.calcMoves(enemy, mover);
-        return eval.eval(mover, enemy, moverMoves, enemyMoves);
+        return eval.eval(mover(), enemy());
     }
 }

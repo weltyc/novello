@@ -499,3 +499,15 @@ Try using edge patterns for eval: this is eval 7A. Compare to older non-edge-pat
     -13.0  7A:1
     -15.2  5K:2
     -34.5  6A:1
+
+
+Found a bug in evalPlayer (evaluated position using the mover's moves for both moverMoves and enemyMoves).
+All previous tournament results are thus suspect as are the values from playouts.
+
+Reran the previous tournament:
+    +40.0  7A:2
+    +20.6  6A:2
+     +4.2  5K:2
+    -20.9  7A:1
+    -43.9  6A:1
+

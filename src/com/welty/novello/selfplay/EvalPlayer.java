@@ -83,7 +83,7 @@ public class EvalPlayer extends EndgamePlayer {
      */
     private int searchScore(long mover, long enemy, int alpha, int beta, int depth) {
         if (depth == 0) {
-            return score(mover, enemy);
+            return eval.eval(mover, enemy);
         }
         final long moverMoves = BitBoardUtils.calcMoves(mover, enemy);
         if (moverMoves != 0) {
@@ -150,20 +150,6 @@ public class EvalPlayer extends EndgamePlayer {
         }
 
         return result;
-    }
-
-    private int score(long mover, long enemy) {
-        final long moverMoves = BitBoardUtils.calcMoves(mover, enemy);
-        final long enemyMoves = BitBoardUtils.calcMoves(enemy, mover);
-        final int moveScore;
-        if (moverMoves != 0) {
-            moveScore = eval.eval(mover, enemy, moverMoves, enemyMoves);
-        } else if (enemyMoves != 0) {
-            moveScore = -eval.eval(enemy, mover, enemyMoves, moverMoves);
-        } else {
-            moveScore = CoefficientCalculator.DISK_VALUE * (Long.bitCount(mover) - Long.bitCount(enemy));
-        }
-        return moveScore;
     }
 
     @Override public String toString() {
