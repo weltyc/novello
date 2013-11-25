@@ -18,14 +18,14 @@ public class EvalStrategies {
             new URDLTerm()
     );
 
-    public static final EvalStrategy eval4 = new EvalStrategy("eval4",
+    public static final EvalStrategy eval4 = new EvalStrategy("4",
             new CornerTerm2(000),
             new CornerTerm2(007),
             new CornerTerm2(070),
             new CornerTerm2(077)
     );
 
-    public static final EvalStrategy eval5 = new EvalStrategy("eval5",
+    public static final EvalStrategy eval5 = new EvalStrategy("5",
             new CornerTerm2(000),
             new CornerTerm2(007),
             new CornerTerm2(070),
@@ -36,7 +36,7 @@ public class EvalStrategies {
             Terms.enemyMobilities
     );
 
-    public static final EvalStrategy eval6 = new EvalStrategy("eval6",
+    public static final EvalStrategy eval6 = new EvalStrategy("6",
             new CornerTerm2(000),
             new CornerTerm2(007),
             new CornerTerm2(070),

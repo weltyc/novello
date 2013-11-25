@@ -4,10 +4,9 @@ package com.welty.novello.eval;
  */
 public class CoefficientViewer {
     public static void main(String[] args) {
-        final int nEmpty = 24;
+        final int nEmpty = 7;
 
         dumpSlice("6A", nEmpty);
-        dumpSlice("5K", nEmpty);
     }
 
     private static void dumpSlice(String eval, int nEmpty) {

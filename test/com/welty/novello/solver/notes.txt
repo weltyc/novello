@@ -385,10 +385,11 @@ New evaluator 6 uses pot mob as a pattern. The coefficients on it are very large
 will help our endgame play.
 
     Tournament results:
-    +43.5  eval6-A-2
-    +12.6  eval5-K-2
-    -12.0  eval4-G-2
-    -15.3  eval6-A-1
-    -28.8  eval5-K-1
+    +43.5  6A:2
+    +12.6  5K:2
+    -12.0  4G:2
+    -15.3  6A:1
+    -28.8  5K:1
 
 Obviously this is a keeper.
+

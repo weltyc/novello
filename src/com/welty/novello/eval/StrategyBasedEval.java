@@ -40,6 +40,6 @@ public class StrategyBasedEval implements Eval {
     }
 
     @Override public String toString() {
-        return evalStrategy+"-"+coefficientSet;
+        return evalStrategy+""+coefficientSet;
     }
 }

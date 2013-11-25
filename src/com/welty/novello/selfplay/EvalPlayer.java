@@ -166,7 +166,7 @@ public class EvalPlayer extends EndgamePlayer {
     }
 
     @Override public String toString() {
-        return eval.toString() + "-" + searchDepth;
+        return eval.toString() + ":" + searchDepth;
     }
 
     private String indent(int depth) {
