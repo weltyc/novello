@@ -1,8 +1,6 @@
 package com.welty.novello.selfplay;
 
-import com.welty.novello.eval.EvalStrategies;
 import com.welty.novello.eval.PositionValue;
-import com.welty.novello.eval.StrategyBasedEval;
 import com.welty.novello.solver.BitBoard;
 import org.jetbrains.annotations.NotNull;
 
@@ -15,7 +13,7 @@ import java.util.List;
 public class SelfPlaySet {
     public static void main(String[] args) {
         final Player black = Players.player("6A:2");
-        final Player white = Players.player("5K:2");
+        final Player white = Players.player("7A:2");
         new SelfPlaySet(black, white, 2, true).call();
     }
 

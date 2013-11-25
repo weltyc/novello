@@ -49,6 +49,24 @@ public class EvalStrategies {
             Terms.enemyPotMobs
     );
 
+    public static final EvalStrategy eval7 = new EvalStrategy("7",
+            new CornerTerm2(000),
+            new CornerTerm2(007),
+            new CornerTerm2(070),
+            new CornerTerm2(077),
+            Terms.moverDisks,
+            Terms.enemyDisks,
+            Terms.moverMobilities,
+            Terms.enemyMobilities,
+            Terms.moverPotMobs,
+            Terms.enemyPotMobs,
+            new RowTerm(0),
+            new RowTerm(7),
+            new ColTerm(0),
+            new ColTerm(7)
+
+    );
+
     public static EvalStrategy strategy(String name) {
         switch (name) {
             case "4":
@@ -57,6 +75,8 @@ public class EvalStrategies {
                 return eval5;
             case "6":
                 return eval6;
+            case "7":
+                return eval7;
             default:
                 throw new IllegalArgumentException("unknown strategy name : " + name);
         }

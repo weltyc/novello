@@ -3,9 +3,12 @@ package com.welty.novello.eval;
 import com.orbanova.common.misc.ArrayTestCase;
 import com.orbanova.common.misc.Vec;
 import com.orbanova.common.ramfs.RamFileSystem;
+import com.welty.novello.selfplay.Players;
+import com.welty.novello.solver.BitBoard;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Random;
 
 /**
  */
@@ -66,6 +69,43 @@ public class EvalStrategyTest extends ArrayTestCase {
         }
     }
 
+    public void testAllReflectionsHaveTheSameEval() {
+        final Random random = new Random(1337);
+        final Eval eval = Players.eval("7A");
+
+        // test with small # of disks on the board
+        long empty = random.nextLong() | random.nextLong();
+        long mover = random.nextLong() & ~empty;
+        testAllReflectionsHaveTheSameEval(eval, mover, ~(empty | mover));
+
+        // test with large # of disks on the board
+        empty = random.nextLong() & random.nextLong();
+        mover = random.nextLong() & ~empty;
+        testAllReflectionsHaveTheSameEval(eval, mover, ~(empty | mover));
+    }
+
+    private void testAllReflectionsHaveTheSameEval(Eval eval, long mover, long enemy) {
+        final BitBoard bitBoard = new BitBoard(mover, enemy, true);
+        final int expected = bitBoard.eval(eval);
+        for (int r = 1; r<8; r++) {
+            final BitBoard reflection = bitBoard.reflection(r);
+            assertEquals(expected, reflection.eval(eval));
+        }
+    }
+
+    public void testExplain() {
+        final String evalName = "7A";
+
+        // I really can't understand why it wanted to play H2
+        final BitBoard board = new BitBoard("-------- -------* --O*-**- --O***** --OOO**- -OOOOO-* ---*O--- -----O--", false);
+        System.out.println(board);
+
+        final Eval eval = Players.eval(evalName);
+        System.out.println("Explaining eval. eval() returns " + board.eval(eval) + ".\n\n");
+
+        eval.explain(board.mover(), board.enemy(), board.calcMoves(), board.enemyMoves());
+        CoefficientViewer.dumpSlice(evalName, board.nEmpty(), 0);
+    }
     public void testDecompress() {
         final EvalStrategy strategy = EvalStrategies.diagonal;
         final int nFeatures = strategy.nFeatures();

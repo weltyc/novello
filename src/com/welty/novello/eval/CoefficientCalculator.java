@@ -35,7 +35,7 @@ public class CoefficientCalculator {
      * 1 disk is worth how many evaluation points?
      */
     public static final int DISK_VALUE = 100;
-    public static final String target = "6A";
+    public static final String target = "7A";
     public static final EvalStrategy STRATEGY =  EvalStrategies.strategy(target.substring(0, 1));
     public static final String COEFF_SET_NAME = target.substring(1);
     public static final double PENALTY = 100;
@@ -62,6 +62,7 @@ public class CoefficientCalculator {
             System.out.println();
             System.out.println("--- " + nEmpty + " ---");
             final Element[] elements = elementsFromPvs(pvs, nEmpty, STRATEGY);
+            dumpElementDistribution(elements, STRATEGY.nCoefficientIndices());
             System.out.format("estimating coefficients using %,d positions\n", elements.length);
             final long t0 = System.currentTimeMillis();
             final double[] coefficients = estimateCoefficients(elements, STRATEGY.nCoefficientIndices(), PENALTY);
@@ -74,8 +75,43 @@ public class CoefficientCalculator {
         }
     }
 
+    private static void dumpElementDistribution(Element[] elements, int nIndices) {
+        final int[] counts = new int[nIndices];
+        for (Element element : elements) {
+            for (int index :element.indices) {
+                counts[index]++;
+            }
+        }
+        final int[] histogram = new int[32];
+        for (int count : counts) {
+            final int lg = 32-Integer.numberOfLeadingZeros(count);
+            histogram[lg]++;
+        }
+        System.out.println("== instance counts ==");
+        for (int i=0; i<histogram.length; i++) {
+            final int h = histogram[i];
+            if (h>0) {
+                System.out.format("%,8d coefficients occurred %s%n", h, rangeText(i));
+            }
+        }
+        System.out.println();
+    }
+
+    private static String rangeText(int i) {
+        if (i==0) {
+            return "0 times";
+        }
+        if (i==1) {
+            return "1 time";
+        }
+        int min = 1<<(i-1);
+        int max = (1<<i)-1;
+        return min + "-" + max + " times";
+    }
+
     private static List<PositionValue> loadOrCreatePvs() throws IOException, ClassNotFoundException {
-        final Path pvFile = Paths.get("c:/temp/novello-" + randomFraction + "_" + PLAYOUT_PLAYER + ".pvs");
+        final String  playerComponent = PLAYOUT_PLAYER.toString().replace(':','-');
+        final Path pvFile = Paths.get("c:/temp/novello/" + playerComponent + ".pvs");
         if (!Files.exists(pvFile)) {
             createPvs(pvFile, PLAYOUT_PLAYER);
         }

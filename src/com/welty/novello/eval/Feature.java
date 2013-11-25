@@ -86,22 +86,28 @@ class Features {
      *
      * @param feature      feature used to interpret the coefficients
      * @param coefficients coefficients to print
+     * @param minValue     minimum absolute value to print a coefficient
      */
-    static void dumpCoefficients(Feature feature, int[] coefficients) {
+    static void dumpCoefficients(Feature feature, int[] coefficients, int minValue) {
         Require.eq(coefficients.length, "# coefficients", feature.nInstances());
+        boolean[] printedOrids = new boolean[feature.nOrids()];
 
         System.out.println();
-        System.out.println(feature+":");
-        int nNonZero = 0;
+        System.out.println(feature + ":");
+        int nLarge = 0;
         for (int instance = 0; instance < coefficients.length; instance++) {
             final int coefficient = coefficients[instance];
-            if (coefficient != 0) {
-                final String desc = feature.oridDescription(feature.orid(instance));
-                System.out.format("%+5d  %s%n", coefficient, desc);
-                nNonZero++;
+            if (Math.abs(coefficient) >= minValue) {
+                final int orid = feature.orid(instance);
+                if (!printedOrids[orid]) {
+                    final String desc = feature.oridDescription(orid);
+                    System.out.format("%+5d  %s (i=%d, o=%d)%n", coefficient, desc, instance, orid);
+                    printedOrids[orid]=true;
+                }
+                nLarge++;
             }
         }
-        System.out.println("(" + nNonZero + " non-zero coefficients out of " + feature.nInstances() + " total coefficients)");
+        System.out.println("(" + nLarge + " coefficients valued at least " + minValue + " out of " + feature.nInstances() + " total coefficients)");
     }
 }
 
@@ -183,7 +189,7 @@ class GridFeature extends SoloFeature {
 
     private static String[] grid(String name) {
         final String[] result = new String[65];
-        for (int i=0; i<=64; i++) {
+        for (int i = 0; i <= 64; i++) {
             result[i] = String.format("%2d %s", i, name);
         }
         return result;

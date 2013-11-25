@@ -1,6 +1,7 @@
 package com.welty.novello.selfplay;
 
 import com.welty.novello.eval.CoefficientCalculator;
+import com.welty.novello.eval.Eval;
 import com.welty.novello.solver.BitBoard;
 import com.welty.novello.solver.BitBoardUtils;
 import com.welty.novello.solver.Square;

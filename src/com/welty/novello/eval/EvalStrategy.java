@@ -173,6 +173,7 @@ public class EvalStrategy {
         final Path dir = coeffDir(coeffSetName);
         return Files.exists(dir) && Files.isDirectory(dir);
     }
+
     /**
      * Write a slice to disk.
      * <p/>
@@ -264,6 +265,28 @@ public class EvalStrategy {
         return eval;
     }
 
+
+    public void explain(long mover, long enemy, long moverMoves, long enemyMoves, CoefficientSet coefficientSet) {
+        assert moverMoves != 0;
+
+        final int[][] slice = coefficientSet.slice(BitBoardUtils.nEmpty(mover, enemy));
+
+        int eval = 0;
+
+        for (int iTerm = 0; iTerm < terms.length; iTerm++) {
+            final Term term = terms[iTerm];
+            final int iFeature = iFeatures[iTerm];
+
+            final int orid = term.orid(mover, enemy, moverMoves, enemyMoves);
+
+            final int coeff = slice[iFeature][orid];
+            final Feature feature = getFeature(iFeature);
+            System.out.println(feature + "[" + feature.oridDescription(orid) + "] = " + coeff);
+            eval += coeff;
+        }
+        System.out.println("total eval = " + eval);
+    }
+
     /**
      * Calculate the total number of possible orids for all features.
      *
@@ -282,13 +305,14 @@ public class EvalStrategy {
      * <p/>
      * This version takes coefficients as they are stored in the CoeffSet.
      *
-     * @param slice coefficients to print
+     * @param slice    coefficients to print
+     * @param minValue
      */
-    public void dumpCoefficients(int[][] slice) {
+    public void dumpCoefficients(int[][] slice, int minValue) {
         Require.eq(slice.length, "slice length", nFeatures());
         for (int iFeature = 0; iFeature < nFeatures(); iFeature++) {
             final Feature feature = getFeature(iFeature);
-            Features.dumpCoefficients(feature, slice[iFeature]);
+            Features.dumpCoefficients(feature, slice[iFeature], minValue);
         }
     }
 

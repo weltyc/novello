@@ -73,6 +73,7 @@ class CornerTerm2 extends Term {
     public CornerTerm2(int sq) {
         super(Features.corner2Feature);
         this.sq = sq;
+        //noinspection OctalInteger
         this.xSq = sq^011;
     }
 
@@ -115,16 +116,6 @@ class CornerTerm2 extends Term {
 
     private int bit(long mover) {
         return getBitAsInt(mover, sq);
-    }
-}
-
-class MoverMobilityTerm extends Term {
-    protected MoverMobilityTerm() {
-        super(Features.moverMobilities);
-    }
-
-    @Override public int instance(long mover, long enemy, long moverMoves, long enemyMoves) {
-        return Long.bitCount(moverMoves);
     }
 }
 

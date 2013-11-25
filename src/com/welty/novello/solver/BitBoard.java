@@ -1,6 +1,7 @@
 package com.welty.novello.solver;
 
 import com.orbanova.common.misc.Require;
+import com.welty.novello.eval.Eval;
 import org.jetbrains.annotations.Nullable;
 
 import static java.lang.Long.bitCount;
@@ -239,7 +240,7 @@ public class BitBoard implements Comparable<BitBoard> {
 
     /**
      * Calculate the minimal reflection of this.
-     *
+     * <p/>
      * Of the 8 reflections of this BitBoard, the minimal one is the one
      * that compares smallest using compareTo().
      *
@@ -257,10 +258,10 @@ public class BitBoard implements Comparable<BitBoard> {
     }
 
     @Override public int compareTo(BitBoard o) {
-        if (black!=o.black) {
+        if (black != o.black) {
             return Long.compare(black, o.black);
         }
-        if (white!=o.white) {
+        if (white != o.white) {
             return Long.compare(white, o.white);
         }
         return Boolean.compare(blackToMove, o.blackToMove);
@@ -309,9 +310,16 @@ public class BitBoard implements Comparable<BitBoard> {
     public static BitBoard ofMover(long mover, long enemy, boolean blackToMove) {
         if (blackToMove) {
             return new BitBoard(mover, enemy, blackToMove);
-        }
-        else {
+        } else {
             return new BitBoard(enemy, mover, blackToMove);
         }
+    }
+
+    public int eval(Eval eval) {
+        final long mover = mover();
+        final long enemy = enemy();
+        final long moverMoves = BitBoardUtils.calcMoves(mover, enemy);
+        final long enemyMoves = BitBoardUtils.calcMoves(enemy, mover);
+        return eval.eval(mover, enemy, moverMoves, enemyMoves);
     }
 }

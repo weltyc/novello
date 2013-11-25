@@ -1,44 +1,28 @@
 package com.welty.novello.selfplay;
 
+import com.welty.novello.eval.Eval;
 import com.welty.novello.eval.EvalStrategies;
 import com.welty.novello.eval.EvalStrategy;
-import com.welty.novello.eval.StrategyBasedEval;
-import com.welty.novello.solver.BitBoardUtils;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import static java.lang.Long.bitCount;
 
 /**
  * Utility class containing Othello players
  */
 public class Players {
-    private static final Eval bobbyEval = new Eval() {
-        public int eval(long mover, long enemy, long moverMoves, long enemyMoves) {
-            final int corners = bitCount((mover & BitBoardUtils.CORNERS)) - bitCount(enemy & BitBoardUtils.CORNERS);
-            final int cornerCan = bitCount(moverMoves & BitBoardUtils.CORNERS) - bitCount(enemyMoves & BitBoardUtils.CORNERS);
-            return 2 * corners + cornerCan;
-        }
-
-        @Override public String toString() {
-            return "Bobby";
-        }
-    };
-
     private static Map<String, Eval> namedEvals = new HashMap<>();
     static {
-        namedEvals.put("Bobby", bobbyEval);
         namedEvals.put("Charlie", Charlie.charlieEval);
     }
 
-    static Eval eval(String name) {
+    public static Eval eval(String name) {
         final Eval eval = namedEvals.get(name);
         if (null!=eval) {
             return eval;
         } else {
             EvalStrategy strategy = EvalStrategies.strategy(name.substring(0, 1));
-            return new StrategyBasedEval(strategy, name.substring(1));
+            return new Eval(strategy, name.substring(1));
         }
     }
 

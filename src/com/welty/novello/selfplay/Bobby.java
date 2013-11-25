@@ -1,8 +1,8 @@
 package com.welty.novello.selfplay;
 
 import com.welty.novello.eval.CoefficientSet;
+import com.welty.novello.eval.Eval;
 import com.welty.novello.eval.EvalStrategies;
-import com.welty.novello.eval.StrategyBasedEval;
 
 /**
  */
@@ -12,7 +12,7 @@ class Charlie extends EvalPlayer {
         super(charlieEval);
     }
 
-    static final Eval charlieEval = new StrategyBasedEval(EvalStrategies.eval4, createCoeffSet());
+    static final Eval charlieEval = new Eval(EvalStrategies.eval4, createCoeffSet());
 
     private static CoefficientSet createCoeffSet() {
         // coefficients  from eval4-D at 30 empties
