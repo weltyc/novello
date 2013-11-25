@@ -393,3 +393,97 @@ will help our endgame play.
 
 Obviously this is a keeper.
 
+Move Sorting
+============
+
+Trying potential mobility in Move Sorting.
+
+### Without potential mobility ###
+
+    914 [ 913- 917] ms. 8.40 Mn; 9.18 Mn/s; 109 ns/n
+
+    Node fractions by depth:
+     1: 33.7%
+     2: 25.7%
+     3: 16.9%
+     4: 10.1%
+     5:  6.0%
+     6:  3.7%       First cut: 89%. Wasted: 0.15
+     7:  2.1%       First cut: 85%. Wasted: 0.22
+     8:  1.1%       First cut: 83%. Wasted: 0.26
+     9:  0.51%      First cut: 80%. Wasted: 0.31
+    10:  0.18%      First cut: 78%. Wasted: 0.36
+    11:  0.063%     First cut: 78%. Wasted: 0.33
+    12:  0.0095%
+
+### With potential mobility ###
+
+    887 [ 876- 894] ms. 7.99 Mn; 9.02 Mn/s; 111 ns/n
+
+    Node fractions by depth:
+     1: 33.6%
+     2: 25.7%
+     3: 16.8%
+     4: 10.1%
+     5:  5.9%
+     6:  3.7%       First cut: 90%. Wasted: 0.14
+     7:  2.1%       First cut: 86%. Wasted: 0.20
+     8:  1.1%       First cut: 85%. Wasted: 0.23
+     9:  0.53%      First cut: 83%. Wasted: 0.28
+    10:  0.19%      First cut: 80%. Wasted: 0.32
+    11:  0.067%     First cut: 81%. Wasted: 0.28
+    12:  0.010%
+
+    Predicted node type distribution:
+    [ 5] ALL 37%, PV  0%, CUT 63%
+    [ 6] ALL 36%, PV  0%, CUT 64%
+    [ 7] ALL 31%, PV  0%, CUT 68%
+    [ 8] ALL 32%, PV  1%, CUT 67%
+    [ 9] ALL 25%, PV  2%, CUT 73%
+    [10] ALL 31%, PV  5%, CUT 64%
+    [11] ALL 11%, PV 15%, CUT 74%
+    [12] ALL  0%, PV 100%, CUT  0%
+
+After slightly tuning move ordering weights using SolverTuner, node count goes down to 7.97Mn.
+
+With all move ordering weights non-final
+    896 [ 893- 899] ms. 7.97 Mn; 8.88 Mn/s; 113 ns/n
+    893 [ 891- 895] ms. 7.97 Mn; 8.94 Mn/s; 112 ns/n
+
+With all move-ordering weights final:
+    895 [ 893- 899] ms. 7.97 Mn; 8.90 Mn/s; 112 ns/n
+
+final and subtracting 5 makes some weights 0, so the compiler can eliminate the shifts:
+    887 [ 881- 889] ms. 8.04 Mn; 9.08 Mn/s; 110 ns/n
+
+These seem to bounce around a lot, so not sure how much all this is helping.
+
+### Results from version checked in ###
+
+    Typical  873 [ 862- 878] ms. 7.97 Mn; 9.13 Mn/s; 110 ns/n
+
+    Node fractions by depth:
+     1: 33.6%
+     2: 25.7%
+     3: 16.9%
+     4: 10.1%
+     5:  6.0%
+     6:  3.7%       First cut: 89%. Wasted: 0.14
+     7:  2.1%       First cut: 85%. Wasted: 0.21
+     8:  1.1%       First cut: 84%. Wasted: 0.24
+     9:  0.53%      First cut: 81%. Wasted: 0.30
+    10:  0.19%      First cut: 78%. Wasted: 0.36
+    11:  0.067%     First cut: 78%. Wasted: 0.32
+    12:  0.010%
+
+    Predicted node type distribution:
+    [ 5] ALL 37%, PV  0%, CUT 63%
+    [ 6] ALL 36%, PV  0%, CUT 63%
+    [ 7] ALL 31%, PV  0%, CUT 69%
+    [ 8] ALL 33%, PV  1%, CUT 66%
+    [ 9] ALL 24%, PV  2%, CUT 74%
+    [10] ALL 32%, PV  5%, CUT 63%
+    [11] ALL 10%, PV 15%, CUT 75%
+    [12] ALL  0%, PV 100%, CUT  0%
+
+    31,106,608 finds and 9,049,840 stores. 269,440 / 718,992 / 1,664 alpha/beta/pv cuts. 703,504 useless finds.
