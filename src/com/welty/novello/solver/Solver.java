@@ -1,5 +1,7 @@
 package com.welty.novello.solver;
 
+import com.welty.novello.selfplay.MoveScore;
+
 import static java.lang.Long.bitCount;
 
 /**
@@ -106,7 +108,7 @@ public class Solver {
      * @param enemy  enemy disks
      * @return a {@link Result} containing the best move
      */
-    public Result solveWithMove(long mover, long enemy) {
+    public MoveScore solveWithMove(long mover, long enemy) {
         if (BitBoardUtils.calcMoves(mover, enemy)==0) {
             throw new IllegalArgumentException("mover must have a legal move");
         }
@@ -118,7 +120,7 @@ public class Solver {
         moverResultWithSorting(result, mover, enemy, -64, 64, nEmpties, parity, NODE_PV, -1);
         final MoveSorter moveSorter = moveSorters[nEmpties];
         final int sq = moveSorter.moves[result.iBestMove].sq;
-        return new Result(result.score, sq);
+        return new MoveScore(sq, result.score);
     }
 
     private static ListOfEmpties createEmptiesList(long mover, long enemy) {

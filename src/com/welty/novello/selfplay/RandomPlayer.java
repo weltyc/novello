@@ -10,11 +10,11 @@ import java.util.Random;
 public class RandomPlayer implements Player {
     private final Random random = new Random(1337);
 
-    @Override public int calcMove(@NotNull BitBoard board, long moverMoves, int flags) {
+    @Override public MoveScore calcMove(@NotNull BitBoard board, long moverMoves, int flags) {
         int n = random.nextInt(Long.bitCount(moverMoves));
         while (n-- > 0) {
             moverMoves &= moverMoves - 1;
         }
-        return Long.numberOfTrailingZeros(moverMoves);
+        return new MoveScore(Long.numberOfTrailingZeros(moverMoves), 0);
     }
 }

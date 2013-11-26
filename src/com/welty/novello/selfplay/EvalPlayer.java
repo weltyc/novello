@@ -18,7 +18,7 @@ public class EvalPlayer extends EndgamePlayer {
         this.searchDepth = searchDepth;
     }
 
-    @Override public int calcMove(@NotNull BitBoard board, long moverMoves, int flags) {
+    @Override public MoveScore calcMove(@NotNull BitBoard board, long moverMoves, int flags) {
         if (board.nEmpty() > 8) {
             return searchMove(board.mover(), board.enemy(), moverMoves, searchDepth, flags);
         } else {
@@ -42,7 +42,7 @@ public class EvalPlayer extends EndgamePlayer {
      * @param depth      remaining search depth
      * @return index of square of best move
      */
-    private int searchMove(long mover, long enemy, long moverMoves, int depth, int flags) {
+    private MoveScore searchMove(long mover, long enemy, long moverMoves, int depth, int flags) {
         BA ba = new BA();
         ba.bestMove = -1;
         ba.alpha = NO_MOVE;
@@ -60,7 +60,7 @@ public class EvalPlayer extends EndgamePlayer {
             System.out.println();
             System.out.format("%s score = %+5d (%s)\n", this, ba.alpha, BitBoardUtils.sqToText(ba.bestMove));
         }
-        return ba.bestMove;
+        return new MoveScore(ba.bestMove, ba.alpha);
     }
 
     private void searchMoves(long mover, long enemy, long moverMoves, int depth, int flags, BA ba, String indent) {
@@ -114,9 +114,9 @@ public class EvalPlayer extends EndgamePlayer {
      * This is the score used when no move has yet been evaluated. It needs to be lower than
      * any valid score.
      * <p/>
-     * It is sometimes used as alpha in a search. When switching sides, the search uses -alpha as the new beta.
+     * It is sometimes used as score in a search. When switching sides, the search uses -score as the new beta.
      * This means NO_MOVE can't be Integer.MIN_VALUE, because -Integer.MIN_VALUE = Integer.MIN_VALUE and we would
-     * end up with new beta < new alpha.
+     * end up with new beta < new score.
      */
     private static final int NO_MOVE = -Integer.MAX_VALUE;
 
@@ -129,7 +129,7 @@ public class EvalPlayer extends EndgamePlayer {
      * @param mover      mover disks
      * @param enemy      enemy disks
      * @param moverMoves mover legal moves
-     * @param alpha      search alpha
+     * @param alpha      search score
      * @param beta       search beta
      * @param depth      remaining search depth
      * @return score
@@ -138,7 +138,7 @@ public class EvalPlayer extends EndgamePlayer {
         int result = NO_MOVE;
 
 //        final String indent = indent(depth);
-//        System.out.format("%s[%d] (%+5d,%+5d) -->\n", indent, depth, alpha, beta);
+//        System.out.format("%s[%d] (%+5d,%+5d) -->\n", indent, depth, score, beta);
 
         while (moverMoves != 0) {
             final int sq = Long.numberOfTrailingZeros(moverMoves);
@@ -149,7 +149,7 @@ public class EvalPlayer extends EndgamePlayer {
             final long subEnemy = mover | placement | flips;
             final long subMover = enemy & ~flips;
             final int subScore = -searchScore(subMover, subEnemy, -beta, -alpha, depth - 1);
-//            System.out.format("%s[%d] (%+5d,%+5d) score(%s)=%+5d\n", indent, depth, -beta, -alpha, BitBoardUtils.sqToText(sq), subScore);
+//            System.out.format("%s[%d] (%+5d,%+5d) score(%s)=%+5d\n", indent, depth, -beta, -score, BitBoardUtils.sqToText(sq), subScore);
             if (subScore >= beta) {
                 return subScore;
             }

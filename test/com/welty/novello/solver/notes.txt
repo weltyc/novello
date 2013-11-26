@@ -520,3 +520,8 @@ Check node count of a SelfPlaySet, 7A:1 vs 7A:1
 
 Try corners first, x-squares last:
     95,340,441 position evaluations performed.
+
+Coefficient calculation
+=======================
+
+Reran coefficients for 6B and 7B. [Coefficient index frequency distribution][frequency.txt]

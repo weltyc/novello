@@ -71,7 +71,7 @@ public class BitBoard implements Comparable<BitBoard> {
                 case '-':
                     break;
                 default:
-                    throw new IllegalArgumentException("Unexpected board character '" + c + "'");
+                    throw new IllegalArgumentException("Invalid board character '" + c + "'");
             }
         }
 
@@ -79,6 +79,11 @@ public class BitBoard implements Comparable<BitBoard> {
         this.black = blackDisks;
         this.white = whiteDisks;
         this.blackToMove = blackToMove;
+    }
+
+    public BitBoard(String positionString) {
+        this(positionString.replace(" ", "").substring(0, 64), positionString.replace(" ", "").substring(64).equals("*"));
+        Require.eq(positionString.replace(" ", "").length(), "position string length", 65);
     }
 
     private void validate() {
@@ -148,16 +153,28 @@ public class BitBoard implements Comparable<BitBoard> {
         StringBuilder sb = new StringBuilder();
         long b = black;
         long w = white;
-        while (sb.length() < 64) {
+        int nWritten = 0;
+        while (nWritten < 64) {
             if (b < 0) {
                 sb.append('*');
             } else {
                 sb.append(w < 0 ? 'O' : '-');
             }
+            nWritten++;
+            if ((nWritten&7)==0 && nWritten<64) {
+                sb.append(' ');
+            }
             b <<= 1;
             w <<= 1;
         }
         return sb.toString();
+    }
+
+    /**
+     * @return Text of the contents of the board, with player-to-move
+     */
+    public String positionString() {
+         return boardString() + " " + (blackToMove? '*' : 'O');
     }
 
     @Override public String toString() {

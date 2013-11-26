@@ -1,5 +1,7 @@
 package com.welty.novello.solver;
 
+import com.orbanova.common.misc.Require;
+
 /**
  */
 public class BitBoardUtils {
@@ -28,7 +30,6 @@ public class BitBoardUtils {
     private static final long EDGES = FilesAH | Ranks18;
     private static final long CENTER_36 = ~EDGES;
     public static final long CENTER_4 = 0x0000001818000000L;
-
 
 
     /**
@@ -364,7 +365,7 @@ public class BitBoardUtils {
 
     /**
      * Convert square index to text.
-     *
+     * <p/>
      * This uses Novello conventions; the row and col increase as the text chars decrease.
      *
      * @param sq index of square. A1 = 63, H1 = 56.
@@ -378,7 +379,7 @@ public class BitBoardUtils {
 
     /**
      * Convert row and col indices to text
-     *
+     * <p/>
      * This uses Novello conventions; the row and col increase as the text chars decrease.
      *
      * @param col index of column. "H"=0, "A"=7.
@@ -399,21 +400,41 @@ public class BitBoardUtils {
      * @return number of empty disks
      */
     public static int nEmpty(long mover, long enemy) {
-        return Long.bitCount(~(mover|enemy));
+        return Long.bitCount(~(mover | enemy));
     }
 
     /**
      * Calculate potential mobilities.
-     *
+     * <p/>
      * A potential mobility is a disk on the border of the playing field: there's at least one direction where
      * it's adjacent to an enemy square and not on the edge of the board in that direction.
      *
      * @return location of potMobs.
      */
     public static long potMobs(long player, long empty) {
-        final long upDown =  ((empty>>>8)|(empty<<8))&(player&~Ranks18);
-        final long leftRight = ((empty>>>1 | empty<<1))&(player&~FilesAH);
-        final long diagonal = ((empty>>7)|(empty>>9)|(empty<<7)|(empty<<9))&(player&CENTER_36);
+        final long upDown = ((empty >>> 8) | (empty << 8)) & (player & ~Ranks18);
+        final long leftRight = ((empty >>> 1 | empty << 1)) & (player & ~FilesAH);
+        final long diagonal = ((empty >> 7) | (empty >> 9) | (empty << 7) | (empty << 9)) & (player & CENTER_36);
         return upDown | leftRight | diagonal;
+    }
+
+    /**
+     * Convert test, for example "D5", to a square index
+     *
+     * @param squareText text of the square
+     */
+    public static int textToSq(String squareText) {
+        Require.eq(squareText.length(), "# of chars in squareText", 2);
+        final int col = getCol("col", squareText.charAt(0), 'H');
+        final int row = getCol("row", squareText.charAt(1), '8');
+        return square(row, col);
+    }
+
+    private static int getCol(String name, char input, char limit) {
+        final int value = limit - input;
+        if (value != (value & 7)) {
+            throw new IllegalArgumentException("Illegal " + name + ": '" + input + "'");
+        }
+        return value;
     }
 }

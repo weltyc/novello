@@ -1,0 +1,1917 @@
+--- 0 ---
+== instance counts ==
+     620 coefficients occurred 0 times
+      49 coefficients occurred 1 time
+      97 coefficients occurred 2-3 times
+     143 coefficients occurred 4-7 times
+     258 coefficients occurred 8-15 times
+     407 coefficients occurred 16-31 times
+     472 coefficients occurred 32-63 times
+     476 coefficients occurred 64-127 times
+     365 coefficients occurred 128-255 times
+     273 coefficients occurred 256-511 times
+     165 coefficients occurred 512-1023 times
+      94 coefficients occurred 1024-2047 times
+      78 coefficients occurred 2048-4095 times
+      52 coefficients occurred 4096-8191 times
+      38 coefficients occurred 8192-16383 times
+      34 coefficients occurred 16384-32767 times
+      53 coefficients occurred 32768-65535 times
+      16 coefficients occurred 65536-131071 times
+      15 coefficients occurred 131072-262143 times
+      11 coefficients occurred 262144-524287 times
+       1 coefficients occurred 524288-1048575 times
+       2 coefficients occurred 1048576-2097151 times
+
+estimating coefficients using 1,225,492 positions
+15,040 ms elapsed
+sum of coefficients squared = 2.61e+04
+3060 non-zero coefficients written
+
+--- 1 ---
+== instance counts ==
+     589 coefficients occurred 0 times
+      30 coefficients occurred 1 time
+      72 coefficients occurred 2-3 times
+     128 coefficients occurred 4-7 times
+     223 coefficients occurred 8-15 times
+     368 coefficients occurred 16-31 times
+     432 coefficients occurred 32-63 times
+     450 coefficients occurred 64-127 times
+     431 coefficients occurred 128-255 times
+     295 coefficients occurred 256-511 times
+     226 coefficients occurred 512-1023 times
+     124 coefficients occurred 1024-2047 times
+      89 coefficients occurred 2048-4095 times
+      65 coefficients occurred 4096-8191 times
+      48 coefficients occurred 8192-16383 times
+      32 coefficients occurred 16384-32767 times
+      39 coefficients occurred 32768-65535 times
+      40 coefficients occurred 65536-131071 times
+      19 coefficients occurred 131072-262143 times
+      14 coefficients occurred 262144-524287 times
+       3 coefficients occurred 524288-1048575 times
+       2 coefficients occurred 2097152-4194303 times
+
+estimating coefficients using 1,670,963 positions
+30,297 ms elapsed
+sum of coefficients squared = 2.96e+04
+3101 non-zero coefficients written
+
+--- 2 ---
+== instance counts ==
+     585 coefficients occurred 0 times
+      36 coefficients occurred 1 time
+      66 coefficients occurred 2-3 times
+     114 coefficients occurred 4-7 times
+     182 coefficients occurred 8-15 times
+     309 coefficients occurred 16-31 times
+     413 coefficients occurred 32-63 times
+     464 coefficients occurred 64-127 times
+     419 coefficients occurred 128-255 times
+     355 coefficients occurred 256-511 times
+     266 coefficients occurred 512-1023 times
+     139 coefficients occurred 1024-2047 times
+     103 coefficients occurred 2048-4095 times
+      67 coefficients occurred 4096-8191 times
+      46 coefficients occurred 8192-16383 times
+      33 coefficients occurred 16384-32767 times
+      41 coefficients occurred 32768-65535 times
+      41 coefficients occurred 65536-131071 times
+      21 coefficients occurred 131072-262143 times
+      13 coefficients occurred 262144-524287 times
+       4 coefficients occurred 524288-1048575 times
+       1 coefficients occurred 1048576-2097151 times
+       1 coefficients occurred 2097152-4194303 times
+
+estimating coefficients using 1,738,730 positions
+25,613 ms elapsed
+sum of coefficients squared = 2.67e+04
+3096 non-zero coefficients written
+
+--- 3 ---
+== instance counts ==
+     571 coefficients occurred 0 times
+      20 coefficients occurred 1 time
+      65 coefficients occurred 2-3 times
+      94 coefficients occurred 4-7 times
+     188 coefficients occurred 8-15 times
+     289 coefficients occurred 16-31 times
+     370 coefficients occurred 32-63 times
+     451 coefficients occurred 64-127 times
+     390 coefficients occurred 128-255 times
+     376 coefficients occurred 256-511 times
+     290 coefficients occurred 512-1023 times
+     187 coefficients occurred 1024-2047 times
+     119 coefficients occurred 2048-4095 times
+      80 coefficients occurred 4096-8191 times
+      55 coefficients occurred 8192-16383 times
+      39 coefficients occurred 16384-32767 times
+      37 coefficients occurred 32768-65535 times
+      49 coefficients occurred 65536-131071 times
+      23 coefficients occurred 131072-262143 times
+      16 coefficients occurred 262144-524287 times
+       6 coefficients occurred 524288-1048575 times
+       2 coefficients occurred 1048576-2097151 times
+       2 coefficients occurred 2097152-4194303 times
+
+estimating coefficients using 2,243,257 positions
+45,125 ms elapsed
+sum of coefficients squared = 3.58e+04
+3127 non-zero coefficients written
+
+--- 4 ---
+== instance counts ==
+     566 coefficients occurred 0 times
+      35 coefficients occurred 1 time
+      61 coefficients occurred 2-3 times
+      83 coefficients occurred 4-7 times
+     172 coefficients occurred 8-15 times
+     254 coefficients occurred 16-31 times
+     379 coefficients occurred 32-63 times
+     430 coefficients occurred 64-127 times
+     421 coefficients occurred 128-255 times
+     360 coefficients occurred 256-511 times
+     290 coefficients occurred 512-1023 times
+     216 coefficients occurred 1024-2047 times
+     128 coefficients occurred 2048-4095 times
+      95 coefficients occurred 4096-8191 times
+      44 coefficients occurred 8192-16383 times
+      50 coefficients occurred 16384-32767 times
+      35 coefficients occurred 32768-65535 times
+      38 coefficients occurred 65536-131071 times
+      36 coefficients occurred 131072-262143 times
+      19 coefficients occurred 262144-524287 times
+       3 coefficients occurred 524288-1048575 times
+       2 coefficients occurred 1048576-2097151 times
+       2 coefficients occurred 2097152-4194303 times
+
+estimating coefficients using 2,328,853 positions
+43,254 ms elapsed
+sum of coefficients squared = 3.11e+04
+3120 non-zero coefficients written
+
+--- 5 ---
+== instance counts ==
+     555 coefficients occurred 0 times
+      25 coefficients occurred 1 time
+      51 coefficients occurred 2-3 times
+      88 coefficients occurred 4-7 times
+     161 coefficients occurred 8-15 times
+     254 coefficients occurred 16-31 times
+     360 coefficients occurred 32-63 times
+     408 coefficients occurred 64-127 times
+     394 coefficients occurred 128-255 times
+     358 coefficients occurred 256-511 times
+     324 coefficients occurred 512-1023 times
+     216 coefficients occurred 1024-2047 times
+     149 coefficients occurred 2048-4095 times
+     115 coefficients occurred 4096-8191 times
+      63 coefficients occurred 8192-16383 times
+      44 coefficients occurred 16384-32767 times
+      38 coefficients occurred 32768-65535 times
+      37 coefficients occurred 65536-131071 times
+      42 coefficients occurred 131072-262143 times
+      26 coefficients occurred 262144-524287 times
+       6 coefficients occurred 524288-1048575 times
+       2 coefficients occurred 1048576-2097151 times
+       3 coefficients occurred 2097152-4194303 times
+
+estimating coefficients using 2,894,807 positions
+65,432 ms elapsed
+sum of coefficients squared = 3.70e+04
+3141 non-zero coefficients written
+
+--- 6 ---
+== instance counts ==
+     554 coefficients occurred 0 times
+      32 coefficients occurred 1 time
+      61 coefficients occurred 2-3 times
+      77 coefficients occurred 4-7 times
+     147 coefficients occurred 8-15 times
+     243 coefficients occurred 16-31 times
+     350 coefficients occurred 32-63 times
+     422 coefficients occurred 64-127 times
+     400 coefficients occurred 128-255 times
+     366 coefficients occurred 256-511 times
+     291 coefficients occurred 512-1023 times
+     234 coefficients occurred 1024-2047 times
+     154 coefficients occurred 2048-4095 times
+     115 coefficients occurred 4096-8191 times
+      68 coefficients occurred 8192-16383 times
+      45 coefficients occurred 16384-32767 times
+      42 coefficients occurred 32768-65535 times
+      35 coefficients occurred 65536-131071 times
+      42 coefficients occurred 131072-262143 times
+      28 coefficients occurred 262144-524287 times
+       8 coefficients occurred 524288-1048575 times
+       2 coefficients occurred 1048576-2097151 times
+       3 coefficients occurred 2097152-4194303 times
+
+estimating coefficients using 2,995,161 positions
+53,114 ms elapsed
+sum of coefficients squared = 2.94e+04
+3133 non-zero coefficients written
+
+--- 7 ---
+== instance counts ==
+     546 coefficients occurred 0 times
+      22 coefficients occurred 1 time
+      52 coefficients occurred 2-3 times
+      74 coefficients occurred 4-7 times
+     147 coefficients occurred 8-15 times
+     251 coefficients occurred 16-31 times
+     349 coefficients occurred 32-63 times
+     367 coefficients occurred 64-127 times
+     410 coefficients occurred 128-255 times
+     344 coefficients occurred 256-511 times
+     317 coefficients occurred 512-1023 times
+     243 coefficients occurred 1024-2047 times
+     161 coefficients occurred 2048-4095 times
+     123 coefficients occurred 4096-8191 times
+      84 coefficients occurred 8192-16383 times
+      55 coefficients occurred 16384-32767 times
+      41 coefficients occurred 32768-65535 times
+      43 coefficients occurred 65536-131071 times
+      41 coefficients occurred 131072-262143 times
+      34 coefficients occurred 262144-524287 times
+      10 coefficients occurred 524288-1048575 times
+       2 coefficients occurred 1048576-2097151 times
+       3 coefficients occurred 2097152-4194303 times
+
+estimating coefficients using 3,621,637 positions
+73,597 ms elapsed
+sum of coefficients squared = 3.57e+04
+3150 non-zero coefficients written
+
+--- 8 ---
+== instance counts ==
+     547 coefficients occurred 0 times
+      28 coefficients occurred 1 time
+      55 coefficients occurred 2-3 times
+      79 coefficients occurred 4-7 times
+     141 coefficients occurred 8-15 times
+     224 coefficients occurred 16-31 times
+     335 coefficients occurred 32-63 times
+     423 coefficients occurred 64-127 times
+     390 coefficients occurred 128-255 times
+     367 coefficients occurred 256-511 times
+     280 coefficients occurred 512-1023 times
+     236 coefficients occurred 1024-2047 times
+     185 coefficients occurred 2048-4095 times
+     104 coefficients occurred 4096-8191 times
+      91 coefficients occurred 8192-16383 times
+      56 coefficients occurred 16384-32767 times
+      40 coefficients occurred 32768-65535 times
+      43 coefficients occurred 65536-131071 times
+      43 coefficients occurred 131072-262143 times
+      37 coefficients occurred 262144-524287 times
+      10 coefficients occurred 524288-1048575 times
+       2 coefficients occurred 1048576-2097151 times
+       2 coefficients occurred 2097152-4194303 times
+       1 coefficients occurred 4194304-8388607 times
+
+estimating coefficients using 3,736,324 positions
+69,632 ms elapsed
+sum of coefficients squared = 3.21e+04
+3136 non-zero coefficients written
+
+--- 9 ---
+== instance counts ==
+     553 coefficients occurred 0 times
+      26 coefficients occurred 1 time
+      51 coefficients occurred 2-3 times
+      77 coefficients occurred 4-7 times
+     156 coefficients occurred 8-15 times
+     231 coefficients occurred 16-31 times
+     338 coefficients occurred 32-63 times
+     390 coefficients occurred 64-127 times
+     390 coefficients occurred 128-255 times
+     350 coefficients occurred 256-511 times
+     277 coefficients occurred 512-1023 times
+     241 coefficients occurred 1024-2047 times
+     184 coefficients occurred 2048-4095 times
+     123 coefficients occurred 4096-8191 times
+      87 coefficients occurred 8192-16383 times
+      54 coefficients occurred 16384-32767 times
+      51 coefficients occurred 32768-65535 times
+      39 coefficients occurred 65536-131071 times
+      38 coefficients occurred 131072-262143 times
+      48 coefficients occurred 262144-524287 times
+      10 coefficients occurred 524288-1048575 times
+       2 coefficients occurred 1048576-2097151 times
+       2 coefficients occurred 2097152-4194303 times
+       1 coefficients occurred 4194304-8388607 times
+
+estimating coefficients using 4,095,230 positions
+56,965 ms elapsed
+sum of coefficients squared = 2.37e+04
+3102 non-zero coefficients written
+
+--- 10 ---
+== instance counts ==
+     568 coefficients occurred 0 times
+      40 coefficients occurred 1 time
+      66 coefficients occurred 2-3 times
+      79 coefficients occurred 4-7 times
+     159 coefficients occurred 8-15 times
+     238 coefficients occurred 16-31 times
+     344 coefficients occurred 32-63 times
+     413 coefficients occurred 64-127 times
+     358 coefficients occurred 128-255 times
+     350 coefficients occurred 256-511 times
+     251 coefficients occurred 512-1023 times
+     209 coefficients occurred 1024-2047 times
+     186 coefficients occurred 2048-4095 times
+     121 coefficients occurred 4096-8191 times
+      84 coefficients occurred 8192-16383 times
+      54 coefficients occurred 16384-32767 times
+      53 coefficients occurred 32768-65535 times
+      46 coefficients occurred 65536-131071 times
+      36 coefficients occurred 131072-262143 times
+      48 coefficients occurred 262144-524287 times
+      11 coefficients occurred 524288-1048575 times
+       2 coefficients occurred 1048576-2097151 times
+       2 coefficients occurred 2097152-4194303 times
+       1 coefficients occurred 4194304-8388607 times
+
+estimating coefficients using 4,167,790 positions
+89,354 ms elapsed
+sum of coefficients squared = 2.87e+04
+3120 non-zero coefficients written
+
+--- 11 ---
+== instance counts ==
+     579 coefficients occurred 0 times
+      42 coefficients occurred 1 time
+      74 coefficients occurred 2-3 times
+      92 coefficients occurred 4-7 times
+     192 coefficients occurred 8-15 times
+     228 coefficients occurred 16-31 times
+     363 coefficients occurred 32-63 times
+     366 coefficients occurred 64-127 times
+     357 coefficients occurred 128-255 times
+     303 coefficients occurred 256-511 times
+     244 coefficients occurred 512-1023 times
+     237 coefficients occurred 1024-2047 times
+     163 coefficients occurred 2048-4095 times
+     133 coefficients occurred 4096-8191 times
+      89 coefficients occurred 8192-16383 times
+      49 coefficients occurred 16384-32767 times
+      50 coefficients occurred 32768-65535 times
+      50 coefficients occurred 65536-131071 times
+      42 coefficients occurred 131072-262143 times
+      46 coefficients occurred 262144-524287 times
+      13 coefficients occurred 524288-1048575 times
+       5 coefficients occurred 1048576-2097151 times
+       1 coefficients occurred 2097152-4194303 times
+       1 coefficients occurred 8388608-16777215 times
+
+estimating coefficients using 4,535,432 positions
+65,574 ms elapsed
+sum of coefficients squared = 2.10e+04
+3067 non-zero coefficients written
+
+--- 12 ---
+== instance counts ==
+     610 coefficients occurred 0 times
+      53 coefficients occurred 1 time
+      78 coefficients occurred 2-3 times
+     108 coefficients occurred 4-7 times
+     211 coefficients occurred 8-15 times
+     274 coefficients occurred 16-31 times
+     311 coefficients occurred 32-63 times
+     385 coefficients occurred 64-127 times
+     336 coefficients occurred 128-255 times
+     301 coefficients occurred 256-511 times
+     214 coefficients occurred 512-1023 times
+     203 coefficients occurred 1024-2047 times
+     160 coefficients occurred 2048-4095 times
+     119 coefficients occurred 4096-8191 times
+      94 coefficients occurred 8192-16383 times
+      54 coefficients occurred 16384-32767 times
+      49 coefficients occurred 32768-65535 times
+      43 coefficients occurred 65536-131071 times
+      49 coefficients occurred 131072-262143 times
+      47 coefficients occurred 262144-524287 times
+      13 coefficients occurred 524288-1048575 times
+       5 coefficients occurred 1048576-2097151 times
+       1 coefficients occurred 2097152-4194303 times
+       1 coefficients occurred 8388608-16777215 times
+
+estimating coefficients using 4,654,440 positions
+61,126 ms elapsed
+sum of coefficients squared = 2.02e+04
+3023 non-zero coefficients written
+
+--- 13 ---
+== instance counts ==
+     634 coefficients occurred 0 times
+      62 coefficients occurred 1 time
+      92 coefficients occurred 2-3 times
+     126 coefficients occurred 4-7 times
+     201 coefficients occurred 8-15 times
+     265 coefficients occurred 16-31 times
+     329 coefficients occurred 32-63 times
+     349 coefficients occurred 64-127 times
+     329 coefficients occurred 128-255 times
+     256 coefficients occurred 256-511 times
+     238 coefficients occurred 512-1023 times
+     205 coefficients occurred 1024-2047 times
+     147 coefficients occurred 2048-4095 times
+     127 coefficients occurred 4096-8191 times
+      92 coefficients occurred 8192-16383 times
+      57 coefficients occurred 16384-32767 times
+      48 coefficients occurred 32768-65535 times
+      39 coefficients occurred 65536-131071 times
+      50 coefficients occurred 131072-262143 times
+      53 coefficients occurred 262144-524287 times
+      13 coefficients occurred 524288-1048575 times
+       5 coefficients occurred 1048576-2097151 times
+       1 coefficients occurred 2097152-4194303 times
+       1 coefficients occurred 8388608-16777215 times
+
+estimating coefficients using 5,039,587 positions
+71,046 ms elapsed
+sum of coefficients squared = 2.02e+04
+2993 non-zero coefficients written
+
+--- 14 ---
+== instance counts ==
+     673 coefficients occurred 0 times
+      82 coefficients occurred 1 time
+     102 coefficients occurred 2-3 times
+     144 coefficients occurred 4-7 times
+     219 coefficients occurred 8-15 times
+     278 coefficients occurred 16-31 times
+     341 coefficients occurred 32-63 times
+     330 coefficients occurred 64-127 times
+     310 coefficients occurred 128-255 times
+     243 coefficients occurred 256-511 times
+     200 coefficients occurred 512-1023 times
+     181 coefficients occurred 1024-2047 times
+     139 coefficients occurred 2048-4095 times
+     116 coefficients occurred 4096-8191 times
+      93 coefficients occurred 8192-16383 times
+      59 coefficients occurred 16384-32767 times
+      42 coefficients occurred 32768-65535 times
+      42 coefficients occurred 65536-131071 times
+      47 coefficients occurred 131072-262143 times
+      55 coefficients occurred 262144-524287 times
+      16 coefficients occurred 524288-1048575 times
+       5 coefficients occurred 1048576-2097151 times
+       1 coefficients occurred 2097152-4194303 times
+       1 coefficients occurred 8388608-16777215 times
+
+estimating coefficients using 5,177,982 positions
+67,857 ms elapsed
+sum of coefficients squared = 1.96e+04
+2945 non-zero coefficients written
+
+--- 15 ---
+== instance counts ==
+     708 coefficients occurred 0 times
+      83 coefficients occurred 1 time
+     105 coefficients occurred 2-3 times
+     166 coefficients occurred 4-7 times
+     231 coefficients occurred 8-15 times
+     278 coefficients occurred 16-31 times
+     314 coefficients occurred 32-63 times
+     301 coefficients occurred 64-127 times
+     310 coefficients occurred 128-255 times
+     220 coefficients occurred 256-511 times
+     209 coefficients occurred 512-1023 times
+     170 coefficients occurred 1024-2047 times
+     143 coefficients occurred 2048-4095 times
+     119 coefficients occurred 4096-8191 times
+      86 coefficients occurred 8192-16383 times
+      65 coefficients occurred 16384-32767 times
+      35 coefficients occurred 32768-65535 times
+      49 coefficients occurred 65536-131071 times
+      44 coefficients occurred 131072-262143 times
+      56 coefficients occurred 262144-524287 times
+      21 coefficients occurred 524288-1048575 times
+       4 coefficients occurred 1048576-2097151 times
+       1 coefficients occurred 2097152-4194303 times
+       1 coefficients occurred 8388608-16777215 times
+
+estimating coefficients using 5,552,176 positions
+60,154 ms elapsed
+sum of coefficients squared = 1.54e+04
+2891 non-zero coefficients written
+
+--- 16 ---
+== instance counts ==
+     763 coefficients occurred 0 times
+      89 coefficients occurred 1 time
+     131 coefficients occurred 2-3 times
+     203 coefficients occurred 4-7 times
+     236 coefficients occurred 8-15 times
+     291 coefficients occurred 16-31 times
+     312 coefficients occurred 32-63 times
+     288 coefficients occurred 64-127 times
+     266 coefficients occurred 128-255 times
+     202 coefficients occurred 256-511 times
+     177 coefficients occurred 512-1023 times
+     164 coefficients occurred 1024-2047 times
+     127 coefficients occurred 2048-4095 times
+     110 coefficients occurred 4096-8191 times
+      84 coefficients occurred 8192-16383 times
+      66 coefficients occurred 16384-32767 times
+      38 coefficients occurred 32768-65535 times
+      41 coefficients occurred 65536-131071 times
+      40 coefficients occurred 131072-262143 times
+      59 coefficients occurred 262144-524287 times
+      27 coefficients occurred 524288-1048575 times
+       3 coefficients occurred 1048576-2097151 times
+       1 coefficients occurred 2097152-4194303 times
+       1 coefficients occurred 8388608-16777215 times
+
+estimating coefficients using 5,691,892 positions
+34,269 ms elapsed
+sum of coefficients squared = 1.00e+04
+2603 non-zero coefficients written
+
+--- 17 ---
+== instance counts ==
+     807 coefficients occurred 0 times
+      88 coefficients occurred 1 time
+     152 coefficients occurred 2-3 times
+     207 coefficients occurred 4-7 times
+     243 coefficients occurred 8-15 times
+     273 coefficients occurred 16-31 times
+     272 coefficients occurred 32-63 times
+     304 coefficients occurred 64-127 times
+     237 coefficients occurred 128-255 times
+     210 coefficients occurred 256-511 times
+     178 coefficients occurred 512-1023 times
+     141 coefficients occurred 1024-2047 times
+     138 coefficients occurred 2048-4095 times
+     110 coefficients occurred 4096-8191 times
+      80 coefficients occurred 8192-16383 times
+      69 coefficients occurred 16384-32767 times
+      37 coefficients occurred 32768-65535 times
+      35 coefficients occurred 65536-131071 times
+      43 coefficients occurred 131072-262143 times
+      62 coefficients occurred 262144-524287 times
+      27 coefficients occurred 524288-1048575 times
+       4 coefficients occurred 1048576-2097151 times
+       1 coefficients occurred 2097152-4194303 times
+       1 coefficients occurred 16777216-33554431 times
+
+estimating coefficients using 6,044,108 positions
+43,506 ms elapsed
+sum of coefficients squared = 1.02e+04
+2571 non-zero coefficients written
+
+--- 18 ---
+== instance counts ==
+     877 coefficients occurred 0 times
+     136 coefficients occurred 1 time
+     174 coefficients occurred 2-3 times
+     202 coefficients occurred 4-7 times
+     270 coefficients occurred 8-15 times
+     258 coefficients occurred 16-31 times
+     270 coefficients occurred 32-63 times
+     278 coefficients occurred 64-127 times
+     217 coefficients occurred 128-255 times
+     168 coefficients occurred 256-511 times
+     166 coefficients occurred 512-1023 times
+     138 coefficients occurred 1024-2047 times
+     109 coefficients occurred 2048-4095 times
+      96 coefficients occurred 4096-8191 times
+      87 coefficients occurred 8192-16383 times
+      64 coefficients occurred 16384-32767 times
+      36 coefficients occurred 32768-65535 times
+      37 coefficients occurred 65536-131071 times
+      42 coefficients occurred 131072-262143 times
+      55 coefficients occurred 262144-524287 times
+      33 coefficients occurred 524288-1048575 times
+       4 coefficients occurred 1048576-2097151 times
+       1 coefficients occurred 2097152-4194303 times
+       1 coefficients occurred 16777216-33554431 times
+
+estimating coefficients using 6,187,754 positions
+53,079 ms elapsed
+sum of coefficients squared = 1.01e+04
+2503 non-zero coefficients written
+
+--- 19 ---
+== instance counts ==
+     940 coefficients occurred 0 times
+     112 coefficients occurred 1 time
+     187 coefficients occurred 2-3 times
+     216 coefficients occurred 4-7 times
+     252 coefficients occurred 8-15 times
+     258 coefficients occurred 16-31 times
+     254 coefficients occurred 32-63 times
+     247 coefficients occurred 64-127 times
+     199 coefficients occurred 128-255 times
+     199 coefficients occurred 256-511 times
+     156 coefficients occurred 512-1023 times
+     131 coefficients occurred 1024-2047 times
+     113 coefficients occurred 2048-4095 times
+     108 coefficients occurred 4096-8191 times
+      74 coefficients occurred 8192-16383 times
+      64 coefficients occurred 16384-32767 times
+      38 coefficients occurred 32768-65535 times
+      30 coefficients occurred 65536-131071 times
+      44 coefficients occurred 131072-262143 times
+      53 coefficients occurred 262144-524287 times
+      37 coefficients occurred 524288-1048575 times
+       6 coefficients occurred 1048576-2097151 times
+       1 coefficients occurred 16777216-33554431 times
+
+estimating coefficients using 6,510,387 positions
+53,559 ms elapsed
+sum of coefficients squared = 1.12e+04
+2490 non-zero coefficients written
+
+--- 20 ---
+== instance counts ==
+   1,025 coefficients occurred 0 times
+     164 coefficients occurred 1 time
+     203 coefficients occurred 2-3 times
+     220 coefficients occurred 4-7 times
+     244 coefficients occurred 8-15 times
+     261 coefficients occurred 16-31 times
+     248 coefficients occurred 32-63 times
+     213 coefficients occurred 64-127 times
+     190 coefficients occurred 128-255 times
+     146 coefficients occurred 256-511 times
+     154 coefficients occurred 512-1023 times
+     113 coefficients occurred 1024-2047 times
+      97 coefficients occurred 2048-4095 times
+      97 coefficients occurred 4096-8191 times
+      76 coefficients occurred 8192-16383 times
+      61 coefficients occurred 16384-32767 times
+      36 coefficients occurred 32768-65535 times
+      31 coefficients occurred 65536-131071 times
+      41 coefficients occurred 131072-262143 times
+      49 coefficients occurred 262144-524287 times
+      43 coefficients occurred 524288-1048575 times
+       6 coefficients occurred 1048576-2097151 times
+       1 coefficients occurred 16777216-33554431 times
+
+estimating coefficients using 6,652,806 positions
+93,290 ms elapsed
+sum of coefficients squared = 1.77e+04
+2572 non-zero coefficients written
+
+--- 21 ---
+== instance counts ==
+   1,100 coefficients occurred 0 times
+     132 coefficients occurred 1 time
+     210 coefficients occurred 2-3 times
+     225 coefficients occurred 4-7 times
+     214 coefficients occurred 8-15 times
+     239 coefficients occurred 16-31 times
+     237 coefficients occurred 32-63 times
+     216 coefficients occurred 64-127 times
+     168 coefficients occurred 128-255 times
+     180 coefficients occurred 256-511 times
+     133 coefficients occurred 512-1023 times
+     119 coefficients occurred 1024-2047 times
+     105 coefficients occurred 2048-4095 times
+     104 coefficients occurred 4096-8191 times
+      73 coefficients occurred 8192-16383 times
+      65 coefficients occurred 16384-32767 times
+      30 coefficients occurred 32768-65535 times
+      26 coefficients occurred 65536-131071 times
+      45 coefficients occurred 131072-262143 times
+      49 coefficients occurred 262144-524287 times
+      42 coefficients occurred 524288-1048575 times
+       6 coefficients occurred 1048576-2097151 times
+       1 coefficients occurred 16777216-33554431 times
+
+estimating coefficients using 6,946,524 positions
+53,953 ms elapsed
+sum of coefficients squared = 1.05e+04
+2284 non-zero coefficients written
+
+--- 22 ---
+== instance counts ==
+   1,177 coefficients occurred 0 times
+     182 coefficients occurred 1 time
+     213 coefficients occurred 2-3 times
+     236 coefficients occurred 4-7 times
+     231 coefficients occurred 8-15 times
+     232 coefficients occurred 16-31 times
+     221 coefficients occurred 32-63 times
+     187 coefficients occurred 64-127 times
+     154 coefficients occurred 128-255 times
+     163 coefficients occurred 256-511 times
+     117 coefficients occurred 512-1023 times
+      98 coefficients occurred 1024-2047 times
+      88 coefficients occurred 2048-4095 times
+      85 coefficients occurred 4096-8191 times
+      81 coefficients occurred 8192-16383 times
+      51 coefficients occurred 16384-32767 times
+      32 coefficients occurred 32768-65535 times
+      30 coefficients occurred 65536-131071 times
+      41 coefficients occurred 131072-262143 times
+      45 coefficients occurred 262144-524287 times
+      47 coefficients occurred 524288-1048575 times
+       6 coefficients occurred 1048576-2097151 times
+       1 coefficients occurred 2097152-4194303 times
+       1 coefficients occurred 16777216-33554431 times
+
+estimating coefficients using 7,074,789 positions
+46,097 ms elapsed
+sum of coefficients squared = 9.70e+03
+2102 non-zero coefficients written
+
+--- 23 ---
+== instance counts ==
+   1,252 coefficients occurred 0 times
+     149 coefficients occurred 1 time
+     203 coefficients occurred 2-3 times
+     219 coefficients occurred 4-7 times
+     224 coefficients occurred 8-15 times
+     217 coefficients occurred 16-31 times
+     198 coefficients occurred 32-63 times
+     192 coefficients occurred 64-127 times
+     157 coefficients occurred 128-255 times
+     173 coefficients occurred 256-511 times
+     104 coefficients occurred 512-1023 times
+     110 coefficients occurred 1024-2047 times
+     107 coefficients occurred 2048-4095 times
+      89 coefficients occurred 4096-8191 times
+      73 coefficients occurred 8192-16383 times
+      54 coefficients occurred 16384-32767 times
+      28 coefficients occurred 32768-65535 times
+      30 coefficients occurred 65536-131071 times
+      40 coefficients occurred 131072-262143 times
+      43 coefficients occurred 262144-524287 times
+      48 coefficients occurred 524288-1048575 times
+       7 coefficients occurred 1048576-2097151 times
+       1 coefficients occurred 2097152-4194303 times
+       1 coefficients occurred 16777216-33554431 times
+
+estimating coefficients using 7,344,199 positions
+54,732 ms elapsed
+sum of coefficients squared = 1.08e+04
+2117 non-zero coefficients written
+
+--- 24 ---
+== instance counts ==
+   1,362 coefficients occurred 0 times
+     159 coefficients occurred 1 time
+     216 coefficients occurred 2-3 times
+     244 coefficients occurred 4-7 times
+     209 coefficients occurred 8-15 times
+     210 coefficients occurred 16-31 times
+     192 coefficients occurred 32-63 times
+     171 coefficients occurred 64-127 times
+     140 coefficients occurred 128-255 times
+     149 coefficients occurred 256-511 times
+      90 coefficients occurred 512-1023 times
+      96 coefficients occurred 1024-2047 times
+      90 coefficients occurred 2048-4095 times
+      75 coefficients occurred 4096-8191 times
+      70 coefficients occurred 8192-16383 times
+      51 coefficients occurred 16384-32767 times
+      31 coefficients occurred 32768-65535 times
+      28 coefficients occurred 65536-131071 times
+      39 coefficients occurred 131072-262143 times
+      39 coefficients occurred 262144-524287 times
+      50 coefficients occurred 524288-1048575 times
+       6 coefficients occurred 1048576-2097151 times
+       1 coefficients occurred 2097152-4194303 times
+       1 coefficients occurred 16777216-33554431 times
+
+estimating coefficients using 7,449,321 positions
+58,285 ms elapsed
+sum of coefficients squared = 9.54e+03
+1989 non-zero coefficients written
+
+--- 25 ---
+== instance counts ==
+   1,404 coefficients occurred 0 times
+     143 coefficients occurred 1 time
+     218 coefficients occurred 2-3 times
+     195 coefficients occurred 4-7 times
+     210 coefficients occurred 8-15 times
+     205 coefficients occurred 16-31 times
+     190 coefficients occurred 32-63 times
+     154 coefficients occurred 64-127 times
+     167 coefficients occurred 128-255 times
+     130 coefficients occurred 256-511 times
+     110 coefficients occurred 512-1023 times
+      97 coefficients occurred 1024-2047 times
+     107 coefficients occurred 2048-4095 times
+      79 coefficients occurred 4096-8191 times
+      68 coefficients occurred 8192-16383 times
+      48 coefficients occurred 16384-32767 times
+      27 coefficients occurred 32768-65535 times
+      33 coefficients occurred 65536-131071 times
+      36 coefficients occurred 131072-262143 times
+      39 coefficients occurred 262144-524287 times
+      51 coefficients occurred 524288-1048575 times
+       6 coefficients occurred 1048576-2097151 times
+       1 coefficients occurred 4194304-8388607 times
+       1 coefficients occurred 16777216-33554431 times
+
+estimating coefficients using 7,692,351 positions
+56,548 ms elapsed
+sum of coefficients squared = 1.00e+04
+1919 non-zero coefficients written
+
+--- 26 ---
+== instance counts ==
+   1,527 coefficients occurred 0 times
+     164 coefficients occurred 1 time
+     192 coefficients occurred 2-3 times
+     235 coefficients occurred 4-7 times
+     194 coefficients occurred 8-15 times
+     191 coefficients occurred 16-31 times
+     181 coefficients occurred 32-63 times
+     152 coefficients occurred 64-127 times
+     133 coefficients occurred 128-255 times
+     113 coefficients occurred 256-511 times
+      94 coefficients occurred 512-1023 times
+      84 coefficients occurred 1024-2047 times
+      92 coefficients occurred 2048-4095 times
+      63 coefficients occurred 4096-8191 times
+      65 coefficients occurred 8192-16383 times
+      54 coefficients occurred 16384-32767 times
+      21 coefficients occurred 32768-65535 times
+      36 coefficients occurred 65536-131071 times
+      34 coefficients occurred 131072-262143 times
+      36 coefficients occurred 262144-524287 times
+      50 coefficients occurred 524288-1048575 times
+       6 coefficients occurred 1048576-2097151 times
+       1 coefficients occurred 4194304-8388607 times
+       1 coefficients occurred 16777216-33554431 times
+
+estimating coefficients using 7,761,520 positions
+64,266 ms elapsed
+sum of coefficients squared = 8.37e+03
+1751 non-zero coefficients written
+
+--- 27 ---
+== instance counts ==
+   1,548 coefficients occurred 0 times
+     152 coefficients occurred 1 time
+     210 coefficients occurred 2-3 times
+     195 coefficients occurred 4-7 times
+     185 coefficients occurred 8-15 times
+     193 coefficients occurred 16-31 times
+     155 coefficients occurred 32-63 times
+     150 coefficients occurred 64-127 times
+     151 coefficients occurred 128-255 times
+     107 coefficients occurred 256-511 times
+     110 coefficients occurred 512-1023 times
+     108 coefficients occurred 1024-2047 times
+      89 coefficients occurred 2048-4095 times
+      74 coefficients occurred 4096-8191 times
+      61 coefficients occurred 8192-16383 times
+      42 coefficients occurred 16384-32767 times
+      26 coefficients occurred 32768-65535 times
+      38 coefficients occurred 65536-131071 times
+      32 coefficients occurred 131072-262143 times
+      35 coefficients occurred 262144-524287 times
+      51 coefficients occurred 524288-1048575 times
+       4 coefficients occurred 1048576-2097151 times
+       1 coefficients occurred 2097152-4194303 times
+       1 coefficients occurred 4194304-8388607 times
+       1 coefficients occurred 16777216-33554431 times
+
+estimating coefficients using 7,987,839 positions
+69,997 ms elapsed
+sum of coefficients squared = 9.38e+03
+1759 non-zero coefficients written
+
+--- 28 ---
+== instance counts ==
+   1,697 coefficients occurred 0 times
+     152 coefficients occurred 1 time
+     209 coefficients occurred 2-3 times
+     191 coefficients occurred 4-7 times
+     177 coefficients occurred 8-15 times
+     165 coefficients occurred 16-31 times
+     163 coefficients occurred 32-63 times
+     151 coefficients occurred 64-127 times
+     122 coefficients occurred 128-255 times
+      91 coefficients occurred 256-511 times
+      95 coefficients occurred 512-1023 times
+      89 coefficients occurred 1024-2047 times
+      77 coefficients occurred 2048-4095 times
+      54 coefficients occurred 4096-8191 times
+      62 coefficients occurred 8192-16383 times
+      42 coefficients occurred 16384-32767 times
+      22 coefficients occurred 32768-65535 times
+      37 coefficients occurred 65536-131071 times
+      30 coefficients occurred 131072-262143 times
+      35 coefficients occurred 262144-524287 times
+      49 coefficients occurred 524288-1048575 times
+       6 coefficients occurred 1048576-2097151 times
+       1 coefficients occurred 2097152-4194303 times
+       1 coefficients occurred 4194304-8388607 times
+       1 coefficients occurred 16777216-33554431 times
+
+estimating coefficients using 8,001,205 positions
+55,466 ms elapsed
+sum of coefficients squared = 8.01e+03
+1540 non-zero coefficients written
+
+--- 29 ---
+== instance counts ==
+   1,681 coefficients occurred 0 times
+     157 coefficients occurred 1 time
+     206 coefficients occurred 2-3 times
+     198 coefficients occurred 4-7 times
+     159 coefficients occurred 8-15 times
+     163 coefficients occurred 16-31 times
+     146 coefficients occurred 32-63 times
+     148 coefficients occurred 64-127 times
+     111 coefficients occurred 128-255 times
+     126 coefficients occurred 256-511 times
+      96 coefficients occurred 512-1023 times
+     103 coefficients occurred 1024-2047 times
+      80 coefficients occurred 2048-4095 times
+      72 coefficients occurred 4096-8191 times
+      53 coefficients occurred 8192-16383 times
+      41 coefficients occurred 16384-32767 times
+      26 coefficients occurred 32768-65535 times
+      33 coefficients occurred 65536-131071 times
+      27 coefficients occurred 131072-262143 times
+      37 coefficients occurred 262144-524287 times
+      43 coefficients occurred 524288-1048575 times
+      10 coefficients occurred 1048576-2097151 times
+       1 coefficients occurred 2097152-4194303 times
+       1 coefficients occurred 8388608-16777215 times
+       1 coefficients occurred 16777216-33554431 times
+
+estimating coefficients using 8,218,612 positions
+51,894 ms elapsed
+sum of coefficients squared = 7.84e+03
+1537 non-zero coefficients written
+
+--- 30 ---
+== instance counts ==
+   1,852 coefficients occurred 0 times
+     160 coefficients occurred 1 time
+     188 coefficients occurred 2-3 times
+     172 coefficients occurred 4-7 times
+     154 coefficients occurred 8-15 times
+     156 coefficients occurred 16-31 times
+     160 coefficients occurred 32-63 times
+     136 coefficients occurred 64-127 times
+      88 coefficients occurred 128-255 times
+      95 coefficients occurred 256-511 times
+      90 coefficients occurred 512-1023 times
+      89 coefficients occurred 1024-2047 times
+      63 coefficients occurred 2048-4095 times
+      57 coefficients occurred 4096-8191 times
+      49 coefficients occurred 8192-16383 times
+      34 coefficients occurred 16384-32767 times
+      26 coefficients occurred 32768-65535 times
+      35 coefficients occurred 65536-131071 times
+      25 coefficients occurred 131072-262143 times
+      34 coefficients occurred 262144-524287 times
+      44 coefficients occurred 524288-1048575 times
+       7 coefficients occurred 1048576-2097151 times
+       3 coefficients occurred 2097152-4194303 times
+       1 coefficients occurred 8388608-16777215 times
+       1 coefficients occurred 16777216-33554431 times
+
+estimating coefficients using 8,163,153 positions
+77,708 ms elapsed
+sum of coefficients squared = 7.90e+03
+1522 non-zero coefficients written
+
+--- 31 ---
+== instance counts ==
+   1,822 coefficients occurred 0 times
+     147 coefficients occurred 1 time
+     205 coefficients occurred 2-3 times
+     157 coefficients occurred 4-7 times
+     152 coefficients occurred 8-15 times
+     159 coefficients occurred 16-31 times
+     141 coefficients occurred 32-63 times
+     125 coefficients occurred 64-127 times
+     112 coefficients occurred 128-255 times
+     110 coefficients occurred 256-511 times
+     108 coefficients occurred 512-1023 times
+      85 coefficients occurred 1024-2047 times
+      75 coefficients occurred 2048-4095 times
+      65 coefficients occurred 4096-8191 times
+      52 coefficients occurred 8192-16383 times
+      28 coefficients occurred 16384-32767 times
+      32 coefficients occurred 32768-65535 times
+      30 coefficients occurred 65536-131071 times
+      28 coefficients occurred 131072-262143 times
+      30 coefficients occurred 262144-524287 times
+      41 coefficients occurred 524288-1048575 times
+      11 coefficients occurred 1048576-2097151 times
+       2 coefficients occurred 2097152-4194303 times
+       1 coefficients occurred 8388608-16777215 times
+       1 coefficients occurred 16777216-33554431 times
+
+estimating coefficients using 8,363,764 positions
+75,425 ms elapsed
+sum of coefficients squared = 8.40e+03
+1507 non-zero coefficients written
+
+--- 32 ---
+== instance counts ==
+   1,998 coefficients occurred 0 times
+     155 coefficients occurred 1 time
+     173 coefficients occurred 2-3 times
+     148 coefficients occurred 4-7 times
+     156 coefficients occurred 8-15 times
+     149 coefficients occurred 16-31 times
+     134 coefficients occurred 32-63 times
+     108 coefficients occurred 64-127 times
+      97 coefficients occurred 128-255 times
+      90 coefficients occurred 256-511 times
+      83 coefficients occurred 512-1023 times
+      74 coefficients occurred 1024-2047 times
+      57 coefficients occurred 2048-4095 times
+      55 coefficients occurred 4096-8191 times
+      45 coefficients occurred 8192-16383 times
+      31 coefficients occurred 16384-32767 times
+      25 coefficients occurred 32768-65535 times
+      33 coefficients occurred 65536-131071 times
+      23 coefficients occurred 131072-262143 times
+      31 coefficients occurred 262144-524287 times
+      40 coefficients occurred 524288-1048575 times
+       9 coefficients occurred 1048576-2097151 times
+       3 coefficients occurred 2097152-4194303 times
+       1 coefficients occurred 8388608-16777215 times
+       1 coefficients occurred 16777216-33554431 times
+
+estimating coefficients using 8,235,334 positions
+67,867 ms elapsed
+sum of coefficients squared = 8.17e+03
+1377 non-zero coefficients written
+
+--- 33 ---
+== instance counts ==
+   1,940 coefficients occurred 0 times
+     158 coefficients occurred 1 time
+     178 coefficients occurred 2-3 times
+     171 coefficients occurred 4-7 times
+     135 coefficients occurred 8-15 times
+     138 coefficients occurred 16-31 times
+     134 coefficients occurred 32-63 times
+     109 coefficients occurred 64-127 times
+     123 coefficients occurred 128-255 times
+      99 coefficients occurred 256-511 times
+      89 coefficients occurred 512-1023 times
+      81 coefficients occurred 1024-2047 times
+      70 coefficients occurred 2048-4095 times
+      53 coefficients occurred 4096-8191 times
+      49 coefficients occurred 8192-16383 times
+      26 coefficients occurred 16384-32767 times
+      29 coefficients occurred 32768-65535 times
+      31 coefficients occurred 65536-131071 times
+      22 coefficients occurred 131072-262143 times
+      30 coefficients occurred 262144-524287 times
+      39 coefficients occurred 524288-1048575 times
+      11 coefficients occurred 1048576-2097151 times
+       2 coefficients occurred 2097152-4194303 times
+       1 coefficients occurred 8388608-16777215 times
+       1 coefficients occurred 16777216-33554431 times
+
+estimating coefficients using 8,413,943 positions
+63,155 ms elapsed
+sum of coefficients squared = 8.32e+03
+1366 non-zero coefficients written
+
+--- 34 ---
+== instance counts ==
+   2,144 coefficients occurred 0 times
+     139 coefficients occurred 1 time
+     162 coefficients occurred 2-3 times
+     155 coefficients occurred 4-7 times
+     138 coefficients occurred 8-15 times
+     131 coefficients occurred 16-31 times
+      98 coefficients occurred 32-63 times
+     105 coefficients occurred 64-127 times
+     102 coefficients occurred 128-255 times
+      81 coefficients occurred 256-511 times
+      83 coefficients occurred 512-1023 times
+      53 coefficients occurred 1024-2047 times
+      58 coefficients occurred 2048-4095 times
+      46 coefficients occurred 4096-8191 times
+      38 coefficients occurred 8192-16383 times
+      29 coefficients occurred 16384-32767 times
+      29 coefficients occurred 32768-65535 times
+      28 coefficients occurred 65536-131071 times
+      20 coefficients occurred 131072-262143 times
+      28 coefficients occurred 262144-524287 times
+      35 coefficients occurred 524288-1048575 times
+      13 coefficients occurred 1048576-2097151 times
+       2 coefficients occurred 2097152-4194303 times
+       1 coefficients occurred 8388608-16777215 times
+       1 coefficients occurred 16777216-33554431 times
+
+estimating coefficients using 8,220,153 positions
+63,531 ms elapsed
+sum of coefficients squared = 7.64e+03
+1232 non-zero coefficients written
+
+--- 35 ---
+== instance counts ==
+   2,085 coefficients occurred 0 times
+     141 coefficients occurred 1 time
+     168 coefficients occurred 2-3 times
+     152 coefficients occurred 4-7 times
+     118 coefficients occurred 8-15 times
+     125 coefficients occurred 16-31 times
+     122 coefficients occurred 32-63 times
+     120 coefficients occurred 64-127 times
+     103 coefficients occurred 128-255 times
+      99 coefficients occurred 256-511 times
+      84 coefficients occurred 512-1023 times
+      66 coefficients occurred 1024-2047 times
+      64 coefficients occurred 2048-4095 times
+      56 coefficients occurred 4096-8191 times
+      33 coefficients occurred 8192-16383 times
+      28 coefficients occurred 16384-32767 times
+      29 coefficients occurred 32768-65535 times
+      25 coefficients occurred 65536-131071 times
+      22 coefficients occurred 131072-262143 times
+      26 coefficients occurred 262144-524287 times
+      36 coefficients occurred 524288-1048575 times
+      14 coefficients occurred 1048576-2097151 times
+       1 coefficients occurred 2097152-4194303 times
+       1 coefficients occurred 8388608-16777215 times
+       1 coefficients occurred 16777216-33554431 times
+
+estimating coefficients using 8,366,471 positions
+76,864 ms elapsed
+sum of coefficients squared = 7.96e+03
+1348 non-zero coefficients written
+
+--- 36 ---
+== instance counts ==
+   2,276 coefficients occurred 0 times
+     149 coefficients occurred 1 time
+     155 coefficients occurred 2-3 times
+     123 coefficients occurred 4-7 times
+     124 coefficients occurred 8-15 times
+     115 coefficients occurred 16-31 times
+      94 coefficients occurred 32-63 times
+     102 coefficients occurred 64-127 times
+      75 coefficients occurred 128-255 times
+      84 coefficients occurred 256-511 times
+      65 coefficients occurred 512-1023 times
+      55 coefficients occurred 1024-2047 times
+      56 coefficients occurred 2048-4095 times
+      39 coefficients occurred 4096-8191 times
+      33 coefficients occurred 8192-16383 times
+      30 coefficients occurred 16384-32767 times
+      26 coefficients occurred 32768-65535 times
+      21 coefficients occurred 65536-131071 times
+      22 coefficients occurred 131072-262143 times
+      24 coefficients occurred 262144-524287 times
+      34 coefficients occurred 524288-1048575 times
+      14 coefficients occurred 1048576-2097151 times
+       1 coefficients occurred 2097152-4194303 times
+       2 coefficients occurred 16777216-33554431 times
+
+estimating coefficients using 8,123,805 positions
+40,702 ms elapsed
+sum of coefficients squared = 3.05e+03
+927 non-zero coefficients written
+
+--- 37 ---
+== instance counts ==
+   2,214 coefficients occurred 0 times
+     126 coefficients occurred 1 time
+     159 coefficients occurred 2-3 times
+     131 coefficients occurred 4-7 times
+     116 coefficients occurred 8-15 times
+     125 coefficients occurred 16-31 times
+     119 coefficients occurred 32-63 times
+     104 coefficients occurred 64-127 times
+     102 coefficients occurred 128-255 times
+      87 coefficients occurred 256-511 times
+      70 coefficients occurred 512-1023 times
+      65 coefficients occurred 1024-2047 times
+      54 coefficients occurred 2048-4095 times
+      48 coefficients occurred 4096-8191 times
+      27 coefficients occurred 8192-16383 times
+      29 coefficients occurred 16384-32767 times
+      32 coefficients occurred 32768-65535 times
+      19 coefficients occurred 65536-131071 times
+      18 coefficients occurred 131072-262143 times
+      24 coefficients occurred 262144-524287 times
+      34 coefficients occurred 524288-1048575 times
+      13 coefficients occurred 1048576-2097151 times
+       1 coefficients occurred 2097152-4194303 times
+       2 coefficients occurred 16777216-33554431 times
+
+estimating coefficients using 8,234,644 positions
+63,711 ms elapsed
+sum of coefficients squared = 7.51e+03
+1216 non-zero coefficients written
+
+--- 38 ---
+== instance counts ==
+   2,399 coefficients occurred 0 times
+     143 coefficients occurred 1 time
+     141 coefficients occurred 2-3 times
+     118 coefficients occurred 4-7 times
+     111 coefficients occurred 8-15 times
+     103 coefficients occurred 16-31 times
+      88 coefficients occurred 32-63 times
+      97 coefficients occurred 64-127 times
+      60 coefficients occurred 128-255 times
+      76 coefficients occurred 256-511 times
+      53 coefficients occurred 512-1023 times
+      62 coefficients occurred 1024-2047 times
+      46 coefficients occurred 2048-4095 times
+      29 coefficients occurred 4096-8191 times
+      34 coefficients occurred 8192-16383 times
+      27 coefficients occurred 16384-32767 times
+      23 coefficients occurred 32768-65535 times
+      17 coefficients occurred 65536-131071 times
+      23 coefficients occurred 131072-262143 times
+      17 coefficients occurred 262144-524287 times
+      37 coefficients occurred 524288-1048575 times
+      13 coefficients occurred 1048576-2097151 times
+       2 coefficients occurred 16777216-33554431 times
+
+estimating coefficients using 7,929,531 positions
+51,286 ms elapsed
+sum of coefficients squared = 5.40e+03
+1011 non-zero coefficients written
+
+--- 39 ---
+== instance counts ==
+   2,355 coefficients occurred 0 times
+     110 coefficients occurred 1 time
+     132 coefficients occurred 2-3 times
+     120 coefficients occurred 4-7 times
+     129 coefficients occurred 8-15 times
+     112 coefficients occurred 16-31 times
+     103 coefficients occurred 32-63 times
+     102 coefficients occurred 64-127 times
+      82 coefficients occurred 128-255 times
+      77 coefficients occurred 256-511 times
+      77 coefficients occurred 512-1023 times
+      57 coefficients occurred 1024-2047 times
+      38 coefficients occurred 2048-4095 times
+      41 coefficients occurred 4096-8191 times
+      25 coefficients occurred 8192-16383 times
+      27 coefficients occurred 16384-32767 times
+      24 coefficients occurred 32768-65535 times
+      21 coefficients occurred 65536-131071 times
+      17 coefficients occurred 131072-262143 times
+      20 coefficients occurred 262144-524287 times
+      35 coefficients occurred 524288-1048575 times
+      13 coefficients occurred 1048576-2097151 times
+       2 coefficients occurred 16777216-33554431 times
+
+estimating coefficients using 8,017,320 positions
+27,706 ms elapsed
+sum of coefficients squared = 2.89e+03
+876 non-zero coefficients written
+
+--- 40 ---
+== instance counts ==
+   2,543 coefficients occurred 0 times
+     116 coefficients occurred 1 time
+     138 coefficients occurred 2-3 times
+      96 coefficients occurred 4-7 times
+     113 coefficients occurred 8-15 times
+      90 coefficients occurred 16-31 times
+      77 coefficients occurred 32-63 times
+      72 coefficients occurred 64-127 times
+      62 coefficients occurred 128-255 times
+      65 coefficients occurred 256-511 times
+      55 coefficients occurred 512-1023 times
+      47 coefficients occurred 1024-2047 times
+      34 coefficients occurred 2048-4095 times
+      38 coefficients occurred 4096-8191 times
+      28 coefficients occurred 8192-16383 times
+      22 coefficients occurred 16384-32767 times
+      24 coefficients occurred 32768-65535 times
+      16 coefficients occurred 65536-131071 times
+      15 coefficients occurred 131072-262143 times
+      18 coefficients occurred 262144-524287 times
+      37 coefficients occurred 524288-1048575 times
+      11 coefficients occurred 1048576-2097151 times
+       2 coefficients occurred 16777216-33554431 times
+
+estimating coefficients using 7,623,084 positions
+41,835 ms elapsed
+sum of coefficients squared = 4.55e+03
+894 non-zero coefficients written
+
+--- 41 ---
+== instance counts ==
+   2,491 coefficients occurred 0 times
+     117 coefficients occurred 1 time
+     120 coefficients occurred 2-3 times
+     106 coefficients occurred 4-7 times
+     106 coefficients occurred 8-15 times
+     100 coefficients occurred 16-31 times
+      97 coefficients occurred 32-63 times
+      86 coefficients occurred 64-127 times
+      73 coefficients occurred 128-255 times
+      77 coefficients occurred 256-511 times
+      58 coefficients occurred 512-1023 times
+      48 coefficients occurred 1024-2047 times
+      38 coefficients occurred 2048-4095 times
+      33 coefficients occurred 4096-8191 times
+      23 coefficients occurred 8192-16383 times
+      29 coefficients occurred 16384-32767 times
+      14 coefficients occurred 32768-65535 times
+      21 coefficients occurred 65536-131071 times
+      14 coefficients occurred 131072-262143 times
+      19 coefficients occurred 262144-524287 times
+      36 coefficients occurred 524288-1048575 times
+      11 coefficients occurred 1048576-2097151 times
+       2 coefficients occurred 16777216-33554431 times
+
+estimating coefficients using 7,686,993 positions
+72,952 ms elapsed
+sum of coefficients squared = 6.49e+03
+1086 non-zero coefficients written
+
+--- 42 ---
+== instance counts ==
+   2,691 coefficients occurred 0 times
+      92 coefficients occurred 1 time
+     113 coefficients occurred 2-3 times
+     105 coefficients occurred 4-7 times
+      83 coefficients occurred 8-15 times
+      72 coefficients occurred 16-31 times
+      78 coefficients occurred 32-63 times
+      57 coefficients occurred 64-127 times
+      65 coefficients occurred 128-255 times
+      53 coefficients occurred 256-511 times
+      53 coefficients occurred 512-1023 times
+      34 coefficients occurred 1024-2047 times
+      35 coefficients occurred 2048-4095 times
+      25 coefficients occurred 4096-8191 times
+      31 coefficients occurred 8192-16383 times
+      20 coefficients occurred 16384-32767 times
+      15 coefficients occurred 32768-65535 times
+      20 coefficients occurred 65536-131071 times
+      12 coefficients occurred 131072-262143 times
+      18 coefficients occurred 262144-524287 times
+      38 coefficients occurred 524288-1048575 times
+       7 coefficients occurred 1048576-2097151 times
+       2 coefficients occurred 16777216-33554431 times
+
+estimating coefficients using 7,190,565 positions
+42,003 ms elapsed
+sum of coefficients squared = 3.98e+03
+827 non-zero coefficients written
+
+--- 43 ---
+== instance counts ==
+   2,667 coefficients occurred 0 times
+     100 coefficients occurred 1 time
+      92 coefficients occurred 2-3 times
+      99 coefficients occurred 4-7 times
+     110 coefficients occurred 8-15 times
+      79 coefficients occurred 16-31 times
+      76 coefficients occurred 32-63 times
+      77 coefficients occurred 64-127 times
+      66 coefficients occurred 128-255 times
+      54 coefficients occurred 256-511 times
+      39 coefficients occurred 512-1023 times
+      47 coefficients occurred 1024-2047 times
+      35 coefficients occurred 2048-4095 times
+      21 coefficients occurred 4096-8191 times
+      24 coefficients occurred 8192-16383 times
+      23 coefficients occurred 16384-32767 times
+      16 coefficients occurred 32768-65535 times
+      15 coefficients occurred 65536-131071 times
+      16 coefficients occurred 131072-262143 times
+      19 coefficients occurred 262144-524287 times
+      35 coefficients occurred 524288-1048575 times
+       7 coefficients occurred 1048576-2097151 times
+       2 coefficients occurred 16777216-33554431 times
+
+estimating coefficients using 7,219,667 positions
+43,985 ms elapsed
+sum of coefficients squared = 4.66e+03
+865 non-zero coefficients written
+
+--- 44 ---
+== instance counts ==
+   2,804 coefficients occurred 0 times
+      98 coefficients occurred 1 time
+     115 coefficients occurred 2-3 times
+      79 coefficients occurred 4-7 times
+      64 coefficients occurred 8-15 times
+      68 coefficients occurred 16-31 times
+      59 coefficients occurred 32-63 times
+      64 coefficients occurred 64-127 times
+      43 coefficients occurred 128-255 times
+      60 coefficients occurred 256-511 times
+      29 coefficients occurred 512-1023 times
+      39 coefficients occurred 1024-2047 times
+      28 coefficients occurred 2048-4095 times
+      23 coefficients occurred 4096-8191 times
+      23 coefficients occurred 8192-16383 times
+      16 coefficients occurred 16384-32767 times
+      18 coefficients occurred 32768-65535 times
+      12 coefficients occurred 65536-131071 times
+      15 coefficients occurred 131072-262143 times
+      19 coefficients occurred 262144-524287 times
+      39 coefficients occurred 524288-1048575 times
+       2 coefficients occurred 1048576-2097151 times
+       2 coefficients occurred 16777216-33554431 times
+
+estimating coefficients using 6,626,064 positions
+20,106 ms elapsed
+sum of coefficients squared = 2.01e+03
+578 non-zero coefficients written
+
+--- 45 ---
+== instance counts ==
+   2,821 coefficients occurred 0 times
+      85 coefficients occurred 1 time
+      95 coefficients occurred 2-3 times
+      88 coefficients occurred 4-7 times
+      89 coefficients occurred 8-15 times
+      61 coefficients occurred 16-31 times
+      71 coefficients occurred 32-63 times
+      53 coefficients occurred 64-127 times
+      56 coefficients occurred 128-255 times
+      42 coefficients occurred 256-511 times
+      38 coefficients occurred 512-1023 times
+      31 coefficients occurred 1024-2047 times
+      28 coefficients occurred 2048-4095 times
+      17 coefficients occurred 4096-8191 times
+      25 coefficients occurred 8192-16383 times
+      12 coefficients occurred 16384-32767 times
+      20 coefficients occurred 32768-65535 times
+      11 coefficients occurred 65536-131071 times
+      15 coefficients occurred 131072-262143 times
+      18 coefficients occurred 262144-524287 times
+      38 coefficients occurred 524288-1048575 times
+       3 coefficients occurred 1048576-2097151 times
+       2 coefficients occurred 16777216-33554431 times
+
+estimating coefficients using 6,673,457 positions
+20,378 ms elapsed
+sum of coefficients squared = 1.93e+03
+587 non-zero coefficients written
+
+--- 46 ---
+== instance counts ==
+   2,959 coefficients occurred 0 times
+      74 coefficients occurred 1 time
+      87 coefficients occurred 2-3 times
+      68 coefficients occurred 4-7 times
+      70 coefficients occurred 8-15 times
+      48 coefficients occurred 16-31 times
+      57 coefficients occurred 32-63 times
+      31 coefficients occurred 64-127 times
+      53 coefficients occurred 128-255 times
+      38 coefficients occurred 256-511 times
+      36 coefficients occurred 512-1023 times
+      29 coefficients occurred 1024-2047 times
+      18 coefficients occurred 2048-4095 times
+      21 coefficients occurred 4096-8191 times
+      18 coefficients occurred 8192-16383 times
+      15 coefficients occurred 16384-32767 times
+      15 coefficients occurred 32768-65535 times
+      10 coefficients occurred 65536-131071 times
+      14 coefficients occurred 131072-262143 times
+      22 coefficients occurred 262144-524287 times
+      33 coefficients occurred 524288-1048575 times
+       1 coefficients occurred 1048576-2097151 times
+       2 coefficients occurred 16777216-33554431 times
+
+estimating coefficients using 5,743,748 positions
+18,334 ms elapsed
+sum of coefficients squared = 1.73e+03
+527 non-zero coefficients written
+
+--- 47 ---
+== instance counts ==
+   2,977 coefficients occurred 0 times
+      64 coefficients occurred 1 time
+      76 coefficients occurred 2-3 times
+      77 coefficients occurred 4-7 times
+      66 coefficients occurred 8-15 times
+      57 coefficients occurred 16-31 times
+      54 coefficients occurred 32-63 times
+      53 coefficients occurred 64-127 times
+      41 coefficients occurred 128-255 times
+      37 coefficients occurred 256-511 times
+      28 coefficients occurred 512-1023 times
+      27 coefficients occurred 1024-2047 times
+      12 coefficients occurred 2048-4095 times
+      27 coefficients occurred 4096-8191 times
+      12 coefficients occurred 8192-16383 times
+      18 coefficients occurred 16384-32767 times
+      11 coefficients occurred 32768-65535 times
+      12 coefficients occurred 65536-131071 times
+      15 coefficients occurred 131072-262143 times
+      19 coefficients occurred 262144-524287 times
+      34 coefficients occurred 524288-1048575 times
+       2 coefficients occurred 16777216-33554431 times
+
+estimating coefficients using 5,832,235 positions
+28,972 ms elapsed
+sum of coefficients squared = 1.65e+03
+546 non-zero coefficients written
+
+--- 48 ---
+== instance counts ==
+   3,108 coefficients occurred 0 times
+      59 coefficients occurred 1 time
+      74 coefficients occurred 2-3 times
+      50 coefficients occurred 4-7 times
+      50 coefficients occurred 8-15 times
+      40 coefficients occurred 16-31 times
+      43 coefficients occurred 32-63 times
+      38 coefficients occurred 64-127 times
+      32 coefficients occurred 128-255 times
+      27 coefficients occurred 256-511 times
+      29 coefficients occurred 512-1023 times
+      24 coefficients occurred 1024-2047 times
+      14 coefficients occurred 2048-4095 times
+      16 coefficients occurred 4096-8191 times
+      14 coefficients occurred 8192-16383 times
+      16 coefficients occurred 16384-32767 times
+      13 coefficients occurred 32768-65535 times
+       9 coefficients occurred 65536-131071 times
+      11 coefficients occurred 131072-262143 times
+      26 coefficients occurred 262144-524287 times
+      24 coefficients occurred 524288-1048575 times
+       1 coefficients occurred 8388608-16777215 times
+       1 coefficients occurred 16777216-33554431 times
+
+estimating coefficients using 4,629,541 positions
+18,355 ms elapsed
+sum of coefficients squared = 1.48e+03
+467 non-zero coefficients written
+
+--- 49 ---
+== instance counts ==
+   3,116 coefficients occurred 0 times
+      55 coefficients occurred 1 time
+      81 coefficients occurred 2-3 times
+      41 coefficients occurred 4-7 times
+      49 coefficients occurred 8-15 times
+      53 coefficients occurred 16-31 times
+      34 coefficients occurred 32-63 times
+      46 coefficients occurred 64-127 times
+      28 coefficients occurred 128-255 times
+      35 coefficients occurred 256-511 times
+      22 coefficients occurred 512-1023 times
+      15 coefficients occurred 1024-2047 times
+      17 coefficients occurred 2048-4095 times
+      17 coefficients occurred 4096-8191 times
+      14 coefficients occurred 8192-16383 times
+      11 coefficients occurred 16384-32767 times
+      11 coefficients occurred 32768-65535 times
+      11 coefficients occurred 65536-131071 times
+      12 coefficients occurred 131072-262143 times
+      21 coefficients occurred 262144-524287 times
+      28 coefficients occurred 524288-1048575 times
+       1 coefficients occurred 8388608-16777215 times
+       1 coefficients occurred 16777216-33554431 times
+
+estimating coefficients using 4,716,740 positions
+13,304 ms elapsed
+sum of coefficients squared = 712
+345 non-zero coefficients written
+
+--- 50 ---
+== instance counts ==
+   3,231 coefficients occurred 0 times
+      47 coefficients occurred 1 time
+      52 coefficients occurred 2-3 times
+      44 coefficients occurred 4-7 times
+      30 coefficients occurred 8-15 times
+      36 coefficients occurred 16-31 times
+      39 coefficients occurred 32-63 times
+      29 coefficients occurred 64-127 times
+      33 coefficients occurred 128-255 times
+      17 coefficients occurred 256-511 times
+      16 coefficients occurred 512-1023 times
+      22 coefficients occurred 1024-2047 times
+      10 coefficients occurred 2048-4095 times
+      14 coefficients occurred 4096-8191 times
+      12 coefficients occurred 8192-16383 times
+       9 coefficients occurred 16384-32767 times
+      12 coefficients occurred 32768-65535 times
+      10 coefficients occurred 65536-131071 times
+      15 coefficients occurred 131072-262143 times
+      24 coefficients occurred 262144-524287 times
+      15 coefficients occurred 524288-1048575 times
+       2 coefficients occurred 8388608-16777215 times
+
+estimating coefficients using 3,562,743 positions
+10,355 ms elapsed
+sum of coefficients squared = 630
+279 non-zero coefficients written
+
+--- 51 ---
+== instance counts ==
+   3,267 coefficients occurred 0 times
+      41 coefficients occurred 1 time
+      45 coefficients occurred 2-3 times
+      30 coefficients occurred 4-7 times
+      35 coefficients occurred 8-15 times
+      38 coefficients occurred 16-31 times
+      36 coefficients occurred 32-63 times
+      32 coefficients occurred 64-127 times
+      30 coefficients occurred 128-255 times
+      13 coefficients occurred 256-511 times
+      13 coefficients occurred 512-1023 times
+      16 coefficients occurred 1024-2047 times
+      12 coefficients occurred 2048-4095 times
+      16 coefficients occurred 4096-8191 times
+       7 coefficients occurred 8192-16383 times
+      11 coefficients occurred 16384-32767 times
+      12 coefficients occurred 32768-65535 times
+       8 coefficients occurred 65536-131071 times
+      16 coefficients occurred 131072-262143 times
+      24 coefficients occurred 262144-524287 times
+      15 coefficients occurred 524288-1048575 times
+       2 coefficients occurred 8388608-16777215 times
+
+estimating coefficients using 3,653,103 positions
+3,825 ms elapsed
+sum of coefficients squared = 535
+261 non-zero coefficients written
+
+--- 52 ---
+== instance counts ==
+   3,329 coefficients occurred 0 times
+      42 coefficients occurred 1 time
+      38 coefficients occurred 2-3 times
+      32 coefficients occurred 4-7 times
+      35 coefficients occurred 8-15 times
+      33 coefficients occurred 16-31 times
+      26 coefficients occurred 32-63 times
+      21 coefficients occurred 64-127 times
+      15 coefficients occurred 128-255 times
+      12 coefficients occurred 256-511 times
+      15 coefficients occurred 512-1023 times
+      12 coefficients occurred 1024-2047 times
+       9 coefficients occurred 2048-4095 times
+      16 coefficients occurred 4096-8191 times
+       5 coefficients occurred 8192-16383 times
+       9 coefficients occurred 16384-32767 times
+      12 coefficients occurred 32768-65535 times
+      12 coefficients occurred 65536-131071 times
+      15 coefficients occurred 131072-262143 times
+      25 coefficients occurred 262144-524287 times
+       4 coefficients occurred 524288-1048575 times
+       2 coefficients occurred 8388608-16777215 times
+
+estimating coefficients using 2,565,821 positions
+3,473 ms elapsed
+sum of coefficients squared = 570
+250 non-zero coefficients written
+
+--- 53 ---
+== instance counts ==
+   3,399 coefficients occurred 0 times
+      23 coefficients occurred 1 time
+      30 coefficients occurred 2-3 times
+      22 coefficients occurred 4-7 times
+      23 coefficients occurred 8-15 times
+      29 coefficients occurred 16-31 times
+      23 coefficients occurred 32-63 times
+      17 coefficients occurred 64-127 times
+      11 coefficients occurred 128-255 times
+      17 coefficients occurred 256-511 times
+      12 coefficients occurred 512-1023 times
+      11 coefficients occurred 1024-2047 times
+       7 coefficients occurred 2048-4095 times
+       9 coefficients occurred 4096-8191 times
+      11 coefficients occurred 8192-16383 times
+       7 coefficients occurred 16384-32767 times
+      11 coefficients occurred 32768-65535 times
+      12 coefficients occurred 65536-131071 times
+      13 coefficients occurred 131072-262143 times
+      24 coefficients occurred 262144-524287 times
+       6 coefficients occurred 524288-1048575 times
+       2 coefficients occurred 8388608-16777215 times
+
+estimating coefficients using 2,654,985 positions
+4,527 ms elapsed
+sum of coefficients squared = 856
+250 non-zero coefficients written
+
+--- 54 ---
+== instance counts ==
+   3,468 coefficients occurred 0 times
+      23 coefficients occurred 1 time
+      24 coefficients occurred 2-3 times
+      22 coefficients occurred 4-7 times
+       8 coefficients occurred 8-15 times
+      19 coefficients occurred 16-31 times
+      13 coefficients occurred 32-63 times
+       7 coefficients occurred 64-127 times
+      11 coefficients occurred 128-255 times
+      12 coefficients occurred 256-511 times
+       8 coefficients occurred 512-1023 times
+      12 coefficients occurred 1024-2047 times
+       8 coefficients occurred 2048-4095 times
+       7 coefficients occurred 4096-8191 times
+       8 coefficients occurred 8192-16383 times
+      11 coefficients occurred 16384-32767 times
+      10 coefficients occurred 32768-65535 times
+      14 coefficients occurred 65536-131071 times
+      20 coefficients occurred 131072-262143 times
+      12 coefficients occurred 262144-524287 times
+       2 coefficients occurred 4194304-8388607 times
+
+estimating coefficients using 1,670,318 positions
+2,770 ms elapsed
+sum of coefficients squared = 596
+194 non-zero coefficients written
+
+--- 55 ---
+== instance counts ==
+   3,511 coefficients occurred 0 times
+      21 coefficients occurred 1 time
+      15 coefficients occurred 2-3 times
+      12 coefficients occurred 4-7 times
+      15 coefficients occurred 8-15 times
+       9 coefficients occurred 16-31 times
+       8 coefficients occurred 32-63 times
+      13 coefficients occurred 64-127 times
+       8 coefficients occurred 128-255 times
+       5 coefficients occurred 256-511 times
+       8 coefficients occurred 512-1023 times
+       5 coefficients occurred 1024-2047 times
+       5 coefficients occurred 2048-4095 times
+      11 coefficients occurred 4096-8191 times
+       8 coefficients occurred 8192-16383 times
+       8 coefficients occurred 16384-32767 times
+      11 coefficients occurred 32768-65535 times
+      12 coefficients occurred 65536-131071 times
+      16 coefficients occurred 131072-262143 times
+      16 coefficients occurred 262144-524287 times
+       2 coefficients occurred 4194304-8388607 times
+
+estimating coefficients using 1,754,763 positions
+3,106 ms elapsed
+sum of coefficients squared = 804
+170 non-zero coefficients written
+
+--- 56 ---
+== instance counts ==
+   3,560 coefficients occurred 0 times
+       7 coefficients occurred 1 time
+       9 coefficients occurred 2-3 times
+       8 coefficients occurred 4-7 times
+       8 coefficients occurred 8-15 times
+      11 coefficients occurred 16-31 times
+       7 coefficients occurred 32-63 times
+       5 coefficients occurred 64-127 times
+       4 coefficients occurred 128-255 times
+       9 coefficients occurred 256-511 times
+       7 coefficients occurred 512-1023 times
+       4 coefficients occurred 1024-2047 times
+       9 coefficients occurred 2048-4095 times
+       7 coefficients occurred 4096-8191 times
+       7 coefficients occurred 8192-16383 times
+      10 coefficients occurred 16384-32767 times
+      12 coefficients occurred 32768-65535 times
+      17 coefficients occurred 65536-131071 times
+      16 coefficients occurred 131072-262143 times
+       2 coefficients occurred 2097152-4194303 times
+
+estimating coefficients using 902,417 positions
+1,545 ms elapsed
+sum of coefficients squared = 467
+145 non-zero coefficients written
+
+--- 57 ---
+== instance counts ==
+   3,594 coefficients occurred 0 times
+       1 coefficients occurred 1 time
+       6 coefficients occurred 2-3 times
+       7 coefficients occurred 4-7 times
+       4 coefficients occurred 8-15 times
+       6 coefficients occurred 16-31 times
+       5 coefficients occurred 32-63 times
+       2 coefficients occurred 64-127 times
+       8 coefficients occurred 128-255 times
+       5 coefficients occurred 512-1023 times
+       6 coefficients occurred 1024-2047 times
+       4 coefficients occurred 2048-4095 times
+      10 coefficients occurred 4096-8191 times
+       7 coefficients occurred 8192-16383 times
+       7 coefficients occurred 16384-32767 times
+      11 coefficients occurred 32768-65535 times
+      14 coefficients occurred 65536-131071 times
+      17 coefficients occurred 131072-262143 times
+       3 coefficients occurred 262144-524287 times
+       2 coefficients occurred 2097152-4194303 times
+
+estimating coefficients using 989,954 positions
+8,540 ms elapsed
+sum of coefficients squared = 672
+118 non-zero coefficients written
+
+--- 58 ---
+== instance counts ==
+   3,621 coefficients occurred 0 times
+       1 coefficients occurred 2-3 times
+       1 coefficients occurred 4-7 times
+       1 coefficients occurred 8-15 times
+       6 coefficients occurred 16-31 times
+       3 coefficients occurred 32-63 times
+       5 coefficients occurred 64-127 times
+       1 coefficients occurred 128-255 times
+       8 coefficients occurred 256-511 times
+       4 coefficients occurred 512-1023 times
+       7 coefficients occurred 1024-2047 times
+       8 coefficients occurred 2048-4095 times
+       4 coefficients occurred 4096-8191 times
+      12 coefficients occurred 8192-16383 times
+      10 coefficients occurred 16384-32767 times
+      21 coefficients occurred 32768-65535 times
+       4 coefficients occurred 65536-131071 times
+       2 coefficients occurred 1048576-2097151 times
+
+estimating coefficients using 277,822 positions
+523 ms elapsed
+sum of coefficients squared = 299
+96 non-zero coefficients written
+
+--- 59 ---
+== instance counts ==
+   3,632 coefficients occurred 0 times
+       2 coefficients occurred 1 time
+       2 coefficients occurred 2-3 times
+       3 coefficients occurred 4-7 times
+       5 coefficients occurred 16-31 times
+       2 coefficients occurred 32-63 times
+       3 coefficients occurred 64-127 times
+       4 coefficients occurred 256-511 times
+       2 coefficients occurred 512-1023 times
+       5 coefficients occurred 1024-2047 times
+       7 coefficients occurred 2048-4095 times
+       6 coefficients occurred 4096-8191 times
+       5 coefficients occurred 8192-16383 times
+      13 coefficients occurred 16384-32767 times
+      18 coefficients occurred 32768-65535 times
+       8 coefficients occurred 65536-131071 times
+       2 coefficients occurred 1048576-2097151 times
+
+estimating coefficients using 326,786 positions
+6,908 ms elapsed
+sum of coefficients squared = 841
+87 non-zero coefficients written
+
+--- 60 ---
+== instance counts ==
+   3,663 coefficients occurred 0 times
+       2 coefficients occurred 2-3 times
+      10 coefficients occurred 4-7 times
+       3 coefficients occurred 8-15 times
+       2 coefficients occurred 16-31 times
+       3 coefficients occurred 32-63 times
+      11 coefficients occurred 64-127 times
+       8 coefficients occurred 128-255 times
+      10 coefficients occurred 256-511 times
+       1 coefficients occurred 512-1023 times
+       4 coefficients occurred 1024-2047 times
+       2 coefficients occurred 4096-8191 times
+
+estimating coefficients using 1,972 positions
+8 ms elapsed
+sum of coefficients squared = 106
+56 non-zero coefficients written
+
+--- 61 ---
+== instance counts ==
+   3,719 coefficients occurred 0 times
+
+estimating coefficients using 0 positions
+WARNING: might not have converged
+6 ms elapsed
+sum of coefficients squared = 0.00
+0 non-zero coefficients written
+
+--- 62 ---
+== instance counts ==
+   3,719 coefficients occurred 0 times
+
+estimating coefficients using 0 positions
+WARNING: might not have converged
+4 ms elapsed
+sum of coefficients squared = 0.00
+0 non-zero coefficients written
+
+--- 63 ---
+== instance counts ==
+   3,719 coefficients occurred 0 times
+
+estimating coefficients using 0 positions
+WARNING: might not have converged
+1 ms elapsed
+sum of coefficients squared = 0.00
+0 non-zero coefficients written

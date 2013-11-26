@@ -1,5 +1,6 @@
 package com.welty.novello.solver;
 
+import com.welty.novello.selfplay.MoveScore;
 import junit.framework.TestCase;
 
 import static com.welty.novello.solver.BitBoardUtils.reflection;
@@ -220,16 +221,16 @@ public class SolverTest extends TestCase {
         BitBoard bb = testCases[2];
         final Solver solver = new Solver();
         // switch player to move because mover has no move.
-        final Result result = solver.solveWithMove(bb.enemy(), bb.mover());
-        assertEquals(1,result.bestMoveSq);
+        final MoveScore result = solver.solveWithMove(bb.enemy(), bb.mover());
+        assertEquals(1,result.sq);
     }
 
     public void testSolveWithMove2() {
         BitBoard bb= new BitBoard("********************O*****OO*O****-********O*****O.OOO**--O---**", true);
         final Solver solver = new Solver();
-        final Result result = solver.solveWithMove(bb.mover(), bb.enemy());
+        final MoveScore result = solver.solveWithMove(bb.mover(), bb.enemy());
         // A8, F8, C5 all win by 64.
         //noinspection OctalInteger
-        assertTrue(result.bestMoveSq==007 || result.bestMoveSq==002 || result.bestMoveSq == 035);
+        assertTrue(result.sq==007 || result.sq==002 || result.sq == 035);
     }
 }

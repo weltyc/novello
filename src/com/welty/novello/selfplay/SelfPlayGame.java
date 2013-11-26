@@ -2,7 +2,6 @@ package com.welty.novello.selfplay;
 
 import com.welty.novello.eval.PositionValue;
 import com.welty.novello.solver.BitBoard;
-import com.welty.novello.solver.BitBoardUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -12,7 +11,7 @@ import java.util.concurrent.Callable;
 /**
  */
 public class SelfPlayGame implements Callable<SelfPlayGame.Result> {
-    private @NotNull BitBoard board;
+    private @NotNull MutableGame game;
     private final @NotNull Player black;
     private final @NotNull Player white;
     private final boolean printGame;
@@ -25,7 +24,7 @@ public class SelfPlayGame implements Callable<SelfPlayGame.Result> {
 
     public SelfPlayGame(@NotNull BitBoard board, @NotNull Player black, @NotNull Player white, boolean printGame
             , int searchFlags) {
-        this.board = board;
+        this.game = new MutableGame(board);
         this.black = black;
         this.white = white;
         this.printGame = printGame;
@@ -34,16 +33,10 @@ public class SelfPlayGame implements Callable<SelfPlayGame.Result> {
 
     @Override public Result call() {
         while (true) {
-            if (printGame) {
-                System.out.println(board.boardString());
-                System.out.println();
-                System.out.println(board);
-                System.out.println(player(board.blackToMove) + " to move");
-            }
             if (!moveIfLegal()) {
-                board = board.pass();
+                game.pass();
                 if (!moveIfLegal()) {
-                    final Result result = new Result(board.netDisks(), blackToMovePositions, whiteToMovePositions);
+                    final Result result = new Result(game.getLastPosition().netDisks(), blackToMovePositions, whiteToMovePositions);
                     if (printGame) {
                         System.out.println("--- result : " + result);
                     }
@@ -58,18 +51,25 @@ public class SelfPlayGame implements Callable<SelfPlayGame.Result> {
     }
 
     private boolean moveIfLegal() {
+        final BitBoard board = game.getLastPosition();
         final long moverMoves = board.calcMoves();
-        final boolean result = moverMoves!=0;
-        if (result) {
-            (board.blackToMove ? blackToMovePositions : whiteToMovePositions).add(board);
-            final int sq = player(board.blackToMove).calcMove(board, moverMoves, searchFlags);
-            board = board.play(sq);
+        final boolean canMove = moverMoves != 0;
+        if (canMove) {
             if (printGame) {
-                System.out.println("play " + BitBoardUtils.sqToText(sq));
+                System.out.println(board.boardString());
+                System.out.println();
+                System.out.println(board);
+                System.out.println(player(board.blackToMove) + " to move");
+            }
+            (board.blackToMove ? blackToMovePositions : whiteToMovePositions).add(board);
+            final MoveScore moveScore = player(board.blackToMove).calcMove(board, moverMoves, searchFlags);
+            game.play(moveScore);
+            if (printGame) {
+                System.out.println("play " + moveScore);
                 System.out.println();
             }
         }
-        return result;
+        return canMove;
     }
 
     /**
