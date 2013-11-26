@@ -32,7 +32,7 @@ public class CoefficientCalculator {
      * 1 disk is worth how many evaluation points?
      */
     public static final int DISK_VALUE = 100;
-    private static final String target = "6B";
+    private static final String target = "8A";
     private static final EvalStrategy STRATEGY = EvalStrategies.strategy(target.substring(0, 1));
     private static final String COEFF_SET_NAME = target.substring(1);
     private static final double PENALTY = 100;
@@ -79,9 +79,12 @@ public class CoefficientCalculator {
                 counts[index]++;
             }
         }
-        final int[] histogram = new int[32];
+        final int[] histogram = new int[12];
         for (int count : counts) {
-            final int lg = 32 - Integer.numberOfLeadingZeros(count);
+            int lg = 32 - Integer.numberOfLeadingZeros(count);
+            if (lg>11) {
+                lg = 11;
+            }
             histogram[lg]++;
         }
         System.out.println("== instance counts ==");
@@ -102,6 +105,9 @@ public class CoefficientCalculator {
             return "1 time";
         }
         int min = 1 << (i - 1);
+        if (i==11) {
+            return min + "+ times";
+        }
         int max = (1 << i) - 1;
         return min + "-" + max + " times";
     }
