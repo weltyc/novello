@@ -1,5 +1,6 @@
 package com.welty.novello.selfplay;
 
+import com.welty.novello.eval.PositionValue;
 import com.welty.novello.solver.BitBoard;
 import com.welty.novello.solver.BitBoardUtils;
 
@@ -30,7 +31,7 @@ public class MutableGame {
             sb.append(cur.blackToMove ? "B[" : "W[");
             move.appendTo(sb);
             sb.append(']');
-            cur = cur.play(move.sq);
+            cur = cur.playOrPass(move.sq);
         }
 
         sb.append(";)");
@@ -45,7 +46,7 @@ public class MutableGame {
      * Add a move
      *
      * @param moveScore move and score of the move
-     * @param time time taken to make the move, in seconds
+     * @param time      time taken to make the move, in seconds
      */
     public void play(MoveScore moveScore, double time) {
         play(new Move(moveScore, time));
@@ -58,7 +59,7 @@ public class MutableGame {
 
     private void play(Move move) {
         moves.add(move);
-        lastPosition = lastPosition.play(move.sq);
+        lastPosition = lastPosition.playOrPass(move.sq);
     }
 
     public BitBoard getStartPosition() {
@@ -68,6 +69,36 @@ public class MutableGame {
     public BitBoard getLastPosition() {
         return lastPosition;
     }
+
+    /**
+     * @return a list of PositionValues, but only those where the mover has a legal move.
+     */
+    public List<PositionValue> calcPositionValues() {
+        final int netScore = getLastPosition().netDisks();
+        final List<PositionValue> pvs = new ArrayList<>();
+        BitBoard pos = getStartPosition();
+        for (MutableGame.Move move : moves) {
+            if (move.isPass()) {
+                pos = pos.pass();
+            } else {
+                pvs.add(pv(pos, netScore));
+                pos = pos.play(move.sq);
+            }
+        }
+        return pvs;
+    }
+
+    private static PositionValue pv(BitBoard pos, int netScore) {
+        return new PositionValue(pos.mover(), pos.enemy(), pos.blackToMove ? netScore : -netScore);
+    }
+
+    /**
+     * @return number of black disks - number of white disks at the end of the game
+     */
+    public int netScore() {
+        return lastPosition.netDisks();
+    }
+
 
     static class Move {
         /**
@@ -87,7 +118,7 @@ public class MutableGame {
 
         /**
          * Generic pass move
-         *
+         * <p/>
          * This is a pass move with no eval and no time elapsed.
          * To create a pass move with an eval or time elapsed, use the constructor.
          */
@@ -98,7 +129,7 @@ public class MutableGame {
             if (split.length > 3) {
                 throw new IllegalArgumentException("Moves may have at most 3 components");
             }
-            sq = split[0].startsWith("PA")?-1:BitBoardUtils.textToSq(split[0]);
+            sq = split[0].startsWith("PA") ? -1 : BitBoardUtils.textToSq(split[0]);
             time = (split.length > 1 && !split[1].isEmpty()) ? Double.parseDouble(split[1]) : 0;
             eval = (split.length > 2 && !split[2].isEmpty()) ? Double.parseDouble(split[2]) : 0;
         }
@@ -116,7 +147,7 @@ public class MutableGame {
         }
 
         private void appendTo(StringBuilder sb) {
-            sb.append(BitBoardUtils.sqToText(sq));
+            sb.append(isPass()?"PASS":BitBoardUtils.sqToText(sq));
             if (time != 0 || eval != 0) {
                 sb.append('/');
                 if (time != 0) {

@@ -106,6 +106,15 @@ public class BitBoard implements Comparable<BitBoard> {
     }
 
     /**
+     * Play a move, if sq >= 0, or pass if sq <0
+     * @param sq square index
+     * @return new BitBoard
+     */
+    public BitBoard playOrPass(int sq) {
+        return sq >= 0 ? play(sq) : pass();
+    }
+
+    /**
      * Play a move.
      * <p/>
      * This is designed for ease of use and error reporting rather than optimal efficiency. For optimal
@@ -161,7 +170,7 @@ public class BitBoard implements Comparable<BitBoard> {
                 sb.append(w < 0 ? 'O' : '-');
             }
             nWritten++;
-            if ((nWritten&7)==0 && nWritten<64) {
+            if ((nWritten & 7) == 0 && nWritten < 64) {
                 sb.append(' ');
             }
             b <<= 1;
@@ -174,7 +183,7 @@ public class BitBoard implements Comparable<BitBoard> {
      * @return Text of the contents of the board, with player-to-move
      */
     public String positionString() {
-         return boardString() + " " + (blackToMove? '*' : 'O');
+        return boardString() + " " + (blackToMove ? '*' : 'O');
     }
 
     @Override public String toString() {
@@ -328,7 +337,7 @@ public class BitBoard implements Comparable<BitBoard> {
 
     /**
      * Evaluate a position
-     *
+     * <p/>
      * This function will check for passes and return the terminal value if the game is over.
      *
      * @param eval Eval to use

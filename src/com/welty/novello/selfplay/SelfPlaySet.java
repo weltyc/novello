@@ -62,15 +62,15 @@ public class SelfPlaySet {
                     final int netResult;
                     final boolean printDetails = nComplete < nToPrint;
                     final int searchFlags = printDetails ? -1 : 0;
-                    final SelfPlayGame.Result result = new SelfPlayGame(startPosition, black, white, printDetails, searchFlags).call();
+                    final MutableGame result = new SelfPlayGame(startPosition, black, white, printDetails, searchFlags).call();
                     pvs.addAll(result.calcPositionValues());
                     if (white != black) {
-                        final SelfPlayGame.Result result2 = new SelfPlayGame(startPosition, white, black, printDetails, searchFlags).call();
+                        final MutableGame result2 = new SelfPlayGame(startPosition, white, black, printDetails, searchFlags).call();
                         pvs.addAll(result2.calcPositionValues());
-                        netResult = (result.netScore - result2.netScore);
+                        netResult = (result.netScore() - result2.netScore());
                     } else {
                         // if the same player plays both sides we don't need to play the return games
-                        netResult = result.netScore;
+                        netResult = result.netScore();
                     }
                     sum += netResult;
                     sumSq += netResult * netResult;

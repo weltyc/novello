@@ -1,7 +1,10 @@
 package com.welty.novello.selfplay;
 
+import com.welty.novello.eval.PositionValue;
 import com.welty.novello.solver.BitBoard;
 import junit.framework.TestCase;
+
+import java.util.List;
 
 /**
  */
@@ -27,7 +30,33 @@ public class MutableGameTest extends TestCase {
         assertTrue(game.toGgf().contains("B[F5]"));
 
         game.play("D6//1.03");
-        System.out.println(game.toGgf());
         assertTrue(game.toGgf().contains("W[D6//1.03]"));
+
+        //
+        // we're going to cheat and assume black passes here, to test passing code and to make the game shorter.
+        //
+
+        game.play("PASS");
+        game.play("F4");
+        game.play("PASS");
+        game.play("F6");
+        System.out.println(game.toGgf());
+        assertTrue(game.toGgf().contains("B[PASS]W[F4]B[PASS]W[F6]"));
+
+        final List<PositionValue> pvs = game.calcPositionValues();
+        assertEquals(4, pvs.size());
+        final boolean[] blackToMoves = {true, false, false, false};
+        assertEquals(8, pvs.get(1).value);
+        assertEquals(8, pvs.get(2).value);
+        assertEquals(8, pvs.get(3).value);
+        for (int i=0; i<4; i++) {
+            final PositionValue pv = pvs.get(i);
+            assertEquals(60 - i, pv.nEmpty());
+            final boolean blackToMove =blackToMoves[i];
+            final int netScore = blackToMove ? -8 : 8;
+            assertEquals(netScore, pv.value);
+        }
+        assertEquals(pvs.get(0).mover, startPosition.mover());
+        assertEquals(pvs.get(0).enemy, startPosition.enemy());
     }
 }

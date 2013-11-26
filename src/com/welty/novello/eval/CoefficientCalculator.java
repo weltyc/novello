@@ -5,10 +5,7 @@ import com.orbanova.common.misc.Logger;
 import com.orbanova.common.misc.Require;
 import com.orbanova.common.misc.Utils;
 import com.orbanova.common.misc.Vec;
-import com.welty.novello.selfplay.Player;
-import com.welty.novello.selfplay.Players;
-import com.welty.novello.selfplay.SelfPlayGame;
-import com.welty.novello.selfplay.SelfPlaySet;
+import com.welty.novello.selfplay.*;
 import com.welty.novello.solver.BitBoard;
 import org.jetbrains.annotations.NotNull;
 
@@ -332,8 +329,8 @@ public class CoefficientCalculator {
             final int sq = Long.numberOfTrailingZeros(moves);
             moves ^= 1L << sq;
             final BitBoard subPos = pos.play(sq);
-            final SelfPlayGame.Result gameResult = new SelfPlayGame(subPos, player, player, false, 0).call();
-            final List<PositionValue> gamePvs = gameResult.calcPositionValues();
+            final MutableGame game = new SelfPlayGame(subPos, player, player, false, 0).call();
+            final List<PositionValue> gamePvs = game.calcPositionValues();
             final List<PositionValue> toAdd = gamePvs.subList(0, Math.min(2, gamePvs.size()));
             for (PositionValue pv : toAdd) {
                 pv.write(out);
