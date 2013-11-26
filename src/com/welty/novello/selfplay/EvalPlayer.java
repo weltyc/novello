@@ -48,13 +48,13 @@ public class EvalPlayer extends EndgamePlayer {
         ba.alpha = NO_MOVE;
         final String indent = indent(depth);
 
-        final long corners = mover & BitBoardUtils.CORNERS;
-        final long xSquares = mover & BitBoardUtils.X_SQUARES;
-        final long rest = mover &~(BitBoardUtils.CORNERS | BitBoardUtils.X_SQUARES);
+        final long corners = moverMoves & BitBoardUtils.CORNERS;
+        final long xSquares = moverMoves & BitBoardUtils.X_SQUARES;
+        final long rest = moverMoves &~(BitBoardUtils.CORNERS | BitBoardUtils.X_SQUARES);
 
-        searchMoves(corners, enemy, moverMoves, depth, flags, ba, indent);
-        searchMoves(rest, enemy, moverMoves, depth, flags, ba, indent);
-        searchMoves(xSquares, enemy, moverMoves, depth, flags, ba, indent);
+        searchMoves(mover, enemy, corners, depth, flags, ba, indent);
+        searchMoves(mover, enemy, rest, depth, flags, ba, indent);
+        searchMoves(mover, enemy, xSquares, depth, flags, ba, indent);
 
         if (0 != (flags & FLAG_PRINT_SCORE)) {
             System.out.println();

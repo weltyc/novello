@@ -524,4 +524,11 @@ Try corners first, x-squares last:
 Coefficient calculation
 =======================
 
-Reran coefficients for 6B and 7B. [Coefficient index frequency distribution][frequency.txt]
+7A:2 (no bug) surely produces much better playouts than 5J:2 (with bug). Used 7A:2 as playout player and
+reran coefficients for 6B and 7B. [Coefficient index frequency distribution][frequency.txt]
+
+    Tournament results:
+    +13.1  7B:2
+     +2.4  6B:2
+     -1.7  7A:2
+    -13.8  6A:2

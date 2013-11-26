@@ -5,6 +5,8 @@ import com.welty.novello.eval.PositionValue;
 import com.welty.novello.solver.BitBoard;
 import org.jetbrains.annotations.NotNull;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -13,9 +15,9 @@ import java.util.List;
  */
 public class SelfPlaySet {
     public static void main(String[] args) {
-        final Player black = Players.player("7A:2");
-//        final Player white = Players.player("7A:2");
-        new SelfPlaySet(black, black, 2, true).call();
+        final Player black = Players.player("7B:2");
+        final Player white = Players.player("6B:2");
+        new SelfPlaySet(black, white, 2, true).call();
         System.out.format("%,d position evaluations performed.\n", Eval.nEvals());
     }
 
@@ -54,6 +56,8 @@ public class SelfPlaySet {
         double sum = 0;
         double sumSq = 0;
 
+        String hostName = getHostName();
+
         while (null != (startPosition = generator.next())) {
             // only play positions where we have not seen a reflection previously
             // this means we won't get 8 of each game.
@@ -62,10 +66,10 @@ public class SelfPlaySet {
                     final int netResult;
                     final boolean printDetails = nComplete < nToPrint;
                     final int searchFlags = printDetails ? -1 : 0;
-                    final MutableGame result = new SelfPlayGame(startPosition, black, white, printDetails, searchFlags).call();
+                    final MutableGame result = new SelfPlayGame(startPosition, black, white, hostName, printDetails, searchFlags).call();
                     pvs.addAll(result.calcPositionValues());
                     if (white != black) {
-                        final MutableGame result2 = new SelfPlayGame(startPosition, white, black, printDetails, searchFlags).call();
+                        final MutableGame result2 = new SelfPlayGame(startPosition, white, black, hostName, printDetails, searchFlags).call();
                         pvs.addAll(result2.calcPositionValues());
                         netResult = (result.netScore() - result2.netScore());
                     } else {
@@ -87,6 +91,16 @@ public class SelfPlaySet {
             printStats(nComplete, sum, sumSq);
         }
         return new Result(pvs, sum/nComplete);
+    }
+
+    private static String getHostName() {
+        String hostName;
+        try {
+            hostName = InetAddress.getLocalHost().getHostName();
+        } catch (UnknownHostException e) {
+            hostName = "Unknown";
+        }
+        return hostName;
     }
 
     private static void printStats(int nComplete, double sum, double sumSq) {

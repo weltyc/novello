@@ -12,18 +12,30 @@ import java.util.List;
  */
 public class MutableGame {
     final List<Move> moves = new ArrayList<>();
-    private boolean isComplete = false;
     private BitBoard lastPosition;
     private final BitBoard startPosition;
+    private final String blackName;
+    private final String whiteName;
+    private final String place;
+    private boolean isOver = false;
 
-    public MutableGame(BitBoard startPosition) {
+    public MutableGame(BitBoard startPosition, String blackName, String whiteName, String place) {
         this.startPosition = startPosition;
         lastPosition = startPosition;
+        this.blackName = blackName;
+        this.whiteName = whiteName;
+        this.place = place;
     }
 
     public String toGgf() {
         final StringBuilder sb = new StringBuilder();
         sb.append("(;GM[Othello]");
+        sb.append("PC[").append(place).append("]");
+        sb.append("PB[").append(blackName).append("]");
+        sb.append("PW[").append(whiteName).append("]");
+        sb.append("RE[").append(isOver ? netScore() : "?").append("]");
+        sb.append("TI[0]");
+        sb.append("TY[8r]");
 
         sb.append("BO[8 ").append(startPosition.positionString()).append("]");
         BitBoard cur = startPosition;
@@ -56,6 +68,12 @@ public class MutableGame {
         play(Move.PASS);
     }
 
+    public void finish() {
+        if (!moves.isEmpty() && moves.get(moves.size()-1).isPass()) {
+            throw new IllegalArgumentException("Can't end on a pass");
+        }
+        this.isOver = true;
+    }
 
     private void play(Move move) {
         moves.add(move);

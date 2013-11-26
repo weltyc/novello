@@ -63,7 +63,7 @@ public class BitBoardUtils {
      * @param sq   bit index
      * @return true if bit number sq is set in the mask, false if it is clear.
      */
-    static boolean isBitSet(long mask, int sq) {
+    public static boolean isBitSet(long mask, int sq) {
         return ((mask >> sq) & 1) == 1;
     }
 

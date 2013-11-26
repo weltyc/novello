@@ -329,7 +329,7 @@ public class CoefficientCalculator {
             final int sq = Long.numberOfTrailingZeros(moves);
             moves ^= 1L << sq;
             final BitBoard subPos = pos.play(sq);
-            final MutableGame game = new SelfPlayGame(subPos, player, player, false, 0).call();
+            final MutableGame game = new SelfPlayGame(subPos, player, player, "", false, 0).call();
             final List<PositionValue> gamePvs = game.calcPositionValues();
             final List<PositionValue> toAdd = gamePvs.subList(0, Math.min(2, gamePvs.size()));
             for (PositionValue pv : toAdd) {

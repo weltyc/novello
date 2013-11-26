@@ -46,7 +46,7 @@ public class BitBoard implements Comparable<BitBoard> {
      * and so on. white is set the same way based on squares containing white disks.
      */
     public BitBoard(String boardString, boolean blackToMove) {
-        boardString = boardString.replace(" ", "");
+        boardString = boardString.replaceAll("\\s+", "");
         Require.eq(boardString.length(), "board text length", 64);
 
         long blackDisks = 0;
@@ -82,14 +82,28 @@ public class BitBoard implements Comparable<BitBoard> {
     }
 
     public BitBoard(String positionString) {
-        this(positionString.replace(" ", "").substring(0, 64), positionString.replace(" ", "").substring(64).equals("*"));
-        Require.eq(positionString.replace(" ", "").length(), "position string length", 65);
+        this(positionString.replaceAll("\\s+", "").substring(0, 64), positionString.replaceAll("\\s+", "").substring(64).equals("*"));
+        Require.eq(positionString.replaceAll("\\s+", "").length(), "position string length", 65);
     }
 
     private void validate() {
         if ((black & white) != 0) {
             throw new IllegalStateException("Internal error.");
         }
+    }
+
+
+    /**
+     * Play a move.
+     * <p/>
+     * This is designed for ease of use and error reporting rather than optimal efficiency. For optimal
+     * efficiency call square.calcFlips() directly without creating objects.
+     *
+     * @param moveText text of square to play
+     * @return a new BitBoard containing the board position after the move
+     */
+    public BitBoard play(String moveText) {
+        return play(BitBoardUtils.textToSq(moveText));
     }
 
     /**
@@ -193,7 +207,7 @@ public class BitBoard implements Comparable<BitBoard> {
         for (int row = 0; row < 8; row++) {
             final int rowDisplayIndex = row + 1;
             sb.append(rowDisplayIndex).append(' ');
-            String rowString = boardString.substring(row * 8, row * 8 + 8);
+            String rowString = boardString.substring(row * 9, row * 9 + 8);
             for (char c : rowString.toCharArray()) {
                 sb.append(c).append(' ');
             }
