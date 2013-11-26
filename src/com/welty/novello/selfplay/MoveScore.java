@@ -3,6 +3,7 @@ package com.welty.novello.selfplay;
 import com.welty.novello.solver.BitBoardUtils;
 
 /**
+ * A move with an evaluation
 */
 public class MoveScore {
     public final int sq;

@@ -63,7 +63,7 @@ public class SelfPlayGame implements Callable<SelfPlayGame.Result> {
             }
             (board.blackToMove ? blackToMovePositions : whiteToMovePositions).add(board);
             final MoveScore moveScore = player(board.blackToMove).calcMove(board, moverMoves, searchFlags);
-            game.play(moveScore);
+            game.play(moveScore, 0);
             if (printGame) {
                 System.out.println("play " + moveScore);
                 System.out.println();

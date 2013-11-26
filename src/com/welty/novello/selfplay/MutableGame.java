@@ -41,8 +41,14 @@ public class MutableGame {
         play(new Move(squareText));
     }
 
-    public void play(MoveScore moveScore) {
-        play(new Move(moveScore, 0));
+    /**
+     * Add a move
+     *
+     * @param moveScore move and score of the move
+     * @param time time taken to make the move, in seconds
+     */
+    public void play(MoveScore moveScore, double time) {
+        play(new Move(moveScore, time));
     }
 
     public void pass() {
