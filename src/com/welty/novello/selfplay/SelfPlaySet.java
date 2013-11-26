@@ -16,7 +16,7 @@ public class SelfPlaySet {
         final Player black = Players.player("7A:2");
 //        final Player white = Players.player("7A:2");
         new SelfPlaySet(black, black, 2, true).call();
-        System.out.format("%,d position evaluations performed.\n" , Eval.nEvals());
+        System.out.format("%,d position evaluations performed.\n", Eval.nEvals());
     }
 
     private final @NotNull Player black;
@@ -63,10 +63,10 @@ public class SelfPlaySet {
                     final boolean printDetails = nComplete < nToPrint;
                     final int searchFlags = printDetails ? -1 : 0;
                     final SelfPlayGame.Result result = new SelfPlayGame(startPosition, black, white, printDetails, searchFlags).call();
-                    pvs.addAll(result.getPositionValues());
+                    pvs.addAll(result.calcPositionValues());
                     if (white != black) {
                         final SelfPlayGame.Result result2 = new SelfPlayGame(startPosition, white, black, printDetails, searchFlags).call();
-                        pvs.addAll(result2.getPositionValues());
+                        pvs.addAll(result2.calcPositionValues());
                         netResult = (result.netScore - result2.netScore);
                     } else {
                         // if the same player plays both sides we don't need to play the return games

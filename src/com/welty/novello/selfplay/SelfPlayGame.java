@@ -36,7 +36,7 @@ public class SelfPlayGame implements Callable<SelfPlayGame.Result> {
             if (!moveIfLegal()) {
                 game.pass();
                 if (!moveIfLegal()) {
-                    final Result result = new Result(game.getLastPosition().netDisks(), blackToMovePositions, whiteToMovePositions);
+                    final Result result = new Result(game);
                     if (printGame) {
                         System.out.println("--- result : " + result);
                     }
@@ -82,28 +82,34 @@ public class SelfPlayGame implements Callable<SelfPlayGame.Result> {
          * Net score (black disks - white disks).
          */
         public final int netScore;
-        private final @NotNull List<BitBoard> blackToMovePositions;
-        private final @NotNull List<BitBoard> whiteToMovePositions;
+        public final MutableGame game;
 
-        private Result(int netScore, @NotNull List<BitBoard> blackToMovePositions, @NotNull List<BitBoard> whiteToMovePositions) {
-            this.netScore = netScore;
-            this.blackToMovePositions = blackToMovePositions;
-            this.whiteToMovePositions = whiteToMovePositions;
+        private Result(MutableGame game) {
+            this.netScore = game.getLastPosition().netDisks();
+            this.game = game;
         }
 
         @Override public String toString() {
             return (netScore > 0 ? "+" : "") + netScore;
         }
 
-        public List<PositionValue> getPositionValues() {
+        public List<PositionValue> calcPositionValues() {
             final List<PositionValue> pvs = new ArrayList<>();
-            for (BitBoard bb : blackToMovePositions) {
-                pvs.add(new PositionValue(bb.black, bb.white, netScore));
-            }
-            for (BitBoard bb : whiteToMovePositions) {
-                pvs.add(new PositionValue(bb.white, bb.black, -netScore));
+            BitBoard pos = game.getStartPosition();
+            pvs.add(pv(pos, netScore));
+            for (MutableGame.Move move : game.moves) {
+                if (move.isPass()) {
+                    pos = pos.pass();
+                }
+                else {
+                    pos = pos.play(move.sq);
+                }
             }
             return pvs;
+        }
+
+        private PositionValue pv(BitBoard pos, int netScore) {
+            return  new PositionValue(pos.mover(), pos.enemy(), pos.blackToMove?netScore:-netScore);
         }
     }
 }

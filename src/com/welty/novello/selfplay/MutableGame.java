@@ -10,7 +10,7 @@ import java.util.List;
  * Game history
  */
 public class MutableGame {
-    private final List<Move> moves = new ArrayList<>();
+    final List<Move> moves = new ArrayList<>();
     private boolean isComplete = false;
     private BitBoard lastPosition;
     private final BitBoard startPosition;
@@ -69,7 +69,7 @@ public class MutableGame {
         return lastPosition;
     }
 
-    private static class Move {
+    static class Move {
         /**
          * Square of the move, or -1 if the move was a pass
          */
@@ -127,6 +127,10 @@ public class MutableGame {
                     sb.append(eval);
                 }
             }
+        }
+
+        public boolean isPass() {
+            return sq < 0;
         }
     }
 }
