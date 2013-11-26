@@ -543,6 +543,12 @@ Set up to play vs Ntest. This is slow because of inter-process communication, so
 Whoops, just realized 7B is the current version, and much better.
     7B:2 vs NTest:1  after 10,000 matches, average result = -17.0 +/- 0.34. T ~ -50.3
 
+Coefficients 8A now available:
+    8A:2 vs NTest:1  after 15,000 matches, average result = -11.2 +/- 0.27. T ~ -41.2
+    8A:2 vs NTest:2  after 10,000 matches, average result = -33.7 +/- 0.31. T ~  -110
+
+Still have a ways to go.
+
 Coefficient calculation
 =======================
 

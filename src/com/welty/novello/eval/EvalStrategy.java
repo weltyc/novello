@@ -17,7 +17,6 @@ import java.util.ArrayList;
 public class EvalStrategy {
     private final String name;
     private final Term[] terms;
-
     private static final boolean debug = false;
 
     /**
@@ -52,6 +51,7 @@ public class EvalStrategy {
             iFeatures[i] = iFeature;
         }
         this.features = features.toArray(new Feature[features.size()]);
+        EvalStrategies.addStrategy(name, this);
     }
 
     /**
