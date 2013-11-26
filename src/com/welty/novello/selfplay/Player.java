@@ -16,7 +16,7 @@ public interface Player {
      *
      * @param board      board to move on
      * @param moverMoves legal moves for the player to move
-     * @param flags      a sum of binary flags. 1 = print out move score.
+     * @param flags      a sum of binary flags, as defined in the Player interface.
      * @return square of the player's chosen move
      */
     MoveScore calcMove(@NotNull BitBoard board, long moverMoves, int flags);

@@ -121,6 +121,7 @@ public class BitBoard implements Comparable<BitBoard> {
 
     /**
      * Play a move, if sq >= 0, or pass if sq <0
+     *
      * @param sq square index
      * @return new BitBoard
      */
@@ -173,6 +174,14 @@ public class BitBoard implements Comparable<BitBoard> {
      * @return Text of the contents of the board, without player-to-move.
      */
     public String boardString() {
+        return boardString(" ");
+    }
+
+    /**
+     * @param lineSeparator separator between lines of the board
+     * @return Text of the contents of the board, without player-to-move.
+     */
+    public String boardString(String lineSeparator) {
         StringBuilder sb = new StringBuilder();
         long b = black;
         long w = white;
@@ -185,7 +194,7 @@ public class BitBoard implements Comparable<BitBoard> {
             }
             nWritten++;
             if ((nWritten & 7) == 0 && nWritten < 64) {
-                sb.append(' ');
+                sb.append(lineSeparator);
             }
             b <<= 1;
             w <<= 1;
@@ -197,7 +206,15 @@ public class BitBoard implements Comparable<BitBoard> {
      * @return Text of the contents of the board, with player-to-move
      */
     public String positionString() {
-        return boardString() + " " + (blackToMove ? '*' : 'O');
+        return positionString(" ");
+    }
+
+    /**
+     * @param lineSeparator separator between lines of the board
+     * @return Text of the contents of the board, with player-to-move
+     */
+    public String positionString(String lineSeparator) {
+        return boardString(lineSeparator) + " " + (blackToMove ? '*' : 'O');
     }
 
     @Override public String toString() {

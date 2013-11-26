@@ -515,11 +515,11 @@ Midgame Speed
 =============
 It's getting painfully slow even at 2 ply.
 
-Check node count of a SelfPlaySet, 7A:1 vs 7A:1
+Check node count of a SelfPlaySet, 7A:2 vs 7A:2
     110,538,379 position evaluations performed.
 
 Try corners first, x-squares last:
-    95,340,441 position evaluations performed.
+    106,405,074 position evaluations performed.
 
 Coefficient calculation
 =======================
@@ -528,7 +528,27 @@ Coefficient calculation
 reran coefficients for 6B and 7B. [Coefficient index frequency distribution][frequency.txt]
 
     Tournament results:
-    +13.1  7B:2
-     +2.4  6B:2
-     -1.7  7A:2
-    -13.8  6A:2
+    +30.0  7B:2
+     +1.2  6B:2
+     -5.4  7A:2
+    -25.8  6A:2
+
+Play vs NTest
+=============
+
+Set up to play vs Ntest. This is slow because of inter-process communication, so I cut off before the end, but 7A loses quite badly.
+    7A:2 vs NTest:2  after 15,000 matches, average result = -59.2 +/- 0.24. T ~  -248
+    7A:2 vs NTest:1  after 15,000 matches, average result = -39.7 +/- 0.27. T ~  -150
+
+Whoops, just realized 7B is the current version, and much better.
+    7B:2 vs NTest:1  after 10,000 matches, average result = -17.0 +/- 0.34. T ~ -50.3
+
+Coefficient calculation
+=======================
+
+Add PotMobs2 as an evaluation term. Coefficients are fairly small compared to PotMobs, range from lowest coefficient to highest within MoverPotMobs and also EnemyPotMobs is typically ~7. This is surely correlated with PotMobs, too, so I wasn't expecting too much improvement.
+
+    7B:2 vs 8A:2: average result = -5.4
+
+While small, I'll keep it. We're not doing performance tuning yet.
+

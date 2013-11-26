@@ -114,4 +114,12 @@ public class BitBoardUtilsTest extends BitBoardTestCase {
         assertBitBoardEquals("empty down right but disk on top edge", 0, potMobs(0x40L<<56, 0x20L<<48));
 
     }
+
+    public void testPotMobs2() {
+        assertBitBoardEquals("no empties", 0, potMobs2(0, 0));
+
+        assertBitBoardEquals("empty above", 0x10000, potMobs2(0x100, 0x10000));
+        assertBitBoardEquals("no empty above", 0, potMobs2(0x100, 0));
+        assertBitBoardEquals("empty above but disk on bottom edge", 0, potMobs2(0x1, 0x100));
+    }
 }

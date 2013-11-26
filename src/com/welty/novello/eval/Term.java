@@ -152,6 +152,18 @@ class Terms {
             return Long.bitCount(BitBoardUtils.potMobs(enemy, empty));
         }
     };
+    static final Term moverPotMobs2 = new Term(Features.moverPotMobs2) {
+        @Override public int instance(long mover, long enemy, long moverMoves, long enemyMoves) {
+            final long empty = ~(mover|enemy);
+            return Long.bitCount(BitBoardUtils.potMobs2(mover, empty));
+        }
+    };
+    static final Term enemyPotMobs2 = new Term(Features.enemyPotMobs2) {
+        @Override public int instance(long mover, long enemy, long moverMoves, long enemyMoves) {
+            final long empty = ~(mover|enemy);
+            return Long.bitCount(BitBoardUtils.potMobs2(enemy, empty));
+        }
+    };
 }
 /**
  * A Term that gets its value from the disk pattern on the Upper Left / Down Right main diagonal

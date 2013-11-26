@@ -2,9 +2,11 @@ package com.welty.novello.selfplay;
 
 import com.welty.novello.eval.Eval;
 import com.welty.novello.eval.PositionValue;
+import com.welty.novello.ntest.NTest;
 import com.welty.novello.solver.BitBoard;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -14,10 +16,12 @@ import java.util.List;
 /**
  */
 public class SelfPlaySet {
-    public static void main(String[] args) {
-        final Player black = Players.player("7B:2");
-        final Player white = Players.player("6B:2");
-        new SelfPlaySet(black, white, 2, true).call();
+    public static void main(String[] args) throws IOException {
+        final Player black = Players.player("8A:2");
+//        final Player white = Players.player("8A:2");
+        final Player white = new NTest(1, false);
+        final Result result = new SelfPlaySet(black, white, 2, true).call();
+        System.out.format("%s vs %s: average result = %.1f\n", black, white, result.averageResult);
         System.out.format("%,d position evaluations performed.\n", Eval.nEvals());
     }
 
@@ -28,13 +32,13 @@ public class SelfPlaySet {
 
     /**
      * Construct a SelfPlaySet.
-     *
+     * <p/>
      * call() plays the games.
      *
-     * @param black black player
-     * @param white white player
-     * @param nToPrint print the first nToPrint games to System.out.
-     * @param printUpdates  if true, print out statistics during the course of the set
+     * @param black        black player
+     * @param white        white player
+     * @param nToPrint     print the first nToPrint games to System.out.
+     * @param printUpdates if true, print out statistics during the course of the set
      */
     public SelfPlaySet(@NotNull Player black, @NotNull Player white, int nToPrint, boolean printUpdates) {
         this.black = black;
@@ -90,7 +94,7 @@ public class SelfPlaySet {
         if (printUpdates) {
             printStats(nComplete, sum, sumSq);
         }
-        return new Result(pvs, sum/nComplete);
+        return new Result(pvs, sum / nComplete);
     }
 
     private static String getHostName() {

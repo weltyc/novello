@@ -154,7 +154,7 @@ public class MutableGame {
 
         public Move(MoveScore moveScore, double time) {
             this.sq = moveScore.sq;
-            this.eval = moveScore.score;
+            this.eval = moveScore.score*.01;
             this.time = time;
         }
 

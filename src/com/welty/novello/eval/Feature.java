@@ -60,6 +60,8 @@ class Features {
     static final SoloFeature enemyMobilities = new GridFeature("Enemy Mobilities");
     static final SoloFeature moverPotMobs = new GridFeature("Mover PotMobs");
     static final SoloFeature enemyPotMobs = new GridFeature("Enemy PotMobs");
+    static final SoloFeature moverPotMobs2 = new GridFeature("Mover PotMobs2");
+    static final SoloFeature enemyPotMobs2 = new GridFeature("Enemy PotMobs2");
 
 
     static final Feature mainDiagonalFeature = LinePatternFeatureFactory.of("main diagonal", 8);
