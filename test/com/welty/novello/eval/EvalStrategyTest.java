@@ -41,7 +41,7 @@ public class EvalStrategyTest extends ArrayTestCase {
         assertEquals(2, strategy.nFeatures());
         assertEquals(new int[]{3, 2}, strategy.nOridsByFeature());
         assertEquals(TermTest.feature1.nOrids() + TermTest.feature2.nOrids(), strategy.nCoefficientIndices());
-        assertEquals(new int[]{2, 2, 3}, strategy.coefficientIndices(2, 0));
+        assertEquals(new int[]{2, 2, 3}, strategy.coefficientIndices(3, 0));
     }
 
     public void testWriteRead() throws IOException {
@@ -123,7 +123,7 @@ public class EvalStrategyTest extends ArrayTestCase {
             final long rEnemy = BitBoardUtils.reflection(enemy, r);
             final int[] actual = strategy.coefficientIndices(rMover, rEnemy);
             Arrays.sort(actual);
-            assertEquals(expected, actual);
+            assertEquals(strategy.toString(), expected, actual);
         }
     }
 }

@@ -66,4 +66,11 @@ public class MutableGameTest extends TestCase {
         assertEquals(pvs.get(0).mover, startPosition.mover());
         assertEquals(pvs.get(0).enemy, startPosition.enemy());
     }
+
+    public void testMove() {
+        assertEquals("time and eval", "H8/-2.01/1.03", new MutableGame.Move(new MoveScore(0, -201), 1.03).toString());
+        assertEquals("time", "H8//1.03", new MutableGame.Move(new MoveScore(0, 0), 1.03).toString());
+        assertEquals("eval", "H8/-2.01", new MutableGame.Move(new MoveScore(0, -201), 0).toString());
+        assertEquals("no time or eval", "H8", new MutableGame.Move(new MoveScore(0, 0), 0).toString());
+    }
 }

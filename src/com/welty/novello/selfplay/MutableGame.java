@@ -50,8 +50,13 @@ public class MutableGame {
         return sb.toString();
     }
 
-    public void play(String squareText) {
-        play(new Move(squareText));
+    /**
+     * Play a move
+     *
+     * @param moveText in GGF format. Square [/eval[/time]]
+     */
+    public void play(String moveText) {
+        play(new Move(moveText));
     }
 
     /**
@@ -148,8 +153,8 @@ public class MutableGame {
                 throw new IllegalArgumentException("Moves may have at most 3 components");
             }
             sq = split[0].startsWith("PA") ? -1 : BitBoardUtils.textToSq(split[0]);
-            time = (split.length > 1 && !split[1].isEmpty()) ? Double.parseDouble(split[1]) : 0;
-            eval = (split.length > 2 && !split[2].isEmpty()) ? Double.parseDouble(split[2]) : 0;
+            eval = (split.length > 1 && !split[1].isEmpty()) ? Double.parseDouble(split[1]) : 0;
+            time = (split.length > 2 && !split[2].isEmpty()) ? Double.parseDouble(split[2]) : 0;
         }
 
         public Move(MoveScore moveScore, double time) {
@@ -168,12 +173,12 @@ public class MutableGame {
             sb.append(isPass()?"PASS":BitBoardUtils.sqToText(sq));
             if (time != 0 || eval != 0) {
                 sb.append('/');
-                if (time != 0) {
-                    sb.append(time);
-                }
                 if (eval != 0) {
+                    sb.append(String.format("%.2f", eval));
+                }
+                if (time != 0) {
                     sb.append('/');
-                    sb.append(eval);
+                    sb.append(time);
                 }
             }
         }
