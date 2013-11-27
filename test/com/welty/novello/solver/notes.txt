@@ -558,3 +558,9 @@ Add PotMobs2 as an evaluation term. Coefficients are fairly small compared to Po
 
 While small, I'll keep it. We're not doing performance tuning yet.
 
+Add all rows as evaluation terms instead of just edges.
+
+    9A:2 vs 8A:2: average result = 7.9
+    9A:2 vs NTest:1: average result = -4.7
+
+Found a bug if there was a pass in midgame search. Fixed!

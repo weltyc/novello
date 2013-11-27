@@ -5,9 +5,11 @@ import com.orbanova.common.misc.Vec;
 import com.orbanova.common.ramfs.RamFileSystem;
 import com.welty.novello.selfplay.Players;
 import com.welty.novello.solver.BitBoard;
+import com.welty.novello.solver.BitBoardUtils;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.Random;
 
 /**
@@ -90,6 +92,38 @@ public class EvalStrategyTest extends ArrayTestCase {
         for (int r = 1; r < 8; r++) {
             final BitBoard reflection = bitBoard.reflection(r);
             assertEquals(expected, reflection.eval(eval));
+        }
+    }
+
+    public void testAllReflectionsHaveSameOrids() {
+        final Random random = new Random(1337);
+
+        // test with small # of disks on the board
+        final long empty1 = random.nextLong() | random.nextLong();
+        final long mover1 = random.nextLong() & ~empty1;
+        final long enemy1 = ~(empty1 | mover1);
+
+        // test with large # of disks on the board
+        final long empty2 = random.nextLong() | random.nextLong();
+        final long mover2 = random.nextLong() & ~empty2;
+        final long enemy2 = ~(empty2 | mover2);
+
+        for (EvalStrategy strategy : EvalStrategies.knownStrategies()) {
+            testAllReflectionsHaveTheSameOrids(strategy, mover1, enemy1);
+            testAllReflectionsHaveTheSameOrids(strategy, mover2, enemy2);
+            System.out.println("Success with EvalStrategy " + strategy);
+        }
+    }
+
+    private void testAllReflectionsHaveTheSameOrids(EvalStrategy strategy, long mover, long enemy) {
+        final int[] expected = strategy.coefficientIndices(mover, enemy);
+        Arrays.sort(expected);
+        for (int r=1; r<8; r++) {
+            final long rMover = BitBoardUtils.reflection(mover, r);
+            final long rEnemy = BitBoardUtils.reflection(enemy, r);
+            final int[] actual = strategy.coefficientIndices(rMover, rEnemy);
+            Arrays.sort(actual);
+            assertEquals(expected, actual);
         }
     }
 }

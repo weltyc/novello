@@ -4,6 +4,7 @@ import com.orbanova.common.misc.Require;
 import com.orbanova.common.misc.Vec;
 import com.welty.novello.solver.BitBoardUtils;
 
+import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -82,7 +83,7 @@ public class EvalStrategy {
      */
     int[][] readSlice(int nEmpty, Path coefficientDirectory) {
         final Path path = coefficientDirectory.resolve(filename(nEmpty));
-        try (DataInputStream in = new DataInputStream(Files.newInputStream(path))) {
+        try (DataInputStream in = new DataInputStream(new BufferedInputStream(Files.newInputStream(path)))) {
             final int nFeatures = nFeatures();
             final int[][] slice = new int[nFeatures][];
 

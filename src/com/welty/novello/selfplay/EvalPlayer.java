@@ -93,7 +93,7 @@ public class EvalPlayer extends EndgamePlayer {
      * <p/>
      * See {@link #searchScore(long, long, long, int, int, int)}  for parameter and output details.
      */
-    private int searchScore(long mover, long enemy, int alpha, int beta, int depth) {
+    int searchScore(long mover, long enemy, int alpha, int beta, int depth) {
         if (depth == 0) {
             return eval.eval(mover, enemy);
         }
@@ -101,7 +101,7 @@ public class EvalPlayer extends EndgamePlayer {
         if (moverMoves != 0) {
             return searchScore(mover, enemy, moverMoves, alpha, beta, depth);
         } else {
-            final long enemyMoves = BitBoardUtils.calcMoves(mover, enemy);
+            final long enemyMoves = BitBoardUtils.calcMoves(enemy, mover);
             if (enemyMoves != 0) {
                 return -searchScore(enemy, mover, enemyMoves, -beta, -alpha, depth);
             } else {
@@ -118,7 +118,7 @@ public class EvalPlayer extends EndgamePlayer {
      * This means NO_MOVE can't be Integer.MIN_VALUE, because -Integer.MIN_VALUE = Integer.MIN_VALUE and we would
      * end up with new beta < new score.
      */
-    private static final int NO_MOVE = -Integer.MAX_VALUE;
+    static final int NO_MOVE = -Integer.MAX_VALUE;
 
 
     /**

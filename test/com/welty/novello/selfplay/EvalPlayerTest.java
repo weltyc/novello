@@ -1,5 +1,6 @@
 package com.welty.novello.selfplay;
 
+import com.welty.novello.eval.CoefficientCalculator;
 import com.welty.novello.eval.Eval;
 import com.welty.novello.solver.BitBoard;
 import com.welty.novello.solver.BitBoardUtils;
@@ -49,5 +50,28 @@ public class EvalPlayerTest extends TestCase {
             }
         }
         return score;
+    }
+
+    public void testSearchScoreWithPass() {
+        final Eval eval = Players.eval("9A");
+        final EvalPlayer player = new EvalPlayer(eval, 2);
+
+        final BitBoard root = new BitBoard("--OO-O-O\n" +
+                "--****OO\n" +
+                "*--*OOOO\n" +
+                "-***OOOO\n" +
+                "-***O*OO\n" +
+                "-*OO**-O\n" +
+                "*****-*-\n" +
+                "OOOOOO-*\n" +
+                "O");
+        // g1  pass e1 is the best line
+
+//        player.calcMove(root, root.calcMoves(), -1);
+        final BitBoard g1 = root.play("G1");
+        final int subScore = -player.searchScore(g1.mover(), g1.enemy(), EvalPlayer.NO_MOVE, -3949, 1);
+        // had a bug where it was returning the terminal value (+6) if the opponent passes. This position is way
+        // better than that!
+        assertTrue(subScore > 20* CoefficientCalculator.DISK_VALUE);
     }
 }

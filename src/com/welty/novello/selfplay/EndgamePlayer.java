@@ -1,5 +1,6 @@
 package com.welty.novello.selfplay;
 
+import com.welty.novello.eval.CoefficientCalculator;
 import com.welty.novello.solver.BitBoard;
 import com.welty.novello.solver.Solver;
 import org.jetbrains.annotations.NotNull;
@@ -28,6 +29,7 @@ public class EndgamePlayer extends RandomPlayer {
      * @return the perfect-play move
      */
     MoveScore solveMove(BitBoard board) {
-        return solvers.get().solveWithMove(board.mover(), board.enemy());
+        final MoveScore moveScore = solvers.get().solveWithMove(board.mover(), board.enemy());
+        return new MoveScore(moveScore.sq, moveScore.score * CoefficientCalculator.DISK_VALUE);
     }
 }
