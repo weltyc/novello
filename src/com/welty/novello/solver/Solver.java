@@ -106,7 +106,7 @@ public class Solver {
      *
      * @param mover mover disks
      * @param enemy  enemy disks
-     * @return a {@link Result} containing the best move
+     * @return a {@link MoveScore} containing the best move
      */
     public MoveScore solveWithMove(long mover, long enemy) {
         if (BitBoardUtils.calcMoves(mover, enemy)==0) {
