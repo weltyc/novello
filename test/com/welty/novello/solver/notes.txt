@@ -564,3 +564,5 @@ Add all rows as evaluation terms instead of just edges.
     9A:2 vs NTest:1: average result = -4.7
 
 Found a bug if there was a pass in midgame search. Fixed!
+
+    9A:2 vs NTest:1: average result = -4.2
