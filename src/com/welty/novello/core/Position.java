@@ -1,4 +1,4 @@
-package com.welty.novello.solver;
+package com.welty.novello.core;
 
 import com.orbanova.common.misc.Require;
 import com.welty.novello.eval.Eval;
@@ -9,7 +9,7 @@ import static java.lang.Long.bitCount;
 /**
  * Bitboard representation of an Othello board
  */
-public class BitBoard implements Comparable<BitBoard> {
+public class Position implements Comparable<Position> {
     private static final String header = "  A B C D E F G H  \n";
     public final long black;
     public final long white;
@@ -22,7 +22,7 @@ public class BitBoard implements Comparable<BitBoard> {
      * @param white       white disk bitboard
      * @param blackToMove true if black's move; false if white's
      */
-    public BitBoard(long black, long white, boolean blackToMove) {
+    public Position(long black, long white, boolean blackToMove) {
         this.black = black;
         this.white = white;
         this.blackToMove = blackToMove;
@@ -45,7 +45,7 @@ public class BitBoard implements Comparable<BitBoard> {
      * The high bit of black is set if A1 contains a black disk; the second highest bit is set if A2 contains a black disk, and
      * and so on. white is set the same way based on squares containing white disks.
      */
-    public BitBoard(String boardString, boolean blackToMove) {
+    public Position(String boardString, boolean blackToMove) {
         boardString = boardString.replaceAll("\\s+", "");
         Require.eq(boardString.length(), "board text length", 64);
 
@@ -81,7 +81,7 @@ public class BitBoard implements Comparable<BitBoard> {
         this.blackToMove = blackToMove;
     }
 
-    public BitBoard(String positionString) {
+    public Position(String positionString) {
         this(positionString.replaceAll("\\s+", "").substring(0, 64), positionString.replaceAll("\\s+", "").substring(64).equals("*"));
         Require.eq(positionString.replaceAll("\\s+", "").length(), "position string length", 65);
     }
@@ -100,9 +100,9 @@ public class BitBoard implements Comparable<BitBoard> {
      * efficiency call square.calcFlips() directly without creating objects.
      *
      * @param moveText text of square to play
-     * @return a new BitBoard containing the board position after the move
+     * @return a new Position containing the board position after the move
      */
-    public BitBoard play(String moveText) {
+    public Position play(String moveText) {
         return play(BitBoardUtils.textToSq(moveText));
     }
 
@@ -113,9 +113,9 @@ public class BitBoard implements Comparable<BitBoard> {
      * efficiency call square.calcFlips() directly without creating objects.
      *
      * @param sq index of square to play
-     * @return a new BitBoard containing the board position after the move
+     * @return a new Position containing the board position after the move
      */
-    public BitBoard play(int sq) {
+    public Position play(int sq) {
         return play(Square.of(sq));
     }
 
@@ -123,9 +123,9 @@ public class BitBoard implements Comparable<BitBoard> {
      * Play a move, if sq >= 0, or pass if sq <0
      *
      * @param sq square index
-     * @return new BitBoard
+     * @return new Position
      */
-    public BitBoard playOrPass(int sq) {
+    public Position playOrPass(int sq) {
         return sq >= 0 ? play(sq) : pass();
     }
 
@@ -136,9 +136,9 @@ public class BitBoard implements Comparable<BitBoard> {
      * efficiency call square.calcFlips() directly without creating objects.
      *
      * @param square move to make, or null to pass
-     * @return a new BitBoard containing the board position after the move
+     * @return a new Position containing the board position after the move
      */
-    BitBoard play(@Nullable Square square) {
+    Position play(@Nullable Square square) {
         if (square == null) {
             return pass();
         }
@@ -155,9 +155,9 @@ public class BitBoard implements Comparable<BitBoard> {
         mover = mover | flip | square.placement();
         enemy = enemy & ~flip;
         if (blackToMove) {
-            return new BitBoard(mover, enemy, !blackToMove);
+            return new Position(mover, enemy, !blackToMove);
         } else {
-            return new BitBoard(enemy, mover, !blackToMove);
+            return new Position(enemy, mover, !blackToMove);
         }
     }
 
@@ -263,8 +263,8 @@ public class BitBoard implements Comparable<BitBoard> {
     /**
      * @return bitboard that occurs after a pass (color changes but not disks).
      */
-    public BitBoard pass() {
-        return new BitBoard(black, white, !blackToMove);
+    public Position pass() {
+        return new Position(black, white, !blackToMove);
     }
 
     /**
@@ -282,24 +282,24 @@ public class BitBoard implements Comparable<BitBoard> {
      * @param r index of reflection, 0..7
      * @return reflected position.
      */
-    public BitBoard reflection(int r) {
+    public Position reflection(int r) {
         long b = BitBoardUtils.reflection(black, r);
         long w = BitBoardUtils.reflection(white, r);
-        return new BitBoard(b, w, blackToMove);
+        return new Position(b, w, blackToMove);
     }
 
     /**
      * Calculate the minimal reflection of this.
      * <p/>
-     * Of the 8 reflections of this BitBoard, the minimal one is the one
+     * Of the 8 reflections of this Position, the minimal one is the one
      * that compares smallest using compareTo().
      *
      * @return minimal reflection of the bitboard.
      */
-    public BitBoard minimalReflection() {
-        BitBoard minimal = this;
+    public Position minimalReflection() {
+        Position minimal = this;
         for (int r = 1; r < 8; r++) {
-            BitBoard reflection = reflection(r);
+            Position reflection = reflection(r);
             if (reflection.compareTo(minimal) < 0) {
                 minimal = reflection;
             }
@@ -307,7 +307,7 @@ public class BitBoard implements Comparable<BitBoard> {
         return minimal;
     }
 
-    @Override public int compareTo(BitBoard o) {
+    @Override public int compareTo(Position o) {
         if (black != o.black) {
             return Long.compare(black, o.black);
         }
@@ -323,11 +323,11 @@ public class BitBoard implements Comparable<BitBoard> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        BitBoard bitBoard = (BitBoard) o;
+        Position position = (Position) o;
 
-        if (black != bitBoard.black) return false;
-        if (blackToMove != bitBoard.blackToMove) return false;
-        if (white != bitBoard.white) return false;
+        if (black != position.black) return false;
+        if (blackToMove != position.blackToMove) return false;
+        if (white != position.white) return false;
 
         return true;
     }
@@ -358,11 +358,11 @@ public class BitBoard implements Comparable<BitBoard> {
         return BitBoardUtils.calcMoves(enemy(), mover());
     }
 
-    public static BitBoard ofMover(long mover, long enemy, boolean blackToMove) {
+    public static Position ofMover(long mover, long enemy, boolean blackToMove) {
         if (blackToMove) {
-            return new BitBoard(mover, enemy, blackToMove);
+            return new Position(mover, enemy, blackToMove);
         } else {
-            return new BitBoard(enemy, mover, blackToMove);
+            return new Position(enemy, mover, blackToMove);
         }
     }
 

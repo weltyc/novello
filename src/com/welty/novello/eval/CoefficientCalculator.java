@@ -6,7 +6,7 @@ import com.orbanova.common.misc.Require;
 import com.orbanova.common.misc.Utils;
 import com.orbanova.common.misc.Vec;
 import com.welty.novello.selfplay.*;
-import com.welty.novello.solver.BitBoard;
+import com.welty.novello.core.Position;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedOutputStream;
@@ -333,12 +333,12 @@ public class CoefficientCalculator {
      */
     private static int writeSubPositions(DataOutputStream out, long mover, long enemy, Player player) throws IOException {
         int nWritten = 0;
-        final BitBoard pos = new BitBoard(mover, enemy, true);
+        final Position pos = new Position(mover, enemy, true);
         long moves = pos.calcMoves();
         while (moves != 0) {
             final int sq = Long.numberOfTrailingZeros(moves);
             moves ^= 1L << sq;
-            final BitBoard subPos = pos.play(sq);
+            final Position subPos = pos.play(sq);
             final MutableGame game = new SelfPlayGame(subPos, player, player, "", false, 0).call();
             final List<PositionValue> gamePvs = game.calcPositionValues();
             final List<PositionValue> toAdd = gamePvs.subList(0, Math.min(2, gamePvs.size()));

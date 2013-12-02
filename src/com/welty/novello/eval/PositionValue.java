@@ -1,7 +1,7 @@
 package com.welty.novello.eval;
 
-import com.welty.novello.solver.BitBoard;
-import com.welty.novello.solver.BitBoardUtils;
+import com.welty.novello.core.Position;
+import com.welty.novello.core.BitBoardUtils;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -27,7 +27,7 @@ public class PositionValue {
     public PositionValue(long mover, long enemy, int value) {
         final long moves = BitBoardUtils.calcMoves(mover, enemy);
         if (moves==0) {
-            System.err.println(new BitBoard(mover, enemy, false));
+            System.err.println(new Position(mover, enemy, false));
             throw new IllegalArgumentException("must have a legal move");
         }
         this.mover = mover;

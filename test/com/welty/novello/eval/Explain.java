@@ -2,7 +2,7 @@ package com.welty.novello.eval;
 
 import com.welty.novello.selfplay.EvalPlayer;
 import com.welty.novello.selfplay.Players;
-import com.welty.novello.solver.BitBoard;
+import com.welty.novello.core.Position;
 
 /**
  */
@@ -14,7 +14,7 @@ public class Explain {
 
         // I really can't understand why it wanted to play G7
         // in a two ply search.
-        final BitBoard prev = new BitBoard("--------\n" +
+        final Position prev = new Position("--------\n" +
                 "--------\n" +
                 "-----*--\n" +
                 "---***--\n" +
@@ -29,7 +29,7 @@ public class Explain {
         final String moves = "E3,G3";
         for (String move : moves.split(",")) {
             System.out.println("----- " + move + " -----");
-            final BitBoard board = prev.play(move);
+            final Position board = prev.play(move);
             System.out.println(board);
 
             System.out.println("Explaining eval. eval() returns " + board.eval(eval) + ".\n\n");

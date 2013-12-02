@@ -2,7 +2,7 @@ package com.welty.novello.eval;
 
 import com.orbanova.common.misc.Require;
 import com.orbanova.common.misc.Vec;
-import com.welty.novello.solver.BitBoardUtils;
+import com.welty.novello.core.BitBoardUtils;
 
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;

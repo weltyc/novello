@@ -1,6 +1,6 @@
 package com.welty.novello.selfplay;
 
-import com.welty.novello.solver.BitBoard;
+import com.welty.novello.core.Position;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -19,5 +19,5 @@ public interface Player {
      * @param flags      a sum of binary flags, as defined in the Player interface.
      * @return square of the player's chosen move
      */
-    MoveScore calcMove(@NotNull BitBoard board, long moverMoves, int flags);
+    MoveScore calcMove(@NotNull Position board, long moverMoves, int flags);
 }

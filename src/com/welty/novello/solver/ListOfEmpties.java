@@ -1,5 +1,6 @@
 package com.welty.novello.solver;
 
+import com.welty.novello.core.Square;
 import org.jetbrains.annotations.NotNull;
 
 /**

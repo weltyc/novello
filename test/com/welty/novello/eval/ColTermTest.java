@@ -1,6 +1,6 @@
 package com.welty.novello.eval;
 
-import com.welty.novello.solver.BitBoardUtils;
+import com.welty.novello.core.BitBoardUtils;
 import junit.framework.TestCase;
 
 /**

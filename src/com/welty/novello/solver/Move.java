@@ -1,5 +1,7 @@
 package com.welty.novello.solver;
 
+import com.welty.novello.core.BitBoardUtils;
+
 /**
  *  Representation of an othello move, for use in move sorting.
  *

@@ -1,5 +1,7 @@
 package com.welty.novello.solver;
 
+import com.welty.novello.core.BitBoardUtils;
+
 /**
  * fixed move ordering
  * <p/>

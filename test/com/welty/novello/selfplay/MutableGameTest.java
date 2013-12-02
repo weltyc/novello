@@ -1,7 +1,7 @@
 package com.welty.novello.selfplay;
 
 import com.welty.novello.eval.PositionValue;
-import com.welty.novello.solver.BitBoard;
+import com.welty.novello.core.Position;
 import junit.framework.TestCase;
 
 import java.util.List;
@@ -11,10 +11,10 @@ import java.util.List;
 
 public class MutableGameTest extends TestCase {
 
-    private static final BitBoard START_POSITION = new BitBoard(0x0000000810000000L, 0x0000001008000000L, true);
+    private static final Position START_POSITION = new Position(0x0000000810000000L, 0x0000001008000000L, true);
 
     public void testUpdates() {
-        final BitBoard startPosition = START_POSITION;
+        final Position startPosition = START_POSITION;
         final MutableGame game = new MutableGame(startPosition, "Boris", "William","VistaNova");
         assertEquals(START_POSITION, game.getStartPosition());
         assertEquals(START_POSITION, game.getLastPosition());
@@ -29,7 +29,7 @@ public class MutableGameTest extends TestCase {
         assertTrue(game.toGgf().endsWith(";)"));
 
         game.play("F5");
-        final BitBoard nextPosition = new BitBoard(0x000000081C000000L, 0x0000001000000000L, false);
+        final Position nextPosition = new Position(0x000000081C000000L, 0x0000001000000000L, false);
         assertEquals(START_POSITION, game.getStartPosition());
         assertEquals(nextPosition, game.getLastPosition());
         assertTrue(game.toGgf().contains("BO[8 -------- -------- -------- ---O*--- ---*O--- -------- -------- -------- *]"));

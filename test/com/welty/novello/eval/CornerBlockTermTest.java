@@ -1,13 +1,12 @@
 package com.welty.novello.eval;
 
 import com.orbanova.common.misc.ArrayTestCase;
-import com.welty.novello.solver.BitBoard;
-import junit.framework.TestCase;
+import com.welty.novello.core.Position;
 
 import java.util.Arrays;
 
-import static com.welty.novello.solver.BitBoardUtils.reflectHorizontally;
-import static com.welty.novello.solver.BitBoardUtils.reflectVertically;
+import static com.welty.novello.core.BitBoardUtils.reflectHorizontally;
+import static com.welty.novello.core.BitBoardUtils.reflectVertically;
 
 /**
  */
@@ -43,14 +42,14 @@ public class CornerBlockTermTest extends ArrayTestCase {
         testReflectionOrids(EvalStrategyTest.densePosition);
     }
 
-    private static void testReflectionOrids(BitBoard position) {
+    private static void testReflectionOrids(Position position) {
         int[] expected = calcOrids(position, 0);
         for (int r=1; r<8; r++) {
             assertEquals(""+r, expected, calcOrids(position, r));
         }
     }
 
-    private static int[] calcOrids(BitBoard bitBoard, int r) {
+    private static int[] calcOrids(Position position, int r) {
         int[] expected = new int[4];
         Term[] terms = {
                 new CornerBlockTerm(false, false),
@@ -58,7 +57,7 @@ public class CornerBlockTermTest extends ArrayTestCase {
                 new CornerBlockTerm(true, false),
                 new CornerBlockTerm(true, true)
         };
-        final BitBoard reflection = bitBoard.reflection(r);
+        final Position reflection = position.reflection(r);
         for (int i=0; i<4; i++) {
             expected[i]=terms[i].orid(reflection.mover(), reflection.enemy(), 0, 0);
         }

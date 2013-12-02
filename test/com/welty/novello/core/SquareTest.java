@@ -1,5 +1,7 @@
-package com.welty.novello.solver;
+package com.welty.novello.core;
 
+
+import com.welty.novello.solver.BitBoardTestCase;
 
 /**
  */
@@ -14,9 +16,9 @@ public class SquareTest extends BitBoardTestCase {
     }
 
     private void testCalcFlips(String boardString, int sq, int expectedFlips) {
-        final BitBoard bitBoard = new BitBoard(boardString, false);
+        final Position position = new Position(boardString, false);
         final Square square = Square.of(sq);
-        long flips = square.calcFlips(bitBoard.white, bitBoard.black);
+        long flips = square.calcFlips(position.white, position.black);
         assertBitBoardEquals(expectedFlips, flips);
     }
 
@@ -43,14 +45,14 @@ public class SquareTest extends BitBoardTestCase {
         final long placement = 0x100;
         final long enemy = 0x04020000;
         final long mover = 0x0800000000L;
-        System.out.println(new BitBoard(mover, enemy, true));
+        System.out.println(new Position(mover, enemy, true));
         assertBitBoardEquals(0x04020100, BitBoardUtils.fillUpLeft(placement, enemy));
         assertBitBoardEquals(0x0804020000L, BitBoardUtils.fillDownRight(mover, enemy));
     }
 
     public void testCalcFlipsSamplePosition() {
         final String boardText = "OOOOOOO*OO******O*O*O**OO**O**OOO*O**O*OO***O*OOO*****O.OOOOOOOO";
-        BitBoard bb = new BitBoard(boardText, true);
+        Position bb = new Position(boardText, true);
         final long flips = Square.H7.calcFlips(bb.black, bb.white);
         assertBitBoardEquals(0x0000010105030200L, flips);
     }

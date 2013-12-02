@@ -3,8 +3,8 @@ package com.welty.novello.ntest;
 import com.welty.novello.selfplay.MoveScore;
 import com.welty.novello.selfplay.MutableGame;
 import com.welty.novello.selfplay.Player;
-import com.welty.novello.solver.BitBoard;
-import com.welty.novello.solver.BitBoardUtils;
+import com.welty.novello.core.Position;
+import com.welty.novello.core.BitBoardUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
@@ -82,7 +82,7 @@ public class NTest implements Player {
         }
     }
 
-    @Override public MoveScore calcMove(@NotNull BitBoard board, long moverMoves, int flags) {
+    @Override public MoveScore calcMove(@NotNull Position board, long moverMoves, int flags) {
         try {
             pingPong();
             println("set game " + new MutableGame(board, "me", "you", "here").toGgf());

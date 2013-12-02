@@ -1,4 +1,6 @@
-package com.welty.novello.solver;
+package com.welty.novello.core;
+
+import com.welty.novello.solver.BitBoardTestCase;
 
 @SuppressWarnings("OctalInteger")
 public class KindergartenTest extends BitBoardTestCase {

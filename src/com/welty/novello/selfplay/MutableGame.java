@@ -1,8 +1,8 @@
 package com.welty.novello.selfplay;
 
 import com.welty.novello.eval.PositionValue;
-import com.welty.novello.solver.BitBoard;
-import com.welty.novello.solver.BitBoardUtils;
+import com.welty.novello.core.Position;
+import com.welty.novello.core.BitBoardUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,14 +12,14 @@ import java.util.List;
  */
 public class MutableGame {
     final List<Move> moves = new ArrayList<>();
-    private BitBoard lastPosition;
-    private final BitBoard startPosition;
+    private Position lastPosition;
+    private final Position startPosition;
     private final String blackName;
     private final String whiteName;
     private final String place;
     private boolean isOver = false;
 
-    public MutableGame(BitBoard startPosition, String blackName, String whiteName, String place) {
+    public MutableGame(Position startPosition, String blackName, String whiteName, String place) {
         this.startPosition = startPosition;
         lastPosition = startPosition;
         this.blackName = blackName;
@@ -38,7 +38,7 @@ public class MutableGame {
         sb.append("TY[8r]");
 
         sb.append("BO[8 ").append(startPosition.positionString()).append("]");
-        BitBoard cur = startPosition;
+        Position cur = startPosition;
         for (Move move : moves) {
             sb.append(cur.blackToMove ? "B[" : "W[");
             move.appendTo(sb);
@@ -85,11 +85,11 @@ public class MutableGame {
         lastPosition = lastPosition.playOrPass(move.sq);
     }
 
-    public BitBoard getStartPosition() {
+    public Position getStartPosition() {
         return startPosition;
     }
 
-    public BitBoard getLastPosition() {
+    public Position getLastPosition() {
         return lastPosition;
     }
 
@@ -99,7 +99,7 @@ public class MutableGame {
     public List<PositionValue> calcPositionValues() {
         final int netScore = getLastPosition().netDisks();
         final List<PositionValue> pvs = new ArrayList<>();
-        BitBoard pos = getStartPosition();
+        Position pos = getStartPosition();
         for (MutableGame.Move move : moves) {
             if (move.isPass()) {
                 pos = pos.pass();
@@ -111,7 +111,7 @@ public class MutableGame {
         return pvs;
     }
 
-    private static PositionValue pv(BitBoard pos, int netScore) {
+    private static PositionValue pv(Position pos, int netScore) {
         return new PositionValue(pos.mover(), pos.enemy(), pos.blackToMove ? netScore : -netScore);
     }
 

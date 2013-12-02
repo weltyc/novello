@@ -1,6 +1,9 @@
 package com.welty.novello.solver;
 
-import static com.welty.novello.solver.BitBoardUtils.*;
+import com.welty.novello.core.BitBoardUtils;
+import com.welty.novello.core.Square;
+
+import static com.welty.novello.core.BitBoardUtils.*;
 import static java.lang.Long.bitCount;
 
 /**

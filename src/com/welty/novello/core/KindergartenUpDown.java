@@ -1,6 +1,6 @@
-package com.welty.novello.solver;
+package com.welty.novello.core;
 
-import static com.welty.novello.solver.BitBoardUtils.*;
+import static com.welty.novello.core.BitBoardUtils.*;
 
 /**
  */

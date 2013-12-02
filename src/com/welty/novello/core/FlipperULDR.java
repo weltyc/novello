@@ -1,14 +1,16 @@
-package com.welty.novello.solver;
+package com.welty.novello.core;
 
-import static com.welty.novello.solver.BitBoardUtils.*;
+import static com.welty.novello.core.BitBoardUtils.bit;
+import static com.welty.novello.core.BitBoardUtils.col;
+import static com.welty.novello.core.BitBoardUtils.row;
 
 /**
- * Each square has a FlipperURDL. The FlipperURDL calculates flips when a disk is placed on its square.
+ * Each square has a FlipperULDR. The FlipperULDR calculates flips when a disk is placed on its square.
  *
  * Uses kindergarten bitboards.
  * See <a href="http://chessprogramming.wikispaces.com/Kindergarten+Bitboards">chessprogramming wiki</a>.
  */
-final class FlipperURDL {
+final class FlipperULDR {
     /**
      * Bitboard containing the square's diagonal (including the square).
      */
@@ -29,14 +31,14 @@ final class FlipperURDL {
      */
     private final long[] flipTable;
 
-    FlipperURDL(int sq) {
+    FlipperULDR(int sq) {
         final int row = row(sq);
         final int col = col(sq);
 
         diagonal = diagonal(sq, row, col);
         length = Long.bitCount(diagonal);
 
-        final int diff = col+row-7;
+        final int diff = col-row;
         shift = diff <= 0 ? 56 : 56 + diff;
 
         flipTable = new long[1<<2*length];
@@ -56,7 +58,7 @@ final class FlipperURDL {
     private void initFlipTable(long placement, long remaining, long mover, long enemy) {
         if (remaining==0) {
             final int index = calcIndex(mover, enemy);
-            final long flips = BitBoardUtils.fillURDL(mover, enemy, placement);
+            final long flips = BitBoardUtils.fillULDR(mover, enemy, placement);
             flipTable[index] = flips;
         }
         else {
@@ -70,10 +72,10 @@ final class FlipperURDL {
 
     private static long diagonal(int sq, int row, int col) {
         long mask = 1L << sq;
-        for (int r = row, c= col; r<8 && c>=0; r++, c--) {
+        for (int r = row, c= col; r>=0 && c>=0; r--, c--) {
             mask |= bit(r, c);
         }
-        for (int r=row, c=col; r>=0 && c<8; r--, c++) {
+        for (int r=row, c=col; r<8 && c<8; r++, c++) {
             mask |= bit(r, c);
         }
         return mask;
@@ -99,7 +101,7 @@ final class FlipperURDL {
      * @return moverRow/ enemyRow
      */
     private int bbIndex(long bb) {
-        final int index = (int) (((bb & diagonal) * HFile) >>> shift);
+        final int index = (int) (((bb & diagonal) * BitBoardUtils.HFile) >>> shift);
 //            assert index < 256;
 //            assert index >= 0;
         return index;

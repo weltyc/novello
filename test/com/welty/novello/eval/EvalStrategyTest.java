@@ -4,8 +4,8 @@ import com.orbanova.common.misc.ArrayTestCase;
 import com.orbanova.common.misc.Vec;
 import com.orbanova.common.ramfs.RamFileSystem;
 import com.welty.novello.selfplay.Players;
-import com.welty.novello.solver.BitBoard;
-import com.welty.novello.solver.BitBoardUtils;
+import com.welty.novello.core.Position;
+import com.welty.novello.core.BitBoardUtils;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -87,10 +87,10 @@ public class EvalStrategyTest extends ArrayTestCase {
     }
 
     private void testAllReflectionsHaveTheSameEval(Eval eval, long mover, long enemy) {
-        final BitBoard bitBoard = new BitBoard(mover, enemy, true);
-        final int expected = bitBoard.eval(eval);
+        final Position position = new Position(mover, enemy, true);
+        final int expected = position.eval(eval);
         for (int r = 1; r < 8; r++) {
-            final BitBoard reflection = bitBoard.reflection(r);
+            final Position reflection = position.reflection(r);
             assertEquals(expected, reflection.eval(eval));
         }
     }
@@ -98,12 +98,12 @@ public class EvalStrategyTest extends ArrayTestCase {
     /**
      * A test position with a small number of disks on the board
      */
-    public static final BitBoard sparsePosition;
+    public static final Position sparsePosition;
 
     /**
      * A test position with a large number of disks on the board
      */
-    public static final BitBoard densePosition;
+    public static final Position densePosition;
 
     static {
         final Random random = new Random(1337);
@@ -112,13 +112,13 @@ public class EvalStrategyTest extends ArrayTestCase {
         final long empty1 = random.nextLong() | random.nextLong();
         final long mover1 = random.nextLong() & ~empty1;
         final long enemy1 = ~(empty1 | mover1);
-        sparsePosition = new BitBoard(mover1, enemy1, true);
+        sparsePosition = new Position(mover1, enemy1, true);
 
         // test with large # of disks on the board
         final long empty2 = random.nextLong() | random.nextLong();
         final long mover2 = random.nextLong() & ~empty2;
         final long enemy2 = ~(empty2 | mover2);
-        densePosition = new BitBoard(mover2, enemy2, true);
+        densePosition = new Position(mover2, enemy2, true);
     }
 
     public void testAllReflectionsHaveSameOrids() {
@@ -130,7 +130,7 @@ public class EvalStrategyTest extends ArrayTestCase {
         }
     }
 
-    private void testAllReflectionsHaveTheSameOrids(EvalStrategy strategy, BitBoard position) {
+    private void testAllReflectionsHaveTheSameOrids(EvalStrategy strategy, Position position) {
         final long mover = position.mover();
         final long enemy = position.enemy();
 

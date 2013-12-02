@@ -1,5 +1,6 @@
 package com.welty.novello.solver;
 
+import com.welty.novello.core.BitBoardUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;

@@ -1,4 +1,4 @@
-package com.welty.novello.solver;
+package com.welty.novello.core;
 
 import com.orbanova.common.misc.Require;
 
@@ -24,7 +24,7 @@ public class BitBoardUtils {
     private static final long Ranks18 = Rank1 | Rank8;
 
     public static final long CORNERS = 0x8100000000000081L;
-    static final long C_SQUARES = 0x4281000000008142L;
+    public static final long C_SQUARES = 0x4281000000008142L;
     public static final long X_SQUARES = 0x0042000000004200L;
 
     private static final long EDGES = FilesAH | Ranks18;
@@ -72,7 +72,7 @@ public class BitBoardUtils {
      * @param sq   bit index
      * @return true if bit number sq is clear in the mask, false if it is set.
      */
-    static boolean isBitClear(long mask, int sq) {
+    public static boolean isBitClear(long mask, int sq) {
         return ((mask >> sq) & 1) == 0;
     }
 

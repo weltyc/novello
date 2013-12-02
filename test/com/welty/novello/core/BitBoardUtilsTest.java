@@ -1,8 +1,10 @@
-package com.welty.novello.solver;
+package com.welty.novello.core;
+
+import com.welty.novello.solver.BitBoardTestCase;
 
 import java.util.Random;
 
-import static com.welty.novello.solver.BitBoardUtils.*;
+import static com.welty.novello.core.BitBoardUtils.*;
 
 /**
  */
@@ -27,7 +29,7 @@ public class BitBoardUtilsTest extends BitBoardTestCase {
      * Test BitBoardUtils.calcMoves
      */
     public void testCalcMoves() {
-        BitBoard board = new BitBoard("---------------------------O*------*O---------------------------", true);
+        Position board = new Position("---------------------------O*------*O---------------------------", true);
         testCalcMoves(0x0000102004080000L, board.mover(), board.enemy());
         testCalcMoves(0x0000080420100000L, board.enemy(), board.mover());
 
@@ -55,7 +57,7 @@ public class BitBoardUtilsTest extends BitBoardTestCase {
         final long mover = random.nextLong()&~empty;
         final long enemy = ~(mover|empty);
 
-        final BitBoard board = new BitBoard(mover, enemy, true);
+        final Position board = new Position(mover, enemy, true);
         System.out.format("testCalcMoves(0x%016XL, \"%s\");%n", calcMoves(board.mover(), board.enemy()), board.boardString());
     }
 
@@ -66,7 +68,7 @@ public class BitBoardUtilsTest extends BitBoardTestCase {
      * @param boardString Board characters. Black to move.
      */
     private static void testCalcMoves(long expected, String boardString) {
-        BitBoard board = new BitBoard(boardString, true);
+        Position board = new Position(boardString, true);
         testCalcMoves(expected, board.mover(), board.enemy());
     }
 

@@ -1,7 +1,7 @@
 package com.welty.novello.eval;
 
-import com.welty.novello.solver.BitBoard;
-import com.welty.novello.solver.BitBoardUtils;
+import com.welty.novello.core.Position;
+import com.welty.novello.core.BitBoardUtils;
 
 /**
  * The evaluation function evaluates positions.
@@ -70,7 +70,7 @@ public class Eval {
     private int eval(long mover, long enemy, long moverMoves, long enemyMoves) {
         if (debug) {
             System.out.println("....................");
-            System.out.println(BitBoard.ofMover(mover, enemy, false));
+            System.out.println(Position.ofMover(mover, enemy, false));
         }
         final int eval = evalStrategy.eval(mover, enemy, moverMoves, enemyMoves, coefficientSet);
         nEvals++;

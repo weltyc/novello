@@ -1,5 +1,7 @@
 package com.welty.novello.solver;
 
+import com.welty.novello.core.BitBoardUtils;
+import com.welty.novello.core.Square;
 import com.welty.novello.selfplay.MoveScore;
 
 import static java.lang.Long.bitCount;

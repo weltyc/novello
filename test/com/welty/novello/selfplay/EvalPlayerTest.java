@@ -2,8 +2,8 @@ package com.welty.novello.selfplay;
 
 import com.welty.novello.eval.CoefficientCalculator;
 import com.welty.novello.eval.Eval;
-import com.welty.novello.solver.BitBoard;
-import com.welty.novello.solver.BitBoardUtils;
+import com.welty.novello.core.Position;
+import com.welty.novello.core.BitBoardUtils;
 import junit.framework.TestCase;
 
 /**
@@ -14,7 +14,7 @@ public class EvalPlayerTest extends TestCase {
         final Eval eval = Players.eval(evalName);
         final EvalPlayer player = new EvalPlayer(eval, 1);
 
-        final BitBoard prev = new BitBoard("--------\n" +
+        final Position prev = new Position("--------\n" +
                 "--------\n" +
                 "-----*--\n" +
                 "---***--\n" +
@@ -30,7 +30,7 @@ public class EvalPlayerTest extends TestCase {
         final MoveScore moveScore = player.calcMove(prev, moves, -1);
         assertTrue("must be a legal move", BitBoardUtils.isBitSet(moves, moveScore.sq));
 
-        final BitBoard terminal = prev.play(moveScore.sq);
+        final Position terminal = prev.play(moveScore.sq);
         assertEquals(-terminal.eval(eval), moveScore.score);
 
         int score = simpleSearch(eval, prev, moves);
@@ -38,12 +38,12 @@ public class EvalPlayerTest extends TestCase {
     }
 
     // do a simple 1-ply search without sorting.
-    private static int simpleSearch(Eval eval, BitBoard prev, long moves) {
+    private static int simpleSearch(Eval eval, Position prev, long moves) {
         int score = Integer.MIN_VALUE;
         for (long m = moves; m!=0; ) {
             final int sq = Long.numberOfTrailingZeros(m);
             m&=~(1L<<sq);
-            final BitBoard sub = prev.play(sq);
+            final Position sub = prev.play(sq);
             final int subScore = -sub.eval(eval);
             if (subScore > score) {
                 score = subScore;
@@ -56,7 +56,7 @@ public class EvalPlayerTest extends TestCase {
         final Eval eval = Players.eval("9A");
         final EvalPlayer player = new EvalPlayer(eval, 2);
 
-        final BitBoard root = new BitBoard("--OO-O-O\n" +
+        final Position root = new Position("--OO-O-O\n" +
                 "--****OO\n" +
                 "*--*OOOO\n" +
                 "-***OOOO\n" +
@@ -68,7 +68,7 @@ public class EvalPlayerTest extends TestCase {
         // g1  pass e1 is the best line
 
 //        player.calcMove(root, root.calcMoves(), -1);
-        final BitBoard g1 = root.play("G1");
+        final Position g1 = root.play("G1");
         final int subScore = -player.searchScore(g1.mover(), g1.enemy(), EvalPlayer.NO_MOVE, -3949, 1);
         // had a bug where it was returning the terminal value (+6) if the opponent passes. This position is way
         // better than that!

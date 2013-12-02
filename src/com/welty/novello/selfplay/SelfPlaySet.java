@@ -3,7 +3,7 @@ package com.welty.novello.selfplay;
 import com.welty.novello.eval.Eval;
 import com.welty.novello.eval.PositionValue;
 import com.welty.novello.ntest.NTest;
-import com.welty.novello.solver.BitBoard;
+import com.welty.novello.core.Position;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -52,9 +52,9 @@ public class SelfPlaySet {
 
         final StartPosGenerator generator = new StartPosGenerator(9);
 
-        final HashSet<BitBoard> alreadySeen = new HashSet<>();
+        final HashSet<Position> alreadySeen = new HashSet<>();
 
-        BitBoard startPosition;
+        Position startPosition;
         int nComplete = 0;
 
         double sum = 0;

@@ -2,9 +2,9 @@ package com.welty.novello.selfplay;
 
 import com.welty.novello.eval.CoefficientCalculator;
 import com.welty.novello.eval.Eval;
-import com.welty.novello.solver.BitBoard;
-import com.welty.novello.solver.BitBoardUtils;
-import com.welty.novello.solver.Square;
+import com.welty.novello.core.Position;
+import com.welty.novello.core.BitBoardUtils;
+import com.welty.novello.core.Square;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -18,7 +18,7 @@ public class EvalPlayer extends EndgamePlayer {
         this.searchDepth = searchDepth;
     }
 
-    @Override public MoveScore calcMove(@NotNull BitBoard board, long moverMoves, int flags) {
+    @Override public MoveScore calcMove(@NotNull Position board, long moverMoves, int flags) {
         if (board.nEmpty() > 8) {
             return searchMove(board.mover(), board.enemy(), moverMoves, searchDepth, flags);
         } else {

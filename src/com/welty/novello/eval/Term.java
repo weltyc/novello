@@ -1,8 +1,8 @@
 package com.welty.novello.eval;
 
-import com.welty.novello.solver.BitBoardUtils;
+import com.welty.novello.core.BitBoardUtils;
 
-import static com.welty.novello.solver.BitBoardUtils.getBitAsInt;
+import static com.welty.novello.core.BitBoardUtils.getBitAsInt;
 
 /**
  */

@@ -1,7 +1,7 @@
 package com.welty.novello.selfplay;
 
 import com.welty.novello.eval.CoefficientCalculator;
-import com.welty.novello.solver.BitBoard;
+import com.welty.novello.core.Position;
 import com.welty.novello.solver.Solver;
 import org.jetbrains.annotations.NotNull;
 
@@ -15,7 +15,7 @@ public class EndgamePlayer extends RandomPlayer {
         }
     };
 
-    @Override public MoveScore calcMove(@NotNull BitBoard board, long moverMoves, int flags) {
+    @Override public MoveScore calcMove(@NotNull Position board, long moverMoves, int flags) {
         if (board.nEmpty() <= 8) {
             return solveMove(board);
         }
@@ -28,7 +28,7 @@ public class EndgamePlayer extends RandomPlayer {
      * @param board board to move from
      * @return the perfect-play move
      */
-    MoveScore solveMove(BitBoard board) {
+    MoveScore solveMove(Position board) {
         final MoveScore moveScore = solvers.get().solveWithMove(board.mover(), board.enemy());
         return new MoveScore(moveScore.sq, moveScore.score * CoefficientCalculator.DISK_VALUE);
     }

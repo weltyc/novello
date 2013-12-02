@@ -1,6 +1,6 @@
-package com.welty.novello.solver;
+package com.welty.novello.core;
 
-import static com.welty.novello.solver.BitBoardUtils.*;
+import static com.welty.novello.core.BitBoardUtils.*;
 
 /**
  * Can update bitboards when the mover places a disk in the square.
@@ -24,11 +24,11 @@ public class Square {
     private static final long TOP_LEFT = TOP_RIGHT << 4;
 
 
-    final int sq;
+    public final int sq;
     /**
      * BitMask containing all squares whose parity will be calculated along with this square
      */
-    final long parityRegion;
+    public final long parityRegion;
 
     /**
      * ULDR flip function
@@ -66,7 +66,7 @@ public class Square {
     /**
      * @return a bitboard containing only one set bit - this Square's.
      */
-    long placement() {
+    public long placement() {
         return 1L << sq;
     }
 

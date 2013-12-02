@@ -1,6 +1,6 @@
 package com.welty.novello.selfplay;
 
-import com.welty.novello.solver.BitBoardUtils;
+import com.welty.novello.core.BitBoardUtils;
 
 /**
  * A move with an evaluation
