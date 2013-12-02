@@ -72,7 +72,7 @@ public class EvalStrategy {
 
     /**
      * Read all coefficients for the strategy at a given nEmpty.
-     *
+     * <p/>
      * Coefficients for feature 0 are written first, then feature 1, etc.
      * Coefficients for each feature are indexed by orid.
      * <p/>
@@ -138,14 +138,30 @@ public class EvalStrategy {
     }
 
     /**
+     * Checks that at least one slice can be created.
+     * <p/>
+     * A slice can be created if the coeffSetName is alphanumeric and either:
+     * The coeffSet dir does not exist, or
+     * The coeffSet dir is a directory which is missing slices.
+     *
      * @param coeffSetName name of the coefficient set. This is used as a directory name. So that it works on all
      *                     systems it is required to be alphanumeric.
-     * @return true if the given coefficient set exists on disk
-     * @throws IllegalArgumentException if  the coeffSetName is not alphanumeric
+     * @throws IllegalArgumentException if no slices can be created.
      */
-    public boolean coefficientsExist(String coeffSetName) {
+    public void checkSlicesCanBeCreated(String coeffSetName) {
         final Path dir = coeffDir(coeffSetName);
-        return Files.exists(dir) && Files.isDirectory(dir);
+        if (!Files.exists(dir)) {
+            return;
+        }
+        if (!Files.isDirectory(dir)) {
+            throw new IllegalArgumentException("Can't create coefficient directory " + dir + " - a file with that name already exists");
+        }
+        for (int nEmpty = 0; nEmpty < 64; nEmpty++) {
+            if (!Files.exists(dir.resolve(filename(nEmpty)))) {
+                return;
+            }
+        }
+        throw new IllegalArgumentException("All slices for " + coeffSetName + " have already been calculated.");
     }
 
     /**
@@ -179,6 +195,17 @@ public class EvalStrategy {
             }
         }
         System.out.println(nNonZero + " non-zero coefficients written");
+    }
+
+    /**
+     * Are there coefficients on disk for this slice?
+     *
+     * @param coeffSetName name of coeff set being checked
+     * @param nEmpty # of empty disks for this slice
+     * @return true if coefficients exist for this slice
+     */
+    boolean sliceExists(String coeffSetName, int nEmpty) {
+        return Files.exists(coeffDir(coeffSetName).resolve(filename(nEmpty)));
     }
 
     private static String filename(int nEmpty) {

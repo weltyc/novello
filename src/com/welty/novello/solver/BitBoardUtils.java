@@ -234,6 +234,26 @@ public class BitBoardUtils {
     }
 
     /**
+     * Reflect the bitBoard, switching left and right.
+     *
+     * @param mover original bitboard
+     * @return reflected bitboard
+     */
+    public static long reflectHorizontally(long mover) {
+        return Long.reverse(Long.reverseBytes(mover));
+    }
+
+    /**
+     * Reflect the bitBoard, switching top and bottom.
+     *
+     * @param mover original bitboard
+     * @return reflected bitboard
+     */
+    public static long reflectVertically(long mover) {
+        return Long.reverseBytes(mover);
+    }
+
+    /**
      * Calculate a bitboard reflection.
      * <p/>
      * Reflections rearrange the bitboard by rotating or flipping it.

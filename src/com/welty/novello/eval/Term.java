@@ -74,7 +74,7 @@ class CornerTerm2 extends Term {
         super(Features.corner2Feature);
         this.sq = sq;
         //noinspection OctalInteger
-        this.xSq = sq^011;
+        this.xSq = sq ^ 011;
     }
 
     /**
@@ -102,13 +102,11 @@ class CornerTerm2 extends Term {
         final int cornerMobility = bit(moverMoves) + 2 * bit(enemyMoves);
         if (cornerMobility > 0) {
             return cornerMobility;
-        }
-        else {
-            final int xSquareOccupier = BitBoardUtils.getBitAsInt(mover, xSq) + 2*BitBoardUtils.getBitAsInt(enemy, xSq);
-            if (xSquareOccupier>0) {
+        } else {
+            final int xSquareOccupier = BitBoardUtils.getBitAsInt(mover, xSq) + 2 * BitBoardUtils.getBitAsInt(enemy, xSq);
+            if (xSquareOccupier > 0) {
                 return xSquareOccupier + 5;
-            }
-            else {
+            } else {
                 return 0;
             }
         }
@@ -142,108 +140,28 @@ class Terms {
     };
     static final Term moverPotMobs = new Term(Features.moverPotMobs) {
         @Override public int instance(long mover, long enemy, long moverMoves, long enemyMoves) {
-            final long empty = ~(mover|enemy);
+            final long empty = ~(mover | enemy);
             return Long.bitCount(BitBoardUtils.potMobs(mover, empty));
         }
     };
     static final Term enemyPotMobs = new Term(Features.enemyPotMobs) {
         @Override public int instance(long mover, long enemy, long moverMoves, long enemyMoves) {
-            final long empty = ~(mover|enemy);
+            final long empty = ~(mover | enemy);
             return Long.bitCount(BitBoardUtils.potMobs(enemy, empty));
         }
     };
     static final Term moverPotMobs2 = new Term(Features.moverPotMobs2) {
         @Override public int instance(long mover, long enemy, long moverMoves, long enemyMoves) {
-            final long empty = ~(mover|enemy);
+            final long empty = ~(mover | enemy);
             return Long.bitCount(BitBoardUtils.potMobs2(mover, empty));
         }
     };
     static final Term enemyPotMobs2 = new Term(Features.enemyPotMobs2) {
         @Override public int instance(long mover, long enemy, long moverMoves, long enemyMoves) {
-            final long empty = ~(mover|enemy);
+            final long empty = ~(mover | enemy);
             return Long.bitCount(BitBoardUtils.potMobs2(enemy, empty));
         }
     };
-}
-/**
- * A Term that gets its value from the disk pattern on the Upper Left / Down Right main diagonal
- */
-class ULDRTerm extends Term {
-
-    ULDRTerm() {
-        super(Features.mainDiagonalFeature);
-    }
-
-    @Override public int instance(long mover, long enemy, long moverMoves, long enemyMoves) {
-        // another idea to test: have instance = orid for this, since we're calculating instance by lookup table
-        // anyway. This would decrease the amount of memory used by coeffs.
-        // todo test that once eval is complete
-        final long moverShift = shift(mover);
-        final long enemyShift = shift(enemy);
-        // todo do this by lookup table
-        return Base3.base2ToBase3((int) (moverShift & 0xFF), (int) (enemyShift & 0xFF));
-    }
-
-    /**
-     * // this funky shift moves the long diagonal down to bits 0-7.
-     * // can do it in fewer shifts but with increased latency by doing it O(log(n)) - not sure if this helps
-     * // or hurts performance.
-     * // todo test O(log(n)) shifting once eval is complete
-     *
-     * @param bb bitboard
-     * @return shifted board.
-     */
-    @SuppressWarnings("OctalInteger")
-    static long shift(long bb) {
-        return ((bb & BitBoardUtils.AFile) >>> 070) |
-                ((bb & BitBoardUtils.BFile) >>> 060) |
-                ((bb & BitBoardUtils.CFile) >>> 050) |
-                ((bb & BitBoardUtils.DFile) >>> 040) |
-                ((bb & BitBoardUtils.EFile) >>> 030) |
-                ((bb & BitBoardUtils.FFile) >>> 020) |
-                ((bb & BitBoardUtils.GFile) >>> 010) |
-                ((bb & BitBoardUtils.HFile));
-    }
-}
-
-/**
- * A Term that gets its value from the disk pattern on the Upper Right / Down Left main diagonal
- */
-class URDLTerm extends Term {
-    URDLTerm() {
-        super(Features.mainDiagonalFeature);
-    }
-
-    @Override public int instance(long mover, long enemy, long moverMoves, long enemyMoves) {
-        // another idea to test: have instance = orid for this, since we're calculating instance by lookup table
-        // anyway. This would decrease the amount of memory used by coeffs.
-        // todo test that once eval is complete
-        final long moverShift = shift(mover);
-        final long enemyShift = shift(enemy);
-        // todo do this by lookup table
-        return Base3.base2ToBase3((int) (moverShift & 0xFF), (int) (enemyShift & 0xFF));
-    }
-
-    /**
-     * // this funky shift moves the long diagonal down to bits 0-7.
-     * // can do it in fewer shifts but with increased latency by doing it O(log(n)) - not sure if this helps
-     * // or hurts performance.
-     * // todo test O(log(n)) shifting once eval is complete
-     *
-     * @param bb bitboard
-     * @return shifted board.
-     */
-    @SuppressWarnings("OctalInteger")
-    private static long shift(long bb) {
-        return ((bb & BitBoardUtils.HFile) >>> 070) |
-                ((bb & BitBoardUtils.GFile) >>> 060) |
-                ((bb & BitBoardUtils.FFile) >>> 050) |
-                ((bb & BitBoardUtils.EFile) >>> 040) |
-                ((bb & BitBoardUtils.DFile) >>> 030) |
-                ((bb & BitBoardUtils.CFile) >>> 020) |
-                ((bb & BitBoardUtils.BFile) >>> 010) |
-                ((bb & BitBoardUtils.AFile));
-    }
 }
 
 class RowTerm extends Term {
@@ -280,7 +198,91 @@ class ColTerm extends Term {
 
     @Override public int instance(long mover, long enemy, long moverMoves, long enemyMoves) {
         final long rMover = BitBoardUtils.reflectDiagonally(mover);
-        final long rEnemy= BitBoardUtils.reflectDiagonally(enemy);
+        final long rEnemy = BitBoardUtils.reflectDiagonally(enemy);
         return Base3.base2ToBase3(0xFF & (int) (rMover >>> shift), 0xFF & (int) (rEnemy >>> shift));
+    }
+}
+
+abstract class DiagonalTerm extends Term {
+    static final Feature[] features = {
+            LinePatternFeatureFactory.of("diagonal 8", 8),
+            LinePatternFeatureFactory.of("diagonal 7", 7),
+            LinePatternFeatureFactory.of("diagonal 6", 6),
+            LinePatternFeatureFactory.of("diagonal 5", 5),
+            LinePatternFeatureFactory.of("diagonal 4", 4)
+    };
+    protected final int shift;
+    protected final long mask;
+
+
+    DiagonalTerm(int diagonal, long mask, int shift) {
+        super(features[Math.abs(diagonal)]);
+        this.mask = mask;
+        this.shift = shift;
+    }
+
+    protected static long diagonalMask(int sq, int length, int dSq) {
+        long mask = 0;
+        for (int i = 0; i < length; i++) {
+            mask |= 1L << sq;
+            sq += dSq;
+        }
+        return mask;
+    }
+
+    @Override public int instance(long mover, long enemy, long moverMoves, long enemyMoves) {
+        final int moverDiagonal = extractDiagonal(mover);
+        final int enemyDiagonal = extractDiagonal(enemy);
+        return Base3.base2ToBase3(moverDiagonal, enemyDiagonal);
+    }
+
+    int extractDiagonal(long mover) {
+        return (int) ((mover & mask) * BitBoardUtils.HFile >>> shift);
+    }
+}
+
+class UrdlTerm extends DiagonalTerm {
+    UrdlTerm(int diagonal) {
+        super(diagonal, urdlMask(diagonal), diagonal >= 0 ? 56 : 56 - diagonal);
+    }
+
+    static long urdlMask(int diagonal) {
+        final int length;
+        final int sq;
+
+        if (diagonal >= 0) {
+            length = 8 - diagonal;
+            sq = length - 1;
+        } else {
+            length = 8 + diagonal;
+            sq = 7 - 8 * diagonal;
+        }
+        final int dSq = 7;
+        return diagonalMask(sq, length, dSq);
+    }
+
+}
+
+class UldrTerm extends DiagonalTerm {
+    UldrTerm(int diagonal) {
+        super(diagonal, uldrMask(diagonal), shift(diagonal));
+    }
+
+    static long uldrMask(int diagonal) {
+        final int length;
+        final int sq;
+
+        if (diagonal >= 0) {
+            length = 8 - diagonal;
+            sq = 8 * diagonal;
+        } else {
+            length = 8 + diagonal;
+            sq = -diagonal;
+        }
+        return diagonalMask(sq, length, 9);
+    }
+
+    static int shift(int diagonal) {
+        return diagonal >= 0 ? 56 : 56 - diagonal;
     }
 }

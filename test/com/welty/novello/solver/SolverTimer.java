@@ -2,16 +2,11 @@ package com.welty.novello.solver;
 
 /**
  */
-public class SolverTimer implements Runnable {
+public class SolverTimer {
     /**
      * Number of times the test is run to make one round.
      */
     private static final int nIters = 16;
-    private final boolean printAllInfo;
-
-    public SolverTimer(boolean printAllInfo) {
-        this.printAllInfo = printAllInfo;
-    }
 
     /**
      * Timing test of the solver
@@ -20,27 +15,14 @@ public class SolverTimer implements Runnable {
      */
     public static void main(String[] args) {
         System.out.println(System.getProperty("sun.arch.data.model") + "-bit JVM");
-        final int nThreads = args.length > 0 ? Integer.parseInt(args[0]) : 1;
-        if (nThreads > 1) {
-            for (int i = 0; i < nThreads; i++) {
-                new Thread(new SolverTimer(false)).start();
-            }
-        } else {
-            new SolverTimer(true).run();
-        }
-    }
-
-    public void run() {
         final Solver solver = new Solver();
         Typical typical = timeRound(solver, nIters);
         final long nNodes = solver.nodeCounts.getNNodes();
         final double Mnps = nNodes / typical.sum * 0.001;
         final double nsPerNode = 1000 / Mnps;
         System.out.format("Typical %s ms. %.3g Mn; %.3g Mn/s; %.3g ns/n%n", typical, 1e-6 * nNodes / nIters, Mnps, nsPerNode);
-        if (printAllInfo) {
-            System.out.println(solver.nodeCounts.getNodeCountsByDepth());
-            System.out.println(solver.hashTable.stats());
-        }
+        System.out.println(solver.nodeCounts.getNodeCountsByDepth());
+        System.out.println(solver.hashTable.stats());
     }
 
     /**

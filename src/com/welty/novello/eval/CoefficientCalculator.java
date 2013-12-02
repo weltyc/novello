@@ -32,7 +32,7 @@ public class CoefficientCalculator {
      * 1 disk is worth how many evaluation points?
      */
     public static final int DISK_VALUE = 100;
-    private static final String target = "8A";
+    private static final String target = "a1";
     private static final EvalStrategy STRATEGY = EvalStrategies.strategy(target.substring(0, 1));
     private static final String COEFF_SET_NAME = target.substring(1);
     private static final double PENALTY = 100;
@@ -47,7 +47,9 @@ public class CoefficientCalculator {
     public static void main(String[] args) throws Exception {
 
         // better to learn this now than after all the computations
-        if (STRATEGY.coefficientsExist(COEFF_SET_NAME)) {
+        try {
+            STRATEGY.checkSlicesCanBeCreated(COEFF_SET_NAME);
+        } catch (IllegalArgumentException e) {
             System.err.println("Coefficient set already exists.\n\nOverwriting coefficient files is not allowed.");
             System.exit(-1);
         }
@@ -56,6 +58,9 @@ public class CoefficientCalculator {
 
         System.out.format("a total of %,d pvs are available.%n", pvs.size());
         for (int nEmpty = 0; nEmpty < 64; nEmpty++) {
+            if (STRATEGY.sliceExists(COEFF_SET_NAME, nEmpty)) {
+                continue;
+            }
             System.out.println();
             System.out.println("--- " + nEmpty + " ---");
             final Element[] elements = elementsFromPvs(pvs, nEmpty);
@@ -82,7 +87,7 @@ public class CoefficientCalculator {
         final int[] histogram = new int[12];
         for (int count : counts) {
             int lg = 32 - Integer.numberOfLeadingZeros(count);
-            if (lg>11) {
+            if (lg > 11) {
                 lg = 11;
             }
             histogram[lg]++;
@@ -105,7 +110,7 @@ public class CoefficientCalculator {
             return "1 time";
         }
         int min = 1 << (i - 1);
-        if (i==11) {
+        if (i == 11) {
             return min + "+ times";
         }
         int max = (1 << i) - 1;
@@ -300,7 +305,6 @@ public class CoefficientCalculator {
      * 1/randomFraction of the positions will be chosen
      * <p/>
      * This function does NOT close the DataOutputStream.
-     *
      *
      * @param pvs positions that might get chosen
      */

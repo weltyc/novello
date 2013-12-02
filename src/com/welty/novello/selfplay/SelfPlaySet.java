@@ -17,7 +17,7 @@ import java.util.List;
  */
 public class SelfPlaySet {
     public static void main(String[] args) throws IOException {
-        final Player black = Players.player("7B:2");
+        final Player black = Players.player("9A:2");
 //        final Player white = Players.player("8A:2");
         final Player white = new NTest(1, false);
         final Result result = new SelfPlaySet(black, white, 2, true).call();

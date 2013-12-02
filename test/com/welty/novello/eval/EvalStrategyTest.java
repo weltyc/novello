@@ -95,27 +95,45 @@ public class EvalStrategyTest extends ArrayTestCase {
         }
     }
 
-    public void testAllReflectionsHaveSameOrids() {
+    /**
+     * A test position with a small number of disks on the board
+     */
+    public static final BitBoard sparsePosition;
+
+    /**
+     * A test position with a large number of disks on the board
+     */
+    public static final BitBoard densePosition;
+
+    static {
         final Random random = new Random(1337);
 
         // test with small # of disks on the board
         final long empty1 = random.nextLong() | random.nextLong();
         final long mover1 = random.nextLong() & ~empty1;
         final long enemy1 = ~(empty1 | mover1);
+        sparsePosition = new BitBoard(mover1, enemy1, true);
 
         // test with large # of disks on the board
         final long empty2 = random.nextLong() | random.nextLong();
         final long mover2 = random.nextLong() & ~empty2;
         final long enemy2 = ~(empty2 | mover2);
+        densePosition = new BitBoard(mover2, enemy2, true);
+    }
+
+    public void testAllReflectionsHaveSameOrids() {
 
         for (EvalStrategy strategy : EvalStrategies.knownStrategies()) {
-            testAllReflectionsHaveTheSameOrids(strategy, mover1, enemy1);
-            testAllReflectionsHaveTheSameOrids(strategy, mover2, enemy2);
+            testAllReflectionsHaveTheSameOrids(strategy, sparsePosition);
+            testAllReflectionsHaveTheSameOrids(strategy, densePosition);
             System.out.println("Success with EvalStrategy " + strategy);
         }
     }
 
-    private void testAllReflectionsHaveTheSameOrids(EvalStrategy strategy, long mover, long enemy) {
+    private void testAllReflectionsHaveTheSameOrids(EvalStrategy strategy, BitBoard position) {
+        final long mover = position.mover();
+        final long enemy = position.enemy();
+
         final int[] expected = strategy.coefficientIndices(mover, enemy);
         Arrays.sort(expected);
         for (int r=1; r<8; r++) {
@@ -123,6 +141,9 @@ public class EvalStrategyTest extends ArrayTestCase {
             final long rEnemy = BitBoardUtils.reflection(enemy, r);
             final int[] actual = strategy.coefficientIndices(rMover, rEnemy);
             Arrays.sort(actual);
+            if (!Arrays.equals(expected, actual)) {
+                assertEquals(Arrays.toString(expected), Arrays.toString(actual));
+            }
             assertEquals(strategy.toString(), expected, actual);
         }
     }
