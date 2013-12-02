@@ -5,6 +5,7 @@ import com.orbanova.common.misc.Logger;
 import com.orbanova.common.misc.Require;
 import com.orbanova.common.misc.Utils;
 import com.orbanova.common.misc.Vec;
+import com.welty.novello.core.MutableGame;
 import com.welty.novello.selfplay.*;
 import com.welty.novello.core.Position;
 import org.jetbrains.annotations.NotNull;

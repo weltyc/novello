@@ -463,7 +463,7 @@ public class BitBoardUtils {
      */
     public static int textToSq(String squareText) {
         Require.eq(squareText.length(), "# of chars in squareText", 2);
-        final int col = getCol("col", squareText.charAt(0), 'H');
+        final int col = getCol("col", Character.toUpperCase(squareText.charAt(0)), 'H');
         final int row = getCol("row", squareText.charAt(1), '8');
         return square(row, col);
     }

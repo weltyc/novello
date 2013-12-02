@@ -1,7 +1,7 @@
 package com.welty.novello.ntest;
 
 import com.welty.novello.selfplay.MoveScore;
-import com.welty.novello.selfplay.MutableGame;
+import com.welty.novello.core.MutableGame;
 import com.welty.novello.selfplay.Player;
 import com.welty.novello.core.Position;
 import com.welty.novello.core.BitBoardUtils;

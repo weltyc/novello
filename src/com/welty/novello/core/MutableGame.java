@@ -1,23 +1,25 @@
-package com.welty.novello.selfplay;
+package com.welty.novello.core;
 
 import com.welty.novello.eval.PositionValue;
-import com.welty.novello.core.Position;
-import com.welty.novello.core.BitBoardUtils;
+import com.welty.novello.selfplay.MoveScore;
 
+import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
  * Game history
  */
 public class MutableGame {
-    final List<Move> moves = new ArrayList<>();
-    private Position lastPosition;
-    private final Position startPosition;
-    private final String blackName;
-    private final String whiteName;
-    private final String place;
+    public final Position startPosition;
+    public final String blackName;
+    public final String whiteName;
+    public final String place;
+
+    private final List<Move> moves = new ArrayList<>();
     private boolean isOver = false;
+    private Position lastPosition;
 
     public MutableGame(Position startPosition, String blackName, String whiteName, String place) {
         this.startPosition = startPosition;
@@ -122,6 +124,77 @@ public class MutableGame {
         return lastPosition.netDisks();
     }
 
+    public static MutableGame ofGgf(String ggf) {
+        // find and strip GGF identifiers
+        if (!ggf.startsWith("(;") || !ggf.endsWith(";)")) {
+            throw new IllegalArgumentException("not a GGF format game");
+        }
+        ggf = ggf.substring(2, ggf.length()-2);
+        final HashMap<String, String> tags = getGgfTags(ggf);
+
+
+        final String place = getRequiredTag(tags, "PC");
+        final String blackName = getRequiredTag(tags, "PB");
+        final String whiteName = getRequiredTag(tags, "PW");
+        final String bo = getRequiredTag(tags, "BO");
+        if (!bo.startsWith("8 ")) {
+            throw new IllegalArgumentException("We can only handle 8x8 boards.");
+        }
+        final Position startPosition = new Position(bo.substring(2));
+
+        final MutableGame game = new MutableGame(startPosition, blackName, whiteName, place);
+
+        // add moves
+        int loc = 0;
+        for (;;) {
+            final int tagEnd = ggf.indexOf('[', loc);
+            if (tagEnd < 0) {
+                break;
+            }
+            final int valueEnd = ggf.indexOf(']', tagEnd);
+            if (valueEnd < 0) {
+                throw new IllegalArgumentException("malformed GGF game");
+            }
+            final String tag = ggf.substring(loc+1, tagEnd).trim();
+            final String value = ggf.substring(tagEnd+1, valueEnd).trim();
+            if (tag.equals("B") || tag.equals("W")) {
+                game.play(new Move(value));
+            }
+            loc = valueEnd;
+        }
+
+        return game;
+    }
+
+    private static HashMap<String, String> getGgfTags(String ggf) {
+        // get tags from GGF
+        final HashMap<String, String> tags = new HashMap<>();
+        int loc = 0;
+        for (;;) {
+            final int tagEnd = ggf.indexOf('[', loc);
+            if (tagEnd < 0) {
+                break;
+            }
+            final int valueEnd = ggf.indexOf(']', tagEnd);
+            if (valueEnd < 0) {
+                throw new IllegalArgumentException("malformed GGF game");
+            }
+            final String tag = ggf.substring(loc+1, tagEnd).trim();
+            final String value = ggf.substring(tagEnd+1, valueEnd).trim();
+            tags.put(tag, value);
+            loc = valueEnd;
+        }
+        return tags;
+    }
+
+    private static String getRequiredTag(HashMap<String, String> tags, String tag) {
+        final String value = tags.get(tag);
+        if (value==null) {
+            throw new IllegalArgumentException("GGF missing tag: " + tag);
+        }
+        return value;
+    }
+
 
     static class Move {
         /**
@@ -152,7 +225,7 @@ public class MutableGame {
             if (split.length > 3) {
                 throw new IllegalArgumentException("Moves may have at most 3 components");
             }
-            sq = split[0].startsWith("PA") ? -1 : BitBoardUtils.textToSq(split[0]);
+            sq = split[0].toUpperCase().startsWith("PA") ? -1 : BitBoardUtils.textToSq(split[0]);
             eval = (split.length > 1 && !split[1].isEmpty()) ? Double.parseDouble(split[1]) : 0;
             time = (split.length > 2 && !split[2].isEmpty()) ? Double.parseDouble(split[2]) : 0;
         }

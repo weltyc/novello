@@ -1,5 +1,6 @@
 package com.welty.novello.selfplay;
 
+import com.welty.novello.core.MutableGame;
 import com.welty.novello.eval.Eval;
 import com.welty.novello.eval.PositionValue;
 import com.welty.novello.ntest.NTest;
