@@ -2,8 +2,8 @@ package com.welty.novello.core;
 
 import com.welty.novello.eval.PositionValue;
 import com.welty.novello.selfplay.MoveScore;
+import org.jetbrains.annotations.Nullable;
 
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -76,7 +76,7 @@ public class MutableGame {
     }
 
     public void finish() {
-        if (!moves.isEmpty() && moves.get(moves.size()-1).isPass()) {
+        if (!moves.isEmpty() && moves.get(moves.size() - 1).isPass()) {
             throw new IllegalArgumentException("Can't end on a pass");
         }
         this.isOver = true;
@@ -129,7 +129,7 @@ public class MutableGame {
         if (!ggf.startsWith("(;") || !ggf.endsWith(";)")) {
             throw new IllegalArgumentException("not a GGF format game");
         }
-        ggf = ggf.substring(2, ggf.length()-2);
+        ggf = ggf.substring(2, ggf.length() - 2);
         final HashMap<String, String> tags = getGgfTags(ggf);
 
 
@@ -146,7 +146,7 @@ public class MutableGame {
 
         // add moves
         int loc = 0;
-        for (;;) {
+        for (; ; ) {
             final int tagEnd = ggf.indexOf('[', loc);
             if (tagEnd < 0) {
                 break;
@@ -155,8 +155,8 @@ public class MutableGame {
             if (valueEnd < 0) {
                 throw new IllegalArgumentException("malformed GGF game");
             }
-            final String tag = ggf.substring(loc+1, tagEnd).trim();
-            final String value = ggf.substring(tagEnd+1, valueEnd).trim();
+            final String tag = ggf.substring(loc + 1, tagEnd).trim();
+            final String value = ggf.substring(tagEnd + 1, valueEnd).trim();
             if (tag.equals("B") || tag.equals("W")) {
                 game.play(new Move(value));
             }
@@ -170,7 +170,7 @@ public class MutableGame {
         // get tags from GGF
         final HashMap<String, String> tags = new HashMap<>();
         int loc = 0;
-        for (;;) {
+        for (; ; ) {
             final int tagEnd = ggf.indexOf('[', loc);
             if (tagEnd < 0) {
                 break;
@@ -179,8 +179,8 @@ public class MutableGame {
             if (valueEnd < 0) {
                 throw new IllegalArgumentException("malformed GGF game");
             }
-            final String tag = ggf.substring(loc+1, tagEnd).trim();
-            final String value = ggf.substring(tagEnd+1, valueEnd).trim();
+            final String tag = ggf.substring(loc + 1, tagEnd).trim();
+            final String value = ggf.substring(tagEnd + 1, valueEnd).trim();
             tags.put(tag, value);
             loc = valueEnd;
         }
@@ -189,10 +189,38 @@ public class MutableGame {
 
     private static String getRequiredTag(HashMap<String, String> tags, String tag) {
         final String value = tags.get(tag);
-        if (value==null) {
+        if (value == null) {
             throw new IllegalArgumentException("GGF missing tag: " + tag);
         }
         return value;
+    }
+
+    /**
+     * Calculate the position with the given number of empties.
+     * <p/>
+     * If there is a pass at that number of empties, the position with the player-to-move having a legal move is returned.
+     * If the game is over, the terminal position is returned. If there is no position with that number of empties,
+     * null is returned.
+     *
+     * @param nEmpty number of empty disks in the position to find
+     */
+    public @Nullable Position calcPositionAt(int nEmpty) {
+        Position pos = getStartPosition();
+        for (MutableGame.Move move : moves) {
+            if (move.isPass()) {
+                pos = pos.pass();
+            } else {
+                if (pos.nEmpty() == nEmpty) {
+                    return pos;
+                }
+                pos = pos.play(move.sq);
+            }
+        }
+        if (pos.nEmpty() == nEmpty) {
+            return pos;
+        } else {
+            return null;
+        }
     }
 
 
@@ -232,7 +260,7 @@ public class MutableGame {
 
         public Move(MoveScore moveScore, double time) {
             this.sq = moveScore.sq;
-            this.eval = moveScore.score*.01;
+            this.eval = moveScore.score * .01;
             this.time = time;
         }
 
@@ -243,7 +271,7 @@ public class MutableGame {
         }
 
         private void appendTo(StringBuilder sb) {
-            sb.append(isPass()?"PASS":BitBoardUtils.sqToText(sq));
+            sb.append(isPass() ? "PASS" : BitBoardUtils.sqToText(sq));
             if (time != 0 || eval != 0) {
                 sb.append('/');
                 if (eval != 0) {
