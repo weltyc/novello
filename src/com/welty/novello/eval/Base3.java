@@ -6,14 +6,28 @@ package com.welty.novello.eval;
 class Base3 {
     public static final char[] output = ".*O".toCharArray();
 
-    static int base2ToBase3(int mover, int enemy) {
-        int base3 = 0;
-        final int nDigits = 32 - Integer.numberOfLeadingZeros(mover | enemy);
-        for (int i = nDigits; i-- > 0; ) {
-            base3 *= 3;
-            base3 += ((mover>>i) & 1) | 2 * ((enemy>>i) & 1);
+    private static final int[] base3FromBase2 = new int[1<<10];
+    static {
+        for (int mover = 0; mover<base3FromBase2.length; mover++) {
+            int base3 = 0;
+            final int nDigits = 32 - Integer.numberOfLeadingZeros(mover);
+            for (int i = nDigits; i-- > 0; ) {
+                base3 *= 3;
+                base3 += ((mover>>i) & 1);
+            }
+            base3FromBase2[mover] = base3;
         }
-        return base3;
+    }
+
+    static int base2ToBase3(int mover, int enemy) {
+//        int base3 = 0;
+//        final int nDigits = 32 - Integer.numberOfLeadingZeros(mover | enemy);
+//        for (int i = nDigits; i-- > 0; ) {
+//            base3 *= 3;
+//            base3 += ((mover>>i) & 1) | 2 * ((enemy>>i) & 1);
+//        }
+//        return base3;
+        return base3FromBase2[mover] + 2*base3FromBase2[enemy];
     }
 
     /**
