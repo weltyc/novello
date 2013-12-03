@@ -566,3 +566,13 @@ Add all rows as evaluation terms instead of just edges.
 Found a bug if there was a pass in midgame search. Fixed!
 
     9A:2 vs NTest:1: average result = -4.2
+
+Added eval 'a' which uses diagonal lines also. Also recalculated coefficients 9 using 9A instead of older 7A;
+this is coefficient set 9B.
+
+    a1:2 vs NTest:1: average result = 6.3
+
+    Tournament results:
+    +11.3  a1:2
+     +2.3  9B:2
+    -13.6  9A:2
