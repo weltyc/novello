@@ -20,20 +20,24 @@ public class NTest implements Player {
     private final int depth;
     private final boolean debug;
 
-    public NTest(int depth, boolean debug) throws IOException {
-        this.depth = depth;
-        this.debug = debug;
-        final String exe = Props.getInstance().get("ntest");
-        final File ntestDir = new File(exe).getParentFile();
-        final Process process = new ProcessBuilder(exe, "x").directory(ntestDir).redirectErrorStream(true).start();
-        out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(process.getOutputStream())), true);
-        in = new BufferedReader(new InputStreamReader(process.getInputStream()));
+    public NTest(int depth, boolean debug) {
+        try {
+            this.depth = depth;
+            this.debug = debug;
+            final String exe = Props.getInstance().get("ntest");
+            final File ntestDir = new File(exe).getParentFile();
+            final Process process = new ProcessBuilder(exe, "x").directory(ntestDir).redirectErrorStream(true).start();
+            out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(process.getOutputStream())), true);
+            in = new BufferedReader(new InputStreamReader(process.getInputStream()));
 
-        pingPong();
-        println("set depth " + depth);
-        println("new");
-        println("go");
-        pingPong();
+            pingPong();
+            println("set depth " + depth);
+            println("new");
+            println("go");
+            pingPong();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     boolean wasWriting = true;
@@ -106,10 +110,6 @@ public class NTest implements Player {
             throw new RuntimeException(e);
         }
         throw new RuntimeException("Ntest connection failed");
-    }
-
-    public static void main(String[] args) throws IOException {
-        new NTest(2, true);
     }
 
     @Override public String toString() {

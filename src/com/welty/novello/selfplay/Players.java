@@ -3,6 +3,7 @@ package com.welty.novello.selfplay;
 import com.welty.novello.eval.Eval;
 import com.welty.novello.eval.EvalStrategies;
 import com.welty.novello.eval.EvalStrategy;
+import com.welty.novello.ntest.NTest;
 
 /**
  * Utility class containing Othello players
@@ -13,10 +14,14 @@ public class Players {
         return new Eval(strategy, name.substring(1));
     }
 
-    public static EvalPlayer player(String name) {
+    public static Player player(String name) {
         final String [] parts = name.split(":",2);
         final int depth = parts.length > 1 ? Integer.parseInt(parts[1]):1;
-        final Eval eval = eval(parts[0]);
+        final String evalName = parts[0];
+        if (evalName.equals("ntest")) {
+            return new NTest(2, false);
+        }
+        final Eval eval = eval(evalName);
         return new EvalPlayer(eval, depth);
     }
 

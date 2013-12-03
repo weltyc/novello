@@ -17,9 +17,13 @@ import java.util.List;
  */
 public class SelfPlaySet {
     public static void main(String[] args) throws IOException {
-        final Player black = Players.player("a1:2");
-//        final Player white = Players.player("8A:2");
-        final Player white = new NTest(1, false);
+        if (args.length!=2) {
+            System.err.println("usage: blackPlayerName whitePlayerName");
+            System.err.println(" for example a1:2 ntest:2");
+        }
+        final Player black = Players.player(args[0]);
+        final Player white = Players.player(args[1]);
+
         final Result result = new SelfPlaySet(black, white, 2, true).call();
         System.out.format("%s vs %s: average result = %.1f\n", black, white, result.averageResult);
         System.out.format("%,d position evaluations performed.\n", Eval.nEvals());

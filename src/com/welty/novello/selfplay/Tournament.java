@@ -11,7 +11,10 @@ import java.util.concurrent.*;
  */
 public class Tournament implements Runnable {
     public static void main(String[] args) throws Exception {
-        final Player[] players = Players.players("8A:2,7B:2,8A:1,7B:1");
+        if (args.length ==0) {
+            System.err.println("usage: player1,player2,...");
+        }
+        final Player[] players = Players.players(args[0]);
         new Tournament(players).run();
     }
 
