@@ -120,19 +120,22 @@ public class EvalStrategies {
     private static class EvalStrategyB extends EvalStrategy {
         private final CornerTerm2[] cornerTerms;
         private final RowTerm[] rowTerms;
+        private final ColTerm[] colTerms;
 
         public EvalStrategyB() {
             this(cornerTerms2(),
-                    new RowTerm[]{new RowTerm(0), new RowTerm(1), new RowTerm(2), new RowTerm(3), new RowTerm(4), new RowTerm(5), new RowTerm(6), new RowTerm(7)});
+                    new RowTerm[]{new RowTerm(0), new RowTerm(1), new RowTerm(2), new RowTerm(3), new RowTerm(4), new RowTerm(5), new RowTerm(6), new RowTerm(7)},
+                    new ColTerm[]{new ColTerm(0), new ColTerm(1), new ColTerm(2), new ColTerm(3), new ColTerm(4), new ColTerm(5), new ColTerm(6), new ColTerm(7)}
+            );
         }
 
-        public EvalStrategyB(CornerTerm2[] cornerTerms, RowTerm[] rowTerms) {
+        public EvalStrategyB(CornerTerm2[] cornerTerms, RowTerm[] rowTerms, ColTerm[] colTerms) {
             super("b",
                     flatten(cornerTerms,
                             Terms.moverDisks, Terms.enemyDisks, Terms.moverMobilities, Terms.enemyMobilities,
                             Terms.moverPotMobs, Terms.enemyPotMobs, Terms.moverPotMobs2, Terms.enemyPotMobs2,
                             rowTerms,
-                            new ColTerm(0), new ColTerm(1), new ColTerm(2), new ColTerm(3), new ColTerm(4), new ColTerm(5), new ColTerm(6), new ColTerm(7),
+                            colTerms,
                             new UldrTerm(-4), new UldrTerm(-3), new UldrTerm(-2), new UldrTerm(-1), new UldrTerm(-0), new UldrTerm(1), new UldrTerm(2), new UldrTerm(3), new UldrTerm(4),
                             new UrdlTerm(-4), new UrdlTerm(-3), new UrdlTerm(-2), new UrdlTerm(-1), new UrdlTerm(-0), new UrdlTerm(1), new UrdlTerm(2), new UrdlTerm(3), new UrdlTerm(4),
                             new CornerBlockTerm(false, false), new CornerBlockTerm(false, true), new CornerBlockTerm(true, false), new CornerBlockTerm(true, true)
@@ -140,6 +143,7 @@ public class EvalStrategies {
             );
             this.cornerTerms = cornerTerms;
             this.rowTerms = rowTerms;
+            this.colTerms = colTerms;
         }
 
         @Override
@@ -194,8 +198,17 @@ public class EvalStrategies {
             eval += row2FeatureCoeffs[row2Feature.orid(rowTerms[5].instance(mover, enemy, moverMoves, enemyMoves))];
             eval += row3FeatureCoeffs[row3Feature.orid(rowTerms[4].instance(mover, enemy, moverMoves, enemyMoves))];
 
+            eval += row0FeatureCoeffs[row0Feature.orid(colTerms[0].instance(mover, enemy, moverMoves, enemyMoves))];
+            eval += row1FeatureCoeffs[row1Feature.orid(colTerms[1].instance(mover, enemy, moverMoves, enemyMoves))];
+            eval += row2FeatureCoeffs[row2Feature.orid(colTerms[2].instance(mover, enemy, moverMoves, enemyMoves))];
+            eval += row3FeatureCoeffs[row3Feature.orid(colTerms[3].instance(mover, enemy, moverMoves, enemyMoves))];
+            eval += row0FeatureCoeffs[row0Feature.orid(colTerms[7].instance(mover, enemy, moverMoves, enemyMoves))];
+            eval += row1FeatureCoeffs[row1Feature.orid(colTerms[6].instance(mover, enemy, moverMoves, enemyMoves))];
+            eval += row2FeatureCoeffs[row2Feature.orid(colTerms[5].instance(mover, enemy, moverMoves, enemyMoves))];
+            eval += row3FeatureCoeffs[row3Feature.orid(colTerms[4].instance(mover, enemy, moverMoves, enemyMoves))];
 
-            for (int iTerm = 20; iTerm < terms.length; iTerm++) {
+
+            for (int iTerm = 28; iTerm < terms.length; iTerm++) {
                 final Term term = terms[iTerm];
                 final int iFeature = iFeatures[iTerm];
 
