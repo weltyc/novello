@@ -121,22 +121,25 @@ public class EvalStrategies {
         private final CornerTerm2[] cornerTerms;
         private final RowTerm[] rowTerms;
         private final ColTerm[] colTerms;
+        private final UldrTerm[] uldrTerms;
 
         public EvalStrategyB() {
             this(cornerTerms2(),
                     new RowTerm[]{new RowTerm(0), new RowTerm(1), new RowTerm(2), new RowTerm(3), new RowTerm(4), new RowTerm(5), new RowTerm(6), new RowTerm(7)},
-                    new ColTerm[]{new ColTerm(0), new ColTerm(1), new ColTerm(2), new ColTerm(3), new ColTerm(4), new ColTerm(5), new ColTerm(6), new ColTerm(7)}
+                    new ColTerm[]{new ColTerm(0), new ColTerm(1), new ColTerm(2), new ColTerm(3), new ColTerm(4), new ColTerm(5), new ColTerm(6), new ColTerm(7)},
+                    new UldrTerm[]{new UldrTerm(-4), new UldrTerm(-3), new UldrTerm(-2), new UldrTerm(-1), new UldrTerm(-0), new UldrTerm(1), new UldrTerm(2), new UldrTerm(3), new UldrTerm(4)}
+                    
             );
         }
 
-        public EvalStrategyB(CornerTerm2[] cornerTerms, RowTerm[] rowTerms, ColTerm[] colTerms) {
+        public EvalStrategyB(CornerTerm2[] cornerTerms, RowTerm[] rowTerms, ColTerm[] colTerms, UldrTerm[] uldrTerms) {
             super("b",
                     flatten(cornerTerms,
                             Terms.moverDisks, Terms.enemyDisks, Terms.moverMobilities, Terms.enemyMobilities,
                             Terms.moverPotMobs, Terms.enemyPotMobs, Terms.moverPotMobs2, Terms.enemyPotMobs2,
                             rowTerms,
                             colTerms,
-                            new UldrTerm(-4), new UldrTerm(-3), new UldrTerm(-2), new UldrTerm(-1), new UldrTerm(-0), new UldrTerm(1), new UldrTerm(2), new UldrTerm(3), new UldrTerm(4),
+                            uldrTerms,
                             new UrdlTerm(-4), new UrdlTerm(-3), new UrdlTerm(-2), new UrdlTerm(-1), new UrdlTerm(-0), new UrdlTerm(1), new UrdlTerm(2), new UrdlTerm(3), new UrdlTerm(4),
                             new CornerBlockTerm(false, false), new CornerBlockTerm(false, true), new CornerBlockTerm(true, false), new CornerBlockTerm(true, true)
                     )
@@ -144,6 +147,7 @@ public class EvalStrategies {
             this.cornerTerms = cornerTerms;
             this.rowTerms = rowTerms;
             this.colTerms = colTerms;
+            this.uldrTerms = uldrTerms;
         }
 
         @Override
@@ -174,20 +178,15 @@ public class EvalStrategies {
             eval += slice[7][Terms.moverPotMobs2.instance(mover, enemy, moverMoves, enemyMoves)];
             eval += slice[8][Terms.enemyPotMobs2.instance(mover, enemy, moverMoves, enemyMoves)];
 
-            final int iRow0Feature = 9;
-            final int iRow1Feature = 10;
-            final int iRow2Feature = 11;
-            final int iRow3Feature = 12;
-            
             final Feature row0Feature = rowTerms[0].getFeature();
             final Feature row1Feature = rowTerms[1].getFeature();
             final Feature row2Feature = rowTerms[2].getFeature();
             final Feature row3Feature = rowTerms[3].getFeature();
-            
-            final int[] row0FeatureCoeffs = slice[iRow0Feature];
-            final int[] row1FeatureCoeffs = slice[iRow1Feature];
-            final int[] row2FeatureCoeffs = slice[iRow2Feature];
-            final int[] row3FeatureCoeffs = slice[iRow3Feature];
+
+            final int[] row0FeatureCoeffs = slice[9];
+            final int[] row1FeatureCoeffs = slice[10];
+            final int[] row2FeatureCoeffs = slice[11];
+            final int[] row3FeatureCoeffs = slice[12];
 
             eval += row0FeatureCoeffs[row0Feature.orid(rowTerms[0].instance(mover, enemy, moverMoves, enemyMoves))];
             eval += row1FeatureCoeffs[row1Feature.orid(rowTerms[1].instance(mover, enemy, moverMoves, enemyMoves))];
@@ -207,8 +206,30 @@ public class EvalStrategies {
             eval += row2FeatureCoeffs[row2Feature.orid(colTerms[5].instance(mover, enemy, moverMoves, enemyMoves))];
             eval += row3FeatureCoeffs[row3Feature.orid(colTerms[4].instance(mover, enemy, moverMoves, enemyMoves))];
 
+            final Feature uldr0Feature = uldrTerms[4].getFeature();
+            final Feature uldr1Feature = uldrTerms[5].getFeature();
+            final Feature uldr2Feature = uldrTerms[6].getFeature();
+            final Feature uldr3Feature = uldrTerms[7].getFeature();
+            final Feature uldr4Feature = uldrTerms[8].getFeature();
 
-            for (int iTerm = 28; iTerm < terms.length; iTerm++) {
+            final int[] uldr0FeatureCoeffs = slice[17];
+            final int[] uldr1FeatureCoeffs = slice[16];
+            final int[] uldr2FeatureCoeffs = slice[15];
+            final int[] uldr3FeatureCoeffs = slice[14];
+            final int[] uldr4FeatureCoeffs = slice[13];
+
+            eval += uldr4FeatureCoeffs[uldr4Feature.orid(uldrTerms[0].instance(mover, enemy, moverMoves, enemyMoves))];
+            eval += uldr3FeatureCoeffs[uldr3Feature.orid(uldrTerms[1].instance(mover, enemy, moverMoves, enemyMoves))];
+            eval += uldr2FeatureCoeffs[uldr2Feature.orid(uldrTerms[2].instance(mover, enemy, moverMoves, enemyMoves))];
+            eval += uldr1FeatureCoeffs[uldr1Feature.orid(uldrTerms[3].instance(mover, enemy, moverMoves, enemyMoves))];
+            eval += uldr0FeatureCoeffs[uldr0Feature.orid(uldrTerms[4].instance(mover, enemy, moverMoves, enemyMoves))];
+            eval += uldr1FeatureCoeffs[uldr1Feature.orid(uldrTerms[5].instance(mover, enemy, moverMoves, enemyMoves))];
+            eval += uldr2FeatureCoeffs[uldr2Feature.orid(uldrTerms[6].instance(mover, enemy, moverMoves, enemyMoves))];
+            eval += uldr3FeatureCoeffs[uldr3Feature.orid(uldrTerms[7].instance(mover, enemy, moverMoves, enemyMoves))];
+            eval += uldr4FeatureCoeffs[uldr4Feature.orid(uldrTerms[8].instance(mover, enemy, moverMoves, enemyMoves))];
+
+
+            for (int iTerm = 37; iTerm < terms.length; iTerm++) {
                 final Term term = terms[iTerm];
                 final int iFeature = iFeatures[iTerm];
 
