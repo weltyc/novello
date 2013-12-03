@@ -10,7 +10,7 @@ public class ColTermTest extends TestCase {
     private static final ColTerm right = new ColTerm(0);
 
     public void testGetInstance() {
-        final int expected = Base3.base2ToBase3(0x31, 0x82);
+        final int expected = Base3.base2ToBase3(0x8C, 0x41);
         check(expected, 0x0000010100000001L, 0x0100000000000100L);
     }
 

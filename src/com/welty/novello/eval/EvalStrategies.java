@@ -148,7 +148,7 @@ public class EvalStrategies {
             int eval = 0;
 
             // evaluate corner features separately to see if specialization helps the timing
-            final int iCornerFeature = iFeatures[0];
+            final int iCornerFeature = 0;
             final Feature cornerFeature = cornerTerms[0].getFeature();
             final int[] cornerFeatureCoeffs = slice[iCornerFeature];
             for (final CornerTerm2 term : cornerTerms) {
@@ -158,7 +158,16 @@ public class EvalStrategies {
                 eval += coeff;
             }
 
-            for (int iTerm = 4; iTerm < terms.length; iTerm++) {
+            eval += slice[1][Terms.moverDisks.instance(mover, enemy, moverMoves, enemyMoves)];
+            eval += slice[2][Terms.enemyDisks.instance(mover, enemy, moverMoves, enemyMoves)];
+            eval += slice[3][Terms.moverMobilities.instance(mover, enemy, moverMoves, enemyMoves)];
+            eval += slice[4][Terms.enemyMobilities.instance(mover, enemy, moverMoves, enemyMoves)];
+            eval += slice[5][Terms.moverPotMobs.instance(mover, enemy, moverMoves, enemyMoves)];
+            eval += slice[6][Terms.enemyPotMobs.instance(mover, enemy, moverMoves, enemyMoves)];
+            eval += slice[7][Terms.moverPotMobs2.instance(mover, enemy, moverMoves, enemyMoves)];
+            eval += slice[8][Terms.enemyPotMobs2.instance(mover, enemy, moverMoves, enemyMoves)];
+
+            for (int iTerm = 12; iTerm < terms.length; iTerm++) {
                 final Term term = terms[iTerm];
                 final int iFeature = iFeatures[iTerm];
 
