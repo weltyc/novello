@@ -1,5 +1,6 @@
 package com.welty.novello.ntest;
 
+import com.welty.novello.core.Props;
 import com.welty.novello.selfplay.MoveScore;
 import com.welty.novello.core.MutableGame;
 import com.welty.novello.selfplay.Player;
@@ -22,8 +23,8 @@ public class NTest implements Player {
     public NTest(int depth, boolean debug) throws IOException {
         this.depth = depth;
         this.debug = debug;
-        final File ntestDir = new File("C:/dev/othMerge");
-        final String exe = ntestDir + "/ntest.exe";
+        final String exe = Props.getInstance().get("ntest");
+        final File ntestDir = new File(exe).getParentFile();
         final Process process = new ProcessBuilder(exe, "x").directory(ntestDir).redirectErrorStream(true).start();
         out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(process.getOutputStream())), true);
         in = new BufferedReader(new InputStreamReader(process.getInputStream()));

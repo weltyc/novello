@@ -30,6 +30,9 @@
                     <exclude>**/*.groovy</exclude>
                 </excludes>
             </resource>
+            <resource>
+                <directory>props</directory>
+            </resource>
         </resources>
         <testResources>
             <testResource>

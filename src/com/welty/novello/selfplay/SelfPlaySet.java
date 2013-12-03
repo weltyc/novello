@@ -1,6 +1,7 @@
 package com.welty.novello.selfplay;
 
 import com.welty.novello.core.MutableGame;
+import com.welty.novello.core.Props;
 import com.welty.novello.eval.Eval;
 import com.welty.novello.eval.PositionValue;
 import com.welty.novello.ntest.NTest;
@@ -8,8 +9,6 @@ import com.welty.novello.core.Position;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -18,7 +17,7 @@ import java.util.List;
  */
 public class SelfPlaySet {
     public static void main(String[] args) throws IOException {
-        final Player black = Players.player("9A:2");
+        final Player black = Players.player("a1:2");
 //        final Player white = Players.player("8A:2");
         final Player white = new NTest(1, false);
         final Result result = new SelfPlaySet(black, white, 2, true).call();
@@ -61,7 +60,7 @@ public class SelfPlaySet {
         double sum = 0;
         double sumSq = 0;
 
-        String hostName = getHostName();
+        String hostName = Props.getHostName();
 
         while (null != (startPosition = generator.next())) {
             // only play positions where we have not seen a reflection previously
@@ -96,16 +95,6 @@ public class SelfPlaySet {
             printStats(nComplete, sum, sumSq);
         }
         return new Result(pvs, sum / nComplete);
-    }
-
-    private static String getHostName() {
-        String hostName;
-        try {
-            hostName = InetAddress.getLocalHost().getHostName();
-        } catch (UnknownHostException e) {
-            hostName = "Unknown";
-        }
-        return hostName;
     }
 
     private static void printStats(int nComplete, double sum, double sumSq) {
