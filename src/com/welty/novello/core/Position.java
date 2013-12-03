@@ -10,6 +10,7 @@ import static java.lang.Long.bitCount;
  */
 public class Position implements Comparable<Position> {
     private static final String header = "  A B C D E F G H  \n";
+    public static final Position START_POSITION = new Position(0x0000000810000000L, 0x0000001008000000L, true);
     public final long black;
     public final long white;
     public final boolean blackToMove;

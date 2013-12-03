@@ -278,6 +278,9 @@ public class EvalStrategy {
                 }
             }
         }
+        if (iDenseWeight!=x.length) {
+            throw new IllegalStateException("Internal error");
+        }
         return unpack;
     }
 

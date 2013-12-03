@@ -17,6 +17,15 @@ public class SelfPlayGame implements Callable<MutableGame> {
     private final boolean printGame;
     private final int searchFlags;
 
+    /**
+     *
+     * @param board start position
+     * @param black black player
+     * @param white white player
+     * @param place location of the match (often, Props.getHostName())
+     * @param printGame  if true prints out each position from the game, followed by the game ggf.
+     * @param searchFlags  as in {@link Player#calcMove(com.welty.novello.core.Position, long, int)}
+     */
     public SelfPlayGame(@NotNull Position board, @NotNull Player black, @NotNull Player white, String place, boolean printGame
             , int searchFlags) {
         this.game = new MutableGame(board, black.toString(), white.toString(), place);

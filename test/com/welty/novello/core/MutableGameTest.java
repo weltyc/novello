@@ -9,13 +9,11 @@ import java.util.List;
 
 public class MutableGameTest extends TestCase {
 
-    private static final Position START_POSITION = new Position(0x0000000810000000L, 0x0000001008000000L, true);
-
     public void testUpdates() {
-        final Position startPosition = START_POSITION;
+        final Position startPosition = Position.START_POSITION;
         final MutableGame game = new MutableGame(startPosition, "Boris", "William", "VistaNova");
-        assertEquals(START_POSITION, game.getStartPosition());
-        assertEquals(START_POSITION, game.getLastPosition());
+        assertEquals(Position.START_POSITION, game.getStartPosition());
+        assertEquals(Position.START_POSITION, game.getLastPosition());
         assertTrue(game.toGgf().contains("BO[8 -------- -------- -------- ---O*--- ---*O--- -------- -------- -------- *]"));
         assertTrue(game.toGgf().contains("PC[VistaNova]"));
         assertTrue(game.toGgf().contains("TY[8r]"));
@@ -28,7 +26,7 @@ public class MutableGameTest extends TestCase {
 
         game.play("F5");
         final Position nextPosition = new Position(0x000000081C000000L, 0x0000001000000000L, false);
-        assertEquals(START_POSITION, game.getStartPosition());
+        assertEquals(Position.START_POSITION, game.getStartPosition());
         assertEquals(nextPosition, game.getLastPosition());
         assertTrue(game.toGgf().contains("BO[8 -------- -------- -------- ---O*--- ---*O--- -------- -------- -------- *]"));
         assertTrue(game.toGgf().contains("B[F5]"));
