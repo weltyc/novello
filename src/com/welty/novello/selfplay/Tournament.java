@@ -52,7 +52,11 @@ public class Tournament implements Runnable {
             scores[result.iBlack] += averageResult;
             scores[result.iWhite] -= averageResult;
         }
-        Vec.timesEquals(scores, 1. / (players.length - 1));
+        /**
+         * divide by number of players, rather than number of games, so that
+         * expected result = score difference
+         */
+        Vec.timesEquals(scores, 1. / players.length);
 
         System.out.println();
         System.out.println("Tournament results:");
