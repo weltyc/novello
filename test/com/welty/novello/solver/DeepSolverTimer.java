@@ -23,11 +23,14 @@ public class DeepSolverTimer {
 
         final long t0 = System.currentTimeMillis();
 
+        final Solver solver = new Solver();
         for (Position position : positions) {
-            new Solver().solve(position.mover(), position.enemy());
+            solver.solve(position.mover(), position.enemy());
         }
-
         final long dt = System.currentTimeMillis() - t0;
         System.out.println(dt + " ms elapsed");
+
+        System.out.println(solver.nodeCounts.getNodeCountsByDepth());
+        System.out.println(solver.hashTable.stats());
     }
 }
