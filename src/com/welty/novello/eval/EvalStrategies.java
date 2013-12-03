@@ -121,15 +121,16 @@ public class EvalStrategies {
         private final CornerTerm2[] cornerTerms;
 
         public EvalStrategyB() {
-            this(cornerTerms2());
+            this(cornerTerms2(),
+                    new RowTerm[]{new RowTerm(0), new RowTerm(1), new RowTerm(2), new RowTerm(3), new RowTerm(4), new RowTerm(5), new RowTerm(6), new RowTerm(7)});
         }
 
-        public EvalStrategyB(CornerTerm2[] cornerTerms) {
+        public EvalStrategyB(CornerTerm2[] cornerTerms, RowTerm[] rowTerms) {
             super("b",
                     flatten(cornerTerms,
                             Terms.moverDisks, Terms.enemyDisks, Terms.moverMobilities, Terms.enemyMobilities,
                             Terms.moverPotMobs, Terms.enemyPotMobs, Terms.moverPotMobs2, Terms.enemyPotMobs2,
-                            new RowTerm(0), new RowTerm(1), new RowTerm(2), new RowTerm(3), new RowTerm(4), new RowTerm(5), new RowTerm(6), new RowTerm(7),
+                            rowTerms,
                             new ColTerm(0), new ColTerm(1), new ColTerm(2), new ColTerm(3), new ColTerm(4), new ColTerm(5), new ColTerm(6), new ColTerm(7),
                             new UldrTerm(-4), new UldrTerm(-3), new UldrTerm(-2), new UldrTerm(-1), new UldrTerm(-0), new UldrTerm(1), new UldrTerm(2), new UldrTerm(3), new UldrTerm(4),
                             new UrdlTerm(-4), new UrdlTerm(-3), new UrdlTerm(-2), new UrdlTerm(-1), new UrdlTerm(-0), new UrdlTerm(1), new UrdlTerm(2), new UrdlTerm(3), new UrdlTerm(4),
