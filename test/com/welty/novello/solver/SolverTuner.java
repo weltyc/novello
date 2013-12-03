@@ -21,7 +21,7 @@ public class SolverTuner {
      * q1 of the original is higher than q3 of the new by random chance is 0.60%.
      */
     public static void main(String[] args) {
-        new SolverTuner(MOBILITY_WEIGHT, true).run();
+        new SolverTuner(DEEP_MOBILITY_WEIGHT, true).run();
     }
 
     private final @NotNull Parameter parameter;
@@ -185,6 +185,7 @@ public class SolverTuner {
     }
 
     private static final Parameter MOBILITY_WEIGHT = new StaticFieldParameter(MoveSorter.class, "MOBILITY_WEIGHT", 0);
+    private static final Parameter DEEP_MOBILITY_WEIGHT = new StaticFieldParameter(MoveSorter.class, "DEEP_MOBILITY_WEIGHT", 0);
     private static final Parameter FIXED_ORDERING_WEIGHT = new StaticFieldParameter(MoveSorter.class, "FIXED_ORDERING_WEIGHT", 0);
     private static final Parameter ETC_WEIGHT = new StaticFieldParameter(MoveSorter.class, "ETC_WEIGHT", 0);
     private static final Parameter PARITY_WEIGHT = new StaticFieldParameter(MoveSorter.class, "PARITY_WEIGHT", 0);

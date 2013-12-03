@@ -604,7 +604,7 @@ Self-play b1:6:
 Deep Solver
 ===========
 [86d7a78] Starting statistics for DeepSolverTimer at depth 20:
-    7602 ms elapsed
+    6,787 ms elapsed; 70,092,939 total nodes
 
     Node fractions by depth:
      1: 31.8%
@@ -648,6 +648,15 @@ Deep Solver
 
     33,688,406 finds and 8,614,016 stores. 312,809 / 347,649 / 21 alpha/beta/pv cuts. 21,595 useless finds.
 
+Hash Table
+----------
+6510 ms elapsed: Separate hash-tables by depth (2^10 hash buckets per depth)
+6471 ms elapsed: 2^12 hash buckets
+6569 ms elapsed: 2^11 hash buckets
 
-6510 ms elapsed: Separate hash-tables by depth
+I don't think this matters very much... keeping at 10
 
+Deep Move Sorting
+-----------------
+9,183 ms elapsed; 75,809,707 total nodes: Eval-based move sort at depth >= 12, with no FF adjustment
+5,252 ms elapsed; 43,713,320 total nodesL Eval -based move sort at depth >= 12, with DEEP_MOBILITY_WEIGHT = 4.

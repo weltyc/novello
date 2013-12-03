@@ -2,6 +2,8 @@ package com.welty.novello.solver;
 
 import com.welty.novello.core.BitBoardUtils;
 import com.welty.novello.core.Square;
+import com.welty.novello.eval.Eval;
+import com.welty.novello.selfplay.Players;
 
 import static com.welty.novello.core.BitBoardUtils.*;
 import static java.lang.Long.bitCount;
@@ -19,6 +21,11 @@ final class MoveSorter {
      * mobility value << MOBILITY_WEIGHT is added to the move sort score
      */
     private static final int MOBILITY_WEIGHT = 4;
+
+    /**
+     * mobility value << DEEP_MOBILITY_WEIGHT is added to the move sort score when using eval
+     */
+    static int DEEP_MOBILITY_WEIGHT = 4;
 
     /**
      * 1 << ETC_WEIGHT is added to the move sort score if the position is in the hash table and will immediately cut off.
@@ -51,6 +58,8 @@ final class MoveSorter {
     private int size = 0;
     final Move[] moves = new Move[64];
 
+    private static final Eval deepEval = Players.currentEval();
+
     MoveSorter() {
         for (int i = 0; i < moves.length; i++) {
             moves[i] = new Move();
@@ -61,6 +70,51 @@ final class MoveSorter {
         return size;
     }
 
+    /**
+     * Create a sorted list containing all legal moves for the mover that are listed in movesToCheck.
+     * <p/>
+     * This version uses ETC.
+     * <p/>
+     * if movesToCheck is -1L, all moves will be checked. Setting movesToCheck to the mobilities can improve the timing
+     * since only known legal moves will have their flips calculated. However, the timing benefit is smaller than the cost
+     * of calculating the mobilities, so this should only be set if mobilities are calculated for some other reason such
+     * as move sorting from a higher depth.
+     */
+    @SuppressWarnings("PointlessBitwiseExpression")
+    public void createWithEtcAndEval(ListOfEmpties empties, long mover, long enemy, long movesToCheck
+            , HashTable hashTable, int alpha, int beta) {
+        size = 0;
+
+        for (ListOfEmpties.Node node = empties.first(); node != empties.end; node = node.next) {
+            final Square square = node.square;
+            final int sq = square.sq;
+            if (isBitClear(movesToCheck, sq)) {
+                continue;
+            }
+
+            final long flips = square.calcFlips(mover, enemy);
+            if (flips != 0) {
+                final long placement = 1L << sq;
+                final long nextEnemy = mover | flips | placement;
+                final long nextMover = enemy & ~flips;
+                final long enemyMoves = calcMoves(nextMover, nextEnemy);
+                int score = scoreWithEtcAndEval(hashTable, alpha, beta, nextEnemy, nextMover, enemyMoves);
+
+                insert(sq, score, flips, enemyMoves, node);
+            }
+        }
+    }
+
+
+    private static int scoreWithEtcAndEval(HashTable hashTable, int alpha, int beta, long nextEnemy, long nextMover, long enemyMoves) {
+        final int nMobs = Long.bitCount(enemyMoves);
+        int score = -deepEval.eval(nextMover, nextEnemy) - (sortWeightFromMobility[nMobs]<<DEEP_MOBILITY_WEIGHT);       // todo pass enemyMoves to eval for speed
+        final HashTable.Entry entry = hashTable.find(nextMover, nextEnemy);
+        if (entry != null && entry.cutsOff(-beta, -alpha)) {
+            score += 1 << ETC_WEIGHT;
+        }
+        return score;
+    }
     /**
      * Create a sorted list containing all legal moves for the mover that are listed in movesToCheck.
      * <p/>

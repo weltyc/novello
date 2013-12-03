@@ -36,6 +36,11 @@ public class Solver {
     private static final int MIN_ETC_DEPTH = MIN_HASH_DEPTH + 1;
 
     /**
+     * Use the eval for sorting at this depth and higher.
+     */
+    private static int MIN_EVAL_SORT_DEPTH = 12;
+
+    /**
      * At this depth and above, the search will do a full sort of the remaining moves
      */
     static final int MIN_SORT_DEPTH = 6;
@@ -336,7 +341,13 @@ public class Solver {
         // do an actual move sort
         final MoveSorter sorter = moveSorters[nEmpties];
         if (nEmpties >= MIN_ETC_DEPTH) {
+            if (nEmpties >= MIN_EVAL_SORT_DEPTH) {
+                sorter.createWithEtcAndEval(empties, mover, enemy, movesToCheck, hashTable, alpha, beta);
+            }
+            else {
             sorter.createWithEtc(empties, mover, enemy, parity, movesToCheck, hashTable, alpha, beta);
+            }
+
         } else {
             sorter.createWithoutEtc(empties, mover, enemy, parity, movesToCheck);
         }
