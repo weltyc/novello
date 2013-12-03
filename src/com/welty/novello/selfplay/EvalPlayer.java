@@ -1,5 +1,6 @@
 package com.welty.novello.selfplay;
 
+import com.welty.novello.core.MoveScore;
 import com.welty.novello.eval.CoefficientCalculator;
 import com.welty.novello.eval.Eval;
 import com.welty.novello.core.Position;

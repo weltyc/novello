@@ -32,7 +32,7 @@ public class Explain {
             final Position board = prev.play(move);
             System.out.println(board);
 
-            System.out.println("Explaining eval. eval() returns " + board.eval(eval) + ".\n\n");
+            System.out.println("Explaining eval. eval() returns " + eval.eval(board) + ".\n\n");
 
             eval.explain(board.mover(), board.enemy(), board.calcMoves(), board.enemyMoves());
         }

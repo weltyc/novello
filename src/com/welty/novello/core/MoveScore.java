@@ -1,4 +1,4 @@
-package com.welty.novello.selfplay;
+package com.welty.novello.core;
 
 import com.welty.novello.core.BitBoardUtils;
 

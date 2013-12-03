@@ -1,6 +1,7 @@
 package com.welty.novello.selfplay;
 
 import com.orbanova.common.misc.Require;
+import com.welty.novello.core.MoveScore;
 import com.welty.novello.core.MutableGame;
 import com.welty.novello.core.Position;
 import org.jetbrains.annotations.NotNull;

@@ -6,6 +6,8 @@ import com.orbanova.common.misc.Require;
 import com.orbanova.common.misc.Utils;
 import com.orbanova.common.misc.Vec;
 import com.welty.novello.core.MutableGame;
+import com.welty.novello.core.ObjectFeed;
+import com.welty.novello.core.PositionValue;
 import com.welty.novello.selfplay.*;
 import com.welty.novello.core.Position;
 import org.jetbrains.annotations.NotNull;
@@ -64,7 +66,7 @@ public class CoefficientCalculator {
             }
             System.out.println();
             System.out.println("--- " + nEmpty + " ---");
-            final Element[] elements = elementsFromPvs(pvs, nEmpty);
+            final PositionElement[] elements = elementsFromPvs(pvs, nEmpty);
             dumpElementDistribution(elements, STRATEGY.nCoefficientIndices());
             System.out.format("estimating coefficients using %,d positions\n", elements.length);
             final long t0 = System.currentTimeMillis();
@@ -78,9 +80,9 @@ public class CoefficientCalculator {
         }
     }
 
-    private static void dumpElementDistribution(Element[] elements, int nIndices) {
+    private static void dumpElementDistribution(PositionElement[] elements, int nIndices) {
         final int[] counts = new int[nIndices];
-        for (Element element : elements) {
+        for (PositionElement element : elements) {
             element.updateHistogram(counts);
         }
         final int[] histogram = new int[12];
@@ -139,7 +141,7 @@ public class CoefficientCalculator {
      * @param nCoefficientIndices number of coefficients
      * @return optimal coefficients
      */
-    static double[] estimateCoefficients(Element[] elements, int nCoefficientIndices, double penalty) {
+    static double[] estimateCoefficients(PositionElement[] elements, int nCoefficientIndices, double penalty) {
         final FunctionWithGradient f = new ErrorFunction(elements, nCoefficientIndices, penalty);
         return ConjugateGradientMethod.minimize(f);
     }
@@ -173,11 +175,11 @@ public class CoefficientCalculator {
      * 2 p x[i]
      */
     static class ErrorFunction extends FunctionWithGradient {
-        private final Element[] elements;
+        private final PositionElement[] elements;
         private final int nIndices;
         private final double penalty;
 
-        public ErrorFunction(Element[] elements, int nIndices, double penalty) {
+        public ErrorFunction(PositionElement[] elements, int nIndices, double penalty) {
             this.elements = elements;
             this.nIndices = nIndices;
             this.penalty = penalty;
@@ -186,7 +188,7 @@ public class CoefficientCalculator {
         @Override public double[] minusGradient(double[] x) {
             Require.eq(x.length, "x length", nIndices);
             final double[] minusGradient = Vec.times(x, -2 * penalty);
-            for (final Element element : elements) {
+            for (final PositionElement element : elements) {
                 element.updateGradient(x, minusGradient);
             }
             return minusGradient;
@@ -194,7 +196,7 @@ public class CoefficientCalculator {
 
         @Override public double y(double[] x) {
             double y = 0;
-            for (Element element : elements) {
+            for (PositionElement element : elements) {
                 final double error = element.error(x);
                 y += error * error;
             }
@@ -224,7 +226,7 @@ public class CoefficientCalculator {
                 errors = new double[elements.length];
                 dErrors = new double[elements.length];
                 for (int i = 0; i < elements.length; i++) {
-                    final Element element = elements[i];
+                    final PositionElement element = elements[i];
                     errors[i] = element.error(x);
                     dErrors[i] = element.dError(dx);
                 }
@@ -253,16 +255,16 @@ public class CoefficientCalculator {
      * @param nEmpty number of empties to generate coefficients for
      * @return list of selected Elements
      */
-    private static Element[] elementsFromPvs(List<PositionValue> pvs, int nEmpty) {
-        final List<Element> res = new ArrayList<>();
+    private static PositionElement[] elementsFromPvs(List<PositionValue> pvs, int nEmpty) {
+        final List<PositionElement> res = new ArrayList<>();
         for (final PositionValue pv : pvs) {
             final int diff = nEmpty - pv.nEmpty();
             if (!Utils.isOdd(diff) && diff >= -6 && diff <= 6) {
                 final int[] indices = CoefficientCalculator.STRATEGY.coefficientIndices(pv.mover, pv.enemy);
-                res.add(new Element(indices, pv.value));
+                res.add(new PositionElement(indices, pv.value));
             }
         }
-        return res.toArray(new Element[res.size()]);
+        return res.toArray(new PositionElement[res.size()]);
     }
 
     /**
@@ -338,12 +340,14 @@ public class CoefficientCalculator {
     }
 }
 
-
-class Element {
+/**
+ * Data about a single position and value
+ */
+class PositionElement {
     private final int[] indices;
     private final int target;
 
-    Element(int[] indices, int target) {
+    PositionElement(int[] indices, int target) {
         this.indices = indices;
         this.target = target;
     }

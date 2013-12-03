@@ -1,7 +1,6 @@
 package com.welty.novello.core;
 
 import com.orbanova.common.misc.Require;
-import com.welty.novello.eval.Eval;
 import org.jetbrains.annotations.Nullable;
 
 import static java.lang.Long.bitCount;
@@ -364,17 +363,5 @@ public class Position implements Comparable<Position> {
         } else {
             return new Position(enemy, mover, blackToMove);
         }
-    }
-
-    /**
-     * Evaluate a position
-     * <p/>
-     * This function will check for passes and return the terminal value if the game is over.
-     *
-     * @param eval Eval to use
-     * @return value of position.
-     */
-    public int eval(Eval eval) {
-        return eval.eval(mover(), enemy());
     }
 }

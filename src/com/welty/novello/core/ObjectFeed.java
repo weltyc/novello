@@ -1,4 +1,4 @@
-package com.welty.novello.eval;
+package com.welty.novello.core;
 
 import com.orbanova.common.feed.Feed;
 import org.jetbrains.annotations.NotNull;

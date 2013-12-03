@@ -1,6 +1,7 @@
 package com.welty.novello.eval;
 
 import com.orbanova.common.ramfs.RamFileSystem;
+import com.welty.novello.core.ObjectFeed;
 import junit.framework.TestCase;
 
 import java.io.DataInputStream;

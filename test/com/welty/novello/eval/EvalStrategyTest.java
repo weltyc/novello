@@ -88,10 +88,10 @@ public class EvalStrategyTest extends ArrayTestCase {
 
     private void testAllReflectionsHaveTheSameEval(Eval eval, long mover, long enemy) {
         final Position position = new Position(mover, enemy, true);
-        final int expected = position.eval(eval);
+        final int expected = eval.eval(position);
         for (int r = 1; r < 8; r++) {
             final Position reflection = position.reflection(r);
-            assertEquals(expected, reflection.eval(eval));
+            assertEquals(expected, eval.eval(reflection));
         }
     }
 

@@ -1,7 +1,7 @@
 package com.welty.novello.solver;
 
 import com.welty.novello.core.Position;
-import com.welty.novello.selfplay.MoveScore;
+import com.welty.novello.core.MoveScore;
 import junit.framework.TestCase;
 
 import static com.welty.novello.core.BitBoardUtils.reflection;

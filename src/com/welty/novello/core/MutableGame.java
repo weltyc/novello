@@ -1,7 +1,5 @@
 package com.welty.novello.core;
 
-import com.welty.novello.eval.PositionValue;
-import com.welty.novello.selfplay.MoveScore;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;

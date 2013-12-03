@@ -1,9 +1,5 @@
 package com.welty.novello.core;
 
-import com.welty.novello.core.MutableGame;
-import com.welty.novello.eval.PositionValue;
-import com.welty.novello.core.Position;
-import com.welty.novello.selfplay.MoveScore;
 import junit.framework.TestCase;
 
 import java.util.List;

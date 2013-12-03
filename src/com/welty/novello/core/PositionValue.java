@@ -1,7 +1,4 @@
-package com.welty.novello.eval;
-
-import com.welty.novello.core.Position;
-import com.welty.novello.core.BitBoardUtils;
+package com.welty.novello.core;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;

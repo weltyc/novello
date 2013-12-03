@@ -8,8 +8,8 @@ import com.orbanova.common.misc.Vec;
 public class CoefficientCalculatorTest extends ArrayTestCase {
     public void testCalc() {
 
-        final Element[] elements = {
-                new Element(new int[]{2, 1, 5, 4}, 8)
+        final PositionElement[] elements = {
+                new PositionElement(new int[]{2, 1, 5, 4}, 8)
         };
 
         for (double penalty = 0; penalty <= 2; penalty++) {
@@ -22,8 +22,8 @@ public class CoefficientCalculatorTest extends ArrayTestCase {
     public void testCoefficientErrorFunction() {
         // only one element, with a target of 8.
         // Each of the four coefficients should be 2; the other coefficients should be 0.
-        final Element[] elements = {
-                new Element(new int[]{2, 1, 5, 4}, 8)
+        final PositionElement[] elements = {
+                new PositionElement(new int[]{2, 1, 5, 4}, 8)
         };
         // err from target when x=0.
         final double err = 8.;
@@ -43,8 +43,8 @@ public class CoefficientCalculatorTest extends ArrayTestCase {
         // Its minimum occurs when 0 = d error / dx = (4+p)x -8
         // so x = 8/(4+p)
         final int nDimensions = 6;
-        final Element[] elements = {
-                new Element(new int[]{2, 1, 5, 4}, 8)
+        final PositionElement[] elements = {
+                new PositionElement(new int[]{2, 1, 5, 4}, 8)
         };
         final double[] x0 = {0, 0, 0, 0, 0, 0};
         final double err0 = 8.;         // err from target when x=0.

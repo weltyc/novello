@@ -1,5 +1,6 @@
 package com.welty.novello.selfplay;
 
+import com.welty.novello.core.MoveScore;
 import com.welty.novello.eval.CoefficientCalculator;
 import com.welty.novello.eval.Eval;
 import com.welty.novello.core.Position;
@@ -31,7 +32,7 @@ public class EvalPlayerTest extends TestCase {
         assertTrue("must be a legal move", BitBoardUtils.isBitSet(moves, moveScore.sq));
 
         final Position terminal = prev.play(moveScore.sq);
-        assertEquals(-terminal.eval(eval), moveScore.score);
+        assertEquals(-eval.eval(terminal), moveScore.score);
 
         int score = simpleSearch(eval, prev, moves);
         assertEquals(score, moveScore.score);
@@ -44,7 +45,7 @@ public class EvalPlayerTest extends TestCase {
             final int sq = Long.numberOfTrailingZeros(m);
             m&=~(1L<<sq);
             final Position sub = prev.play(sq);
-            final int subScore = -sub.eval(eval);
+            final int subScore = -eval.eval(sub);
             if (subScore > score) {
                 score = subScore;
             }
