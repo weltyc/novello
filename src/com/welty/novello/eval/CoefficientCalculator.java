@@ -185,7 +185,8 @@ public class CoefficientCalculator {
             this.penalty = penalty;
         }
 
-        @Override public double[] minusGradient(double[] x) {
+        @Override
+        public double[] minusGradient(double[] x) {
             Require.eq(x.length, "x length", nIndices);
             final double[] minusGradient = Vec.times(x, -2 * penalty);
             for (final PositionElement element : elements) {
@@ -194,7 +195,8 @@ public class CoefficientCalculator {
             return minusGradient;
         }
 
-        @Override public double y(double[] x) {
+        @Override
+        public double y(double[] x) {
             double y = 0;
             for (PositionElement element : elements) {
                 final double error = element.error(x);
@@ -203,11 +205,14 @@ public class CoefficientCalculator {
             return y + penalty * Vec.sumSq(x);
         }
 
-        @Override public int nDimensions() {
+        @Override
+        public int nDimensions() {
             return nIndices;
         }
 
-        @NotNull @Override Function getLineFunction(double[] x, double[] dx) {
+        @NotNull
+        @Override
+        Function getLineFunction(double[] x, double[] dx) {
             return new LineFunction(x, dx);
         }
 
@@ -232,7 +237,8 @@ public class CoefficientCalculator {
                 }
             }
 
-            @Override public double y(double a) {
+            @Override
+            public double y(double a) {
                 double y = 0;
                 for (int i = 0; i < errors.length; i++) {
                     final double error = errors[i] + dErrors[i] * a;
@@ -346,22 +352,34 @@ public class CoefficientCalculator {
 class PositionElement {
     private final int[] indices;
     private final int target;
+    private final float[] denseWeights;
+
+    private static final float[] EMPTY_ARRAY = new float[0];
 
     PositionElement(int[] indices, int target) {
+        this(indices, target, EMPTY_ARRAY);
+    }
+
+    public PositionElement(int[] indices, int target, float[] denseWeights) {
         this.indices = indices;
         this.target = target;
+        this.denseWeights = denseWeights;
     }
 
     /**
      * Update the gradient of the optimization function (sum of squared errors)
      *
-     * @param x  location at which to calculate the gradient
+     * @param x             location at which to calculate the gradient
      * @param minusGradient (negative) gradient of the optimization function
      */
     void updateGradient(double[] x, double[] minusGradient) {
         final double error = error(x);
         for (int i : indices) {
             minusGradient[i] += 2 * error;
+        }
+        final int denseBase = minusGradient.length - denseWeights.length;
+        for (int j = 0; j < denseWeights.length; j++) {
+            minusGradient[denseBase + j] += 2 * error * denseWeights[j];
         }
     }
 
@@ -373,8 +391,9 @@ class PositionElement {
 
     /**
      * Calculate the error in the position value estimation
-     *
+     * <p/>
      * error = target - &Sigma;<sub>i</sub> c<sub>i</sub> x<sub>i</sub>
+     *
      * @param x vector of coefficient values
      * @return error
      */
@@ -382,6 +401,11 @@ class PositionElement {
         double error = target;
         for (int i : indices) {
             error -= x[i];
+        }
+        final int denseBase = x.length - denseWeights.length;
+        for (int j = 0; j < denseWeights.length; j++) {
+            int i = denseBase + j;
+            error -= x[i] * denseWeights[j];
         }
         return error;
     }
@@ -394,8 +418,13 @@ class PositionElement {
      */
     public double dError(double[] deltaX) {
         double dError = 0;
-        for (int j : indices) {
-            dError -= deltaX[j];
+        for (int i : indices) {
+            dError -= deltaX[i];
+        }
+        final int denseBase = deltaX.length - denseWeights.length;
+        for (int j = 0; j < denseWeights.length; j++) {
+            int i = denseBase + j;
+            dError -= deltaX[i] * denseWeights[j];
         }
         return dError;
     }

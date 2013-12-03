@@ -67,11 +67,55 @@ public class CoefficientCalculatorTest extends ArrayTestCase {
             assertEquals("steepest descent", expected, function.minusGradient(x1), 1e-10);
 
             // line function
-            final double[] dx =Vec.increasingDouble(1., 1., nDimensions);
-            for (int a=0; a<3; a++) {
+            final double[] dx = Vec.increasingDouble(1., 1., nDimensions);
+            for (int a = 0; a < 3; a++) {
                 final double[] xa = Vec.plusTimes(x1, dx, a);
                 assertEquals(function.y(xa), function.getLineFunction(x1, dx).y(a));
             }
         }
+    }
+
+    public void testCoefficientErrorFunctionWithDenseOrid() {
+        // One element with a dense coefficient of 1 and an orid of 0
+        final PositionElement[] elements = {
+                new PositionElement(new int[]{0}, 3, new float[]{1.0f})
+        };
+
+        final CoefficientCalculator.ErrorFunction function = new CoefficientCalculator.ErrorFunction(elements, 3, 1e-12);
+        assertEquals(3, function.nDimensions());
+        final double[] x0 = {0., 0., 0.};
+        final double err0 = 3;
+        assertEquals(err0*err0, function.y(x0), 1e-10);
+        assertEquals(new double[]{err0*2, 0, err0*2}, function.minusGradient(x0), 1e-10);
+
+        final double[] x1 = {1., 0., 0.};
+        final double err1 = 2;
+        assertEquals(err1*err1, function.y(x1), 1e-10);
+        assertEquals(new double[]{err1*2, 0, err1*2}, function.minusGradient(x1), 1e-10);
+
+        final double[] x3 = {0. , 0., 1.};
+        final double err3 = 2;
+        assertEquals(err3*err3, function.y(x1), 1e-10);
+        assertEquals(new double[]{err3*2, 0, err3*2}, function.minusGradient(x3), 1e-10);
+    }
+
+    public void testElementError() {
+        final PositionElement element = new PositionElement(new int[]{0}, 3, new float[]{1.0f});
+
+        final double[] x0 = {0., 0., 0.};
+        assertEquals(3, element.error(x0), 1e-10);
+        assertEquals(0, element.dError(x0), 1e-10);
+
+        final double[] x1 = {1., 0., 0.};
+        assertEquals(2, element.error(x1), 1e-10);
+        assertEquals(-1, element.dError(x1), 1e-10);
+
+        final double[] x2 = {0., 1., 0.};
+        assertEquals(3, element.error(x2), 1e-10);
+        assertEquals(0, element.dError(x2), 1e-10);
+
+        final double[] x3 = {0., 0., 1.};
+        assertEquals(2, element.error(x3), 1e-10);
+        assertEquals(-1, element.dError(x3), 1e-10);
     }
 }

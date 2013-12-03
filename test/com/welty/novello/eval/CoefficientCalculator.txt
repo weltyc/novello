@@ -14,7 +14,7 @@ The Eval's evaluation is the sum, over all Terms, of slice[iFeature][orid]
 The coefficient file format is simply the coefficients for each feature written one after another as binary ints.
 
 Internals
----------
+=========
 
 The Coefficient Calculator calculates one slice at a time. It stores the slice coefficients as a double[],
 mapping them to the file format at the end of its run.
@@ -35,7 +35,36 @@ orid that occurs exactly once will be assigned the entire difference between the
 
    OptimizationFunction = sum of squared errors + constant * sum of squared coefficients
 
+Dense Coefficients
+------------------
+
 Orids which rarely or never occur are still poorly valued; in particular, very large mobility values tend to be valued
 close to 0. This is because coefficients are determined independently from one another. In the case of mobility,
 however, we expect a structure to the coefficients; typically more mobility is better. We can use this fact
 to improve the estimation of the mobility coefficients.
+
+At the end of the x-vector we will append some values that are not coefficients. Instead they are used to influence the
+value of coefficients. These are called 'dense sub-coefficients'; thus
+
+    predicted value = Sum over orids (x[index(iFeature, orid)])
+    + Sum over dense coefficients (dense coefficient weight[index(iFeature, orid)]]*x[dense extended orid])
+
+Where the second line is new.
+
+For example, when calculating the predicted value of a PositionElement the 'mover mobility', the dense coefficient
+weight is the number of mover mobilities, and the coefficient[dense extended orid] tells how valuable each mobility is.
+
+Once the x-vector is optimized, we fold the dense coefficients back into the orid values.
+
+    coefficient[iFeature][orid] = x[index(iFeature, orid)] + x[dense extended orid]*dense coefficient weight[orid]
+
+### Calculations ###
+
+The error function needs to calculate the direction of steepest descent (-gradient). This is
+
+    -gradient[i] = - d/dx[i] sum over elements (error ^2)
+                 = - sum over elements (d/dx[i] error^2)
+                 = -2 * sum over elements(error * d/dx[i] error)
+
+For sparse coefficients, d/dx[i] error = -1 if the orid appears in elements and 0 if not.
+For dense coefficients, d/dx[i] error = -dense coefficient weight[orid].
