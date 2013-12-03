@@ -13,7 +13,7 @@ public class CoefficientCalculatorTest extends ArrayTestCase {
         };
 
         for (double penalty = 0; penalty <= 2; penalty++) {
-            final double[] coeffs = CoefficientCalculator.estimateCoefficients(elements, 6, penalty);
+            final double[] coeffs = CoefficientCalculator.estimateCoefficients(elements, 6, 0, penalty);
             final double x = 8 / (4 + penalty);
             assertEquals(new double[]{0., x, x, 0, x, x}, coeffs, 1e-8);
         }
@@ -28,7 +28,7 @@ public class CoefficientCalculatorTest extends ArrayTestCase {
         // err from target when x=0.
         final double err = 8.;
 
-        final CoefficientCalculator.ErrorFunction function = new CoefficientCalculator.ErrorFunction(elements, 6, 0);
+        final CoefficientCalculator.ErrorFunction function = new CoefficientCalculator.ErrorFunction(elements, 6, 0, 0);
         assertEquals(6, function.nDimensions());
         final double[] x0 = {0, 0, 0, 0, 0, 0};
         assertEquals("sum of squared errors", err * err, function.y(x0), 1e-10);
@@ -53,7 +53,7 @@ public class CoefficientCalculatorTest extends ArrayTestCase {
         final double err1 = -4.;   // err from target when x=x1.
 
         for (double penalty = 0; penalty < 4; penalty++) {
-            final CoefficientCalculator.ErrorFunction function = new CoefficientCalculator.ErrorFunction(elements, nDimensions, penalty);
+            final CoefficientCalculator.ErrorFunction function = new CoefficientCalculator.ErrorFunction(elements, nDimensions, 0, penalty);
 
             // at x0
             assertEquals(nDimensions, function.nDimensions());
@@ -81,7 +81,7 @@ public class CoefficientCalculatorTest extends ArrayTestCase {
                 new PositionElement(new int[]{0}, 3, new float[]{1.0f})
         };
 
-        final CoefficientCalculator.ErrorFunction function = new CoefficientCalculator.ErrorFunction(elements, 3, 1e-12);
+        final CoefficientCalculator.ErrorFunction function = new CoefficientCalculator.ErrorFunction(elements, 2, 1, 1e-12);
         assertEquals(3, function.nDimensions());
         final double[] x0 = {0., 0., 0.};
         final double err0 = 3;

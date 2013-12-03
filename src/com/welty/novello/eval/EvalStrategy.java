@@ -12,6 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  */
@@ -33,7 +34,7 @@ public class EvalStrategy {
      * terms[i].getFeature() == features[iFeatures[i]]
      */
     private final int[] iFeatures;
-    private final int nDenseWeights;
+    final int nDenseWeights;
 
     EvalStrategy(String name, Term... terms) {
         this.name = name;
@@ -206,7 +207,7 @@ public class EvalStrategy {
      * Are there coefficients on disk for this slice?
      *
      * @param coeffSetName name of coeff set being checked
-     * @param nEmpty # of empty disks for this slice
+     * @param nEmpty       # of empty disks for this slice
      * @return true if coefficients exist for this slice
      */
     boolean sliceExists(String coeffSetName, int nEmpty) {
@@ -247,6 +248,37 @@ public class EvalStrategy {
             }
         }
         return new PositionElement(coefficientIndices, target, denseWeights);
+    }
+
+    /**
+     * Convert coefficient calculator x to coefficients
+     *
+     * This takes the values from the dense weights and puts them in the coefficients
+     *
+     * @param x  coefficient calculator x
+     * @return coefficients
+     */
+    public double[] unpack(double[] x) {
+        final int[] coefficientIndexStarts = Vec.accumulate0(nOridsByFeature());
+        int iDenseWeight = coefficientIndexStarts[coefficientIndexStarts.length - 1];
+        final double[] unpack = Arrays.copyOf(x, iDenseWeight);
+
+
+        for (int iTerm = 0; iTerm < terms.length; iTerm++) {
+            Term term = terms[iTerm];
+            Feature feature = term.getFeature();
+            if (feature instanceof DenseFeature) {
+                final int iFeature = iFeatures[iTerm];
+                int nOrids = feature.nOrids();
+                final double weightCoefficient = x[iDenseWeight++];
+                for (int orid = 0; orid < nOrids; orid++) {
+                    float weight = ((DenseFeature) feature).denseWeight(orid);
+                    final int coefficientIndex = orid + coefficientIndexStarts[iFeature];
+                    unpack[coefficientIndex]+=weight*weightCoefficient;
+                }
+            }
+        }
+        return unpack;
     }
 
     /**
@@ -338,7 +370,8 @@ public class EvalStrategy {
         return Vec.sum(nOridsByFeature());
     }
 
-    @Override public String toString() {
+    @Override
+    public String toString() {
         return name;
     }
 }

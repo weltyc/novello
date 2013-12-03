@@ -71,7 +71,8 @@ public class CoefficientCalculator {
             dumpElementDistribution(elements, STRATEGY.nCoefficientIndices());
             System.out.format("estimating coefficients using %,d positions\n", elements.length);
             final long t0 = System.currentTimeMillis();
-            final double[] coefficients = estimateCoefficients(elements, STRATEGY.nCoefficientIndices(), PENALTY);
+            final double[] x = estimateCoefficients(elements, STRATEGY.nCoefficientIndices(), STRATEGY.nDenseWeights, PENALTY);
+            final double[] coefficients = STRATEGY.unpack(x);
             final long dt = System.currentTimeMillis() - t0;
             System.out.format("%,d ms elapsed\n", dt);
             System.out.format("sum of coefficients squared = %.3g\n", Vec.sumSq(coefficients));
@@ -138,12 +139,13 @@ public class CoefficientCalculator {
     }
 
     /**
-     * @param elements            indices for each position to match
-     * @param nCoefficientIndices number of coefficients
+     * @param elements      indices for each position to match
+     * @param nCoefficients number of coefficients
+     * @param nDenseWeights number of dense weights
      * @return optimal coefficients
      */
-    static double[] estimateCoefficients(PositionElement[] elements, int nCoefficientIndices, double penalty) {
-        final FunctionWithGradient f = new ErrorFunction(elements, nCoefficientIndices, penalty);
+    static double[] estimateCoefficients(PositionElement[] elements, int nCoefficients, int nDenseWeights, double penalty) {
+        final FunctionWithGradient f = new ErrorFunction(elements, nCoefficients, nDenseWeights, penalty);
         return ConjugateGradientMethod.minimize(f);
     }
 
@@ -177,18 +179,20 @@ public class CoefficientCalculator {
      */
     static class ErrorFunction extends FunctionWithGradient {
         private final PositionElement[] elements;
-        private final int nIndices;
+        private final int nCoefficients;
+        private final int nDenseWeights;
         private final double penalty;
 
-        public ErrorFunction(PositionElement[] elements, int nIndices, double penalty) {
+        public ErrorFunction(PositionElement[] elements, int nCoefficients, int nDenseWeights, double penalty) {
             this.elements = elements;
-            this.nIndices = nIndices;
+            this.nCoefficients = nCoefficients;
+            this.nDenseWeights = nDenseWeights;
             this.penalty = penalty;
         }
 
         @Override
         public double[] minusGradient(double[] x) {
-            Require.eq(x.length, "x length", nIndices);
+            Require.eq(x.length, "x length", nDimensions());
             final double[] minusGradient = Vec.times(x, -2 * penalty);
             for (final PositionElement element : elements) {
                 element.updateGradient(x, minusGradient);
@@ -198,6 +202,7 @@ public class CoefficientCalculator {
 
         @Override
         public double y(double[] x) {
+            Require.eq(x.length, "x length", nDimensions());
             double y = 0;
             for (PositionElement element : elements) {
                 final double error = element.error(x);
@@ -208,7 +213,7 @@ public class CoefficientCalculator {
 
         @Override
         public int nDimensions() {
-            return nIndices;
+            return nCoefficients + nDenseWeights;
         }
 
         @NotNull
@@ -267,7 +272,7 @@ public class CoefficientCalculator {
         for (final PositionValue pv : pvs) {
             final int diff = nEmpty - pv.nEmpty();
             if (!Utils.isOdd(diff) && diff >= -6 && diff <= 6) {
-                final PositionElement element  = STRATEGY.coefficientIndices(pv.mover, pv.enemy, pv.value);
+                final PositionElement element = STRATEGY.coefficientIndices(pv.mover, pv.enemy, pv.value);
                 res.add(element);
             }
         }
@@ -351,9 +356,13 @@ public class CoefficientCalculator {
  * Data about a single position and value
  */
 class PositionElement {
-    final @NotNull int[] indices;
+    final
+    @NotNull
+    int[] indices;
     private final int target;
-    final @NotNull float[] denseWeights;
+    final
+    @NotNull
+    float[] denseWeights;
 
     private static final float[] EMPTY_ARRAY = new float[0];
 
@@ -454,7 +463,7 @@ class PositionElement {
 
     /**
      * Sort indices.
-     *
+     * <p/>
      * The only function this affects is equals, which will work correctly once the indices are sorted.
      */
     public void sortIndices() {
