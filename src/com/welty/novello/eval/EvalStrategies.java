@@ -179,10 +179,19 @@ public class EvalStrategies {
             return eval;
         }
 
-        private static Term[] flatten(CornerTerm2[] cornerTerms, Term... others) {
+        private static Term[] flatten(Object... others) {
             final ArrayList<Term> terms = new ArrayList<>();
-            terms.addAll(Arrays.asList(cornerTerms));
-            terms.addAll(Arrays.asList(others));
+            for (Object o : others) {
+                if (o instanceof Term[]) {
+                    terms.addAll(Arrays.asList((Term[])o));
+                }
+                else if (o instanceof Term) {
+                    terms.add((Term)o);
+                }
+                else {
+                    throw new IllegalStateException("oops. " + o.getClass());
+                }
+            }
             return terms.toArray(new Term[terms.size()]);
         }
     }
