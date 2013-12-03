@@ -1,0 +1,41 @@
+The coefficient calculator calculates coefficients for evaluation functions.
+
+Each evaluation function ("Eval") requires, for each number of empties from 0-63, an int[][] called a "slice" which it reads
+in from a file. It is the coefficient calculator's job to write this file.
+
+The Eval is made up of Terms, for example "north edge disk pattern".
+Each Term has a Feature. The Feature determines the 'orid', an index into the coefficient array. Multiple Terms
+may share a Feature; for example each of the four edges shares the Feature "edge disk pattern". This is so that all
+reflections of the board are evaluated the same way.
+
+The Eval determines all distinct Features in an array. For each Feature, its iFeature is its index into this array.
+The Eval's evaluation is the sum, over all Terms, of slice[iFeature][orid]
+
+The coefficient file format is simply the coefficients for each feature written one after another as binary ints.
+
+Internals
+---------
+
+The Coefficient Calculator calculates one slice at a time. It stores the slice coefficients as a double[],
+mapping them to the file format at the end of its run.
+
+The input to the Coefficient Calculator is a set of positions with values (the PositionValue class) in a file.
+If the file doesn't exist the Coefficient Calculator creates one by creating a large number of positions and valuing them
+via playout.
+
+The Coefficient Calculator then uses the conjugate gradient method to minimize the sum of squared error between
+the PositionValue and its value. To speed things up, each PositionValue is turned into a PositionElement which
+contains the orids for each feature; in terms of the conjugate gradient method, a PositionElement is a sparse matrix
+representation of a row of the A matrix.
+
+The method, as described so far, works poorly for orids that occur rarely; they can get large spurious values. An
+orid that occurs exactly once will be assigned the entire difference between the playout value and the value
+ of the rest of the position. To decrease the impact of rarely occurring orids, a penalty for large coefficients
+ is added to the optimization function. The optimization function thus becomes
+
+   OptimizationFunction = sum of squared errors + constant * sum of squared coefficients
+
+Orids which rarely or never occur are still poorly valued; in particular, very large mobility values tend to be valued
+close to 0. This is because coefficients are determined independently from one another. In the case of mobility,
+however, we expect a structure to the coefficients; typically more mobility is better. We can use this fact
+to improve the estimation of the mobility coefficients.

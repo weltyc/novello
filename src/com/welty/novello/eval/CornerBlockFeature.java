@@ -4,7 +4,7 @@ import com.orbanova.common.misc.Require;
 
 /**
  */
-public class CornerBlockFeature extends MultiFeature {
+class CornerBlockFeature extends MultiFeature {
     public static CornerBlockFeature instance = new CornerBlockFeature(new OridCalc());
 
     private CornerBlockFeature(OridCalc calc) {

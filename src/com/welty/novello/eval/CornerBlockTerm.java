@@ -2,7 +2,7 @@ package com.welty.novello.eval;
 
 /**
  */
-public class CornerBlockTerm  extends Term {
+class CornerBlockTerm  extends Term {
     private final boolean top;
     private final boolean left;
 

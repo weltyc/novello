@@ -576,3 +576,12 @@ this is coefficient set 9B.
     +11.3  a1:2
      +2.3  9B:2
     -13.6  9A:2
+
+Added eval 'b' using 3x3 corner blocks.
+
+    b1:2 vs NTest:2: average result = -12.7
+
+    Tournament results:
+    +11.3  b1:2
+     -1.3  a1:2
+    -10.0  9b:2
