@@ -4,7 +4,7 @@ import com.welty.novello.solver.BitBoardTestCase;
 
 /**
  */
-public class UldrTermTest extends BitBoardTestCase {
+public class Uldr_TermTest extends BitBoardTestCase {
     private static final UldrTerm term0 = new UldrTerm(0);
     private static final UldrTerm term2 = new UldrTerm(2);
     private static final UldrTerm termM3 = new UldrTerm(-3);
