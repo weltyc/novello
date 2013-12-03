@@ -5,20 +5,6 @@ import static com.welty.novello.core.BitBoardUtils.*;
 /**
  */
 class KindergartenUpDown {
-    private static final long multiplier = 0x8040201008040201L;
-
-    /**
-     * From a bitBoard, calculate the moverRow / enemyRow index into the lookup table
-     *
-     * @param bitBoard board containing mover/enemy disks
-     * @param col      column of disk being placed
-     * @return moverRow/ enemyRow
-     */
-    private static int bitBoardToRow(long bitBoard, int col) {
-        final long masked = (bitBoard >>> col) & HFile;
-        final int index = (int) ((masked * multiplier) >>> 56);
-        return index;
-    }
 
     private static int index(int row, int moverRow, int enemyRow) {
         return (row * 65536 + moverRow * 256 + enemyRow);
@@ -27,7 +13,7 @@ class KindergartenUpDown {
     private static int indexFromBitBoard(int sq, long mover, long enemy) {
         final int col = col(sq);
         final int row = row(sq);
-        return index(row, bitBoardToRow(mover, col), bitBoardToRow(enemy, col));
+        return index(row, bitBoardColToRow(mover, col), bitBoardColToRow(enemy, col));
     }
 
     private static final long[] flipTable = createFlipTable();

@@ -2,6 +2,7 @@ package com.welty.novello.eval;
 
 import com.welty.novello.core.BitBoardUtils;
 
+import static com.welty.novello.core.BitBoardUtils.bitBoardColToRow;
 import static com.welty.novello.core.BitBoardUtils.getBitAsInt;
 
 /**
@@ -189,18 +190,20 @@ class RowTerm extends Term {
 }
 
 class ColTerm extends Term {
-    private final int shift;
+
+    private final int col;
 
     ColTerm(int col) {
         super(RowTerm.getRowFeature(col));
-        shift = col * 8;
+        this.col = col;
     }
 
     @Override public int instance(long mover, long enemy, long moverMoves, long enemyMoves) {
-        final long rMover = BitBoardUtils.reflectDiagonally(mover);
-        final long rEnemy = BitBoardUtils.reflectDiagonally(enemy);
-        return Base3.base2ToBase3(0xFF & (int) (rMover >>> shift), 0xFF & (int) (rEnemy >>> shift));
+        final int moverCol = bitBoardColToRow(mover, col);
+        final int enemyCol = bitBoardColToRow(enemy, col);
+        return Base3.base2ToBase3(moverCol, enemyCol);
     }
+
 }
 
 abstract class DiagonalTerm extends Term {

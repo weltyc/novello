@@ -17,6 +17,7 @@ public class BitBoardUtils {
     public static final long FFile = AFile >>> 5;
     public static final long GFile = AFile >>> 6;
     public static final long HFile = AFile >>> 7;
+    public static final long multiplier = 0x8040201008040201L;
     private static final long FilesAH = AFile | HFile;
 
     private static final long Rank1 = 0xFF;
@@ -30,6 +31,7 @@ public class BitBoardUtils {
     private static final long EDGES = FilesAH | Ranks18;
     private static final long CENTER_36 = ~EDGES;
     public static final long CENTER_4 = 0x0000001818000000L;
+    public static final long A1H8Diagonal = 0x8040201008040201L;
 
 
     /**
@@ -474,5 +476,18 @@ public class BitBoardUtils {
             throw new IllegalArgumentException("Illegal " + name + ": '" + input + "'");
         }
         return value;
+    }
+
+    /**
+     * From a bitBoard, calculate the base-2 representation of the column disks
+     *
+     * @param bitBoard board containing mover/enemy disks
+     * @param col      column of disk being placed
+     * @return moverRow/ enemyRow
+     */
+    public static int bitBoardColToRow(long bitBoard, int col) {
+        final long masked = (bitBoard >>> col) & HFile;
+        final int index = (int) ((masked * multiplier) >>> 56);
+        return index;
     }
 }
