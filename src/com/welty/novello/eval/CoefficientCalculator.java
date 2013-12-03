@@ -226,7 +226,7 @@ public class CoefficientCalculator {
                 for (int i = 0; i < elements.length; i++) {
                     final Element element = elements[i];
                     errors[i] = element.error(x);
-                    element.updateDErrors(dx, i, dErrors);
+                    dErrors[i] = element.dError(dx);
                 }
             }
 
@@ -348,6 +348,12 @@ class Element {
         this.target = target;
     }
 
+    /**
+     * Update the gradient of the optimization function (sum of squared errors)
+     *
+     * @param x  location at which to calculate the gradient
+     * @param minusGradient (negative) gradient of the optimization function
+     */
     void updateGradient(double[] x, double[] minusGradient) {
         final double error = error(x);
         for (int i : indices) {
@@ -361,6 +367,13 @@ class Element {
         }
     }
 
+    /**
+     * Calculate the error in the position value estimation
+     *
+     * error = target - &Sigma;<sub>i</sub> c<sub>i</sub> x<sub>i</sub>
+     * @param x vector of coefficient values
+     * @return error
+     */
     double error(double[] x) {
         double error = target;
         for (int i : indices) {
@@ -369,9 +382,17 @@ class Element {
         return error;
     }
 
-    public void updateDErrors(double[] dx, int i, double[] dErrors) {
+    /**
+     * Calculate the directional derivative of error.
+     *
+     * @param deltaX direction
+     * @return sum_i d(error)/dx_i * deltaX[i]
+     */
+    public double dError(double[] deltaX) {
+        double dError = 0;
         for (int j : indices) {
-            dErrors[i] -= dx[j];
+            dError -= deltaX[j];
         }
+        return dError;
     }
 }
