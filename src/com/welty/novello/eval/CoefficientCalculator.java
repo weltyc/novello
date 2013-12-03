@@ -33,7 +33,7 @@ public class CoefficientCalculator {
      * 1 disk is worth how many evaluation points?
      */
     public static final int DISK_VALUE = 100;
-    private static final String target = "a1";
+    private static final String target = "b1";
     private static final EvalStrategy STRATEGY = EvalStrategies.strategy(target.substring(0, 1));
     private static final String COEFF_SET_NAME = target.substring(1);
     private static final double PENALTY = 100;
@@ -81,9 +81,7 @@ public class CoefficientCalculator {
     private static void dumpElementDistribution(Element[] elements, int nIndices) {
         final int[] counts = new int[nIndices];
         for (Element element : elements) {
-            for (int index : element.indices) {
-                counts[index]++;
-            }
+            element.updateHistogram(counts);
         }
         final int[] histogram = new int[12];
         for (int count : counts) {
@@ -189,10 +187,7 @@ public class CoefficientCalculator {
             Require.eq(x.length, "x length", nIndices);
             final double[] minusGradient = Vec.times(x, -2 * penalty);
             for (final Element element : elements) {
-                final double error = error(x, element);
-                for (int i : element.indices) {
-                    minusGradient[i] += 2 * error;
-                }
+                element.updateGradient(x, minusGradient);
             }
             return minusGradient;
         }
@@ -200,7 +195,7 @@ public class CoefficientCalculator {
         @Override public double y(double[] x) {
             double y = 0;
             for (Element element : elements) {
-                final double error = error(x, element);
+                final double error = element.error(x);
                 y += error * error;
             }
             return y + penalty * Vec.sumSq(x);
@@ -208,14 +203,6 @@ public class CoefficientCalculator {
 
         @Override public int nDimensions() {
             return nIndices;
-        }
-
-        private static double error(double[] x, Element element) {
-            double error = element.target;
-            for (int i : element.indices) {
-                error -= x[i];
-            }
-            return error;
         }
 
         @NotNull @Override Function getLineFunction(double[] x, double[] dx) {
@@ -238,10 +225,8 @@ public class CoefficientCalculator {
                 dErrors = new double[elements.length];
                 for (int i = 0; i < elements.length; i++) {
                     final Element element = elements[i];
-                    errors[i] = error(x, element);
-                    for (int j : element.indices) {
-                        dErrors[i] -= dx[j];
-                    }
+                    errors[i] = element.error(x);
+                    element.updateDErrors(dx, i, dErrors);
                 }
             }
 
@@ -355,11 +340,38 @@ public class CoefficientCalculator {
 
 
 class Element {
-    final int[] indices;
-    final int target;
+    private final int[] indices;
+    private final int target;
 
     Element(int[] indices, int target) {
         this.indices = indices;
         this.target = target;
+    }
+
+    void updateGradient(double[] x, double[] minusGradient) {
+        final double error = error(x);
+        for (int i : indices) {
+            minusGradient[i] += 2 * error;
+        }
+    }
+
+    void updateHistogram(int[] counts) {
+        for (int index : indices) {
+            counts[index]++;
+        }
+    }
+
+    double error(double[] x) {
+        double error = target;
+        for (int i : indices) {
+            error -= x[i];
+        }
+        return error;
+    }
+
+    public void updateDErrors(double[] dx, int i, double[] dErrors) {
+        for (int j : indices) {
+            dErrors[i] -= dx[j];
+        }
     }
 }
