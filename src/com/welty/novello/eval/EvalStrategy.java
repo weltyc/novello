@@ -18,7 +18,6 @@ import java.util.ArrayList;
 public class EvalStrategy {
     private final String name;
     private final Term[] terms;
-    private static final boolean debug = false;
 
     /**
      * Directory containing all coefficients
@@ -34,12 +33,14 @@ public class EvalStrategy {
      * terms[i].getFeature() == features[iFeatures[i]]
      */
     private final int[] iFeatures;
+    private final int nDenseWeights;
 
     EvalStrategy(String name, Term... terms) {
         this.name = name;
         this.terms = terms;
         iFeatures = new int[terms.length];
 
+        int nDenseWeights = 0;
         final ArrayList<Feature> features = new ArrayList<>();
         for (int i = 0; i < terms.length; i++) {
             final Term term = terms[i];
@@ -50,8 +51,12 @@ public class EvalStrategy {
                 features.add(feature);
             }
             iFeatures[i] = iFeature;
+            if (feature instanceof DenseFeature) {
+                nDenseWeights++;
+            }
         }
         this.features = features.toArray(new Feature[features.size()]);
+        this.nDenseWeights = nDenseWeights;
         EvalStrategies.addStrategy(name, this);
     }
 
@@ -221,19 +226,27 @@ public class EvalStrategy {
      * @param enemy enemy disks
      * @return coefficient calculator indices for the position
      */
-    public int[] coefficientIndices(long mover, long enemy) {
+    public PositionElement coefficientIndices(long mover, long enemy, int target) {
         final int[] coefficientIndices = new int[terms.length];
+        final float[] denseWeights = new float[nDenseWeights];
+        int iDenseWeight = 0;
 
         final long moverMoves = BitBoardUtils.calcMoves(mover, enemy);
         final long enemyMoves = BitBoardUtils.calcMoves(enemy, mover);
         final int[] coefficientIndexStarts = Vec.accumulate0(nOridsByFeature());
         for (int iTerm = 0; iTerm < terms.length; iTerm++) {
-            final int orid = terms[iTerm].orid(mover, enemy, moverMoves, enemyMoves);
+            Term term = terms[iTerm];
+            final int orid = term.orid(mover, enemy, moverMoves, enemyMoves);
             final int iFeature = iFeatures[iTerm];
             final int coefficientIndex = orid + coefficientIndexStarts[iFeature];
             coefficientIndices[iTerm] = coefficientIndex;
+            Feature feature = term.getFeature();
+            if (feature instanceof DenseFeature) {
+                float weight = ((DenseFeature) feature).denseWeight(orid);
+                denseWeights[iDenseWeight++] = weight;
+            }
         }
-        return coefficientIndices;
+        return new PositionElement(coefficientIndices, target, denseWeights);
     }
 
     /**

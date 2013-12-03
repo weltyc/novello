@@ -11,8 +11,7 @@ import junit.framework.TestCase;
  */
 public class EvalPlayerTest extends TestCase {
     public void test1PlySearch() throws Exception {
-        final String evalName = "7B";
-        final Eval eval = Players.eval(evalName);
+        final Eval eval = Players.eval("b1");
         final EvalPlayer player = new EvalPlayer(eval, 1);
 
         final Position prev = new Position("--------\n" +
@@ -54,7 +53,7 @@ public class EvalPlayerTest extends TestCase {
     }
 
     public void testSearchScoreWithPass() {
-        final Eval eval = Players.eval("9A");
+        final Eval eval = Players.eval("b1");
         final EvalPlayer player = new EvalPlayer(eval, 2);
 
         final Position root = new Position("--OO-O-O\n" +

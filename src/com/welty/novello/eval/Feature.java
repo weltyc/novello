@@ -88,6 +88,12 @@ class Features {
     }
 }
 
+/**
+ * A feature that has a dense weight
+ */
+interface DenseFeature extends Feature {
+    float denseWeight(int orid);
+}
 
 /**
  * A feature that combines multiple instances into a single orid via lookup table

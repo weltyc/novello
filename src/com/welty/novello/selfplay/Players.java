@@ -42,4 +42,8 @@ public class Players {
         }
         return players;
     }
+
+    public static Eval currentEval() {
+        return eval("b1");
+    }
 }

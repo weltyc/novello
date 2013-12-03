@@ -19,6 +19,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -39,7 +40,7 @@ public class CoefficientCalculator {
     private static final EvalStrategy STRATEGY = EvalStrategies.strategy(target.substring(0, 1));
     private static final String COEFF_SET_NAME = target.substring(1);
     private static final double PENALTY = 100;
-    private static final Player PLAYOUT_PLAYER = Players.player("9A:2");
+    private static final Player PLAYOUT_PLAYER = Players.player("b1:2");
 
     /**
      * Generate coefficients for evaluation.
@@ -266,8 +267,8 @@ public class CoefficientCalculator {
         for (final PositionValue pv : pvs) {
             final int diff = nEmpty - pv.nEmpty();
             if (!Utils.isOdd(diff) && diff >= -6 && diff <= 6) {
-                final int[] indices = CoefficientCalculator.STRATEGY.coefficientIndices(pv.mover, pv.enemy);
-                res.add(new PositionElement(indices, pv.value));
+                final PositionElement element  = STRATEGY.coefficientIndices(pv.mover, pv.enemy, pv.value);
+                res.add(element);
             }
         }
         return res.toArray(new PositionElement[res.size()]);
@@ -350,9 +351,9 @@ public class CoefficientCalculator {
  * Data about a single position and value
  */
 class PositionElement {
-    private final int[] indices;
+    final @NotNull int[] indices;
     private final int target;
-    private final float[] denseWeights;
+    final @NotNull float[] denseWeights;
 
     private static final float[] EMPTY_ARRAY = new float[0];
 
@@ -360,7 +361,7 @@ class PositionElement {
         this(indices, target, EMPTY_ARRAY);
     }
 
-    public PositionElement(int[] indices, int target, float[] denseWeights) {
+    public PositionElement(@NotNull int[] indices, int target, @NotNull float[] denseWeights) {
         this.indices = indices;
         this.target = target;
         this.denseWeights = denseWeights;
@@ -427,5 +428,36 @@ class PositionElement {
             dError -= deltaX[i] * denseWeights[j];
         }
         return dError;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        PositionElement that = (PositionElement) o;
+
+        if (target != that.target) return false;
+        if (!Arrays.equals(denseWeights, that.denseWeights)) return false;
+        if (!Arrays.equals(indices, that.indices)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Arrays.hashCode(indices);
+        result = 31 * result + target;
+        result = 31 * result + Arrays.hashCode(denseWeights);
+        return result;
+    }
+
+    /**
+     * Sort indices.
+     *
+     * The only function this affects is equals, which will work correctly once the indices are sorted.
+     */
+    public void sortIndices() {
+        Arrays.sort(indices);
     }
 }

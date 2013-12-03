@@ -27,7 +27,7 @@ public class EvalStrategyTest extends ArrayTestCase {
         final long mover = 0x8001010101010100L;
         final long enemy = 0x0180808080808000L;
         final int[] expected = {2, 1, 5, 4};
-        assertEquals(expected, strategy.coefficientIndices(mover, enemy));
+        assertEquals(new PositionElement(expected, 0), strategy.coefficientIndices(mover, enemy, 0));
     }
 
     public void testFeatureCompression() {
@@ -41,7 +41,7 @@ public class EvalStrategyTest extends ArrayTestCase {
         assertEquals(2, strategy.nFeatures());
         assertEquals(new int[]{3, 2}, strategy.nOridsByFeature());
         assertEquals(TermTest.feature1.nOrids() + TermTest.feature2.nOrids(), strategy.nCoefficientIndices());
-        assertEquals(new int[]{2, 2, 3}, strategy.coefficientIndices(3, 0));
+        assertEquals(new int[]{2, 2, 3}, strategy.coefficientIndices(3, 0, 0).indices);
     }
 
     public void testWriteRead() throws IOException {
@@ -73,7 +73,7 @@ public class EvalStrategyTest extends ArrayTestCase {
 
     public void testAllReflectionsHaveTheSameEval() {
         final Random random = new Random(1337);
-        final Eval eval = Players.eval("7A");
+        final Eval eval = Players.currentEval();
 
         // test with small # of disks on the board
         long empty = random.nextLong() | random.nextLong();
@@ -134,15 +134,15 @@ public class EvalStrategyTest extends ArrayTestCase {
         final long mover = position.mover();
         final long enemy = position.enemy();
 
-        final int[] expected = strategy.coefficientIndices(mover, enemy);
-        Arrays.sort(expected);
+        PositionElement expected = strategy.coefficientIndices(mover, enemy, 0);
+        expected.sortIndices();
         for (int r=1; r<8; r++) {
             final long rMover = BitBoardUtils.reflection(mover, r);
             final long rEnemy = BitBoardUtils.reflection(enemy, r);
-            final int[] actual = strategy.coefficientIndices(rMover, rEnemy);
-            Arrays.sort(actual);
-            if (!Arrays.equals(expected, actual)) {
-                assertEquals(Arrays.toString(expected), Arrays.toString(actual));
+            final PositionElement actual = strategy.coefficientIndices(rMover, rEnemy, 0);
+            actual.sortIndices();
+            if (!expected.equals(actual)) {
+                assertEquals(expected.toString(), actual.toString());
             }
             assertEquals(strategy.toString(), expected, actual);
         }
