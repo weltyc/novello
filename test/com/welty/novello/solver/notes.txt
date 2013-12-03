@@ -595,3 +595,4 @@ Self-play b1:6:
 2426 ms elapsed / 1,517,470 evals. 1.6 us/eval
 1677 ms elapsed / 1,517,470 evals. 1.1 us/eval: convert base2 to base3 using a lookup table.
 1622 ms elapsed / 1,517,470 evals. 1.1 us/eval : Use kindergarten bitboards to get col indices
+1427 ms elapsed / 1,517,470 evals. 0.9 us/eval: Specialize CornerFeature2 terms in eval

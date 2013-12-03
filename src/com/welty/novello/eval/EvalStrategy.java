@@ -18,7 +18,7 @@ import java.util.Arrays;
  */
 public class EvalStrategy {
     private final String name;
-    private final Term[] terms;
+    final Term[] terms;
 
     /**
      * Directory containing all coefficients
@@ -33,7 +33,7 @@ public class EvalStrategy {
     /**
      * terms[i].getFeature() == features[iFeatures[i]]
      */
-    private final int[] iFeatures;
+    final int[] iFeatures;
     final int nDenseWeights;
 
     EvalStrategy(String name, Term... terms) {
