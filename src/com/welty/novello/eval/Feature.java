@@ -164,7 +164,7 @@ class SoloFeature implements Feature {
     }
 }
 
-class GridFeature extends SoloFeature {
+class GridFeature extends SoloFeature implements DenseFeature {
     public GridFeature(String name) {
         super(name, grid(name));
     }
@@ -176,6 +176,11 @@ class GridFeature extends SoloFeature {
             result[i] = String.format("%2d %s", i, name);
         }
         return result;
+    }
+
+    @Override
+    public float denseWeight(int orid) {
+        return orid;
     }
 }
 
