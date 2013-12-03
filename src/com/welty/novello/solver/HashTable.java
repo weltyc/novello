@@ -5,7 +5,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  */
 public class HashTable {
-    private final Entry[] entries;
+    private final Entry[][] entries;
 
     // statistics
     private long nFinds = 0;
@@ -31,9 +31,12 @@ public class HashTable {
      * @param logBuckets log, base 2, of the number of buckets in this HashTable
      */
     public HashTable(int logBuckets) {
-        entries = new Entry[1 << logBuckets];
-        for (int i = 0; i < entries.length; i++) {
-            entries[i] = new Entry();
+        entries = new Entry[64][1 << logBuckets];
+        for (int nEmpty = 0; nEmpty < 64; nEmpty++) {
+            final Entry[] nEmptyEntries = entries[nEmpty];
+            for (int i = 0; i < nEmptyEntries.length; i++) {
+                nEmptyEntries[i] = new Entry();
+            }
         }
     }
 
@@ -42,7 +45,9 @@ public class HashTable {
      *
      * @return hash entry for the position, or null if there is no entry
      */
-    public @Nullable Entry find(long mover, long enemy) {
+    public
+    @Nullable
+    Entry find(long mover, long enemy) {
         nFinds++;
         final Entry entry = getEntry(mover, enemy);
         return entry.matches(mover, enemy) ? entry : null;
@@ -50,7 +55,8 @@ public class HashTable {
 
     private Entry getEntry(long mover, long enemy) {
         final int hash = (entries.length - 1) & (int) Murmur.hash(mover, enemy);
-        return entries[hash];
+        final int nEmpty = Long.bitCount(~(mover|enemy));
+        return entries[nEmpty][hash];
     }
 
     /**
@@ -59,8 +65,10 @@ public class HashTable {
      * Mostly useful to prevent cheating in benchmarks
      */
     public void clear() {
-        for (Entry entry : entries) {
-            entry.clear();
+        for (int nEmpty = 0; nEmpty<64; nEmpty++) {
+            for (Entry entry : entries[nEmpty]) {
+                entry.clear();
+            }
         }
     }
 
@@ -147,7 +155,7 @@ public class HashTable {
          * @return true if the value in this node would cause an immediate return due to alpha or beta cutoff
          */
         public boolean cutsOff(int alpha, int beta) {
-            return min >= beta || max <= alpha || min==max;
+            return min >= beta || max <= alpha || min == max;
         }
     }
 }
