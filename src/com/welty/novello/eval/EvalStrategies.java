@@ -119,6 +119,7 @@ public class EvalStrategies {
 
     private static class EvalStrategyB extends EvalStrategy {
         private final CornerTerm2[] cornerTerms;
+        private final RowTerm[] rowTerms;
 
         public EvalStrategyB() {
             this(cornerTerms2(),
@@ -138,6 +139,7 @@ public class EvalStrategies {
                     )
             );
             this.cornerTerms = cornerTerms;
+            this.rowTerms = rowTerms;
         }
 
         @Override
@@ -168,7 +170,32 @@ public class EvalStrategies {
             eval += slice[7][Terms.moverPotMobs2.instance(mover, enemy, moverMoves, enemyMoves)];
             eval += slice[8][Terms.enemyPotMobs2.instance(mover, enemy, moverMoves, enemyMoves)];
 
-            for (int iTerm = 12; iTerm < terms.length; iTerm++) {
+            final int iRow0Feature = 9;
+            final int iRow1Feature = 10;
+            final int iRow2Feature = 11;
+            final int iRow3Feature = 12;
+            
+            final Feature row0Feature = rowTerms[0].getFeature();
+            final Feature row1Feature = rowTerms[1].getFeature();
+            final Feature row2Feature = rowTerms[2].getFeature();
+            final Feature row3Feature = rowTerms[3].getFeature();
+            
+            final int[] row0FeatureCoeffs = slice[iRow0Feature];
+            final int[] row1FeatureCoeffs = slice[iRow1Feature];
+            final int[] row2FeatureCoeffs = slice[iRow2Feature];
+            final int[] row3FeatureCoeffs = slice[iRow3Feature];
+
+            eval += row0FeatureCoeffs[row0Feature.orid(rowTerms[0].instance(mover, enemy, moverMoves, enemyMoves))];
+            eval += row1FeatureCoeffs[row1Feature.orid(rowTerms[1].instance(mover, enemy, moverMoves, enemyMoves))];
+            eval += row2FeatureCoeffs[row2Feature.orid(rowTerms[2].instance(mover, enemy, moverMoves, enemyMoves))];
+            eval += row3FeatureCoeffs[row3Feature.orid(rowTerms[3].instance(mover, enemy, moverMoves, enemyMoves))];
+            eval += row0FeatureCoeffs[row0Feature.orid(rowTerms[7].instance(mover, enemy, moverMoves, enemyMoves))];
+            eval += row1FeatureCoeffs[row1Feature.orid(rowTerms[6].instance(mover, enemy, moverMoves, enemyMoves))];
+            eval += row2FeatureCoeffs[row2Feature.orid(rowTerms[5].instance(mover, enemy, moverMoves, enemyMoves))];
+            eval += row3FeatureCoeffs[row3Feature.orid(rowTerms[4].instance(mover, enemy, moverMoves, enemyMoves))];
+
+
+            for (int iTerm = 20; iTerm < terms.length; iTerm++) {
                 final Term term = terms[iTerm];
                 final int iFeature = iFeatures[iTerm];
 
