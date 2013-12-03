@@ -597,3 +597,4 @@ Self-play b1:6:
 1622 ms elapsed / 1,517,470 evals. 1.1 us/eval : Use kindergarten bitboards to get col indices
 1427 ms elapsed / 1,517,470 evals. 0.9 us/eval: Specialize CornerFeature2 terms in eval
 1013 ms elapsed / 1,517,470 evals. 0.7 us/eval: Specialize mobility/disk/pot mob terms in eval
+634 ms elapsed / 1,517,470 evals. 0.4 us/eval: specialize rest of eval

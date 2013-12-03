@@ -122,17 +122,21 @@ public class EvalStrategies {
         private final RowTerm[] rowTerms;
         private final ColTerm[] colTerms;
         private final UldrTerm[] uldrTerms;
+        private final UrdlTerm[] urdlTerms;
+        private final CornerBlockTerm[] cornerBlockTerms;
 
         public EvalStrategyB() {
             this(cornerTerms2(),
                     new RowTerm[]{new RowTerm(0), new RowTerm(1), new RowTerm(2), new RowTerm(3), new RowTerm(4), new RowTerm(5), new RowTerm(6), new RowTerm(7)},
                     new ColTerm[]{new ColTerm(0), new ColTerm(1), new ColTerm(2), new ColTerm(3), new ColTerm(4), new ColTerm(5), new ColTerm(6), new ColTerm(7)},
-                    new UldrTerm[]{new UldrTerm(-4), new UldrTerm(-3), new UldrTerm(-2), new UldrTerm(-1), new UldrTerm(-0), new UldrTerm(1), new UldrTerm(2), new UldrTerm(3), new UldrTerm(4)}
-                    
+                    new UldrTerm[]{new UldrTerm(-4), new UldrTerm(-3), new UldrTerm(-2), new UldrTerm(-1), new UldrTerm(-0), new UldrTerm(1), new UldrTerm(2), new UldrTerm(3), new UldrTerm(4)},
+                    new UrdlTerm[]{new UrdlTerm(-4), new UrdlTerm(-3), new UrdlTerm(-2), new UrdlTerm(-1), new UrdlTerm(-0), new UrdlTerm(1), new UrdlTerm(2), new UrdlTerm(3), new UrdlTerm(4)},
+                    new CornerBlockTerm[]{new CornerBlockTerm(false, false), new CornerBlockTerm(false, true), new CornerBlockTerm(true, false), new CornerBlockTerm(true, true)}
             );
         }
 
-        public EvalStrategyB(CornerTerm2[] cornerTerms, RowTerm[] rowTerms, ColTerm[] colTerms, UldrTerm[] uldrTerms) {
+        public EvalStrategyB(CornerTerm2[] cornerTerms, RowTerm[] rowTerms, ColTerm[] colTerms, UldrTerm[] uldrTerms
+                , UrdlTerm[] urdlTerms, CornerBlockTerm[] cornerBlockTerms) {
             super("b",
                     flatten(cornerTerms,
                             Terms.moverDisks, Terms.enemyDisks, Terms.moverMobilities, Terms.enemyMobilities,
@@ -140,14 +144,16 @@ public class EvalStrategies {
                             rowTerms,
                             colTerms,
                             uldrTerms,
-                            new UrdlTerm(-4), new UrdlTerm(-3), new UrdlTerm(-2), new UrdlTerm(-1), new UrdlTerm(-0), new UrdlTerm(1), new UrdlTerm(2), new UrdlTerm(3), new UrdlTerm(4),
-                            new CornerBlockTerm(false, false), new CornerBlockTerm(false, true), new CornerBlockTerm(true, false), new CornerBlockTerm(true, true)
+                            urdlTerms,
+                            cornerBlockTerms
                     )
             );
             this.cornerTerms = cornerTerms;
             this.rowTerms = rowTerms;
             this.colTerms = colTerms;
             this.uldrTerms = uldrTerms;
+            this.urdlTerms = urdlTerms;
+            this.cornerBlockTerms = cornerBlockTerms;
         }
 
         @Override
@@ -159,9 +165,8 @@ public class EvalStrategies {
             int eval = 0;
 
             // evaluate corner features separately to see if specialization helps the timing
-            final int iCornerFeature = 0;
             final Feature cornerFeature = cornerTerms[0].getFeature();
-            final int[] cornerFeatureCoeffs = slice[iCornerFeature];
+            final int[] cornerFeatureCoeffs = slice[0];
             for (final CornerTerm2 term : cornerTerms) {
                 final int instance = term.instance(mover, enemy, moverMoves, enemyMoves);
                 final int orid = cornerFeature.orid(instance);
@@ -228,14 +233,22 @@ public class EvalStrategies {
             eval += uldr3FeatureCoeffs[uldr3Feature.orid(uldrTerms[7].instance(mover, enemy, moverMoves, enemyMoves))];
             eval += uldr4FeatureCoeffs[uldr4Feature.orid(uldrTerms[8].instance(mover, enemy, moverMoves, enemyMoves))];
 
+            eval += uldr4FeatureCoeffs[uldr4Feature.orid(urdlTerms[0].instance(mover, enemy, moverMoves, enemyMoves))];
+            eval += uldr3FeatureCoeffs[uldr3Feature.orid(urdlTerms[1].instance(mover, enemy, moverMoves, enemyMoves))];
+            eval += uldr2FeatureCoeffs[uldr2Feature.orid(urdlTerms[2].instance(mover, enemy, moverMoves, enemyMoves))];
+            eval += uldr1FeatureCoeffs[uldr1Feature.orid(urdlTerms[3].instance(mover, enemy, moverMoves, enemyMoves))];
+            eval += uldr0FeatureCoeffs[uldr0Feature.orid(urdlTerms[4].instance(mover, enemy, moverMoves, enemyMoves))];
+            eval += uldr1FeatureCoeffs[uldr1Feature.orid(urdlTerms[5].instance(mover, enemy, moverMoves, enemyMoves))];
+            eval += uldr2FeatureCoeffs[uldr2Feature.orid(urdlTerms[6].instance(mover, enemy, moverMoves, enemyMoves))];
+            eval += uldr3FeatureCoeffs[uldr3Feature.orid(urdlTerms[7].instance(mover, enemy, moverMoves, enemyMoves))];
+            eval += uldr4FeatureCoeffs[uldr4Feature.orid(urdlTerms[8].instance(mover, enemy, moverMoves, enemyMoves))];
 
-            for (int iTerm = 37; iTerm < terms.length; iTerm++) {
-                final Term term = terms[iTerm];
-                final int iFeature = iFeatures[iTerm];
-
-                final int orid = term.orid(mover, enemy, moverMoves, enemyMoves);
-
-                final int coeff = slice[iFeature][orid];
+            final Feature cornerBlockFeature = cornerBlockTerms[0].getFeature();
+            final int[] cornerBlockFeatureCoeffs = slice[18];
+            for (final CornerBlockTerm term : cornerBlockTerms) {
+                final int instance = term.instance(mover, enemy, moverMoves, enemyMoves);
+                final int orid = cornerBlockFeature.orid(instance);
+                final int coeff = cornerBlockFeatureCoeffs[orid];
                 eval += coeff;
             }
             return eval;
