@@ -37,7 +37,7 @@ public class CoefficientCalculator {
     private static final EvalStrategy STRATEGY = EvalStrategies.strategy(target.substring(0, 1));
     private static final String COEFF_SET_NAME = target.substring(1);
     private static final double PENALTY = 100;
-    private static final Player PLAYOUT_PLAYER = Players.player("7A:2");
+    private static final Player PLAYOUT_PLAYER = Players.player("9A:2");
 
     /**
      * Generate coefficients for evaluation.
@@ -289,6 +289,7 @@ public class CoefficientCalculator {
         log.info("Creating Pvs in " + pvFile + " ...");
         final ArrayList<PositionValue> pvs = new ArrayList<>();
         pvs.addAll(new SelfPlaySet(PLAYOUT_PLAYER, PLAYOUT_PLAYER, 0, false).call().pvs);
+        Files.createDirectories(pvFile.getParent());
         try (final DataOutputStream out = new DataOutputStream(new BufferedOutputStream(Files.newOutputStream(pvFile)))) {
             writeRandomSubpositions(pvs, out);
         }
