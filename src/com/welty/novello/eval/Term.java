@@ -79,13 +79,10 @@ class CornerTerm extends Term {
 
 class CornerTerm2 extends Term {
     private final int sq;
-    private final int xSq;
 
     public CornerTerm2(int sq) {
         super(Features.corner2Feature);
         this.sq = sq;
-        //noinspection OctalInteger
-        this.xSq = sq ^ 011;
     }
 
     /**
@@ -120,7 +117,7 @@ class CornerTerm2 extends Term {
             return cornerMobility;
         } else {
             @SuppressWarnings("OctalInteger")
-            final int xSq = sq^011;
+            final int xSq = sq ^ 011;
             final int xSquareOccupier = BitBoardUtils.getBitAsInt(mover, xSq) + 2 * BitBoardUtils.getBitAsInt(enemy, xSq);
             if (xSquareOccupier > 0) {
                 return xSquareOccupier + 5;
@@ -130,8 +127,8 @@ class CornerTerm2 extends Term {
         }
     }
 
-    @Override
-    String oridGen() {
+
+    @Override String oridGen() {
         return "CornerTerm2.orid(mover, enemy, moverMoves, enemyMoves, " + sq + ")";
     }
 }
@@ -143,8 +140,7 @@ class Terms {
             return Long.bitCount(mover);
         }
 
-        @Override
-        String oridGen() {
+        @Override String oridGen() {
             return "Long.bitCount(mover)";
         }
     };
@@ -154,8 +150,7 @@ class Terms {
             return Long.bitCount(enemy);
         }
 
-        @Override
-        String oridGen() {
+        @Override String oridGen() {
             return "Long.bitCount(enemy)";
         }
     };
@@ -165,8 +160,7 @@ class Terms {
             return Long.bitCount(moverMoves);
         }
 
-        @Override
-        String oridGen() {
+        @Override String oridGen() {
             return "Long.bitCount(moverMoves)";
         }
     };
@@ -176,8 +170,7 @@ class Terms {
             return Long.bitCount(enemyMoves);
         }
 
-        @Override
-        String oridGen() {
+        @Override String oridGen() {
             return "Long.bitCount(enemyMoves)";
         }
     };
@@ -189,8 +182,7 @@ class Terms {
             return Long.bitCount(BitBoardUtils.potMobs(mover, empty));
         }
 
-        @Override
-        String oridGen() {
+        @Override String oridGen() {
             return "Long.bitCount(BitBoardUtils.potMobs(mover, empty))";
         }
     };
@@ -201,8 +193,7 @@ class Terms {
             return Long.bitCount(BitBoardUtils.potMobs(enemy, empty));
         }
 
-        @Override
-        String oridGen() {
+        @Override String oridGen() {
             return "Long.bitCount(BitBoardUtils.potMobs(enemy, empty))";
         }
     };
@@ -213,8 +204,7 @@ class Terms {
             return Long.bitCount(BitBoardUtils.potMobs2(mover, empty));
         }
 
-        @Override
-        String oridGen() {
+        @Override String oridGen() {
             return "Long.bitCount(BitBoardUtils.potMobs2(mover, empty))";
         }
     };
@@ -225,8 +215,7 @@ class Terms {
             return Long.bitCount(BitBoardUtils.potMobs2(enemy, empty));
         }
 
-        @Override
-        String oridGen() {
+        @Override String oridGen() {
             return "Long.bitCount(BitBoardUtils.potMobs2(enemy, empty))";
         }
 
@@ -266,8 +255,7 @@ class RowTerm extends Term {
         return Base3.base2ToBase3(0xFF & (int) (mover >>> shift), 0xFF & (int) (enemy >>> shift));
     }
 
-    @Override
-    String oridGen() {
+    @Override String oridGen() {
         final int row = shift / 8;
         return "RowTerm.rowOrid(mover, enemy, " + row + ")";
     }
@@ -298,8 +286,7 @@ class ColTerm extends Term {
     }
 
 
-    @Override
-    String oridGen() {
+    @Override String oridGen() {
         return "ColTerm.colOrid(mover, enemy, " + col + ")";
     }
 }
