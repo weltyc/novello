@@ -668,3 +668,9 @@ and thus will be optimal at 10.
 
 Better idea: use a small hash at low empties and a larger hash at higher empties; thus the small hash will fit in cache
 while the larger hash will hold more valuable information where it's worth it to go out to RAM.
+
+SolverTimer
+===========
+Rechecking SolverTimer in light of the previous section. At depth12, a lot of its time is spent in HashTable.clear()
+making sure we don't cheat on the benchmarks. Changed it so HashTable.clear() only clears entries that will used by
+the test, so it only clears the section between 6 empties and the number of empties in the position.

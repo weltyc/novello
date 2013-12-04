@@ -1,5 +1,6 @@
 package com.welty.novello.solver;
 
+import com.welty.novello.core.BitBoardUtils;
 import com.welty.novello.core.Position;
 import com.welty.novello.core.MoveScore;
 import junit.framework.TestCase;
@@ -186,7 +187,8 @@ public class SolverTest extends TestCase {
     }
 
     private static void executeTestCase(Solver solver, long white, long black, int expected) {
-        solver.clear(); // we use this for benchmarking. Don't cheat!
+        final int nEmpties = BitBoardUtils.nEmpty(white, black);
+        solver.clear(nEmpties); // we use this for benchmarking. Don't cheat!
         int actual = solver.solve(white, black);
         assertEquals(expected, actual);
     }

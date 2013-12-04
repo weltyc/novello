@@ -92,7 +92,6 @@ public class Solver {
             moveSorters[i] = new MoveSorter();
             treeSearchResults[i] = new TreeSearchResult();
         }
-        clear();
     }
 
     /**
@@ -576,10 +575,14 @@ public class Solver {
     }
 
     /**
-     * Clear all historical information so we don't cheat while benchmarking
+     * Clear all historical information so we don't cheat while benchmarking.
+     *
+     * For speed, only clear up to maxNEmpties.
+     *
+     * @param maxNEmpties max # of empties that will be cleared in the HashTable
      */
-    public void clear() {
-        hashTable.clear();
+    public void clear(int maxNEmpties) {
+        hashTable.clear(maxNEmpties);
     }
 
     /**

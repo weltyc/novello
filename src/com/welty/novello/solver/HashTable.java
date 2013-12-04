@@ -66,9 +66,10 @@ public class HashTable {
      * Clear all entries.
      * <p/>
      * Mostly useful to prevent cheating in benchmarks
+     * @param maxNEmpties max # of empties that will be cleared in the hash table
      */
-    public void clear() {
-        for (int nEmpty = 0; nEmpty < 64; nEmpty++) {
+    public void clear(int maxNEmpties) {
+        for (int nEmpty = Solver.MIN_HASH_DEPTH; nEmpty <= maxNEmpties; nEmpty++) {
             for (Entry entry : entriess[nEmpty]) {
                 entry.clear();
             }

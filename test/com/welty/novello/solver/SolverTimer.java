@@ -45,8 +45,8 @@ public class SolverTimer {
 
         for (int i = 0; i < nIters; i++) {
             final long t0 = System.currentTimeMillis();
-//            SolverTest.testSolveValues(solver);
-            DeepSolverTimer.run(solver);
+            SolverTest.testSolveValues(solver);
+//            DeepSolverTimer.run(solver);
             final long dt = System.currentTimeMillis() - t0;
             timings[i] = dt;
         }
