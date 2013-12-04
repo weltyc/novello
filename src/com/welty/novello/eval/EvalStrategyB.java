@@ -11,8 +11,6 @@ import java.util.Arrays;
 @SuppressWarnings("OctalInteger")
 class EvalStrategyB extends EvalStrategy {
     private final CornerTerm2[] cornerTerms;
-    private final RowTerm[] rowTerms;
-    private final ColTerm[] colTerms;
     private final UldrTerm[] uldrTerms;
     private final UrdlTerm[] urdlTerms;
     private final CornerBlockTerm[] cornerBlockTerms;
@@ -41,8 +39,6 @@ class EvalStrategyB extends EvalStrategy {
                 )
         );
         this.cornerTerms = cornerTerms;
-        this.rowTerms = rowTerms;
-        this.colTerms = colTerms;
         this.uldrTerms = uldrTerms;
         this.urdlTerms = urdlTerms;
         this.cornerBlockTerms = cornerBlockTerms;
@@ -75,31 +71,27 @@ class EvalStrategyB extends EvalStrategy {
         eval += slice[7][Terms.moverPotMobs2.instance(mover, enemy, moverMoves, enemyMoves)];
         eval += slice[8][Terms.enemyPotMobs2.instance(mover, enemy, moverMoves, enemyMoves)];
 
-        final Feature row0Feature = rowTerms[0].getFeature();
         final int[] row0FeatureCoeffs = slice[9];
-        eval += row0FeatureCoeffs[row0Feature.orid(rowTerms[0].instance(mover, enemy, moverMoves, enemyMoves))];
-        eval += row0FeatureCoeffs[row0Feature.orid(rowTerms[7].instance(mover, enemy, moverMoves, enemyMoves))];
+        eval += row0FeatureCoeffs[rowOrid(mover, enemy, 0)];
+        eval += row0FeatureCoeffs[rowOrid(mover, enemy, 7)];
         eval += row0FeatureCoeffs[colOrid(mover, enemy, 0)];
         eval += row0FeatureCoeffs[colOrid(mover, enemy, 7)];
 
-        final Feature row1Feature = rowTerms[1].getFeature();
         final int[] row1FeatureCoeffs = slice[10];
-        eval += row1FeatureCoeffs[row1Feature.orid(rowTerms[1].instance(mover, enemy, moverMoves, enemyMoves))];
-        eval += row1FeatureCoeffs[row1Feature.orid(rowTerms[6].instance(mover, enemy, moverMoves, enemyMoves))];
+        eval += row1FeatureCoeffs[rowOrid(mover, enemy, 1)];
+        eval += row1FeatureCoeffs[rowOrid(mover, enemy, 6)];
         eval += row1FeatureCoeffs[colOrid(mover, enemy, 1)];
         eval += row1FeatureCoeffs[colOrid(mover, enemy, 6)];
 
-        final Feature row2Feature = rowTerms[2].getFeature();
         final int[] row2FeatureCoeffs = slice[11];
-        eval += row2FeatureCoeffs[row2Feature.orid(rowTerms[2].instance(mover, enemy, moverMoves, enemyMoves))];
-        eval += row2FeatureCoeffs[row2Feature.orid(rowTerms[5].instance(mover, enemy, moverMoves, enemyMoves))];
+        eval += row2FeatureCoeffs[rowOrid(mover, enemy, 2)];
+        eval += row2FeatureCoeffs[rowOrid(mover, enemy, 5)];
         eval += row2FeatureCoeffs[colOrid(mover, enemy, 2)];
         eval += row2FeatureCoeffs[colOrid(mover, enemy, 5)];
 
-        final Feature row3Feature = rowTerms[3].getFeature();
         final int[] row3FeatureCoeffs = slice[12];
-        eval += row3FeatureCoeffs[row3Feature.orid(rowTerms[3].instance(mover, enemy, moverMoves, enemyMoves))];
-        eval += row3FeatureCoeffs[row3Feature.orid(rowTerms[4].instance(mover, enemy, moverMoves, enemyMoves))];
+        eval += row3FeatureCoeffs[rowOrid(mover, enemy, 3)];
+        eval += row3FeatureCoeffs[rowOrid(mover, enemy, 4)];
         eval += row3FeatureCoeffs[colOrid(mover, enemy, 3)];
         eval += row3FeatureCoeffs[colOrid(mover, enemy, 4)];
 
@@ -145,6 +137,10 @@ class EvalStrategyB extends EvalStrategy {
             eval += coeff;
         }
         return eval;
+    }
+
+    private int rowOrid(long mover, long enemy, int row) {
+        return OridTable.orid8(RowTerm.rowInstance(mover, enemy, row * 8));
     }
 
     private int colOrid(long mover, long enemy, int col) {

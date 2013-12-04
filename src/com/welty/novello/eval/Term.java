@@ -185,6 +185,11 @@ class RowTerm extends Term {
     }
 
     @Override public int instance(long mover, long enemy, long moverMoves, long enemyMoves) {
+        final int shift = this.shift;
+        return rowInstance(mover, enemy, shift);
+    }
+
+    public static int rowInstance(long mover, long enemy, int shift) {
         return Base3.base2ToBase3(0xFF & (int) (mover >>> shift), 0xFF & (int) (enemy >>> shift));
     }
 }

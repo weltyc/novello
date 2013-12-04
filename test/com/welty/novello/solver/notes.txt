@@ -601,6 +601,8 @@ Self-play b1:6:
 611 ms elapsed / 1,517,470 evals. 0.4 us/eval: reorder calculations in specialized eval so similar rows & cols are together
 597 ms elapsed / 1,517,470 evals. 0.4 us/eval: reorder calculations in specialized eval so similar diagonals are together
 596 ms elapsed / 1,517,470 evals. 0.4 us/eval: simplify col calculation
+558 ms elapsed / 1,517,470 evals. 0.4 us/eval: simplify row calculation
+
 Deep Solver
 ===========
 [86d7a78] Starting statistics for DeepSolverTimer at depth 20:
