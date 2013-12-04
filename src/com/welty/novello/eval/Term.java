@@ -199,6 +199,10 @@ class ColTerm extends Term {
     }
 
     @Override public int instance(long mover, long enemy, long moverMoves, long enemyMoves) {
+        return colInstance(mover, enemy, this.col);
+    }
+
+    public static int colInstance(long mover, long enemy, int col) {
         final int moverCol = bitBoardColToRow(mover, col);
         final int enemyCol = bitBoardColToRow(enemy, col);
         return Base3.base2ToBase3(moverCol, enemyCol);
