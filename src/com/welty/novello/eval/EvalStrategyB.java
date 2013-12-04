@@ -5,8 +5,6 @@ import com.welty.novello.core.BitBoardUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import static com.welty.novello.core.BitBoardUtils.*;
-
 /**
 * Evaluation with all rows, columns, and corner blocks
 */
@@ -97,9 +95,9 @@ class EvalStrategyB extends EvalStrategy {
         eval += row3FeatureCoeffs[colOrid(mover, enemy, 3)];
         eval += row3FeatureCoeffs[colOrid(mover, enemy, 4)];
 
-        final int[] uldr0FeatureCoeffs = slice[17];
-        eval += uldr0FeatureCoeffs[OridTable.orid8(DiagonalTerm.diagonalInstance(mover, enemy, A1H8Diagonal, 56))];
-        eval += uldr0FeatureCoeffs[OridTable.orid8(DiagonalTerm.diagonalInstance(mover, enemy, A8H1Diagonal, 56))];
+        final int[] diagonal8Coeffs = slice[17];
+        eval += diagonal8Coeffs[OridTable.orid8(DiagonalTerm.diagonalInstance(mover, enemy, 0x8040201008040201L, 56))];
+        eval += diagonal8Coeffs[OridTable.orid8(DiagonalTerm.diagonalInstance(mover, enemy, 0x0102040810204080L, 56))];
 
         final int[] uldr1FeatureCoeffs = slice[16];
         eval += uldr1FeatureCoeffs[OridTable.orid7(uldrTerms[3].instance(mover, enemy, moverMoves, enemyMoves))];
@@ -158,5 +156,40 @@ class EvalStrategyB extends EvalStrategy {
             }
         }
         return terms.toArray(new Term[terms.size()]);
+    }
+
+    public static void main(String[] args) {
+        final String generatedCode = generateDiagonalEvalCode();
+        System.out.println(generatedCode);
+    }
+
+    static String generateDiagonalEvalCode() {
+        StringBuilder sb = new StringBuilder();
+
+        // print out a portion of the evaluation function
+        for (int diagonal = 8; diagonal >= 4; diagonal --) {
+            final String coeffs = "diagonal"+diagonal+"Coeffs";
+            final String oridTable = "OridTable.orid"+diagonal;
+
+            sb.append(String.format("final int[] %s = slice[%d];\n", coeffs, diagonal + 9));
+            if (diagonal == 8) {
+            appendDiagonalTerm(sb, coeffs, oridTable, new UldrTerm(0));
+            appendDiagonalTerm(sb, coeffs, oridTable, new UrdlTerm(0));
+            }
+            else {
+                final int diff = 8-diagonal;
+                appendDiagonalTerm(sb, coeffs, oridTable, new UldrTerm(diff));
+                appendDiagonalTerm(sb, coeffs, oridTable, new UldrTerm(-diff));
+                appendDiagonalTerm(sb, coeffs, oridTable, new UrdlTerm(diff));
+                appendDiagonalTerm(sb, coeffs, oridTable, new UrdlTerm(-diff));
+            }
+            sb.append('\n');
+        }
+
+        return sb.toString();
+    }
+
+    private static void appendDiagonalTerm(StringBuilder sb, String coeffs, String oridTable, DiagonalTerm term) {
+        sb.append(String.format("eval += %s[%s(DiagonalTerm.diagonalInstance(mover, enemy, 0x%016xL, %d))];\n", coeffs, oridTable, term.mask, term.shift));
     }
 }
