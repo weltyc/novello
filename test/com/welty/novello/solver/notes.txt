@@ -674,3 +674,21 @@ SolverTimer
 Rechecking SolverTimer in light of the previous section. At depth12, a lot of its time is spent in HashTable.clear()
 making sure we don't cheat on the benchmarks. Changed it so HashTable.clear() only clears entries that will used by
 the test, so it only clears the section between 6 empties and the number of empties in the position.
+
+Eval-based Move Sorting
+=======================
+An idea that didn't work very well: alter eval-based sort depth based on node type.
+
+Some work on move sorting. Alter sorting based on evaluation vs (alpha, beta).
+
+Idea 1: If move eval is > beta + 20, it's going to cut off. Weight enemy mobility higher relative to score.
+ This helps slightly. Halve the excess eval over beta+20. Works better than quartering it.
+
+Idea 2: Don't sort if the position is hopeless and nEmpty is close to MIN_EVAL_SORT_DEPTH. Hopeless is defined as eval < alpha-15.
+ This also helps slightly. Best parameters are MIN_EVAL_SORT_DEPTH stays at 12, and chop off evals if depth <= MIN_EVAL_SORT_DEPTH+2.
+
+With both of these in place, DeepSolverTimer(20) returns
+    3,482 ms elapsed; 35,746,412 total nodes
+
+Tuning the beta margin for minimum nodes with SolverTuner yields BETA_MARGIN=24.
+    3,481 ms elapsed; 35,674,679 total nodes

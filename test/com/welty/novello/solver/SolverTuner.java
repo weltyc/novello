@@ -21,7 +21,7 @@ public class SolverTuner {
      * lowMetric of the original is higher than highMetric of the new by random chance is 0.60%.
      */
     public static void main(String[] args) {
-        new SolverTuner(DEEP_MOBILITY_WEIGHT, new DeepSolverTimer(), true).run();
+        new SolverTuner(BETA_MARGIN, new DeepSolverTimer(20), true).run();
     }
 
     private final @NotNull Parameter parameter;
@@ -43,6 +43,9 @@ public class SolverTuner {
     }
 
     private void run() {
+        // warm up hotspot
+        new DeepSolverTimer(20).run();
+
         final int originalValue = parameter.get();
         System.out.println("Tuning " + parameter);
         System.out.println("-- original value: " + originalValue + " --");
@@ -188,6 +191,7 @@ public class SolverTuner {
         }
     }
 
+    // MoveSorter parameters
     private static final Parameter MOBILITY_WEIGHT = new StaticFieldParameter(MoveSorter.class, "MOBILITY_WEIGHT", 0);
     private static final Parameter DEEP_MOBILITY_WEIGHT = new StaticFieldParameter(MoveSorter.class, "DEEP_MOBILITY_WEIGHT", 0);
     private static final Parameter FIXED_ORDERING_WEIGHT = new StaticFieldParameter(MoveSorter.class, "FIXED_ORDERING_WEIGHT", 0);
@@ -195,6 +199,10 @@ public class SolverTuner {
     private static final Parameter PARITY_WEIGHT = new StaticFieldParameter(MoveSorter.class, "PARITY_WEIGHT", 0);
     private static final Parameter ENEMY_POT_MOB_WEIGHT = new StaticFieldParameter(MoveSorter.class, "ENEMY_POT_MOB_WEIGHT", 0);
     private static final Parameter MOVER_POT_MOB_WEIGHT = new StaticFieldParameter(MoveSorter.class, "MOVER_POT_MOB_WEIGHT", 0);
+    private static final Parameter BETA_MARGIN = new StaticFieldParameter(MoveSorter.class, "BETA_MARGIN", 0);
+
+    // Solver parameters
+    private static final Parameter MIN_EVAL_SORT_DEPTH = new StaticFieldParameter(Solver.class, "MIN_EVAL_SORT_DEPTH", 0);
     private static final Parameter MIN_SORT_DEPTH = new StaticFieldParameter(Solver.class, "MIN_SORT_DEPTH", 5);
     private static final Parameter MIN_HASH_DEPTH = new StaticFieldParameter(Solver.class, "MIN_HASH_DEPTH", Solver.MIN_SORT_DEPTH);
     private static final Parameter MIN_ETC_DEPTH = new StaticFieldParameter(Solver.class, "MIN_ETC_DEPTH", Solver.MIN_HASH_DEPTH+1);

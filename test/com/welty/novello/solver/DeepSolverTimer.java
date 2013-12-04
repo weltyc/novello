@@ -10,18 +10,24 @@ import java.util.List;
 /**
  */
 public class DeepSolverTimer implements Tunable {
-    private static final int nEmpty = 20;
-    private static final List<Position> positions = getPositions(nEmpty);
+    private final List<Position> positions;
+
+    public DeepSolverTimer(int nEmpty) {
+        positions = getPositions(nEmpty);
+    }
 
     public static void main(String[] args) {
+        // warm up Hot Spot
+        new DeepSolverTimer(20).run();
 
         final long t0 = System.currentTimeMillis();
-        final DeepSolverTimer timer = new DeepSolverTimer();
+        final DeepSolverTimer timer = new DeepSolverTimer(20);
         timer.run();
         final long dt = System.currentTimeMillis() - t0;
         final long nNodes = timer.nNodes();
         System.out.format("%,d ms elapsed; %,d total nodes\n", dt, nNodes);
 
+        timer.solver.dumpStatistics();
 //        System.out.println(solver.nodeCounts.getNodeCountsByDepth());
 //        System.out.println(solver.hashTable.stats());
     }

@@ -2,6 +2,7 @@ package com.welty.novello.solver;
 
 import com.welty.novello.core.BitBoardUtils;
 import com.welty.novello.core.Square;
+import com.welty.novello.eval.CoefficientCalculator;
 import com.welty.novello.eval.Eval;
 import com.welty.novello.selfplay.Players;
 
@@ -43,6 +44,8 @@ final class MoveSorter {
     private static final int MOVER_POT_MOB_WEIGHT = 0;
     private static final int ENEMY_POT_MOB_WEIGHT = 4;
 
+    static int BETA_MARGIN = 24;
+
     /**
      * lookup table to get sort weight from mobility.
      * This allows for nonlinear parameters.
@@ -58,7 +61,7 @@ final class MoveSorter {
     private int size = 0;
     final Move[] moves = new Move[64];
 
-    private static final Eval deepEval = Players.currentEval();
+    static final Eval deepEval = Players.currentEval();
 
     MoveSorter() {
         for (int i = 0; i < moves.length; i++) {
@@ -106,15 +109,20 @@ final class MoveSorter {
     }
 
 
-    private static int scoreWithEtcAndEval(HashTable hashTable, int alpha, int beta, long nextEnemy, long nextMover, long enemyMoves) {
-        final int nMobs = Long.bitCount(enemyMoves);
-        int score = -deepEval.eval(nextMover, nextEnemy) - (sortWeightFromMobility[nMobs]<<DEEP_MOBILITY_WEIGHT);       // todo pass enemyMoves to eval for speed
+    private static int scoreWithEtcAndEval(HashTable hashTable, int alpha, int beta, long nextEnemy, long nextMover, long nextMoverMoves) {
+        final int nMobs = Long.bitCount(nextMoverMoves);
+        int margin = -deepEval.eval(nextMover, nextEnemy, nextMoverMoves) - (beta + BETA_MARGIN) * CoefficientCalculator.DISK_VALUE;
+        if (margin > 0) {
+            margin >>= 1;
+        }
+        int score = margin - (sortWeightFromMobility[nMobs] << DEEP_MOBILITY_WEIGHT);
         final HashTable.Entry entry = hashTable.find(nextMover, nextEnemy);
         if (entry != null && entry.cutsOff(-beta, -alpha)) {
             score += 1 << ETC_WEIGHT;
         }
         return score;
     }
+
     /**
      * Create a sorted list containing all legal moves for the mover that are listed in movesToCheck.
      * <p/>

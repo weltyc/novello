@@ -3,6 +3,7 @@ package com.welty.novello.solver;
 import com.welty.novello.core.BitBoardUtils;
 import com.welty.novello.core.Square;
 import com.welty.novello.core.MoveScore;
+import com.welty.novello.eval.CoefficientCalculator;
 
 import static java.lang.Long.bitCount;
 
@@ -38,7 +39,7 @@ public class Solver {
     /**
      * Use the eval for sorting at this depth and higher.
      */
-    private static int MIN_EVAL_SORT_DEPTH = 12;
+    static int MIN_EVAL_SORT_DEPTH = 12;
 
     /**
      * At this depth and above, the search will do a full sort of the remaining moves
@@ -107,15 +108,15 @@ public class Solver {
 
     /**
      * Solve the game and return the best move.
-     *
+     * <p/>
      * Precondition: mover has a legal move
      *
      * @param mover mover disks
-     * @param enemy  enemy disks
+     * @param enemy enemy disks
      * @return a {@link MoveScore} containing the best move
      */
     public MoveScore solveWithMove(long mover, long enemy) {
-        if (BitBoardUtils.calcMoves(mover, enemy)==0) {
+        if (BitBoardUtils.calcMoves(mover, enemy) == 0) {
             throw new IllegalArgumentException("mover must have a legal move");
         }
         this.empties = createEmptiesList(mover, enemy);
@@ -329,10 +330,11 @@ public class Solver {
      * Fills in treeSearchResult with the score.
      * Sets the treeSearchResult.iBestMove to the index of the highest scoring move in sorter.moves.
      * If the highest scoring move scored < alpha then this is kind of arbitrary.
-     *
+     * <p/>
      * If there is no legal move, returns score==NO_MOVE and iBestMove==-1.
      */
-    private void moverResultWithSorting(TreeSearchResult treeSearchResult, long mover, long enemy, int alpha, int beta, int nEmpties, long parity, int nodeType, long movesToCheck) {
+    private void moverResultWithSorting(TreeSearchResult treeSearchResult, long mover, long enemy, int alpha, int beta
+            , int nEmpties, long parity, int nodeType, long movesToCheck) {
         int score = NO_MOVE;
         int iBestMove = -1;
 
@@ -340,13 +342,20 @@ public class Solver {
         // do an actual move sort
         final MoveSorter sorter = moveSorters[nEmpties];
         if (nEmpties >= MIN_ETC_DEPTH) {
-            if (nEmpties >= MIN_EVAL_SORT_DEPTH) {
+            final boolean useEvalSort;
+            if (nEmpties < MIN_EVAL_SORT_DEPTH) {
+                useEvalSort = false;
+            } else if (nEmpties >= MIN_EVAL_SORT_DEPTH + 2) {
+                useEvalSort = true;
+            } else {
+                final int localScore = MoveSorter.deepEval.eval(mover, enemy);
+                useEvalSort = localScore > (alpha - 15) * CoefficientCalculator.DISK_VALUE;
+            }
+            if (useEvalSort) {
                 sorter.createWithEtcAndEval(empties, mover, enemy, movesToCheck, hashTable, alpha, beta);
+            } else {
+                sorter.createWithEtc(empties, mover, enemy, parity, movesToCheck, hashTable, alpha, beta);
             }
-            else {
-            sorter.createWithEtc(empties, mover, enemy, parity, movesToCheck, hashTable, alpha, beta);
-            }
-
         } else {
             sorter.createWithoutEtc(empties, mover, enemy, parity, movesToCheck);
         }
@@ -380,6 +389,11 @@ public class Solver {
                         , parity ^ square.parityRegion, subNodeType, move.enemyMoves);
             }
             move.node.restore();
+//            // todo remove once statistics are collected
+//            if (nEmpties >= MIN_EVAL_SORT_DEPTH) {
+//                collectStatistics(subMover, subEnemy, alpha, beta, subResult, nodeType);
+//            }
+
             if (subResult > score) {
                 score = subResult;
                 iBestMove = i;
@@ -388,7 +402,7 @@ public class Solver {
                         treeSearchResult.score = score;
                         treeSearchResult.iBestMove = iBestMove;
                         nodeCounts.updateCut(nEmpties, i);
-                        assert iBestMove >= 0 || score==NO_MOVE;
+                        assert iBestMove >= 0 || score == NO_MOVE;
                         return;
                     }
                     alpha = subResult;
@@ -398,7 +412,78 @@ public class Solver {
         }
         treeSearchResult.score = score;
         treeSearchResult.iBestMove = iBestMove;
-        assert iBestMove >= 0 || score==NO_MOVE;
+        assert iBestMove >= 0 || score == NO_MOVE;
+    }
+
+    private final static class Statistic {
+        private long nCutoffs;
+        private long nImprovements;
+        private long nFails;
+
+        void update(int score, int alpha, int beta) {
+            if (score >= beta) {
+                nCutoffs++;
+            } else if (score <= alpha) {
+                nFails++;
+            } else {
+                nImprovements++;
+            }
+        }
+
+        long nChances() {
+            return nCutoffs + nImprovements + nFails;
+        }
+
+        @Override public String toString() {
+            final long nChances = nChances();
+            return String.format("%3d%% cutoff, %3d%% improvement, %3d%% fail  in %,6d nodes", 100 * nCutoffs / nChances
+                    , 100 * nImprovements / nChances, 100 * nFails / nChances, nChances);
+        }
+
+        public void dump(String description) {
+            if (nChances() > 0) {
+                System.out.println(description + ": " + toString());
+            }
+        }
+    }
+
+    private final Statistic[] aboveBeta = createStatistics(100);
+    private final Statistic[] belowAlpha = createStatistics(100);
+    private final Statistic pvCutoffs = new Statistic();
+
+    private static Statistic[] createStatistics(int length) {
+        final Statistic[] statistics = new Statistic[length];
+        for (int i = 0; i < length; i++) {
+            statistics[i] = new Statistic();
+        }
+        return statistics;
+    }
+
+    private void collectStatistics(long subMover, long subEnemy, int alpha, int beta, int score, int nodeType) {
+        final int eval = -MoveSorter.deepEval.eval(subMover, subEnemy) / CoefficientCalculator.DISK_VALUE;
+        final Statistic statistic;
+
+        if (eval >= beta) {
+            statistic = aboveBeta[eval - beta];
+        } else if (eval <= alpha) {
+            statistic = belowAlpha[alpha - eval];
+        } else {
+            statistic = pvCutoffs;
+        }
+        statistic.update(score, alpha, beta);
+
+    }
+
+    void dumpStatistics() {
+        for (int margin = 0; margin < aboveBeta.length; margin++) {
+            aboveBeta[margin].dump(String.format("%3s", "+" + margin));
+        }
+        for (int margin = 0; margin < belowAlpha.length; margin++) {
+            belowAlpha[margin].dump(String.format("%3s", "-" + margin));
+        }
+        {
+            pvCutoffs.dump("pv");
+        }
     }
 
     private int solveNoParity(long mover, long enemy, int alpha, int beta, ListOfEmpties empties, int nEmpties) {
@@ -576,7 +661,7 @@ public class Solver {
 
     /**
      * Clear all historical information so we don't cheat while benchmarking.
-     *
+     * <p/>
      * For speed, only clear up to maxNEmpties.
      *
      * @param maxNEmpties max # of empties that will be cleared in the HashTable
