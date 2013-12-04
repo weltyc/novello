@@ -367,7 +367,6 @@ public class BitBoardUtils {
         final long enemyE = enemy & notEastEdge;
 
         long moves = 0;
-        final long empty = ~(mover | enemy);
 
         for (int i = 0; i < 6; i++) {
             south = (south & enemy) << 8;
@@ -379,8 +378,10 @@ public class BitBoardUtils {
             northeast = ((northeast & enemyE) >>> 9);
             southwest = ((southwest & enemyW) << 9);
             southeast = ((southeast & enemyE) << 7);
-            moves |= ((north | south | west | east | northwest | northeast | southwest | southeast) & empty);
+            moves |= ((north | south | west | east | northwest | northeast | southwest | southeast));
         }
+        final long empty = ~(mover | enemy);
+        moves &= empty;
         return moves;
     }
 
