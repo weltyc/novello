@@ -21,7 +21,7 @@ public class DeepSolverTimer implements Tunable {
         new DeepSolverTimer(20).run();
 
         final long t0 = System.currentTimeMillis();
-        final DeepSolverTimer timer = new DeepSolverTimer(20);
+        final DeepSolverTimer timer = new DeepSolverTimer(22);
         timer.run();
         final long dt = System.currentTimeMillis() - t0;
         final long nNodes = timer.nNodes();
@@ -29,7 +29,7 @@ public class DeepSolverTimer implements Tunable {
 
         timer.solver.dumpStatistics();
 //        System.out.println(solver.nodeCounts.getNodeCountsByDepth());
-//        System.out.println(solver.hashTable.stats());
+//        System.out.println(solver.hashTables.stats());
     }
 
     private static List<Position> getPositions(int nEmpty) {

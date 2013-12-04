@@ -79,7 +79,7 @@ public class Solver {
     /**
      * Transposition table.
      */
-    final HashTable hashTable = new HashTable(10, 12);
+    final HashTables hashTables = new HashTables();
 
     /**
      * Set up data structures for a Solver.
@@ -294,18 +294,18 @@ public class Solver {
         int searchAlpha = alpha;
         int searchBeta = beta;
         if (nEmpties >= MIN_HASH_DEPTH) {
-            HashTable.Entry entry = hashTable.find(mover, enemy);
+            HashTables.Entry entry = hashTables.find(mover, enemy);
             if (entry != null) {
                 if (entry.min >= beta) {
-                    hashTable.nBetaCuts++;
+                    hashTables.nBetaCuts++;
                     return entry.min;
                 }
                 if (entry.max <= alpha) {
-                    hashTable.nAlphaCuts++;
+                    hashTables.nAlphaCuts++;
                     return entry.max;
                 }
                 if (entry.min == entry.max) {
-                    hashTable.nPvCuts++;
+                    hashTables.nPvCuts++;
                     return entry.min;
                 }
                 if (entry.min > searchAlpha) {
@@ -314,14 +314,14 @@ public class Solver {
                 if (entry.max < searchBeta) {
                     searchBeta = entry.max;
                 }
-                hashTable.nUselessFind++;
+                hashTables.nUselessFind++;
             }
         }
         final TreeSearchResult result = treeSearchResults[nEmpties];
         moverResultWithSorting(result, mover, enemy, searchAlpha, searchBeta, nEmpties, parity, nodeType
                 , movesToCheck);
         if (nEmpties >= MIN_HASH_DEPTH) {
-            hashTable.store(mover, enemy, alpha, beta, result.score);
+            hashTables.store(mover, enemy, alpha, beta, result.score);
         }
         return result.score;
     }
@@ -352,9 +352,9 @@ public class Solver {
                 useEvalSort = localScore > (alpha - 15) * CoefficientCalculator.DISK_VALUE;
             }
             if (useEvalSort) {
-                sorter.createWithEtcAndEval(empties, mover, enemy, movesToCheck, hashTable, alpha, beta);
+                sorter.createWithEtcAndEval(empties, mover, enemy, movesToCheck, hashTables, alpha, beta);
             } else {
-                sorter.createWithEtc(empties, mover, enemy, parity, movesToCheck, hashTable, alpha, beta);
+                sorter.createWithEtc(empties, mover, enemy, parity, movesToCheck, hashTables, alpha, beta);
             }
         } else {
             sorter.createWithoutEtc(empties, mover, enemy, parity, movesToCheck);
@@ -664,10 +664,10 @@ public class Solver {
      * <p/>
      * For speed, only clear up to maxNEmpties.
      *
-     * @param maxNEmpties max # of empties that will be cleared in the HashTable
+     * @param maxNEmpties max # of empties that will be cleared in the HashTables
      */
     public void clear(int maxNEmpties) {
-        hashTable.clear(maxNEmpties);
+        hashTables.clear(maxNEmpties);
     }
 
     /**

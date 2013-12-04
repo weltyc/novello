@@ -4,7 +4,7 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  */
-public class HashTable {
+public class HashTables {
     private final Entry[][] entriess;
 
     // statistics
@@ -26,15 +26,12 @@ public class HashTable {
     }
 
     /**
-     * Create a HashTable
-     *
-     * @param logBucketsLow  log, base 2, of the number of buckets in this HashTable at < 12 empties
-     * @param logBucketsHigh log, base 2, of the number of buckets in this HashTable at >= 12 empties
+     * Create a HashTables
      */
-    public HashTable(int logBucketsLow, int logBucketsHigh) {
+    public HashTables() {
         entriess = new Entry[64][];
         for (int nEmpty = 0; nEmpty < 64; nEmpty++) {
-            int size = 1 << (nEmpty < 8 ? logBucketsLow : logBucketsHigh);
+            int size = 1 << (nEmpty < 8 ? 10 : 12);
             final Entry[] nEmptyEntries = new Entry[size];
             entriess[nEmpty] = nEmptyEntries;
             for (int i = 0; i < nEmptyEntries.length; i++) {

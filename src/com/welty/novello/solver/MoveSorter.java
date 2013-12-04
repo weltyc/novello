@@ -85,7 +85,7 @@ final class MoveSorter {
      */
     @SuppressWarnings("PointlessBitwiseExpression")
     public void createWithEtcAndEval(ListOfEmpties empties, long mover, long enemy, long movesToCheck
-            , HashTable hashTable, int alpha, int beta) {
+            , HashTables hashTables, int alpha, int beta) {
         size = 0;
 
         for (ListOfEmpties.Node node = empties.first(); node != empties.end; node = node.next) {
@@ -101,7 +101,7 @@ final class MoveSorter {
                 final long nextEnemy = mover | flips | placement;
                 final long nextMover = enemy & ~flips;
                 final long enemyMoves = calcMoves(nextMover, nextEnemy);
-                int score = scoreWithEtcAndEval(hashTable, alpha, beta, nextEnemy, nextMover, enemyMoves);
+                int score = scoreWithEtcAndEval(hashTables, alpha, beta, nextEnemy, nextMover, enemyMoves);
 
                 insert(sq, score, flips, enemyMoves, node);
             }
@@ -109,14 +109,14 @@ final class MoveSorter {
     }
 
 
-    private static int scoreWithEtcAndEval(HashTable hashTable, int alpha, int beta, long nextEnemy, long nextMover, long nextMoverMoves) {
+    private static int scoreWithEtcAndEval(HashTables hashTables, int alpha, int beta, long nextEnemy, long nextMover, long nextMoverMoves) {
         final int nMobs = Long.bitCount(nextMoverMoves);
         int margin = -deepEval.eval(nextMover, nextEnemy, nextMoverMoves) - (beta + BETA_MARGIN) * CoefficientCalculator.DISK_VALUE;
         if (margin > 0) {
             margin >>= 1;
         }
         int score = margin - (sortWeightFromMobility[nMobs] << DEEP_MOBILITY_WEIGHT);
-        final HashTable.Entry entry = hashTable.find(nextMover, nextEnemy);
+        final HashTables.Entry entry = hashTables.find(nextMover, nextEnemy);
         if (entry != null && entry.cutsOff(-beta, -alpha)) {
             score += 1 << ETC_WEIGHT;
         }
@@ -135,7 +135,7 @@ final class MoveSorter {
      */
     @SuppressWarnings("PointlessBitwiseExpression")
     public void createWithEtc(ListOfEmpties empties, long mover, long enemy, long parity, long movesToCheck
-            , HashTable hashTable, int alpha, int beta) {
+            , HashTables hashTables, int alpha, int beta) {
         size = 0;
 
         for (ListOfEmpties.Node node = empties.first(); node != empties.end; node = node.next) {
@@ -151,16 +151,16 @@ final class MoveSorter {
                 final long nextEnemy = mover | flips | placement;
                 final long nextMover = enemy & ~flips;
                 final long enemyMoves = calcMoves(nextMover, nextEnemy);
-                int score = scoreWithEtc(parity, hashTable, alpha, beta, sq, nextEnemy, nextMover, enemyMoves);
+                int score = scoreWithEtc(parity, hashTables, alpha, beta, sq, nextEnemy, nextMover, enemyMoves);
 
                 insert(sq, score, flips, enemyMoves, node);
             }
         }
     }
 
-    private static int scoreWithEtc(long parity, HashTable hashTable, int alpha, int beta, int sq, long nextEnemy, long nextMover, long enemyMoves) {
+    private static int scoreWithEtc(long parity, HashTables hashTables, int alpha, int beta, int sq, long nextEnemy, long nextMover, long enemyMoves) {
         int score = eval(parity, sq, enemyMoves, nextMover, nextEnemy);
-        final HashTable.Entry entry = hashTable.find(nextMover, nextEnemy);
+        final HashTables.Entry entry = hashTables.find(nextMover, nextEnemy);
         if (entry != null && entry.cutsOff(-beta, -alpha)) {
             score += 1 << ETC_WEIGHT;
         }
