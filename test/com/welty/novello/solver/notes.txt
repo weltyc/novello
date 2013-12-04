@@ -586,24 +586,6 @@ Added eval 'b' using 3x3 corner blocks.
      -1.3  a1:2
     -10.0  9b:2
 
-Eval Speed
-==========
-It is getting awfully slow. Time to speed it up! Created timing test EvalPlayerTimer.
-
-Self-play b1:6:
-
-2426 ms elapsed / 1,517,470 evals. 1.6 us/eval
-1677 ms elapsed / 1,517,470 evals. 1.1 us/eval: convert base2 to base3 using a lookup table.
-1622 ms elapsed / 1,517,470 evals. 1.1 us/eval : Use kindergarten bitboards to get col indices
-1427 ms elapsed / 1,517,470 evals. 0.9 us/eval: Specialize CornerFeature2 terms in eval
-1013 ms elapsed / 1,517,470 evals. 0.7 us/eval: Specialize mobility/disk/pot mob terms in eval
-634 ms elapsed / 1,517,470 evals. 0.4 us/eval: specialize rest of eval
-611 ms elapsed / 1,517,470 evals. 0.4 us/eval: reorder calculations in specialized eval so similar rows & cols are together
-597 ms elapsed / 1,517,470 evals. 0.4 us/eval: reorder calculations in specialized eval so similar diagonals are together
-596 ms elapsed / 1,517,470 evals. 0.4 us/eval: simplify col calculation
-558 ms elapsed / 1,517,470 evals. 0.4 us/eval: simplify row calculation
-509 ms elapsed / 1,517,470 evals. 0.34 us/eval: simplify diagonal calculation
-
 Deep Solver
 ===========
 [86d7a78] Starting statistics for DeepSolverTimer at depth 20:

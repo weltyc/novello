@@ -58,14 +58,15 @@ class EvalStrategyB extends EvalStrategy {
             eval += coeff;
         }
 
-        eval += slice[1][Terms.moverDisks.instance(mover, enemy, moverMoves, enemyMoves)];
-        eval += slice[2][Terms.enemyDisks.instance(mover, enemy, moverMoves, enemyMoves)];
-        eval += slice[3][Terms.moverMobilities.instance(mover, enemy, moverMoves, enemyMoves)];
-        eval += slice[4][Terms.enemyMobilities.instance(mover, enemy, moverMoves, enemyMoves)];
-        eval += slice[5][Terms.moverPotMobs.instance(mover, enemy, moverMoves, enemyMoves)];
-        eval += slice[6][Terms.enemyPotMobs.instance(mover, enemy, moverMoves, enemyMoves)];
-        eval += slice[7][Terms.moverPotMobs2.instance(mover, enemy, moverMoves, enemyMoves)];
-        eval += slice[8][Terms.enemyPotMobs2.instance(mover, enemy, moverMoves, enemyMoves)];
+        final long empty = ~(mover|enemy);
+        eval += slice[1][Long.bitCount(mover)];
+        eval += slice[2][Long.bitCount(enemy)];
+        eval += slice[3][Long.bitCount(moverMoves)];
+        eval += slice[4][Long.bitCount(enemyMoves)];
+        eval += slice[5][Long.bitCount(BitBoardUtils.potMobs(mover, empty))];
+        eval += slice[6][Long.bitCount(BitBoardUtils.potMobs(enemy, empty))];
+        eval += slice[7][Long.bitCount(BitBoardUtils.potMobs2(mover, empty))];
+        eval += slice[8][Long.bitCount(BitBoardUtils.potMobs2(enemy, empty))];
 
         final int[] row0Coeffs = slice[9];
         eval += row0Coeffs[RowTerm.rowOrid(mover, enemy, 0)];
@@ -146,8 +147,26 @@ class EvalStrategyB extends EvalStrategy {
 
     String generateCode() {
         StringBuilder sb = new StringBuilder();
+        sb.append("final long empty = ~(mover|enemy);\n");
 
-        for (int iFeature = 9; iFeature<=12; iFeature++) {
+        for (int iFeature = 1; iFeature <= 12; iFeature++) {
+            generateCodeForFeature(sb, iFeature);
+        }
+
+        // evaluating these features in reverse is faster, probably because it moves the long diagonals
+        // to the front. The long diagonals share the length-8 orid table with the row and columns that immediately
+        // precede it.
+        for (int iFeature = 17; iFeature >= 13; iFeature--) {
+            generateCodeForFeature(sb, iFeature);
+        }
+
+        return sb.toString();
+    }
+
+    String generateLineCode() {
+        StringBuilder sb = new StringBuilder();
+
+        for (int iFeature = 9; iFeature <= 12; iFeature++) {
             generateCodeForFeature(sb, iFeature);
         }
 
@@ -172,12 +191,26 @@ class EvalStrategyB extends EvalStrategy {
             }
         }
 
-        final String coeffName = feature.toString() + "Coeffs";
-        sb.append(String.format("final int[] %s = slice[%d];\n", coeffName, iFeature));
-        for (Term term : featureTerms) {
-            appendCodeForTerm(sb, coeffName, term);
+        if (featureTerms.size() > 1) {
+            if (!endsWithDoubleNewline(sb)) {
+                sb.append('\n');
+            }
+            final String coeffName = feature.toString() + "Coeffs";
+            sb.append(String.format("final int[] %s = slice[%d];\n", coeffName, iFeature));
+            for (Term term : featureTerms) {
+                appendCodeForTerm(sb, coeffName, term);
+            }
+            sb.append("\n");
+        } else if (featureTerms.size() == 0) {
+            throw new IllegalStateException("messed up");
+        } else {
+            sb.append(String.format("eval += slice[%d][%s];\n", iFeature, featureTerms.get(0).oridGen()));
         }
-        sb.append("\n");
+    }
+
+    private boolean endsWithDoubleNewline(StringBuilder sb) {
+        final int n = sb.length();
+        return n > 1 && sb.charAt(n - 1) == '\n'&& sb.charAt(n - 2) == '\n';
     }
 
     private static void appendCodeForTerm(StringBuilder sb, String coeffs, Term term) {

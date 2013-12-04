@@ -34,6 +34,7 @@ abstract class Term {
 
     /**
      * Generate code to rapidly calculate the orid
+     *
      * @return generated code fragment
      */
     String oridGen() {
@@ -62,7 +63,8 @@ class CornerTerm extends Term {
      *
      * @return the instance for this term
      */
-    @Override public int instance(long mover, long enemy, long moverMoves, long enemyMoves) {
+    @Override
+    public int instance(long mover, long enemy, long moverMoves, long enemyMoves) {
         final int base = bit(mover) + 2 * bit(enemy);
         if (base > 0) {
             return base + 3;
@@ -103,7 +105,8 @@ class CornerTerm2 extends Term {
      *
      * @return the instance for this term
      */
-    @Override public int instance(long mover, long enemy, long moverMoves, long enemyMoves) {
+    @Override
+    public int instance(long mover, long enemy, long moverMoves, long enemyMoves) {
         final int cornerOccupier = bit(mover) + 2 * bit(enemy);
         if (cornerOccupier > 0) {
             return cornerOccupier + 3;
@@ -128,48 +131,98 @@ class CornerTerm2 extends Term {
 
 class Terms {
     static final Term moverDisks = new Term(Features.moverDisks) {
-        @Override public int instance(long mover, long enemy, long moverMoves, long enemyMoves) {
+        @Override
+        public int instance(long mover, long enemy, long moverMoves, long enemyMoves) {
             return Long.bitCount(mover);
+        }
+
+        @Override
+        String oridGen() {
+            return "Long.bitCount(mover)";
         }
     };
     static final Term enemyDisks = new Term(Features.enemyDisks) {
-        @Override public int instance(long mover, long enemy, long moverMoves, long enemyMoves) {
+        @Override
+        public int instance(long mover, long enemy, long moverMoves, long enemyMoves) {
             return Long.bitCount(enemy);
+        }
+
+        @Override
+        String oridGen() {
+            return "Long.bitCount(enemy)";
         }
     };
     static final Term moverMobilities = new Term(Features.moverMobilities) {
-        @Override public int instance(long mover, long enemy, long moverMoves, long enemyMoves) {
+        @Override
+        public int instance(long mover, long enemy, long moverMoves, long enemyMoves) {
             return Long.bitCount(moverMoves);
+        }
+
+        @Override
+        String oridGen() {
+            return "Long.bitCount(moverMoves)";
         }
     };
     static final Term enemyMobilities = new Term(Features.enemyMobilities) {
-        @Override public int instance(long mover, long enemy, long moverMoves, long enemyMoves) {
+        @Override
+        public int instance(long mover, long enemy, long moverMoves, long enemyMoves) {
             return Long.bitCount(enemyMoves);
         }
+
+        @Override
+        String oridGen() {
+            return "Long.bitCount(enemyMoves)";
+        }
     };
+
     static final Term moverPotMobs = new Term(Features.moverPotMobs) {
-        @Override public int instance(long mover, long enemy, long moverMoves, long enemyMoves) {
+        @Override
+        public int instance(long mover, long enemy, long moverMoves, long enemyMoves) {
             final long empty = ~(mover | enemy);
             return Long.bitCount(BitBoardUtils.potMobs(mover, empty));
         }
+
+        @Override
+        String oridGen() {
+            return "Long.bitCount(BitBoardUtils.potMobs(mover, empty))";
+        }
     };
     static final Term enemyPotMobs = new Term(Features.enemyPotMobs) {
-        @Override public int instance(long mover, long enemy, long moverMoves, long enemyMoves) {
+        @Override
+        public int instance(long mover, long enemy, long moverMoves, long enemyMoves) {
             final long empty = ~(mover | enemy);
             return Long.bitCount(BitBoardUtils.potMobs(enemy, empty));
         }
+
+        @Override
+        String oridGen() {
+            return "Long.bitCount(BitBoardUtils.potMobs(enemy, empty))";
+        }
     };
     static final Term moverPotMobs2 = new Term(Features.moverPotMobs2) {
-        @Override public int instance(long mover, long enemy, long moverMoves, long enemyMoves) {
+        @Override
+        public int instance(long mover, long enemy, long moverMoves, long enemyMoves) {
             final long empty = ~(mover | enemy);
             return Long.bitCount(BitBoardUtils.potMobs2(mover, empty));
         }
+
+        @Override
+        String oridGen() {
+            return "Long.bitCount(BitBoardUtils.potMobs2(mover, empty))";
+        }
     };
     static final Term enemyPotMobs2 = new Term(Features.enemyPotMobs2) {
-        @Override public int instance(long mover, long enemy, long moverMoves, long enemyMoves) {
+        @Override
+        public int instance(long mover, long enemy, long moverMoves, long enemyMoves) {
             final long empty = ~(mover | enemy);
             return Long.bitCount(BitBoardUtils.potMobs2(enemy, empty));
         }
+
+        @Override
+        String oridGen() {
+            return "Long.bitCount(BitBoardUtils.potMobs2(enemy, empty))";
+        }
+
     };
 }
 
@@ -196,7 +249,8 @@ class RowTerm extends Term {
         return OridTable.orid8(rowInstance(mover, enemy, row * 8));
     }
 
-    @Override public int instance(long mover, long enemy, long moverMoves, long enemyMoves) {
+    @Override
+    public int instance(long mover, long enemy, long moverMoves, long enemyMoves) {
         final int shift = this.shift;
         return rowInstance(mover, enemy, shift);
     }
@@ -208,7 +262,7 @@ class RowTerm extends Term {
     @Override
     String oridGen() {
         final int row = shift / 8;
-        return "RowTerm.rowOrid(mover, enemy, "+ row +")";
+        return "RowTerm.rowOrid(mover, enemy, " + row + ")";
     }
 }
 
@@ -225,7 +279,8 @@ class ColTerm extends Term {
         return OridTable.orid8(colInstance(mover, enemy, col));
     }
 
-    @Override public int instance(long mover, long enemy, long moverMoves, long enemyMoves) {
+    @Override
+    public int instance(long mover, long enemy, long moverMoves, long enemyMoves) {
         return colInstance(mover, enemy, this.col);
     }
 
@@ -238,7 +293,7 @@ class ColTerm extends Term {
 
     @Override
     String oridGen() {
-        return "ColTerm.colOrid(mover, enemy, "+ col +")";
+        return "ColTerm.colOrid(mover, enemy, " + col + ")";
     }
 }
 
@@ -259,7 +314,7 @@ abstract class DiagonalTerm extends Term {
         super(features[Math.abs(diagonal)]);
         this.mask = mask;
         this.shift = shift;
-        diagonalLength = 8-Math.abs(diagonal);
+        diagonalLength = 8 - Math.abs(diagonal);
     }
 
     protected static long diagonalMask(int sq, int length, int dSq) {
@@ -273,13 +328,15 @@ abstract class DiagonalTerm extends Term {
 
     /**
      * Quick orid calculation suitable for generated code
+     *
      * @return text of quick orid calculation
      */
     String oridGen() {
         return String.format("OridTable.orid%d(DiagonalTerm.diagonalInstance(mover, enemy, 0x%016xL, %d))", diagonalLength, mask, shift);
     }
 
-    @Override public int instance(long mover, long enemy, long moverMoves, long enemyMoves) {
+    @Override
+    public int instance(long mover, long enemy, long moverMoves, long enemyMoves) {
         final long mask = this.mask;
         final int shift = this.shift;
         return diagonalInstance(mover, enemy, mask, shift);
