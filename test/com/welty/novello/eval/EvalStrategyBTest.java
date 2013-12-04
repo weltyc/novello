@@ -8,7 +8,7 @@ import junit.framework.TestCase;
  */
 public class EvalStrategyBTest extends TestCase {
     public void testGenerateDiagonalEvalCode() throws Exception {
-        final String expected = Feeds.ofLines(EvalStrategyBTest.class, "EvalStrategyBGeneratedCode.txt").join("\n");
+        final String expected = Feeds.ofLines(EvalStrategyBTest.class, "EvalStrategyBGeneratedCode.txt").join("\n") + "\n";
         assertEquals(expected, EvalStrategyB.generateDiagonalEvalCode());
     }
 }
