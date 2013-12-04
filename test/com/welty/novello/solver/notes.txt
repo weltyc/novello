@@ -602,6 +602,7 @@ Self-play b1:6:
 597 ms elapsed / 1,517,470 evals. 0.4 us/eval: reorder calculations in specialized eval so similar diagonals are together
 596 ms elapsed / 1,517,470 evals. 0.4 us/eval: simplify col calculation
 558 ms elapsed / 1,517,470 evals. 0.4 us/eval: simplify row calculation
+509 ms elapsed / 1,517,470 evals. 0.34 us/eval: simplify diagonal calculation
 
 Deep Solver
 ===========

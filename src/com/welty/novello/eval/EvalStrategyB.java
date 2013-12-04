@@ -99,29 +99,29 @@ class EvalStrategyB extends EvalStrategy {
         eval += diagonal8Coeffs[OridTable.orid8(DiagonalTerm.diagonalInstance(mover, enemy, 0x8040201008040201L, 56))];
         eval += diagonal8Coeffs[OridTable.orid8(DiagonalTerm.diagonalInstance(mover, enemy, 0x0102040810204080L, 56))];
 
-        final int[] uldr1FeatureCoeffs = slice[16];
-        eval += uldr1FeatureCoeffs[OridTable.orid7(uldrTerms[3].instance(mover, enemy, moverMoves, enemyMoves))];
-        eval += uldr1FeatureCoeffs[OridTable.orid7(uldrTerms[5].instance(mover, enemy, moverMoves, enemyMoves))];
-        eval += uldr1FeatureCoeffs[OridTable.orid7(urdlTerms[3].instance(mover, enemy, moverMoves, enemyMoves))];
-        eval += uldr1FeatureCoeffs[OridTable.orid7(urdlTerms[5].instance(mover, enemy, moverMoves, enemyMoves))];
+        final int[] diagonal7Coeffs = slice[16];
+        eval += diagonal7Coeffs[OridTable.orid7(DiagonalTerm.diagonalInstance(mover, enemy, 0x4020100804020100L, 56))];
+        eval += diagonal7Coeffs[OridTable.orid7(DiagonalTerm.diagonalInstance(mover, enemy, 0x0080402010080402L, 57))];
+        eval += diagonal7Coeffs[OridTable.orid7(DiagonalTerm.diagonalInstance(mover, enemy, 0x0001020408102040L, 56))];
+        eval += diagonal7Coeffs[OridTable.orid7(DiagonalTerm.diagonalInstance(mover, enemy, 0x0204081020408000L, 57))];
 
-        final int[] uldr2FeatureCoeffs = slice[15];
-        eval += uldr2FeatureCoeffs[OridTable.orid6(uldrTerms[2].instance(mover, enemy, moverMoves, enemyMoves))];
-        eval += uldr2FeatureCoeffs[OridTable.orid6(uldrTerms[6].instance(mover, enemy, moverMoves, enemyMoves))];
-        eval += uldr2FeatureCoeffs[OridTable.orid6(urdlTerms[2].instance(mover, enemy, moverMoves, enemyMoves))];
-        eval += uldr2FeatureCoeffs[OridTable.orid6(urdlTerms[6].instance(mover, enemy, moverMoves, enemyMoves))];
+        final int[] diagonal6Coeffs = slice[15];
+        eval += diagonal6Coeffs[OridTable.orid6(DiagonalTerm.diagonalInstance(mover, enemy, 0x2010080402010000L, 56))];
+        eval += diagonal6Coeffs[OridTable.orid6(DiagonalTerm.diagonalInstance(mover, enemy, 0x0000804020100804L, 58))];
+        eval += diagonal6Coeffs[OridTable.orid6(DiagonalTerm.diagonalInstance(mover, enemy, 0x0000010204081020L, 56))];
+        eval += diagonal6Coeffs[OridTable.orid6(DiagonalTerm.diagonalInstance(mover, enemy, 0x0408102040800000L, 58))];
 
-        final int[] uldr3FeatureCoeffs = slice[14];
-        eval += uldr3FeatureCoeffs[OridTable.orid5(uldrTerms[1].instance(mover, enemy, moverMoves, enemyMoves))];
-        eval += uldr3FeatureCoeffs[OridTable.orid5(uldrTerms[7].instance(mover, enemy, moverMoves, enemyMoves))];
-        eval += uldr3FeatureCoeffs[OridTable.orid5(urdlTerms[1].instance(mover, enemy, moverMoves, enemyMoves))];
-        eval += uldr3FeatureCoeffs[OridTable.orid5(urdlTerms[7].instance(mover, enemy, moverMoves, enemyMoves))];
+        final int[] diagonal5Coeffs = slice[14];
+        eval += diagonal5Coeffs[OridTable.orid5(DiagonalTerm.diagonalInstance(mover, enemy, 0x1008040201000000L, 56))];
+        eval += diagonal5Coeffs[OridTable.orid5(DiagonalTerm.diagonalInstance(mover, enemy, 0x0000008040201008L, 59))];
+        eval += diagonal5Coeffs[OridTable.orid5(DiagonalTerm.diagonalInstance(mover, enemy, 0x0000000102040810L, 56))];
+        eval += diagonal5Coeffs[OridTable.orid5(DiagonalTerm.diagonalInstance(mover, enemy, 0x0810204080000000L, 59))];
 
-        final int[] uldr4FeatureCoeffs = slice[13];
-        eval += uldr4FeatureCoeffs[OridTable.orid4(uldrTerms[0].instance(mover, enemy, moverMoves, enemyMoves))];
-        eval += uldr4FeatureCoeffs[OridTable.orid4(uldrTerms[8].instance(mover, enemy, moverMoves, enemyMoves))];
-        eval += uldr4FeatureCoeffs[OridTable.orid4(urdlTerms[0].instance(mover, enemy, moverMoves, enemyMoves))];
-        eval += uldr4FeatureCoeffs[OridTable.orid4(urdlTerms[8].instance(mover, enemy, moverMoves, enemyMoves))];
+        final int[] diagonal4Coeffs = slice[13];
+        eval += diagonal4Coeffs[OridTable.orid4(DiagonalTerm.diagonalInstance(mover, enemy, 0x0804020100000000L, 56))];
+        eval += diagonal4Coeffs[OridTable.orid4(DiagonalTerm.diagonalInstance(mover, enemy, 0x0000000080402010L, 60))];
+        eval += diagonal4Coeffs[OridTable.orid4(DiagonalTerm.diagonalInstance(mover, enemy, 0x0000000001020408L, 56))];
+        eval += diagonal4Coeffs[OridTable.orid4(DiagonalTerm.diagonalInstance(mover, enemy, 0x1020408000000000L, 60))];
 
         final Feature cornerBlockFeature = cornerBlockTerms[0].getFeature();
         final int[] cornerBlockFeatureCoeffs = slice[18];
