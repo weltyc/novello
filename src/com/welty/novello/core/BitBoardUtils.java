@@ -362,55 +362,12 @@ public class BitBoardUtils {
         return (fillUpLeft(placement, enemy) & fillDownRight(mover, enemy)) | (fillDownRight(placement, enemy) & fillUpLeft(mover, enemy));
     }
 
-    private static final long notEastEdge = 0xFEFEFEFEFEFEFEFEL;
-    private static final long notWestEdge = 0x7F7F7F7F7F7F7F7FL;
-
     /**
      * Calculate mobilities (legal moves for the mover)
      *
      * @return mobility bitboard
      */
     public static long calcMoves(long mover, long enemy) {
-        return koggeStoneMoves(mover, enemy);
-        //	a direction bit is set if we have seen a mover followed by an unbroken string of enemy squares
-//
-//        long south = (mover << 8);
-//        long north = (mover >>> 8);
-//
-//        final long moverW = mover & notWestEdge;
-//        final long moverE = mover & notEastEdge;
-//
-//        long west = (moverW << 1);
-//        long east = (moverE >>> 1);
-//
-//        long northwest = (moverW >>> 7);
-//        long northeast = (moverE >>> 9);
-//        long southwest = (moverW << 9);
-//        long southeast = (moverE << 7);
-//
-//        final long enemyW = enemy & notWestEdge;
-//        final long enemyE = enemy & notEastEdge;
-//
-//        long moves = 0;
-//
-//        for (int i = 0; i < 6; i++) {
-//            south = (south & enemy) << 8;
-//            north = (north & enemy) >>> 8;
-//            west = ((west & enemyW) << 1);
-//            east = ((east & enemyE) >>> 1);
-//
-//            northwest = ((northwest & enemyW) >>> 7);
-//            northeast = ((northeast & enemyE) >>> 9);
-//            southwest = ((southwest & enemyW) << 9);
-//            southeast = ((southeast & enemyE) << 7);
-//            moves |= ((north | south | west | east | northwest | northeast | southwest | southeast));
-//        }
-//        final long empty = ~(mover | enemy);
-//        moves &= empty;
-//        return moves;
-    }
-
-    private static long koggeStoneMoves(long mover, long enemy) {
         final long centerEnemy = enemy & ~BitBoardUtils.FilesAH;
         final long south = (fillDown(mover, enemy) & enemy) >>> 8;
         final long north = (fillUp(mover, enemy) & enemy) << 8;
@@ -423,7 +380,6 @@ public class BitBoardUtils {
 
         final long empty = ~(mover | enemy);
         return (north | south | east | west | northeast | northwest | southeast | southwest) & empty;
-
     }
 
     /**
