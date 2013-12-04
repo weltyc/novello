@@ -5,7 +5,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  */
 public class HashTables {
-    private final Entry[][] entriess;
+    private final HashTable[] tables;
 
     // statistics
     private long nFinds = 0;
@@ -29,14 +29,10 @@ public class HashTables {
      * Create a HashTables
      */
     public HashTables() {
-        entriess = new Entry[64][];
+        tables = new HashTable[64];
         for (int nEmpty = 0; nEmpty < 64; nEmpty++) {
             int size = 1 << (nEmpty < 8 ? 10 : 12);
-            final Entry[] nEmptyEntries = new Entry[size];
-            entriess[nEmpty] = nEmptyEntries;
-            for (int i = 0; i < nEmptyEntries.length; i++) {
-                nEmptyEntries[i] = new Entry();
-            }
+            tables[nEmpty] = new HashTable(size);
         }
     }
 
@@ -54,22 +50,20 @@ public class HashTables {
 
     private Entry getEntry(long mover, long enemy) {
         final int nEmpty = Long.bitCount(~(mover | enemy));
-        final Entry[] entries = entriess[nEmpty];
-        final int hash = (entries.length - 1) & (int) Murmur.hash(mover, enemy);
-        return entries[hash];
+        final HashTable table = tables[nEmpty];
+        return table.getEntry(mover, enemy);
     }
 
     /**
      * Clear all entries.
      * <p/>
      * Mostly useful to prevent cheating in benchmarks
+     *
      * @param maxNEmpties max # of empties that will be cleared in the hash table
      */
     public void clear(int maxNEmpties) {
         for (int nEmpty = Solver.MIN_HASH_DEPTH; nEmpty <= maxNEmpties; nEmpty++) {
-            for (Entry entry : entriess[nEmpty]) {
-                entry.clear();
-            }
+            tables[nEmpty].clear();
         }
     }
 
@@ -157,6 +151,38 @@ public class HashTables {
          */
         public boolean cutsOff(int alpha, int beta) {
             return min >= beta || max <= alpha || min == max;
+        }
+    }
+
+    static class HashTable {
+        Entry[] entries;
+
+        public HashTable(int size) {
+            entries = new Entry[size];
+            for (int i = 0; i < entries.length; i++) {
+                entries[i] = new Entry();
+            }
+
+        }
+
+        /**
+         * Get the Entry that this position can be stored in.
+         *
+         * The position might or might not already be in the returned Entry.
+         *
+         * @param mover mover bits
+         * @param enemy enemy bits
+         * @return the Entry
+         */
+        public Entry getEntry(long mover, long enemy) {
+            final int hash = (entries.length - 1) & (int) Murmur.hash(mover, enemy);
+            return entries[hash];
+        }
+
+        public void clear() {
+            for (Entry entry : entries) {
+                entry.clear();
+            }
         }
     }
 }
