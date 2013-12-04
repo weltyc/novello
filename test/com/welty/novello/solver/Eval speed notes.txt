@@ -18,3 +18,4 @@ Self-play b1:6:
 490 ms elapsed / 1,517,470 evals. 0.32 us/eval: generate code for mobs, pot mobs
 480 ms elapsed / 1,517,470 evals. 0.32 us/eval: generate code for Corner2
 467 ms elapsed / 1,517,470 evals. 0.31 us/eval: generate code for all eval Terms
+489 ms elapsed / 1,517,470 evals. 0.32 us/eval: attempt to speed up code for Corner2 - not keeping
