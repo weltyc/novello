@@ -31,6 +31,14 @@ abstract class Term {
     public Feature getFeature() {
         return feature;
     }
+
+    /**
+     * Generate code to rapidly calculate the orid
+     * @return generated code fragment
+     */
+    String oridGen() {
+        throw new IllegalStateException("not implemented for " + getClass().getSimpleName());
+    }
 }
 
 class CornerTerm extends Term {
@@ -167,10 +175,10 @@ class Terms {
 
 class RowTerm extends Term {
     private static final Feature[] features = {
-            LinePatternFeatureFactory.of("row 0", 8),
-            LinePatternFeatureFactory.of("row 1", 8),
-            LinePatternFeatureFactory.of("row 2", 8),
-            LinePatternFeatureFactory.of("row 3", 8)
+            LinePatternFeatureFactory.of("row0", 8),
+            LinePatternFeatureFactory.of("row1", 8),
+            LinePatternFeatureFactory.of("row2", 8),
+            LinePatternFeatureFactory.of("row3", 8)
     };
 
     static Feature getRowFeature(int row) {
@@ -184,6 +192,10 @@ class RowTerm extends Term {
         shift = row * 8;
     }
 
+    static int rowOrid(long mover, long enemy, int row) {
+        return OridTable.orid8(rowInstance(mover, enemy, row * 8));
+    }
+
     @Override public int instance(long mover, long enemy, long moverMoves, long enemyMoves) {
         final int shift = this.shift;
         return rowInstance(mover, enemy, shift);
@@ -191,6 +203,12 @@ class RowTerm extends Term {
 
     public static int rowInstance(long mover, long enemy, int shift) {
         return Base3.base2ToBase3(0xFF & (int) (mover >>> shift), 0xFF & (int) (enemy >>> shift));
+    }
+
+    @Override
+    String oridGen() {
+        final int row = shift / 8;
+        return "RowTerm.rowOrid(mover, enemy, "+ row +")";
     }
 }
 
@@ -203,6 +221,10 @@ class ColTerm extends Term {
         this.col = col;
     }
 
+    static int colOrid(long mover, long enemy, int col) {
+        return OridTable.orid8(colInstance(mover, enemy, col));
+    }
+
     @Override public int instance(long mover, long enemy, long moverMoves, long enemyMoves) {
         return colInstance(mover, enemy, this.col);
     }
@@ -213,15 +235,20 @@ class ColTerm extends Term {
         return Base3.base2ToBase3(moverCol, enemyCol);
     }
 
+
+    @Override
+    String oridGen() {
+        return "ColTerm.colOrid(mover, enemy, "+ col +")";
+    }
 }
 
 abstract class DiagonalTerm extends Term {
     static final Feature[] features = {
-            LinePatternFeatureFactory.of("diagonal 8", 8),
-            LinePatternFeatureFactory.of("diagonal 7", 7),
-            LinePatternFeatureFactory.of("diagonal 6", 6),
-            LinePatternFeatureFactory.of("diagonal 5", 5),
-            LinePatternFeatureFactory.of("diagonal 4", 4)
+            LinePatternFeatureFactory.of("diagonal8", 8),
+            LinePatternFeatureFactory.of("diagonal7", 7),
+            LinePatternFeatureFactory.of("diagonal6", 6),
+            LinePatternFeatureFactory.of("diagonal5", 5),
+            LinePatternFeatureFactory.of("diagonal4", 4)
     };
     protected final int shift;
     protected final long mask;
