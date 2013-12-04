@@ -107,14 +107,20 @@ class CornerTerm2 extends Term {
      */
     @Override
     public int instance(long mover, long enemy, long moverMoves, long enemyMoves) {
-        final int cornerOccupier = bit(mover) + 2 * bit(enemy);
+        return orid(mover, enemy, moverMoves, enemyMoves, sq);
+    }
+
+    static int orid(long mover, long enemy, long moverMoves, long enemyMoves, int sq) {
+        final int cornerOccupier = getBitAsInt(mover, sq) + 2 * getBitAsInt(enemy, sq);
         if (cornerOccupier > 0) {
             return cornerOccupier + 3;
         }
-        final int cornerMobility = bit(moverMoves) + 2 * bit(enemyMoves);
+        final int cornerMobility = getBitAsInt(moverMoves, sq) + 2 * getBitAsInt(enemyMoves, sq);
         if (cornerMobility > 0) {
             return cornerMobility;
         } else {
+            @SuppressWarnings("OctalInteger")
+            final int xSq = sq^011;
             final int xSquareOccupier = BitBoardUtils.getBitAsInt(mover, xSq) + 2 * BitBoardUtils.getBitAsInt(enemy, xSq);
             if (xSquareOccupier > 0) {
                 return xSquareOccupier + 5;
@@ -124,8 +130,9 @@ class CornerTerm2 extends Term {
         }
     }
 
-    private int bit(long mover) {
-        return getBitAsInt(mover, sq);
+    @Override
+    String oridGen() {
+        return "CornerTerm2.orid(mover, enemy, moverMoves, enemyMoves, " + sq + ")";
     }
 }
 

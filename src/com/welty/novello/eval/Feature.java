@@ -34,7 +34,7 @@ interface Feature {
  * Utility class containing Features that can be used for evaluation
  */
 class Features {
-    static final SoloFeature cornerFeature = new SoloFeature("Corner Mobility",
+    static final SoloFeature cornerFeature = new SoloFeature("CornerMobility",
             "No access to corner",
             "Mover access to corner",
             "Enemy access to corner",
@@ -43,7 +43,7 @@ class Features {
             "Enemy occupies corner"
     );
 
-    static final SoloFeature corner2Feature = new SoloFeature("Corner Mobility",
+    static final SoloFeature corner2Feature = new SoloFeature("corner2",
             "No access to corner",
             "Mover access to corner",
             "Enemy access to corner",

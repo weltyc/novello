@@ -48,21 +48,18 @@ class EvalStrategyB extends EvalStrategy {
 
         int eval = 0;
 
-        // evaluate corner features separately to see if specialization helps the timing
-        final Feature cornerFeature = cornerTerms[0].getFeature();
-        final int[] cornerFeatureCoeffs = slice[0];
-        for (final CornerTerm2 term : cornerTerms) {
-            final int instance = term.instance(mover, enemy, moverMoves, enemyMoves);
-            final int orid = cornerFeature.orid(instance);
-            final int coeff = cornerFeatureCoeffs[orid];
-            eval += coeff;
-        }
+        final int[] corner2Coeffs = slice[0];
+        eval += corner2Coeffs[CornerTerm2.orid(mover, enemy, moverMoves, enemyMoves, 0)];
+        eval += corner2Coeffs[CornerTerm2.orid(mover, enemy, moverMoves, enemyMoves, 7)];
+        eval += corner2Coeffs[CornerTerm2.orid(mover, enemy, moverMoves, enemyMoves, 56)];
+        eval += corner2Coeffs[CornerTerm2.orid(mover, enemy, moverMoves, enemyMoves, 63)];
 
-        final long empty = ~(mover|enemy);
         eval += slice[1][Long.bitCount(mover)];
         eval += slice[2][Long.bitCount(enemy)];
         eval += slice[3][Long.bitCount(moverMoves)];
         eval += slice[4][Long.bitCount(enemyMoves)];
+
+        final long empty = ~(mover|enemy);
         eval += slice[5][Long.bitCount(BitBoardUtils.potMobs(mover, empty))];
         eval += slice[6][Long.bitCount(BitBoardUtils.potMobs(enemy, empty))];
         eval += slice[7][Long.bitCount(BitBoardUtils.potMobs2(mover, empty))];
@@ -96,17 +93,11 @@ class EvalStrategyB extends EvalStrategy {
         eval += diagonal8Coeffs[OridTable.orid8(DiagonalTerm.diagonalInstance(mover, enemy, 0x8040201008040201L, 56))];
         eval += diagonal8Coeffs[OridTable.orid8(DiagonalTerm.diagonalInstance(mover, enemy, 0x0102040810204080L, 56))];
 
-        final int[] diagonal4Coeffs = slice[13];
-        eval += diagonal4Coeffs[OridTable.orid4(DiagonalTerm.diagonalInstance(mover, enemy, 0x0000000080402010L, 60))];
-        eval += diagonal4Coeffs[OridTable.orid4(DiagonalTerm.diagonalInstance(mover, enemy, 0x0804020100000000L, 56))];
-        eval += diagonal4Coeffs[OridTable.orid4(DiagonalTerm.diagonalInstance(mover, enemy, 0x1020408000000000L, 60))];
-        eval += diagonal4Coeffs[OridTable.orid4(DiagonalTerm.diagonalInstance(mover, enemy, 0x0000000001020408L, 56))];
-
-        final int[] diagonal5Coeffs = slice[14];
-        eval += diagonal5Coeffs[OridTable.orid5(DiagonalTerm.diagonalInstance(mover, enemy, 0x0000008040201008L, 59))];
-        eval += diagonal5Coeffs[OridTable.orid5(DiagonalTerm.diagonalInstance(mover, enemy, 0x1008040201000000L, 56))];
-        eval += diagonal5Coeffs[OridTable.orid5(DiagonalTerm.diagonalInstance(mover, enemy, 0x0810204080000000L, 59))];
-        eval += diagonal5Coeffs[OridTable.orid5(DiagonalTerm.diagonalInstance(mover, enemy, 0x0000000102040810L, 56))];
+        final int[] diagonal7Coeffs = slice[16];
+        eval += diagonal7Coeffs[OridTable.orid7(DiagonalTerm.diagonalInstance(mover, enemy, 0x0080402010080402L, 57))];
+        eval += diagonal7Coeffs[OridTable.orid7(DiagonalTerm.diagonalInstance(mover, enemy, 0x4020100804020100L, 56))];
+        eval += diagonal7Coeffs[OridTable.orid7(DiagonalTerm.diagonalInstance(mover, enemy, 0x0204081020408000L, 57))];
+        eval += diagonal7Coeffs[OridTable.orid7(DiagonalTerm.diagonalInstance(mover, enemy, 0x0001020408102040L, 56))];
 
         final int[] diagonal6Coeffs = slice[15];
         eval += diagonal6Coeffs[OridTable.orid6(DiagonalTerm.diagonalInstance(mover, enemy, 0x0000804020100804L, 58))];
@@ -114,11 +105,17 @@ class EvalStrategyB extends EvalStrategy {
         eval += diagonal6Coeffs[OridTable.orid6(DiagonalTerm.diagonalInstance(mover, enemy, 0x0408102040800000L, 58))];
         eval += diagonal6Coeffs[OridTable.orid6(DiagonalTerm.diagonalInstance(mover, enemy, 0x0000010204081020L, 56))];
 
-        final int[] diagonal7Coeffs = slice[16];
-        eval += diagonal7Coeffs[OridTable.orid7(DiagonalTerm.diagonalInstance(mover, enemy, 0x0080402010080402L, 57))];
-        eval += diagonal7Coeffs[OridTable.orid7(DiagonalTerm.diagonalInstance(mover, enemy, 0x4020100804020100L, 56))];
-        eval += diagonal7Coeffs[OridTable.orid7(DiagonalTerm.diagonalInstance(mover, enemy, 0x0204081020408000L, 57))];
-        eval += diagonal7Coeffs[OridTable.orid7(DiagonalTerm.diagonalInstance(mover, enemy, 0x0001020408102040L, 56))];
+        final int[] diagonal5Coeffs = slice[14];
+        eval += diagonal5Coeffs[OridTable.orid5(DiagonalTerm.diagonalInstance(mover, enemy, 0x0000008040201008L, 59))];
+        eval += diagonal5Coeffs[OridTable.orid5(DiagonalTerm.diagonalInstance(mover, enemy, 0x1008040201000000L, 56))];
+        eval += diagonal5Coeffs[OridTable.orid5(DiagonalTerm.diagonalInstance(mover, enemy, 0x0810204080000000L, 59))];
+        eval += diagonal5Coeffs[OridTable.orid5(DiagonalTerm.diagonalInstance(mover, enemy, 0x0000000102040810L, 56))];
+
+        final int[] diagonal4Coeffs = slice[13];
+        eval += diagonal4Coeffs[OridTable.orid4(DiagonalTerm.diagonalInstance(mover, enemy, 0x0000000080402010L, 60))];
+        eval += diagonal4Coeffs[OridTable.orid4(DiagonalTerm.diagonalInstance(mover, enemy, 0x0804020100000000L, 56))];
+        eval += diagonal4Coeffs[OridTable.orid4(DiagonalTerm.diagonalInstance(mover, enemy, 0x1020408000000000L, 60))];
+        eval += diagonal4Coeffs[OridTable.orid4(DiagonalTerm.diagonalInstance(mover, enemy, 0x0000000001020408L, 56))];
 
         final Feature cornerBlockFeature = cornerBlockTerms[0].getFeature();
         final int[] cornerBlockFeatureCoeffs = slice[18];
@@ -147,9 +144,14 @@ class EvalStrategyB extends EvalStrategy {
 
     String generateCode() {
         StringBuilder sb = new StringBuilder();
-        sb.append("final long empty = ~(mover|enemy);\n");
 
-        for (int iFeature = 1; iFeature <= 12; iFeature++) {
+        for (int iFeature = 0; iFeature <= 12; iFeature++) {
+            if (iFeature==5) {
+                if (!endsWithDoubleNewline(sb)) {
+                    sb.append("\n");
+                }
+                sb.append("final long empty = ~(mover|enemy);\n");
+            }
             generateCodeForFeature(sb, iFeature);
         }
 
@@ -195,7 +197,7 @@ class EvalStrategyB extends EvalStrategy {
             if (!endsWithDoubleNewline(sb)) {
                 sb.append('\n');
             }
-            final String coeffName = feature.toString() + "Coeffs";
+            final String coeffName = (feature.toString() + "Coeffs").replace(" ", "");
             sb.append(String.format("final int[] %s = slice[%d];\n", coeffName, iFeature));
             for (Term term : featureTerms) {
                 appendCodeForTerm(sb, coeffName, term);
