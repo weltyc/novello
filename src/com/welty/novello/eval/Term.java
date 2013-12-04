@@ -225,12 +225,14 @@ abstract class DiagonalTerm extends Term {
     };
     protected final int shift;
     protected final long mask;
+    private final int diagonalLength;
 
 
     DiagonalTerm(int diagonal, long mask, int shift) {
         super(features[Math.abs(diagonal)]);
         this.mask = mask;
         this.shift = shift;
+        diagonalLength = 8-Math.abs(diagonal);
     }
 
     protected static long diagonalMask(int sq, int length, int dSq) {
@@ -240,6 +242,14 @@ abstract class DiagonalTerm extends Term {
             sq += dSq;
         }
         return mask;
+    }
+
+    /**
+     * Quick orid calculation suitable for generated code
+     * @return text of quick orid calculation
+     */
+    String oridGen() {
+        return String.format("OridTable.orid%d(DiagonalTerm.diagonalInstance(mover, enemy, 0x%016xL, %d))", diagonalLength, mask, shift);
     }
 
     @Override public int instance(long mover, long enemy, long moverMoves, long enemyMoves) {

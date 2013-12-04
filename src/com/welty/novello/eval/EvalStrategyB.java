@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
-* Evaluation with all rows, columns, and corner blocks
-*/
+ * Evaluation with all rows, columns, and corner blocks
+ */
 @SuppressWarnings("OctalInteger")
 class EvalStrategyB extends EvalStrategy {
     private final CornerTerm2[] cornerTerms;
@@ -147,11 +147,9 @@ class EvalStrategyB extends EvalStrategy {
         for (Object o : others) {
             if (o instanceof Term[]) {
                 terms.addAll(Arrays.asList((Term[]) o));
-            }
-            else if (o instanceof Term) {
-                terms.add((Term)o);
-            }
-            else {
+            } else if (o instanceof Term) {
+                terms.add((Term) o);
+            } else {
                 throw new IllegalStateException("oops. " + o.getClass());
             }
         }
@@ -167,29 +165,29 @@ class EvalStrategyB extends EvalStrategy {
         StringBuilder sb = new StringBuilder();
 
         // print out a portion of the evaluation function
-        for (int diagonal = 8; diagonal >= 4; diagonal --) {
-            final String coeffs = "diagonal"+diagonal+"Coeffs";
-            final String oridTable = "OridTable.orid"+diagonal;
+        for (int diagonal = 8; diagonal >= 4; diagonal--) {
+            final String coeffs = "diagonal" + diagonal + "Coeffs";
 
+            sb.append('\n');
             sb.append(String.format("final int[] %s = slice[%d];\n", coeffs, diagonal + 9));
             if (diagonal == 8) {
-            appendDiagonalTerm(sb, coeffs, oridTable, new UldrTerm(0));
-            appendDiagonalTerm(sb, coeffs, oridTable, new UrdlTerm(0));
+                appendDiagonalTerm(sb, coeffs, new UldrTerm(0));
+                appendDiagonalTerm(sb, coeffs, new UrdlTerm(0));
+            } else {
+                final int diff = 8 - diagonal;
+                appendDiagonalTerm(sb, coeffs, new UldrTerm(diff));
+                appendDiagonalTerm(sb, coeffs, new UldrTerm(-diff));
+                appendDiagonalTerm(sb, coeffs, new UrdlTerm(diff));
+                appendDiagonalTerm(sb, coeffs, new UrdlTerm(-diff));
             }
-            else {
-                final int diff = 8-diagonal;
-                appendDiagonalTerm(sb, coeffs, oridTable, new UldrTerm(diff));
-                appendDiagonalTerm(sb, coeffs, oridTable, new UldrTerm(-diff));
-                appendDiagonalTerm(sb, coeffs, oridTable, new UrdlTerm(diff));
-                appendDiagonalTerm(sb, coeffs, oridTable, new UrdlTerm(-diff));
-            }
-            sb.append('\n');
         }
 
         return sb.toString();
     }
 
-    private static void appendDiagonalTerm(StringBuilder sb, String coeffs, String oridTable, DiagonalTerm term) {
-        sb.append(String.format("eval += %s[%s(DiagonalTerm.diagonalInstance(mover, enemy, 0x%016xL, %d))];\n", coeffs, oridTable, term.mask, term.shift));
+    private static void appendDiagonalTerm(StringBuilder sb, String coeffs, DiagonalTerm term) {
+        final String oridGen = term.oridGen();
+        sb.append(String.format("eval += %s[%s];\n", coeffs, oridGen));
     }
+
 }
