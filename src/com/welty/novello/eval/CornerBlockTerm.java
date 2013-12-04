@@ -14,12 +14,20 @@ class CornerBlockTerm  extends Term {
     }
 
     @Override public int instance(long mover, long enemy, long moverMoves, long enemyMoves) {
-        final int moverRow = row(mover);
-        final int enemyRow = row(enemy);
+        return instance(mover, enemy, this.left, this.top);
+    }
+
+    public static int orid(long mover, long enemy, boolean left, boolean top) {
+        return CornerBlockFeature.instance.orid(instance(mover, enemy, left, top));
+    }
+
+    private static int instance(long mover, long enemy, boolean left, boolean top) {
+        final int moverRow = row(mover, left, top);
+        final int enemyRow = row(enemy, left, top);
         return Base3.base2ToBase3(moverRow, enemyRow);
     }
 
-    private int row(long mover) {
+    private static int row(long mover, boolean left, boolean top) {
         if (left) {
             mover = Long.reverse(mover);
         }
@@ -28,5 +36,10 @@ class CornerBlockTerm  extends Term {
         }
         final long row = (mover & 0x7) | ((mover & 0x700) >>> 5) | ((mover & 0x70000) >> 10);
         return (int)row;
+    }
+
+    @Override
+    String oridGen() {
+        return "CornerBlockTerm.orid(mover, enemy, " + left + ", " + top +")";
     }
 }

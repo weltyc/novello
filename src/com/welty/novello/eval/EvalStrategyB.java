@@ -10,7 +10,6 @@ import java.util.Arrays;
  */
 @SuppressWarnings("OctalInteger")
 class EvalStrategyB extends EvalStrategy {
-    private final CornerTerm2[] cornerTerms;
     private final CornerBlockTerm[] cornerBlockTerms;
 
     public EvalStrategyB() {
@@ -36,7 +35,6 @@ class EvalStrategyB extends EvalStrategy {
                         cornerBlockTerms
                 )
         );
-        this.cornerTerms = cornerTerms;
         this.cornerBlockTerms = cornerBlockTerms;
     }
 
@@ -117,14 +115,13 @@ class EvalStrategyB extends EvalStrategy {
         eval += diagonal4Coeffs[OridTable.orid4(DiagonalTerm.diagonalInstance(mover, enemy, 0x1020408000000000L, 60))];
         eval += diagonal4Coeffs[OridTable.orid4(DiagonalTerm.diagonalInstance(mover, enemy, 0x0000000001020408L, 56))];
 
-        final Feature cornerBlockFeature = cornerBlockTerms[0].getFeature();
-        final int[] cornerBlockFeatureCoeffs = slice[18];
-        for (final CornerBlockTerm term : cornerBlockTerms) {
-            final int instance = term.instance(mover, enemy, moverMoves, enemyMoves);
-            final int orid = cornerBlockFeature.orid(instance);
-            final int coeff = cornerBlockFeatureCoeffs[orid];
-            eval += coeff;
-        }
+
+        final int[] CornerBlockCoeffs = slice[18];
+        eval += CornerBlockCoeffs[CornerBlockTerm.orid(mover, enemy, false, false)];
+        eval += CornerBlockCoeffs[CornerBlockTerm.orid(mover, enemy, true, false)];
+        eval += CornerBlockCoeffs[CornerBlockTerm.orid(mover, enemy, false, true)];
+        eval += CornerBlockCoeffs[CornerBlockTerm.orid(mover, enemy, true, true)];
+
         return eval;
     }
 
@@ -159,6 +156,10 @@ class EvalStrategyB extends EvalStrategy {
         // to the front. The long diagonals share the length-8 orid table with the row and columns that immediately
         // precede it.
         for (int iFeature = 17; iFeature >= 13; iFeature--) {
+            generateCodeForFeature(sb, iFeature);
+        }
+
+        for (int iFeature = 18; iFeature < nFeatures(); iFeature++) {
             generateCodeForFeature(sb, iFeature);
         }
 
