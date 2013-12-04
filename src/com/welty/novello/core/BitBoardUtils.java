@@ -347,42 +347,59 @@ public class BitBoardUtils {
      * @return mobility bitboard
      */
     public static long calcMoves(long mover, long enemy) {
+        return koggeStoneMoves(mover, enemy);
         //	a direction bit is set if we have seen a mover followed by an unbroken string of enemy squares
+//
+//        long south = (mover << 8);
+//        long north = (mover >>> 8);
+//
+//        final long moverW = mover & notWestEdge;
+//        final long moverE = mover & notEastEdge;
+//
+//        long west = (moverW << 1);
+//        long east = (moverE >>> 1);
+//
+//        long northwest = (moverW >>> 7);
+//        long northeast = (moverE >>> 9);
+//        long southwest = (moverW << 9);
+//        long southeast = (moverE << 7);
+//
+//        final long enemyW = enemy & notWestEdge;
+//        final long enemyE = enemy & notEastEdge;
+//
+//        long moves = 0;
+//
+//        for (int i = 0; i < 6; i++) {
+//            south = (south & enemy) << 8;
+//            north = (north & enemy) >>> 8;
+//            west = ((west & enemyW) << 1);
+//            east = ((east & enemyE) >>> 1);
+//
+//            northwest = ((northwest & enemyW) >>> 7);
+//            northeast = ((northeast & enemyE) >>> 9);
+//            southwest = ((southwest & enemyW) << 9);
+//            southeast = ((southeast & enemyE) << 7);
+//            moves |= ((north | south | west | east | northwest | northeast | southwest | southeast));
+//        }
+//        final long empty = ~(mover | enemy);
+//        moves &= empty;
+//        return moves;
+    }
 
-        long south = (mover << 8);
-        long north = (mover >>> 8);
+    private static long koggeStoneMoves(long mover, long enemy) {
+        final long centerEnemy = enemy & ~BitBoardUtils.FilesAH;
+        final long south = (fillDown(mover, enemy) & enemy) >>> 8;
+        final long north = (fillUp(mover, enemy) & enemy) << 8;
+        final long east = (fillRight(mover, enemy) & centerEnemy) >>> 1;
+        final long west = (fillLeft(mover, enemy) & centerEnemy) << 1;
+        final long northeast = (fillUpRight(mover, enemy) & centerEnemy) << 7;
+        final long northwest = (fillUpLeft(mover, enemy) & centerEnemy) << 9;
+        final long southeast = (fillDownRight(mover, enemy) & centerEnemy) >>> 9;
+        final long southwest = (fillDownLeft(mover, enemy) & centerEnemy) >>> 7;
 
-        final long moverW = mover & notWestEdge;
-        final long moverE = mover & notEastEdge;
-
-        long west = (moverW << 1);
-        long east = (moverE >>> 1);
-
-        long northwest = (moverW >>> 7);
-        long northeast = (moverE >>> 9);
-        long southwest = (moverW << 9);
-        long southeast = (moverE << 7);
-
-        final long enemyW = enemy & notWestEdge;
-        final long enemyE = enemy & notEastEdge;
-
-        long moves = 0;
-
-        for (int i = 0; i < 6; i++) {
-            south = (south & enemy) << 8;
-            north = (north & enemy) >>> 8;
-            west = ((west & enemyW) << 1);
-            east = ((east & enemyE) >>> 1);
-
-            northwest = ((northwest & enemyW) >>> 7);
-            northeast = ((northeast & enemyE) >>> 9);
-            southwest = ((southwest & enemyW) << 9);
-            southeast = ((southeast & enemyE) << 7);
-            moves |= ((north | south | west | east | northwest | northeast | southwest | southeast));
-        }
         final long empty = ~(mover | enemy);
-        moves &= empty;
-        return moves;
+        return (north | south | east | west | northeast | northwest | southeast | southwest) & empty;
+
     }
 
     /**
@@ -450,11 +467,11 @@ public class BitBoardUtils {
      */
     public static long potMobs2(long player, long empty) {
         final long ud = player & ~Ranks18;
-        final long upDown = (ud << 8)|(ud>>>8);
+        final long upDown = (ud << 8) | (ud >>> 8);
         final long lr = player & ~FilesAH;
-        final long leftRight = (lr<<1)|(lr>>>1);
+        final long leftRight = (lr << 1) | (lr >>> 1);
         final long di = player & CENTER_36;
-        final long diagonal = (di<<7)|(di>>>7)|(di<<9)|(di>>>9);
+        final long diagonal = (di << 7) | (di >>> 7) | (di << 9) | (di >>> 9);
         return empty & (upDown | leftRight | diagonal);
     }
 

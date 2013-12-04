@@ -19,3 +19,4 @@ Self-play b1:6:
 480 ms elapsed / 1,517,470 evals. 0.32 us/eval: generate code for Corner2
 467 ms elapsed / 1,517,470 evals. 0.31 us/eval: generate code for all eval Terms
 489 ms elapsed / 1,517,470 evals. 0.32 us/eval: attempt to speed up code for Corner2 - not keeping
+437 ms elapsed / 1,517,470 evals. 0.29 us/eval: kogge-stone mobility calc, first pass
