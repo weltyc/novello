@@ -5,7 +5,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  */
 public class HashTable {
-    private final Entry[][] entries;
+    private final Entry[][] entriess;
 
     // statistics
     private long nFinds = 0;
@@ -28,12 +28,15 @@ public class HashTable {
     /**
      * Create a HashTable
      *
-     * @param logBuckets log, base 2, of the number of buckets in this HashTable
+     * @param logBucketsLow  log, base 2, of the number of buckets in this HashTable at < 12 empties
+     * @param logBucketsHigh log, base 2, of the number of buckets in this HashTable at >= 12 empties
      */
-    public HashTable(int logBuckets) {
-        entries = new Entry[64][1 << logBuckets];
+    public HashTable(int logBucketsLow, int logBucketsHigh) {
+        entriess = new Entry[64][];
         for (int nEmpty = 0; nEmpty < 64; nEmpty++) {
-            final Entry[] nEmptyEntries = entries[nEmpty];
+            int size = 1 << (nEmpty < 8 ? logBucketsLow : logBucketsHigh);
+            final Entry[] nEmptyEntries = new Entry[size];
+            entriess[nEmpty] = nEmptyEntries;
             for (int i = 0; i < nEmptyEntries.length; i++) {
                 nEmptyEntries[i] = new Entry();
             }
@@ -46,17 +49,17 @@ public class HashTable {
      * @return hash entry for the position, or null if there is no entry
      */
     public
-    @Nullable
-    Entry find(long mover, long enemy) {
+    @Nullable Entry find(long mover, long enemy) {
         nFinds++;
         final Entry entry = getEntry(mover, enemy);
         return entry.matches(mover, enemy) ? entry : null;
     }
 
     private Entry getEntry(long mover, long enemy) {
+        final int nEmpty = Long.bitCount(~(mover | enemy));
+        final Entry[] entries = entriess[nEmpty];
         final int hash = (entries.length - 1) & (int) Murmur.hash(mover, enemy);
-        final int nEmpty = Long.bitCount(~(mover|enemy));
-        return entries[nEmpty][hash];
+        return entries[hash];
     }
 
     /**
@@ -65,8 +68,8 @@ public class HashTable {
      * Mostly useful to prevent cheating in benchmarks
      */
     public void clear() {
-        for (int nEmpty = 0; nEmpty<64; nEmpty++) {
-            for (Entry entry : entries[nEmpty]) {
+        for (int nEmpty = 0; nEmpty < 64; nEmpty++) {
+            for (Entry entry : entriess[nEmpty]) {
                 entry.clear();
             }
         }

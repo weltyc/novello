@@ -78,7 +78,7 @@ public class Solver {
     /**
      * Transposition table.
      */
-    final HashTable hashTable = new HashTable(10);
+    final HashTable hashTable = new HashTable(10, 12);
 
     /**
      * Set up data structures for a Solver.

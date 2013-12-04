@@ -635,13 +635,36 @@ Deep Solver
 
 Hash Table
 ----------
-6510 ms elapsed: Separate hash-tables by depth (2^10 hash buckets per depth)
-6471 ms elapsed: 2^12 hash buckets
-6569 ms elapsed: 2^11 hash buckets
-
-I don't think this matters very much... keeping at 10
+6510 ms elapsed: Separate hash-tables by depth (64 hash buckets per depth)
 
 Deep Move Sorting
 -----------------
 9,183 ms elapsed; 75,809,707 total nodes: Eval-based move sort at depth >= 12, with no FF adjustment
 5,252 ms elapsed; 43,713,320 total nodesL Eval -based move sort at depth >= 12, with DEEP_MOBILITY_WEIGHT = 4.
+
+Speed up eval
+-------------
+4,969 ms elapsed; 43,713,320 total nodes
+
+Running SolverTimer (so HotSpot warms up):
+Typical 4245 [4239-4253] ms. 43.7 Mn; 10.3 Mn/s; 97.2 ns/n
+
+Hash Table
+----------
+Different hash size per depth. Checking total node count. DeepSolverTest from 20 empty.
+    log buckets   result
+             15   5,480 ms elapsed; 34,322,025 total nodes
+             12   4,296 ms elapsed; 35,283,870 total nodes
+             10   4,348 ms elapsed; 36,750,608 total nodes
+              8   4,541 ms elapsed; 39,237,209 total nodes
+              5   5,319 ms elapsed; 48,065,104 total nodes
+
+          10-12   4,237 ms elapsed; 35,652,697 total nodes
+          10-15   5,299 ms elapsed; 35,035,733 total nodes
+
+Presumably the reason 15 is slower is due to hitting RAM instead of L3 cache. Thus, keeping log buckets at 10
+(even though 12 is faster) on the assumption that, running multiple cores simultaneously will use even more cache
+and thus will be optimal at 10.
+
+Better idea: use a small hash at low empties and a larger hash at higher empties; thus the small hash will fit in cache
+while the larger hash will hold more valuable information where it's worth it to go out to RAM.

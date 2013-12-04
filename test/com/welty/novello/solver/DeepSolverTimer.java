@@ -22,8 +22,8 @@ public class DeepSolverTimer {
         final long nNodes = solver.nodeCounts.getNNodes();
         System.out.format("%,d ms elapsed; %,d total nodes\n", dt, nNodes);
 
-        System.out.println(solver.nodeCounts.getNodeCountsByDepth());
-        System.out.println(solver.hashTable.stats());
+//        System.out.println(solver.nodeCounts.getNodeCountsByDepth());
+//        System.out.println(solver.hashTable.stats());
     }
 
     static void run(Solver solver) {
