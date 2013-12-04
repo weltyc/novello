@@ -9,27 +9,21 @@ import java.util.List;
 
 /**
  */
-public class DeepSolverTimer {
-    static final List<Position> positions = getPositions(20);
+public class DeepSolverTimer implements Tunable {
+    private static final int nEmpty = 20;
+    private static final List<Position> positions = getPositions(nEmpty);
 
     public static void main(String[] args) {
 
         final long t0 = System.currentTimeMillis();
-
-        final Solver solver = new Solver();
-        run(solver);
+        final DeepSolverTimer timer = new DeepSolverTimer();
+        timer.run();
         final long dt = System.currentTimeMillis() - t0;
-        final long nNodes = solver.nodeCounts.getNNodes();
+        final long nNodes = timer.nNodes();
         System.out.format("%,d ms elapsed; %,d total nodes\n", dt, nNodes);
 
 //        System.out.println(solver.nodeCounts.getNodeCountsByDepth());
 //        System.out.println(solver.hashTable.stats());
-    }
-
-    static void run(Solver solver) {
-        for (Position position : positions) {
-            solver.solve(position.mover(), position.enemy());
-        }
     }
 
     private static List<Position> getPositions(int nEmpty) {
@@ -42,5 +36,19 @@ public class DeepSolverTimer {
             positions.add(position);
         }
         return positions;
+    }
+
+    private Solver solver;
+
+    @Override public long nNodes() {
+        return solver.nodeCounts.getNNodes();
+    }
+
+    @Override public void run() {
+        this.solver = new Solver();
+
+        for (Position position : positions) {
+            solver.solve(position.mover(), position.enemy());
+        }
     }
 }

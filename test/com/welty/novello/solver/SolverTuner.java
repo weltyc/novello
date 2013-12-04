@@ -15,17 +15,18 @@ public class SolverTuner {
      * <p/>
      * The timings are noisy. We get a Typical timing using 16 iterations.
      * In order to keep the parameters from wandering around randomly due to noise,
-     * we only recommend altering a parameter value if q1 of the original is higher than q3 of the new.
+     * we only recommend altering a parameter value if lowMetric of the original is higher than highMetric of the new.
      * <p/>
      * If two sets of 16 timings are selected from identical distributions, the chance that
-     * q1 of the original is higher than q3 of the new by random chance is 0.60%.
+     * lowMetric of the original is higher than highMetric of the new by random chance is 0.60%.
      */
     public static void main(String[] args) {
-        new SolverTuner(DEEP_MOBILITY_WEIGHT, true).run();
+        new SolverTuner(DEEP_MOBILITY_WEIGHT, new DeepSolverTimer(), true).run();
     }
 
     private final @NotNull Parameter parameter;
     private final boolean tuneByNodes;
+    private final @NotNull Tunable tunable;
     private @NotNull Best best;
 
     /**
@@ -35,20 +36,23 @@ public class SolverTuner {
      * Timing is more important but can be inconsistent between runs; thus the solver is run multiple times when
      * tuning by time. This takes longer.
      */
-    public SolverTuner(@NotNull Parameter parameter, boolean tuneByNodes) {
+    public SolverTuner(@NotNull Parameter parameter, @NotNull Tunable tunable, boolean tuneByNodes) {
         this.parameter = parameter;
         this.tuneByNodes = tuneByNodes;
+        this.tunable = tunable;
     }
 
     private void run() {
         final int originalValue = parameter.get();
         System.out.println("Tuning " + parameter);
         System.out.println("-- original value: " + originalValue + " --");
-        final double metric = getMetric(true);
+        final double metric = getMetric().highMetric();
         best = new Best(metric, originalValue);
 
         tune(originalValue, +1);
         tune(originalValue, -1);
+
+        parameter.set(originalValue);
 
         System.out.print("Recommended value of " + parameter + ": ");
         if (best.value == originalValue) {
@@ -61,20 +65,20 @@ public class SolverTuner {
     /**
      * Get the value of the metric that we're tuning
      *
-     * @param isOriginal if true, this is the original parameter value. In unstable tunes, it gets special treatment.
      * @return value of the metric with the currently set parameters
      */
-    private double getMetric(boolean isOriginal) {
-        final double metric;
+    private Metric getMetric() {
+        final Metric metric;
         final Solver solver = new Solver();
         if (tuneByNodes) {
-            SolverTimer.timeRound(solver, 1);
-            metric = solver.nodeCounts.getNNodes();
-            System.out.format("%.4g Mn%n", metric * 1e-6);
+            tunable.run();
+            final long nNodes = tunable.nNodes();
+            metric = new FixedMetric(nNodes);
+            System.out.format("%.4g Mn%n", nNodes * 1e-6);
         } else {
-            final Typical typical = SolverTimer.timeRound(solver, 16);
+            final Typical typical = Typical.timing(tunable, 16);
             System.out.println(typical);
-            metric = isOriginal ? typical.q1 : typical.q3;
+            metric = typical;
         }
         return metric;
     }
@@ -88,7 +92,7 @@ public class SolverTuner {
         for (int proposedValue = originalValue + dv; ok && proposedValue >= parameter.min(); proposedValue += dv) {
             System.out.println("-- proposed value: " + proposedValue + " --");
             parameter.set(proposedValue);
-            final double metric = getMetric(false);
+            final double metric = getMetric().lowMetric();
             ok = best.update(metric, proposedValue);
         }
     }
@@ -223,4 +227,48 @@ public class SolverTuner {
     private static final Parameter CORNER_WEIGHT = new FixedWeightParameter(BitBoardUtils.CORNERS, "corner weight");
     private static final Parameter C_SQUARE_WEIGHT = new FixedWeightParameter(BitBoardUtils.C_SQUARES, "c-square weight");
     private static final Parameter X_SQUARE_WEIGHT = new FixedWeightParameter(BitBoardUtils.X_SQUARES, "x-square weight");
+}
+
+/**
+ * Something whose performance can be estimated, either by timing its run() method or by counting its nodes.
+ */
+interface Tunable extends Runnable {
+    /**
+     * @return the number of nodes from the most recent run.
+     */
+    long nNodes();
+}
+
+/**
+ * A performance estimate
+ */
+interface Metric {
+    /**
+     * Low, conservative estimate of performance
+     */
+    double lowMetric();
+
+    /**
+     * High, optimistic estimate of performance
+     */
+    double highMetric();
+}
+
+/**
+ * A simple Metric that returns the same value for both high and low
+ */
+class FixedMetric implements Metric {
+    private final double value;
+
+    FixedMetric(double value) {
+        this.value = value;
+    }
+
+    @Override public double lowMetric() {
+        return value;
+    }
+
+    @Override public double highMetric() {
+        return value;
+    }
 }

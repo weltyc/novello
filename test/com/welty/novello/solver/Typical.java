@@ -1,6 +1,7 @@
 package com.welty.novello.solver;
 
 import com.orbanova.common.misc.Vec;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 
@@ -9,7 +10,7 @@ import java.util.Arrays;
  * <p/>
  * Helps to reduce impact of timing outliers
  */
-class Typical {
+class Typical implements Metric {
     /**
      * mean of middle 50% of the data
      */
@@ -40,5 +41,33 @@ class Typical {
 
     @Override public String toString() {
         return String.format("%4.0f [%4.0f-%4.0f]", value, q1, q3);
+    }
+
+    @Override public double lowMetric() {
+        return q1;
+    }
+
+    @Override public double highMetric() {
+        return q3;
+    }
+
+    /**
+     * Time how long the runnable takes, and return typical timings.
+     *
+     * @param runnable runnable to be executed
+     * @param nIters number of times to execute the runnable
+     * @return typical timing for the runs.
+     */
+    static @NotNull Typical timing(@NotNull Runnable runnable, int nIters) {
+        final double[] timings = new double[nIters];
+
+        for (int i = 0; i < nIters; i++) {
+            final long t0 = System.currentTimeMillis();
+            runnable.run();
+            final long dt = System.currentTimeMillis() - t0;
+            timings[i] = dt;
+        }
+
+        return new Typical(timings);
     }
 }

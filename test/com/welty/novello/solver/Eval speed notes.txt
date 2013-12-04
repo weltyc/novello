@@ -22,3 +22,4 @@ Self-play b1:6:
 437 ms elapsed / 1,517,470 evals. 0.29 us/eval: kogge-stone mobility calc, first pass
 429 ms elapsed / 1,517,470 evals. 0.28 us/eval: speed up kogge-stone
 433 ms elapsed / 1,517,470 evals. 0.29 us/eval: Manually inline kogge-stone and reorder computations - not keeping
+slightly slower: use bit twiddling instead of if statements in CornerTerm2.
