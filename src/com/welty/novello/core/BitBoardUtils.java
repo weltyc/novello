@@ -134,6 +134,10 @@ public class BitBoardUtils {
      */
     static long fillLeft(long g, long p) {
         p &= ~HFile;
+        return fillLeftWrap(g, p);
+    }
+
+    private static long fillLeftWrap(long g, long p) {
         g |= p & (g << 1);
         p &= (p << 1);
         g |= p & (g << 2);
@@ -151,6 +155,10 @@ public class BitBoardUtils {
      */
     static long fillRight(long g, long p) {
         p &= ~AFile;
+        return fillRightWrap(g, p);
+    }
+
+    private static long fillRightWrap(long g, long p) {
         g |= p & (g >>> 1);
         p &= (p >>> 1);
         g |= p & (g >>> 2);
@@ -166,6 +174,10 @@ public class BitBoardUtils {
      */
     static long fillUpLeft(long g, long p) {
         p &= ~HFile;
+        return fillUpLeftWrap(g, p);
+    }
+
+    private static long fillUpLeftWrap(long g, long p) {
         g |= p & (g << 9);
         p &= (p << 9);
         g |= p & (g << 18);
@@ -181,6 +193,10 @@ public class BitBoardUtils {
      */
     static long fillDownRight(long g, long p) {
         p &= ~AFile;
+        return fillDownRightWrap(g, p);
+    }
+
+    private static long fillDownRightWrap(long g, long p) {
         g |= p & (g >>> 9);
         p &= (p >>> 9);
         g |= p & (g >>> 18);
@@ -196,6 +212,10 @@ public class BitBoardUtils {
      */
     private static long fillUpRight(long g, long p) {
         p &= ~AFile;
+        return fillUpRightWrap(g, p);
+    }
+
+    private static long fillUpRightWrap(long g, long p) {
         g |= p & (g << 7);
         p &= (p << 7);
         g |= p & (g << 14);
@@ -211,6 +231,10 @@ public class BitBoardUtils {
      */
     private static long fillDownLeft(long g, long p) {
         p &= ~HFile;
+        return fillDownLeftWrap(g, p);
+    }
+
+    private static long fillDownLeftWrap(long g, long p) {
         g |= p & (g >>> 7);
         p &= (p >>> 7);
         g |= p & (g >>> 14);
@@ -390,12 +414,12 @@ public class BitBoardUtils {
         final long centerEnemy = enemy & ~BitBoardUtils.FilesAH;
         final long south = (fillDown(mover, enemy) & enemy) >>> 8;
         final long north = (fillUp(mover, enemy) & enemy) << 8;
-        final long east = (fillRight(mover, enemy) & centerEnemy) >>> 1;
-        final long west = (fillLeft(mover, enemy) & centerEnemy) << 1;
-        final long northeast = (fillUpRight(mover, enemy) & centerEnemy) << 7;
-        final long northwest = (fillUpLeft(mover, enemy) & centerEnemy) << 9;
-        final long southeast = (fillDownRight(mover, enemy) & centerEnemy) >>> 9;
-        final long southwest = (fillDownLeft(mover, enemy) & centerEnemy) >>> 7;
+        final long east = (fillRightWrap(mover, centerEnemy) & centerEnemy) >>> 1;
+        final long west = (fillLeftWrap(mover, centerEnemy) & centerEnemy) << 1;
+        final long northeast = (fillUpRightWrap(mover, centerEnemy) & centerEnemy) << 7;
+        final long northwest = (fillUpLeftWrap(mover, centerEnemy) & centerEnemy) << 9;
+        final long southeast = (fillDownRightWrap(mover, centerEnemy) & centerEnemy) >>> 9;
+        final long southwest = (fillDownLeftWrap(mover, centerEnemy) & centerEnemy) >>> 7;
 
         final long empty = ~(mover | enemy);
         return (north | south | east | west | northeast | northwest | southeast | southwest) & empty;
