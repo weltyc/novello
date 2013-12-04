@@ -5,6 +5,8 @@ import com.welty.novello.core.BitBoardUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import static com.welty.novello.core.BitBoardUtils.*;
+
 /**
 * Evaluation with all rows, columns, and corner blocks
 */
@@ -95,38 +97,33 @@ class EvalStrategyB extends EvalStrategy {
         eval += row3FeatureCoeffs[colOrid(mover, enemy, 3)];
         eval += row3FeatureCoeffs[colOrid(mover, enemy, 4)];
 
-        final Feature uldr0Feature = uldrTerms[4].getFeature();
         final int[] uldr0FeatureCoeffs = slice[17];
-        eval += uldr0FeatureCoeffs[uldr0Feature.orid(uldrTerms[4].instance(mover, enemy, moverMoves, enemyMoves))];
-        eval += uldr0FeatureCoeffs[uldr0Feature.orid(urdlTerms[4].instance(mover, enemy, moverMoves, enemyMoves))];
+        eval += uldr0FeatureCoeffs[OridTable.orid8(DiagonalTerm.diagonalInstance(mover, enemy, A1H8Diagonal, 56))];
+        eval += uldr0FeatureCoeffs[OridTable.orid8(DiagonalTerm.diagonalInstance(mover, enemy, A8H1Diagonal, 56))];
 
-        final Feature uldr1Feature = uldrTerms[5].getFeature();
         final int[] uldr1FeatureCoeffs = slice[16];
-        eval += uldr1FeatureCoeffs[uldr1Feature.orid(uldrTerms[3].instance(mover, enemy, moverMoves, enemyMoves))];
-        eval += uldr1FeatureCoeffs[uldr1Feature.orid(uldrTerms[5].instance(mover, enemy, moverMoves, enemyMoves))];
-        eval += uldr1FeatureCoeffs[uldr1Feature.orid(urdlTerms[3].instance(mover, enemy, moverMoves, enemyMoves))];
-        eval += uldr1FeatureCoeffs[uldr1Feature.orid(urdlTerms[5].instance(mover, enemy, moverMoves, enemyMoves))];
+        eval += uldr1FeatureCoeffs[OridTable.orid7(uldrTerms[3].instance(mover, enemy, moverMoves, enemyMoves))];
+        eval += uldr1FeatureCoeffs[OridTable.orid7(uldrTerms[5].instance(mover, enemy, moverMoves, enemyMoves))];
+        eval += uldr1FeatureCoeffs[OridTable.orid7(urdlTerms[3].instance(mover, enemy, moverMoves, enemyMoves))];
+        eval += uldr1FeatureCoeffs[OridTable.orid7(urdlTerms[5].instance(mover, enemy, moverMoves, enemyMoves))];
 
-        final Feature uldr2Feature = uldrTerms[6].getFeature();
         final int[] uldr2FeatureCoeffs = slice[15];
-        eval += uldr2FeatureCoeffs[uldr2Feature.orid(uldrTerms[2].instance(mover, enemy, moverMoves, enemyMoves))];
-        eval += uldr2FeatureCoeffs[uldr2Feature.orid(uldrTerms[6].instance(mover, enemy, moverMoves, enemyMoves))];
-        eval += uldr2FeatureCoeffs[uldr2Feature.orid(urdlTerms[2].instance(mover, enemy, moverMoves, enemyMoves))];
-        eval += uldr2FeatureCoeffs[uldr2Feature.orid(urdlTerms[6].instance(mover, enemy, moverMoves, enemyMoves))];
+        eval += uldr2FeatureCoeffs[OridTable.orid6(uldrTerms[2].instance(mover, enemy, moverMoves, enemyMoves))];
+        eval += uldr2FeatureCoeffs[OridTable.orid6(uldrTerms[6].instance(mover, enemy, moverMoves, enemyMoves))];
+        eval += uldr2FeatureCoeffs[OridTable.orid6(urdlTerms[2].instance(mover, enemy, moverMoves, enemyMoves))];
+        eval += uldr2FeatureCoeffs[OridTable.orid6(urdlTerms[6].instance(mover, enemy, moverMoves, enemyMoves))];
 
-        final Feature uldr3Feature = uldrTerms[7].getFeature();
         final int[] uldr3FeatureCoeffs = slice[14];
-        eval += uldr3FeatureCoeffs[uldr3Feature.orid(uldrTerms[1].instance(mover, enemy, moverMoves, enemyMoves))];
-        eval += uldr3FeatureCoeffs[uldr3Feature.orid(uldrTerms[7].instance(mover, enemy, moverMoves, enemyMoves))];
-        eval += uldr3FeatureCoeffs[uldr3Feature.orid(urdlTerms[1].instance(mover, enemy, moverMoves, enemyMoves))];
-        eval += uldr3FeatureCoeffs[uldr3Feature.orid(urdlTerms[7].instance(mover, enemy, moverMoves, enemyMoves))];
+        eval += uldr3FeatureCoeffs[OridTable.orid5(uldrTerms[1].instance(mover, enemy, moverMoves, enemyMoves))];
+        eval += uldr3FeatureCoeffs[OridTable.orid5(uldrTerms[7].instance(mover, enemy, moverMoves, enemyMoves))];
+        eval += uldr3FeatureCoeffs[OridTable.orid5(urdlTerms[1].instance(mover, enemy, moverMoves, enemyMoves))];
+        eval += uldr3FeatureCoeffs[OridTable.orid5(urdlTerms[7].instance(mover, enemy, moverMoves, enemyMoves))];
 
-        final Feature uldr4Feature = uldrTerms[8].getFeature();
         final int[] uldr4FeatureCoeffs = slice[13];
-        eval += uldr4FeatureCoeffs[uldr4Feature.orid(uldrTerms[0].instance(mover, enemy, moverMoves, enemyMoves))];
-        eval += uldr4FeatureCoeffs[uldr4Feature.orid(uldrTerms[8].instance(mover, enemy, moverMoves, enemyMoves))];
-        eval += uldr4FeatureCoeffs[uldr4Feature.orid(urdlTerms[0].instance(mover, enemy, moverMoves, enemyMoves))];
-        eval += uldr4FeatureCoeffs[uldr4Feature.orid(urdlTerms[8].instance(mover, enemy, moverMoves, enemyMoves))];
+        eval += uldr4FeatureCoeffs[OridTable.orid4(uldrTerms[0].instance(mover, enemy, moverMoves, enemyMoves))];
+        eval += uldr4FeatureCoeffs[OridTable.orid4(uldrTerms[8].instance(mover, enemy, moverMoves, enemyMoves))];
+        eval += uldr4FeatureCoeffs[OridTable.orid4(urdlTerms[0].instance(mover, enemy, moverMoves, enemyMoves))];
+        eval += uldr4FeatureCoeffs[OridTable.orid4(urdlTerms[8].instance(mover, enemy, moverMoves, enemyMoves))];
 
         final Feature cornerBlockFeature = cornerBlockTerms[0].getFeature();
         final int[] cornerBlockFeatureCoeffs = slice[18];

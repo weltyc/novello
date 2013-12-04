@@ -243,12 +243,24 @@ abstract class DiagonalTerm extends Term {
     }
 
     @Override public int instance(long mover, long enemy, long moverMoves, long enemyMoves) {
-        final int moverDiagonal = extractDiagonal(mover);
-        final int enemyDiagonal = extractDiagonal(enemy);
+        final long mask = this.mask;
+        final int shift = this.shift;
+        return diagonalInstance(mover, enemy, mask, shift);
+    }
+
+    public static int diagonalInstance(long mover, long enemy, long mask, int shift) {
+        final int moverDiagonal = extractDiagonal(mover, mask, shift);
+        final int enemyDiagonal = extractDiagonal(enemy, mask, shift);
         return Base3.base2ToBase3(moverDiagonal, enemyDiagonal);
     }
 
     int extractDiagonal(long mover) {
+        final long mask = this.mask;
+        final int shift = this.shift;
+        return extractDiagonal(mover, mask, shift);
+    }
+
+    private static int extractDiagonal(long mover, long mask, int shift) {
         return (int) ((mover & mask) * BitBoardUtils.HFile >>> shift);
     }
 }

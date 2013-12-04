@@ -18,6 +18,6 @@ public class EvalPlayerTimer {
         final long dt = System.currentTimeMillis() - t0;
         final long dn = Eval.nEvals() - n0;
 
-        System.out.format("%d ms elapsed / %,d evals. %3.1f us/eval \n"  ,dt,dn , dt*1e3/dn);
+        System.out.format("%d ms elapsed / %,d evals. %4.2f us/eval \n"  ,dt,dn , dt*1e3/dn);
     }
 }

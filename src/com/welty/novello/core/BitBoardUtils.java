@@ -32,6 +32,7 @@ public class BitBoardUtils {
     private static final long CENTER_36 = ~EDGES;
     public static final long CENTER_4 = 0x0000001818000000L;
     public static final long A1H8Diagonal = 0x8040201008040201L;
+    public static final long A8H1Diagonal = 0x0102040810204080L;
 
 
     /**
