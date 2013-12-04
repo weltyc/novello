@@ -31,7 +31,7 @@ public class HashTables {
     public HashTables() {
         tables = new HashTable[64];
         for (int nEmpty = 0; nEmpty < 64; nEmpty++) {
-            int size = 1 << (nEmpty < 8 ? 10 : 12);
+            int size = 1 << (nEmpty < 8 ? 10 : nEmpty < 12 ? 12 : 14);
             tables[nEmpty] = new HashTable(size);
         }
     }
@@ -162,7 +162,6 @@ public class HashTables {
             for (int i = 0; i < entries.length; i++) {
                 entries[i] = new Entry();
             }
-
         }
 
         /**

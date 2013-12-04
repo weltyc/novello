@@ -26,7 +26,7 @@ final class MoveSorter {
     /**
      * mobility value << DEEP_MOBILITY_WEIGHT is added to the move sort score when using eval
      */
-    static int DEEP_MOBILITY_WEIGHT = 4;
+    private static final int DEEP_MOBILITY_WEIGHT = 4;
 
     /**
      * 1 << ETC_WEIGHT is added to the move sort score if the position is in the hash table and will immediately cut off.
@@ -43,8 +43,9 @@ final class MoveSorter {
      */
     private static final int MOVER_POT_MOB_WEIGHT = 0;
     private static final int ENEMY_POT_MOB_WEIGHT = 4;
+    static int DEEP_POT_MOB_WEIGHT = 4;
 
-    static int BETA_MARGIN = 24;
+    private static final int BETA_MARGIN = 24;
 
     /**
      * lookup table to get sort weight from mobility.
@@ -115,7 +116,8 @@ final class MoveSorter {
         if (margin > 0) {
             margin >>= 1;
         }
-        int score = margin - (sortWeightFromMobility[nMobs] << DEEP_MOBILITY_WEIGHT);
+        int moverPotMob = Long.bitCount(BitBoardUtils.potMobs2(nextEnemy, ~(nextMover | nextEnemy)));
+        int score = margin - (sortWeightFromMobility[nMobs] << DEEP_MOBILITY_WEIGHT)-(moverPotMob << DEEP_POT_MOB_WEIGHT);
         final HashTables.Entry entry = hashTables.find(nextMover, nextEnemy);
         if (entry != null && entry.cutsOff(-beta, -alpha)) {
             score += 1 << ETC_WEIGHT;

@@ -692,3 +692,13 @@ With both of these in place, DeepSolverTimer(20) returns
 
 Tuning the beta margin for minimum nodes with SolverTuner yields BETA_MARGIN=24.
     3,481 ms elapsed; 35,674,679 total nodes
+
+Another idea: When sorting, choose a move where the opponent has lower potential mobility in addition to actual mobility,
+thus allowing future moves to be fast. Keeping this, even though it's slower at depth = 20, because it's faster at depth = 22.
+    3,496 ms elapsed; 34,645,403 total nodes   at depth 20
+   18,806 ms elapsed; 186,129,822 total nodes  at depth 22
+
+
+Hash Table
+==========
+Tried increasing the table size at higher depths - helps a little in terms of nodes but not visible in the timing, so did not keep it.

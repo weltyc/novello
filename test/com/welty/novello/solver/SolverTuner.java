@@ -21,7 +21,7 @@ public class SolverTuner {
      * lowMetric of the original is higher than highMetric of the new by random chance is 0.60%.
      */
     public static void main(String[] args) {
-        new SolverTuner(BETA_MARGIN, new DeepSolverTimer(20), true).run();
+        new SolverTuner(DEEP_POT_MOB_WEIGHT, new DeepSolverTimer(22), true).run();
     }
 
     private final @NotNull Parameter parameter;
@@ -197,6 +197,7 @@ public class SolverTuner {
     private static final Parameter FIXED_ORDERING_WEIGHT = new StaticFieldParameter(MoveSorter.class, "FIXED_ORDERING_WEIGHT", 0);
     private static final Parameter ETC_WEIGHT = new StaticFieldParameter(MoveSorter.class, "ETC_WEIGHT", 0);
     private static final Parameter PARITY_WEIGHT = new StaticFieldParameter(MoveSorter.class, "PARITY_WEIGHT", 0);
+    private static final Parameter DEEP_POT_MOB_WEIGHT = new StaticFieldParameter(MoveSorter.class, "DEEP_POT_MOB_WEIGHT", 0);
     private static final Parameter ENEMY_POT_MOB_WEIGHT = new StaticFieldParameter(MoveSorter.class, "ENEMY_POT_MOB_WEIGHT", 0);
     private static final Parameter MOVER_POT_MOB_WEIGHT = new StaticFieldParameter(MoveSorter.class, "MOVER_POT_MOB_WEIGHT", 0);
     private static final Parameter BETA_MARGIN = new StaticFieldParameter(MoveSorter.class, "BETA_MARGIN", 0);
