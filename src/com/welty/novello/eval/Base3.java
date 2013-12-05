@@ -3,7 +3,7 @@ package com.welty.novello.eval;
 /**
  * Utility routines dealing with base-3 numbers and associated patterns.
  */
-class Base3 {
+public class Base3 {
     public static final char[] output = ".*O".toCharArray();
 
     private static final int[] base3FromBase2 = new int[1<<10];
@@ -19,7 +19,7 @@ class Base3 {
         }
     }
 
-    static int base2ToBase3(int mover, int enemy) {
+    public static int base2ToBase3(int mover, int enemy) {
 //        int base3 = 0;
 //        final int nDigits = 32 - Integer.numberOfLeadingZeros(mover | enemy);
 //        for (int i = nDigits; i-- > 0; ) {

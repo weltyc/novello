@@ -2,7 +2,6 @@ package com.welty.novello.eval;
 
 import com.welty.novello.core.BitBoardUtils;
 
-import static com.welty.novello.core.BitBoardUtils.bitBoardColToRow;
 import static com.welty.novello.core.BitBoardUtils.getBitAsInt;
 
 /**
@@ -242,17 +241,13 @@ class RowTerm extends Term {
     }
 
     static int rowOrid(long mover, long enemy, int row) {
-        return OridTable.orid8(rowInstance(mover, enemy, row * 8));
+        return OridTable.orid8(BitBoardUtils.rowInstance(mover, enemy, row * 8));
     }
 
     @Override
     public int instance(long mover, long enemy, long moverMoves, long enemyMoves) {
         final int shift = this.shift;
-        return rowInstance(mover, enemy, shift);
-    }
-
-    public static int rowInstance(long mover, long enemy, int shift) {
-        return Base3.base2ToBase3(0xFF & (int) (mover >>> shift), 0xFF & (int) (enemy >>> shift));
+        return BitBoardUtils.rowInstance(mover, enemy, shift);
     }
 
     @Override String oridGen() {
@@ -271,18 +266,12 @@ class ColTerm extends Term {
     }
 
     static int colOrid(long mover, long enemy, int col) {
-        return OridTable.orid8(colInstance(mover, enemy, col));
+        return OridTable.orid8(BitBoardUtils.colInstance(mover, enemy, col));
     }
 
     @Override
     public int instance(long mover, long enemy, long moverMoves, long enemyMoves) {
-        return colInstance(mover, enemy, this.col);
-    }
-
-    public static int colInstance(long mover, long enemy, int col) {
-        final int moverCol = bitBoardColToRow(mover, col);
-        final int enemyCol = bitBoardColToRow(enemy, col);
-        return Base3.base2ToBase3(moverCol, enemyCol);
+        return BitBoardUtils.colInstance(mover, enemy, this.col);
     }
 
 

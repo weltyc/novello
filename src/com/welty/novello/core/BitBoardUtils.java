@@ -1,6 +1,7 @@
 package com.welty.novello.core;
 
 import com.orbanova.common.misc.Require;
+import com.welty.novello.eval.Base3;
 
 /**
  */
@@ -118,7 +119,7 @@ public class BitBoardUtils {
      * <p/>
      * The bits of g are smeared, but only along set bits of p.
      */
-    static long fillDown(long g, long p) {
+    public static long fillDown(long g, long p) {
         g |= p & (g >>> 8);
         p &= (p >>> 8);
         g |= p & (g >>> 16);
@@ -153,7 +154,7 @@ public class BitBoardUtils {
      * <p/>
      * All fill functions use the <a href="http://chessprogramming.wikispaces.com/Kogge-Stone+Algorithm">Kogge-Stone algorithm</a>
      */
-    static long fillRight(long g, long p) {
+    public static long fillRight(long g, long p) {
         p &= ~AFile;
         return fillRightWrap(g, p);
     }
@@ -172,7 +173,7 @@ public class BitBoardUtils {
      * <p/>
      * The bits of g are smeared, but only along set bits of p.
      */
-    static long fillUpLeft(long g, long p) {
+    public static long fillUpLeft(long g, long p) {
         p &= ~HFile;
         return fillUpLeftWrap(g, p);
     }
@@ -191,7 +192,7 @@ public class BitBoardUtils {
      * <p/>
      * The bits of g are smeared, but only along set bits of p.
      */
-    static long fillDownRight(long g, long p) {
+    public static long fillDownRight(long g, long p) {
         p &= ~AFile;
         return fillDownRightWrap(g, p);
     }
@@ -210,7 +211,7 @@ public class BitBoardUtils {
      * <p/>
      * The bits of g are smeared, but only along set bits of p.
      */
-    private static long fillUpRight(long g, long p) {
+    public static long fillUpRight(long g, long p) {
         p &= ~AFile;
         return fillUpRightWrap(g, p);
     }
@@ -229,7 +230,7 @@ public class BitBoardUtils {
      * <p/>
      * The bits of g are smeared, but only along set bits of p.
      */
-    private static long fillDownLeft(long g, long p) {
+    public static long fillDownLeft(long g, long p) {
         p &= ~HFile;
         return fillDownLeftWrap(g, p);
     }
@@ -486,5 +487,15 @@ public class BitBoardUtils {
         final long masked = (bitBoard >>> col) & HFile;
         final int index = (int) ((masked * multiplier) >>> 56);
         return index;
+    }
+
+    public static int rowInstance(long mover, long enemy, int shift) {
+        return Base3.base2ToBase3(0xFF & (int) (mover >>> shift), 0xFF & (int) (enemy >>> shift));
+    }
+
+    public static int colInstance(long mover, long enemy, int col) {
+        final int moverCol = bitBoardColToRow(mover, col);
+        final int enemyCol = bitBoardColToRow(enemy, col);
+        return Base3.base2ToBase3(moverCol, enemyCol);
     }
 }

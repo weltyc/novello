@@ -3,8 +3,9 @@ package com.welty.novello.core;
 import static com.welty.novello.core.BitBoardUtils.*;
 
 /**
+ * Calculates east/west flips using kindergarten bitboards
  */
-class KindergartenEastWest {
+public class KindergartenEastWest {
     private static int index(int col, int moverRow, int enemyRow) {
         return (col * 65536 + moverRow * 256 + enemyRow);
     }
@@ -39,7 +40,7 @@ class KindergartenEastWest {
      * @return squares that would be flipped in the east/west direction if a mover was placed at sq
      */
     @SuppressWarnings("OctalInteger")
-    static long flips(int sq, long mover, long enemy) {
+    public static long flips(int sq, long mover, long enemy) {
         final int col = col(sq);
         final int rowTimes8 = sq & 070;
         final int moverRow = 0xFF & (int) (mover >>> rowTimes8);
