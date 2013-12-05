@@ -4,9 +4,11 @@ import com.welty.novello.core.BitBoardUtils;
 import com.welty.novello.core.Square;
 import com.welty.novello.eval.CoefficientCalculator;
 import com.welty.novello.eval.Eval;
+import com.welty.novello.selfplay.EvalPlayer;
 import com.welty.novello.selfplay.Players;
 
-import static com.welty.novello.core.BitBoardUtils.*;
+import static com.welty.novello.core.BitBoardUtils.calcMoves;
+import static com.welty.novello.core.BitBoardUtils.isBitClear;
 import static java.lang.Long.bitCount;
 
 /**
@@ -64,6 +66,8 @@ final class MoveSorter {
 
     static final Eval deepEval = Players.currentEval();
 
+    static final EvalPlayer deepEvalPlayer = new EvalPlayer(deepEval, 2);
+
     MoveSorter() {
         for (int i = 0; i < moves.length; i++) {
             moves[i] = new Move();
@@ -112,7 +116,10 @@ final class MoveSorter {
 
     private static int scoreWithEtcAndEval(HashTables hashTables, int alpha, int beta, long nextEnemy, long nextMover, long nextMoverMoves) {
         final int nMobs = Long.bitCount(nextMoverMoves);
-        int margin = -deepEval.eval(nextMover, nextEnemy, nextMoverMoves) - (beta + BETA_MARGIN) * CoefficientCalculator.DISK_VALUE;
+        final int nEmpty = Long.bitCount(~(nextEnemy | nextMover));
+
+        final int evalScore = nEmpty >= 16 ? deepEvalPlayer.searchScore(nextMover, nextEnemy, -Integer.MAX_VALUE, Integer.MAX_VALUE, 1):deepEval.eval(nextMover, nextEnemy, nextMoverMoves);
+        int margin = -evalScore - (beta + BETA_MARGIN) * CoefficientCalculator.DISK_VALUE;
         if (margin > 0) {
             margin >>= 1;
         }

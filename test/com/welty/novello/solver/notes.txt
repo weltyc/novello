@@ -698,6 +698,12 @@ thus allowing future moves to be fast. Keeping this, even though it's slower at 
     3,496 ms elapsed; 34,645,403 total nodes   at depth 20
    18,806 ms elapsed; 186,129,822 total nodes  at depth 22
 
+Evaluate with a 2-ply search if nEmpty > 16:
+    18,267 ms elapsed; 179,094,367 total nodes
+    18,132 ms elapsed; 175,586,548 total nodes, nEmpty >= 16
+    18,219 ms elapsed; 173,957,172 total nodes, nEmpty >= 15
+    19,076 ms elapsed; 171,288,583 total nodes, nEmpty >= 14
+going with nEmpty >= 16.
 
 Hash Table
 ==========

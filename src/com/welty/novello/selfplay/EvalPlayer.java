@@ -94,7 +94,7 @@ public class EvalPlayer extends EndgamePlayer {
      * <p/>
      * See {@link #searchScore(long, long, long, int, int, int)}  for parameter and output details.
      */
-    int searchScore(long mover, long enemy, int alpha, int beta, int depth) {
+    public int searchScore(long mover, long enemy, int alpha, int beta, int depth) {
         if (depth == 0) {
             return eval.eval(mover, enemy);
         }

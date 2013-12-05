@@ -19,7 +19,7 @@ public class Players {
         final int depth = parts.length > 1 ? Integer.parseInt(parts[1]):1;
         final String evalName = parts[0];
         if (evalName.equals("ntest")) {
-            return new NTest(2, false);
+            return new NTest(depth, false);
         }
         final Eval eval = eval(evalName);
         return new EvalPlayer(eval, depth);
