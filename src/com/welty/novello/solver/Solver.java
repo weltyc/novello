@@ -272,6 +272,8 @@ public class Solver {
         return result;
     }
 
+    private static final long[] stableCounts = new long[65];
+
     private int moverResultWithHash(long mover, long enemy, int alpha, int beta, int nEmpties, long parity, int nodeType, long movesToCheck) {
         // searchAlpha and searchBeta are the alpha and beta used for the search.
         // They are normally equal to the original alpha and beta.
@@ -303,6 +305,19 @@ public class Solver {
                     searchBeta = entry.max;
                 }
                 hashTables.nUselessFind++;
+            }
+        }
+        if (nEmpties >= 6) {
+            // only do this expensive calculation if it has a chance of working
+            final int edgeStables = Long.bitCount(enemy & Stable.edgeStable(mover, enemy));
+            if (edgeStables >= 16 - (alpha >> 2)) {
+                final long stable = Stable.stable(mover, enemy);
+                final int enemyStable = Long.bitCount(stable & enemy);
+                final int maxScore = 64 - 2 * enemyStable;
+                if (maxScore <= alpha) {
+                    return maxScore;
+                }
+                stableCounts[enemyStable]++;
             }
         }
         final TreeSearchResult result = treeSearchResults[nEmpties];
@@ -418,14 +433,14 @@ public class Solver {
         }
 
         private int percent(long numerator) {
-            return Math.round((float)numerator*100f/nChances());
+            return Math.round((float) numerator * 100f / nChances());
         }
     }
 
     private final Statistic[] aboveBeta = createStatistics(100);
     private final Statistic[] belowAlpha = createStatistics(100);
     private final Statistic pvCutoffs = new Statistic();
-    private final Statistic[] predictedType =createStatistics(3);
+    private final Statistic[] predictedType = createStatistics(3);
 
     private static Statistic[] createStatistics(int length) {
         final Statistic[] statistics = new Statistic[length];
@@ -436,29 +451,39 @@ public class Solver {
     }
 
     private void collectStatistics(long mover, long enemy, int alpha, int beta, int score, int nodeType) {
-        if (nodeType!=PRED_ALL) {
+        if (nodeType != PRED_ALL) {
             return;
         }
         final int eval = MoveSorter.deepEval.eval(mover, enemy) / CoefficientCalculator.DISK_VALUE;
         final Statistic statistic;
 
         if (eval >= beta) {
-            statistic = aboveBeta[(eval - beta)/4];
+            statistic = aboveBeta[(eval - beta) / 4];
         } else if (eval <= alpha) {
-            statistic = belowAlpha[(alpha - eval)/4];
+            statistic = belowAlpha[(alpha - eval) / 4];
         } else {
             statistic = pvCutoffs;
         }
         statistic.update(score, alpha, beta);
 
-        predictedType[nodeType+1].update(score, alpha, beta);
+        predictedType[nodeType + 1].update(score, alpha, beta);
 
     }
 
     void dumpStatistics() {
+        dumpCutoffStatistics();
+        System.out.println("## Stable disk counts at 6 empty ##");
+        for (int i = 0; i <= 64; i++) {
+            if (stableCounts[i] > 0) {
+                System.out.format("%2d: %,9d\n", i, stableCounts[i]);
+            }
+        }
+    }
+
+    private void dumpCutoffStatistics() {
         long totalNodes = 0;
 
-        for (int margin = belowAlpha.length; margin-->0;) {
+        for (int margin = belowAlpha.length; margin-- > 0; ) {
             final Statistic statistic = belowAlpha[margin];
             statistic.dump("<α " + String.format("%2d-%2d", margin * 4, margin * 4 + 3));
             totalNodes += statistic.nChances();
@@ -473,8 +498,8 @@ public class Solver {
         System.out.println();
 
 
-        final String[] predictedTypeNames = { "PRED_ALL", "PRED_PV ", "PRED_CUT"};
-        for (int i=0; i<predictedType.length; i++) {
+        final String[] predictedTypeNames = {"PRED_ALL", "PRED_PV ", "PRED_CUT"};
+        for (int i = 0; i < predictedType.length; i++) {
             predictedType[i].dump(predictedTypeNames[i]);
         }
 
