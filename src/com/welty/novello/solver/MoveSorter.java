@@ -88,7 +88,8 @@ final class MoveSorter {
     /**
      * Choose a move sorting method appropriate for the position and sort the moves.
      */
-    void createSort(long mover, long enemy, int alpha, int beta, int nEmpties, long parity, long movesToCheck, ListOfEmpties empties, HashTables hashTables) {
+    void createSort(long mover, long enemy, int alpha, int beta, int nEmpties, long parity, long movesToCheck
+            , ListOfEmpties empties, HashTables hashTables, int predictedNodeType) {
         if (nEmpties >= MIN_ETC_DEPTH) {
             final boolean useEvalSort;
             if (nEmpties < MIN_EVAL_SORT_DEPTH) {
@@ -96,12 +97,33 @@ final class MoveSorter {
             } else if (nEmpties >= MIN_EVAL_SORT_DEPTH + 2) {
                 useEvalSort = true;
             } else {
-                final int localScore = deepEval.eval(mover, enemy);
-                useEvalSort = localScore > (alpha - 15) * CoefficientCalculator.DISK_VALUE;
+                int localScore = deepEval.eval(mover, enemy);
+                if (predictedNodeType==Solver.PRED_ALL) {
+                    localScore -= 10;
+                }
+                useEvalSort = localScore > (alpha - 20) * CoefficientCalculator.DISK_VALUE;
             }
             if (useEvalSort) {
                 final int nEmpty = Long.bitCount(~(mover|enemy));
-                final int searchDepth = nEmpty >= 17 ? 1 : 0;
+                final int searchDepth;
+                if (nEmpty >= 16) {
+                    // decide if we should use an eval or a 1-ply search for valuing the subnodes.
+                    // 1-ply search is better but expensive; use it only if it's going to help.
+                    //
+                    // We guess whether it will help by looking at the current eval; if it's close to the range
+                    // (alpha, beta) it's likely to help.
+                    //
+                    // The current eval has a small adjustment for the current predicted node type; it turns out
+                    // that predicted ALL nodes cut off less frequently than predicted CUT nodes with the same eval.
+                    int localScore = deepEval.eval(mover, enemy);
+                    if (predictedNodeType==Solver.PRED_ALL) {
+                        localScore -= 10;
+                    }
+                    searchDepth = nEmpty >= 19 || scoreInRange(localScore, alpha-20, beta+20) ? 1 : 0;
+                }
+                else {
+                    searchDepth = 0;
+                }
                 createWithEtcAndEval(empties, mover, enemy, movesToCheck, hashTables, alpha, beta, searchDepth);
             } else {
                 createWithEtc(empties, mover, enemy, parity, movesToCheck, hashTables, alpha, beta);
@@ -109,6 +131,10 @@ final class MoveSorter {
         } else {
             createWithoutEtc(empties, mover, enemy, parity, movesToCheck);
         }
+    }
+
+    private boolean scoreInRange(int localScore, int min, int max) {
+        return localScore >= min*CoefficientCalculator.DISK_VALUE && localScore <= max*CoefficientCalculator.DISK_VALUE;
     }
 
     int size() {

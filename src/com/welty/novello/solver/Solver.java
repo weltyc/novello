@@ -185,9 +185,9 @@ public class Solver {
     /*
      * Predicted node types
      */
-    private static final int PRED_CUT = 1;
-    private static final int PRED_PV = 0;
-    private static final int PRED_ALL = -1;
+    static final int PRED_CUT = 1;
+    static final int PRED_PV = 0;
+    static final int PRED_ALL = -1;
 
     /**
      * The nodeType is a hint to this routine. It describes the expected return value of the routine.
@@ -329,7 +329,7 @@ public class Solver {
         int subNodeType = -nodeType;
         // do an actual move sort
         final MoveSorter sorter = moveSorters[nEmpties];
-        sorter.createSort(mover, enemy, alpha, beta, nEmpties, parity, movesToCheck, this.empties, this.hashTables);
+        sorter.createSort(mover, enemy, alpha, beta, nEmpties, parity, movesToCheck, this.empties, this.hashTables, nodeType);
         final int n = sorter.size();
         for (int i = 0; i < n; i++) {
             final Move move = sorter.moves[i];
