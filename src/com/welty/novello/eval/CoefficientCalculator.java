@@ -36,11 +36,11 @@ public class CoefficientCalculator {
      * 1 disk is worth how many evaluation points?
      */
     public static final int DISK_VALUE = 100;
-    private static final String target = "b1";
+    private static final String target = "b2";
     private static final EvalStrategy STRATEGY = EvalStrategies.strategy(target.substring(0, 1));
     private static final String COEFF_SET_NAME = target.substring(1);
     private static final double PENALTY = 100;
-    private static final Player PLAYOUT_PLAYER = Players.player("b1:2");
+    private static final String PLAYOUT_PLAYER_NAME = "9A:2";
 
     /**
      * Generate coefficients for evaluation.
@@ -121,10 +121,11 @@ public class CoefficientCalculator {
     }
 
     private static List<PositionValue> loadOrCreatePvs() throws IOException {
-        final String playerComponent = PLAYOUT_PLAYER.toString().replace(':', '-');
+        final String playerComponent = PLAYOUT_PLAYER_NAME.replace(':', '-');
         final Path pvFile = Paths.get("c:/temp/novello/" + playerComponent + ".pvs");
         if (!Files.exists(pvFile)) {
-            createPvs(pvFile);
+            final Player PLAYOUT_PLAYER = Players.player(PLAYOUT_PLAYER_NAME);
+            createPvs(pvFile, PLAYOUT_PLAYER);
         }
         System.out.println("Loading pvs from " + pvFile + "...");
         final List<PositionValue> pvs;
@@ -284,13 +285,13 @@ public class CoefficientCalculator {
      *
      * @param pvFile path to the file to be written.
      */
-    private static void createPvs(Path pvFile) throws IOException {
+    private static void createPvs(Path pvFile, Player playoutPlayer) throws IOException {
         log.info("Creating Pvs in " + pvFile + " ...");
         final ArrayList<PositionValue> pvs = new ArrayList<>();
-        pvs.addAll(new SelfPlaySet(PLAYOUT_PLAYER, PLAYOUT_PLAYER, 0, false).call().pvs);
+        pvs.addAll(new SelfPlaySet(playoutPlayer, playoutPlayer, 0, false).call().pvs);
         Files.createDirectories(pvFile.getParent());
         try (final DataOutputStream out = new DataOutputStream(new BufferedOutputStream(Files.newOutputStream(pvFile)))) {
-            writeRandomSubpositions(pvs, out);
+            writeRandomSubpositions(pvs, playoutPlayer, out);
         }
     }
 
@@ -309,8 +310,7 @@ public class CoefficientCalculator {
      *
      * @param pvs positions that might get chosen
      */
-    private static void writeRandomSubpositions(List<PositionValue> pvs, DataOutputStream out) throws IOException {
-        final Player player = PLAYOUT_PLAYER;
+    private static void writeRandomSubpositions(List<PositionValue> pvs, Player player, DataOutputStream out) throws IOException {
         final Random random = new Random(1337);
         int nextMessage = 50000;
         int nWritten = 0;
