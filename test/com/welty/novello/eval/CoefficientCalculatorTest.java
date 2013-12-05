@@ -118,4 +118,46 @@ public class CoefficientCalculatorTest extends ArrayTestCase {
         assertEquals(2, element.error(x3), 1e-10);
         assertEquals(-1, element.dError(x3), 1e-10);
     }
+
+    public void testDenseCoefficientEstimation() {
+        final Feature denseFeature = new DenseFeature() {
+
+            @Override public float denseWeight(int orid) {
+                return (float)Math.sqrt(1+orid);
+            }
+
+            @Override public int nOrids() {
+                return 2;
+            }
+
+            @Override public String oridDescription(int orid) {
+                return null;
+            }
+
+            @Override public int nInstances() {
+                return 2;
+            }
+
+            @Override public int orid(int instance) {
+                return instance;
+            }
+        };
+
+        Term denseTerm = new Term(denseFeature) {
+            @Override public int instance(long mover, long enemy, long moverMoves, long enemyMoves) {
+                return Long.bitCount(mover)&1;
+            }
+        };
+
+        final EvalStrategy strategy = new EvalStrategy("denseTest", denseTerm);
+        // with these two elements we can get a perfect fit
+        final PositionElement[] elements = {
+                new PositionElement(new int[]{0}, 5, new float[]{1f}),
+                new PositionElement(new int[]{1}, 3, new float[]{1.414f}),
+        };
+
+        final double[] x = CoefficientCalculator.estimateCoefficients(elements, 2, 1, 0);
+        final double[] coeffs = strategy.unpack(x);
+        assertEquals(new double[]{5., 3.}, coeffs, 1e-3);
+    }
 }
