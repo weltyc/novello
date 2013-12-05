@@ -118,7 +118,13 @@ final class MoveSorter {
         final int nMobs = Long.bitCount(nextMoverMoves);
         final int nEmpty = Long.bitCount(~(nextEnemy | nextMover));
 
-        final int evalScore = nEmpty >= 16 ? deepEvalPlayer.searchScore(nextMover, nextEnemy, -Integer.MAX_VALUE, Integer.MAX_VALUE, 1):deepEval.eval(nextMover, nextEnemy, nextMoverMoves);
+        final int evalScore;
+        if (nEmpty >= 16) {
+            evalScore = deepEvalPlayer.searchScore(nextMover, nextEnemy, -Integer.MAX_VALUE, Integer.MAX_VALUE, 1);
+        }
+        else {
+            evalScore = deepEval.eval(nextMover, nextEnemy, nextMoverMoves);
+        }
         int margin = -evalScore - (beta + BETA_MARGIN) * CoefficientCalculator.DISK_VALUE;
         if (margin > 0) {
             margin >>= 1;

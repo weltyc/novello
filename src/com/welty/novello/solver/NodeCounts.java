@@ -86,7 +86,7 @@ class NodeCounts {
      * Update the stats with a node of a given type
      *
      * @param nEmpties # of empty squares at root position
-     * @param nodeType NODE_ALL, NODE_PV, NODE_CUT
+     * @param nodeType PRED_ALL, PRED_PV, PRED_CUT
      */
     public void update(int nEmpties, int nodeType) {
         nNodes[nEmpties]++;

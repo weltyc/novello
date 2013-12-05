@@ -124,7 +124,7 @@ public class Solver {
         final TreeSearchResult result = treeSearchResults[nEmpties];
 
         final long parity = calcParity();
-        moverResultWithSorting(result, mover, enemy, -64, 64, nEmpties, parity, NODE_PV, -1);
+        moverResultWithSorting(result, mover, enemy, -64, 64, nEmpties, parity, PRED_PV, -1);
         final MoveSorter moveSorter = moveSorters[nEmpties];
         final int sq = moveSorter.moves[result.iBestMove].sq;
         return new MoveScore(sq, result.score);
@@ -183,7 +183,7 @@ public class Solver {
         if (nEmpty < MIN_PARITY_DEPTH) {
             return solveNoParity(mover, enemy, alpha, beta, empties, nEmpty);
         }
-        return solveDeep(mover, enemy, alpha, beta, nEmpty, calcParity(), NODE_PV, -1L);
+        return solveDeep(mover, enemy, alpha, beta, nEmpty, calcParity(), PRED_PV, -1L);
     }
 
     private long calcParity() {
@@ -197,21 +197,21 @@ public class Solver {
     /*
      * Predicted node types
      */
-    private static final int NODE_CUT = 1;
-    private static final int NODE_PV = 0;
-    private static final int NODE_ALL = -1;
+    private static final int PRED_CUT = 1;
+    private static final int PRED_PV = 0;
+    private static final int PRED_ALL = -1;
 
     /**
      * The nodeType is a hint to this routine. It describes the expected return value of the routine.
      * <p/>
-     * If the node type is NODE_ALL, we expect the value to be below alpha. The routine may spend less effort
+     * If the node type is PRED_ALL, we expect the value to be below alpha. The routine may spend less effort
      * on move ordering in this case.
      * <p/>
-     * If the node type is NODE_PV, we expect the value to be between alpha and beta.
+     * If the node type is PRED_PV, we expect the value to be between alpha and beta.
      * <p/>
-     * If the node type is NODE_CUT, we expect the value to be above beta.
+     * If the node type is PRED_CUT, we expect the value to be above beta.
      *
-     * @param nodeType     one of NODE_CUT, NODE_PV, or NODE_ALL
+     * @param nodeType     one of PRED_CUT, PRED_PV, or PRED_ALL
      * @param movesToCheck bitBoard containing moves to check (if the mover moves).
      */
     private int solveDeep(long mover, long enemy, int alpha, int beta, int nEmpties, long parity, int nodeType
@@ -276,7 +276,7 @@ public class Solver {
                                 alpha = subResult;
                             }
                         }
-                        subNodeType = NODE_CUT;
+                        subNodeType = PRED_CUT;
                     }
                 }
             }
@@ -382,7 +382,7 @@ public class Solver {
                 // This re-search can't be a CUT node because it can't fail low. We'll predict ALL.
                 if (subResult > alpha && subResult < beta) {
                     subResult = -solveDeep(subMover, subEnemy, -beta, -subResult, nEmpties - 1
-                            , parity ^ square.parityRegion, NODE_ALL, move.enemyMoves);
+                            , parity ^ square.parityRegion, PRED_ALL, move.enemyMoves);
                 }
             } else {
                 subResult = -solveDeep(subMover, subEnemy, -beta, -alpha, nEmpties - 1
@@ -391,7 +391,7 @@ public class Solver {
             move.node.restore();
 //            // todo remove once statistics are collected
 //            if (nEmpties >= MIN_EVAL_SORT_DEPTH) {
-//                collectStatistics(subMover, subEnemy, alpha, beta, subResult, nodeType);
+//                collectStatistics(subMover, subEnemy, -beta, -alpha, -subResult, subNodeType);
 //            }
 
             if (subResult > score) {
@@ -408,7 +408,7 @@ public class Solver {
                     alpha = subResult;
                 }
             }
-            subNodeType = NODE_CUT;
+            subNodeType = PRED_CUT;
         }
         treeSearchResult.score = score;
         treeSearchResult.iBestMove = iBestMove;
@@ -436,8 +436,8 @@ public class Solver {
 
         @Override public String toString() {
             final long nChances = nChances();
-            return String.format("%3d%% cutoff, %3d%% improvement, %3d%% fail  in %,6d nodes", 100 * nCutoffs / nChances
-                    , 100 * nImprovements / nChances, 100 * nFails / nChances, nChances);
+            return String.format("%3d%% CUT, %3d%% PV, %3d%% ALL   %,9d nodes", percent(nCutoffs)
+                    , percent(nImprovements), percent(nFails), nChances);
         }
 
         public void dump(String description) {
@@ -445,11 +445,16 @@ public class Solver {
                 System.out.println(description + ": " + toString());
             }
         }
+
+        private int percent(long numerator) {
+            return Math.round((float)numerator*100f/nChances());
+        }
     }
 
     private final Statistic[] aboveBeta = createStatistics(100);
     private final Statistic[] belowAlpha = createStatistics(100);
     private final Statistic pvCutoffs = new Statistic();
+    private final Statistic[] predictedType =createStatistics(3);
 
     private static Statistic[] createStatistics(int length) {
         final Statistic[] statistics = new Statistic[length];
@@ -459,31 +464,51 @@ public class Solver {
         return statistics;
     }
 
-    private void collectStatistics(long subMover, long subEnemy, int alpha, int beta, int score, int nodeType) {
-        final int eval = -MoveSorter.deepEval.eval(subMover, subEnemy) / CoefficientCalculator.DISK_VALUE;
+    private void collectStatistics(long mover, long enemy, int alpha, int beta, int score, int nodeType) {
+        if (nodeType!=PRED_ALL) {
+            return;
+        }
+        final int eval = MoveSorter.deepEval.eval(mover, enemy) / CoefficientCalculator.DISK_VALUE;
         final Statistic statistic;
 
         if (eval >= beta) {
-            statistic = aboveBeta[eval - beta];
+            statistic = aboveBeta[(eval - beta)/4];
         } else if (eval <= alpha) {
-            statistic = belowAlpha[alpha - eval];
+            statistic = belowAlpha[(alpha - eval)/4];
         } else {
             statistic = pvCutoffs;
         }
         statistic.update(score, alpha, beta);
 
+        predictedType[nodeType+1].update(score, alpha, beta);
+
     }
 
     void dumpStatistics() {
+        long totalNodes = 0;
+
+        for (int margin = belowAlpha.length; margin-->0;) {
+            final Statistic statistic = belowAlpha[margin];
+            statistic.dump("<α " + String.format("%2d-%2d", margin * 4, margin * 4 + 3));
+            totalNodes += statistic.nChances();
+        }
+        pvCutoffs.dump("pv      ");
+        totalNodes += pvCutoffs.nChances();
         for (int margin = 0; margin < aboveBeta.length; margin++) {
-            aboveBeta[margin].dump(String.format("%3s", "+" + margin));
+            final Statistic statistic = aboveBeta[margin];
+            statistic.dump(">ß " + String.format("%2d-%2d", margin * 4, margin * 4 + 3));
+            totalNodes += statistic.nChances();
         }
-        for (int margin = 0; margin < belowAlpha.length; margin++) {
-            belowAlpha[margin].dump(String.format("%3s", "-" + margin));
+        System.out.println();
+
+
+        final String[] predictedTypeNames = { "PRED_ALL", "PRED_PV ", "PRED_CUT"};
+        for (int i=0; i<predictedType.length; i++) {
+            predictedType[i].dump(predictedTypeNames[i]);
         }
-        {
-            pvCutoffs.dump("pv");
-        }
+
+        System.out.println();
+        System.out.format("Statistics calculated for %,d total nodes\n", totalNodes);
     }
 
     private int solveNoParity(long mover, long enemy, int alpha, int beta, ListOfEmpties empties, int nEmpties) {

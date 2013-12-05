@@ -729,3 +729,161 @@ b3 is calculated using dense features only for mover and enemy mobility, with th
     b3:2 vs b1:2: average result = -0.8
 
 This also doesn't work.
+
+Cutoff statistics
+=================
+[0723bde] Running DeepSolver at 22 empty. We want to predict whether the solver value for a move is >= beta ('CUT'),
+<= alpha ('ALL') or in the window ('PV') - call this the 'actual node type', in contrast to the 'predicted node type'
+which is what is represented by the nodeType variable.
+
+For each node at depth >=11, do a static eval on the position using b1.
+Create a bucket based on the static eval relation to the (alpha, beta) window: above beta (and by how much),
+below alpha (and by how much), or in the window.
+Calculate the probabilities of each actual node type conditioned on the bucket.
+
+    <α 92-95:   0% CUT,   0% PV, 100% ALL           1 nodes
+    <α 88-91:   0% CUT,   0% PV, 100% ALL           6 nodes
+    <α 84-87:   0% CUT,   0% PV, 100% ALL          15 nodes
+    <α 80-83:   0% CUT,   0% PV, 100% ALL          28 nodes
+    <α 76-79:   0% CUT,   0% PV, 100% ALL         112 nodes
+    <α 72-75:   0% CUT,   0% PV, 100% ALL         259 nodes
+    <α 68-71:   0% CUT,   0% PV, 100% ALL         602 nodes
+    <α 64-67:   0% CUT,   0% PV, 100% ALL       1,144 nodes
+    <α 60-63:   0% CUT,   0% PV, 100% ALL       2,321 nodes
+    <α 56-59:   0% CUT,   0% PV, 100% ALL       4,460 nodes
+    <α 52-55:   0% CUT,   0% PV, 100% ALL       8,176 nodes
+    <α 48-51:   0% CUT,   0% PV, 100% ALL      13,121 nodes
+    <α 44-47:   0% CUT,   0% PV, 100% ALL      19,770 nodes
+    <α 40-43:   0% CUT,   0% PV, 100% ALL      26,678 nodes
+    <α 36-39:   0% CUT,   0% PV, 100% ALL      32,119 nodes
+    <α 32-35:   0% CUT,   0% PV, 100% ALL      36,898 nodes
+    <α 28-31:   0% CUT,   0% PV, 100% ALL      39,576 nodes
+    <α 24-27:   1% CUT,   0% PV,  99% ALL      40,638 nodes
+    <α 20-23:   2% CUT,   0% PV,  98% ALL      39,306 nodes
+    <α 16-19:   4% CUT,   0% PV,  96% ALL      36,233 nodes
+    <α 12-15:  10% CUT,   0% PV,  90% ALL      32,406 nodes
+    <α  8-11:  20% CUT,   0% PV,  80% ALL      29,545 nodes
+    <α  4- 7:  37% CUT,   0% PV,  63% ALL      28,506 nodes
+    <α  0- 3:  58% CUT,   0% PV,  42% ALL      32,755 nodes
+    pv      :  46% CUT,  51% PV,   3% ALL       1,420 nodes
+    >ß  0- 3:  78% CUT,   0% PV,  22% ALL      39,933 nodes
+    >ß  4- 7:  90% CUT,   0% PV,  10% ALL      45,314 nodes
+    >ß  8-11:  96% CUT,   0% PV,   4% ALL      57,383 nodes
+    >ß 12-15:  98% CUT,   0% PV,   2% ALL      71,633 nodes
+    >ß 16-19:  99% CUT,   0% PV,   1% ALL      86,993 nodes
+    >ß 20-23: 100% CUT,   0% PV,   0% ALL     101,264 nodes
+    >ß 24-27: 100% CUT,   0% PV,   0% ALL     111,477 nodes
+    >ß 28-31: 100% CUT,   0% PV,   0% ALL     116,082 nodes
+    >ß 32-35: 100% CUT,   0% PV,   0% ALL     113,619 nodes
+    >ß 36-39: 100% CUT,   0% PV,   0% ALL     103,106 nodes
+    >ß 40-43: 100% CUT,   0% PV,   0% ALL      84,261 nodes
+    >ß 44-47: 100% CUT,   0% PV,   0% ALL      63,049 nodes
+    >ß 48-51: 100% CUT,   0% PV,   0% ALL      41,582 nodes
+    >ß 52-55: 100% CUT,   0% PV,   0% ALL      25,349 nodes
+    >ß 56-59: 100% CUT,   0% PV,   0% ALL      14,271 nodes
+    >ß 60-63: 100% CUT,   0% PV,   0% ALL       7,853 nodes
+    >ß 64-67: 100% CUT,   0% PV,   0% ALL       4,314 nodes
+    >ß 68-71: 100% CUT,   0% PV,   0% ALL       2,258 nodes
+    >ß 72-75: 100% CUT,   0% PV,   0% ALL       1,080 nodes
+    >ß 76-79: 100% CUT,   0% PV,   0% ALL         574 nodes
+    >ß 80-83: 100% CUT,   0% PV,   0% ALL         199 nodes
+    >ß 84-87: 100% CUT,   0% PV,   0% ALL          83 nodes
+    >ß 88-91: 100% CUT,   0% PV,   0% ALL          14 nodes
+    >ß 92-95: 100% CUT,   0% PV,   0% ALL          10 nodes
+    >ß 96-99: 100% CUT,   0% PV,   0% ALL           1 nodes
+
+    PRED_ALL:   8% CUT,   0% PV,  92% ALL     402,461 nodes
+    PRED_PV :   0% CUT, 100% PV,   0% ALL         132 nodes
+    PRED_CUT:  97% CUT,   0% PV,   3% ALL   1,115,204 nodes
+
+    Statistics calculated for 1,517,797 total nodes
+
+The same statistics, but collected only for PRED_CUT nodes:
+
+    <α 52-55:   0% CUT,   0% PV, 100% ALL           1 nodes
+    <α 48-51:   0% CUT,   0% PV, 100% ALL           4 nodes
+    <α 44-47:   0% CUT,   0% PV, 100% ALL          10 nodes
+    <α 40-43:   0% CUT,   0% PV, 100% ALL          13 nodes
+    <α 36-39:   2% CUT,   0% PV,  98% ALL          61 nodes
+    <α 32-35:   0% CUT,   0% PV, 100% ALL         157 nodes
+    <α 28-31:   3% CUT,   0% PV,  97% ALL         301 nodes
+    <α 24-27:   6% CUT,   0% PV,  94% ALL         527 nodes
+    <α 20-23:  10% CUT,   0% PV,  90% ALL       1,101 nodes
+    <α 16-19:  17% CUT,   0% PV,  83% ALL       1,977 nodes
+    <α 12-15:  31% CUT,   0% PV,  69% ALL       3,647 nodes
+    <α  8-11:  43% CUT,   0% PV,  56% ALL       6,560 nodes
+    <α  4- 7:  57% CUT,   1% PV,  42% ALL      10,875 nodes
+    <α  0- 3:  72% CUT,   1% PV,  27% ALL      19,079 nodes
+    pv      :  55% CUT,  41% PV,   4% ALL       1,080 nodes
+    >ß  0- 3:  85% CUT,   0% PV,  15% ALL      30,833 nodes
+    >ß  4- 7:  93% CUT,   0% PV,   7% ALL      40,015 nodes
+    >ß  8-11:  97% CUT,   0% PV,   3% ALL      54,126 nodes
+    >ß 12-15:  99% CUT,   0% PV,   1% ALL      69,807 nodes
+    >ß 16-19:  99% CUT,   0% PV,   1% ALL      85,945 nodes
+    >ß 20-23: 100% CUT,   0% PV,   0% ALL     100,638 nodes
+    >ß 24-27: 100% CUT,   0% PV,   0% ALL     111,138 nodes
+    >ß 28-31: 100% CUT,   0% PV,   0% ALL     115,902 nodes
+    >ß 32-35: 100% CUT,   0% PV,   0% ALL     113,508 nodes
+    >ß 36-39: 100% CUT,   0% PV,   0% ALL     103,042 nodes
+    >ß 40-43: 100% CUT,   0% PV,   0% ALL      84,234 nodes
+    >ß 44-47: 100% CUT,   0% PV,   0% ALL      63,036 nodes
+    >ß 48-51: 100% CUT,   0% PV,   0% ALL      41,582 nodes
+    >ß 52-55: 100% CUT,   0% PV,   0% ALL      25,348 nodes
+    >ß 56-59: 100% CUT,   0% PV,   0% ALL      14,271 nodes
+    >ß 60-63: 100% CUT,   0% PV,   0% ALL       7,853 nodes
+    >ß 64-67: 100% CUT,   0% PV,   0% ALL       4,314 nodes
+    >ß 68-71: 100% CUT,   0% PV,   0% ALL       2,258 nodes
+    >ß 72-75: 100% CUT,   0% PV,   0% ALL       1,080 nodes
+    >ß 76-79: 100% CUT,   0% PV,   0% ALL         574 nodes
+    >ß 80-83: 100% CUT,   0% PV,   0% ALL         199 nodes
+    >ß 84-87: 100% CUT,   0% PV,   0% ALL          83 nodes
+    >ß 88-91: 100% CUT,   0% PV,   0% ALL          14 nodes
+    >ß 92-95: 100% CUT,   0% PV,   0% ALL          10 nodes
+    >ß 96-99: 100% CUT,   0% PV,   0% ALL           1 nodes
+
+    PRED_CUT:  97% CUT,   0% PV,   3% ALL   1,115,204 nodes
+
+And similarly for PRED_ALL nodes:
+
+    <α 92-95:   0% CUT,   0% PV, 100% ALL           1 nodes
+    <α 88-91:   0% CUT,   0% PV, 100% ALL           6 nodes
+    <α 84-87:   0% CUT,   0% PV, 100% ALL          15 nodes
+    <α 80-83:   0% CUT,   0% PV, 100% ALL          28 nodes
+    <α 76-79:   0% CUT,   0% PV, 100% ALL         112 nodes
+    <α 72-75:   0% CUT,   0% PV, 100% ALL         259 nodes
+    <α 68-71:   0% CUT,   0% PV, 100% ALL         602 nodes
+    <α 64-67:   0% CUT,   0% PV, 100% ALL       1,144 nodes
+    <α 60-63:   0% CUT,   0% PV, 100% ALL       2,321 nodes
+    <α 56-59:   0% CUT,   0% PV, 100% ALL       4,460 nodes
+    <α 52-55:   0% CUT,   0% PV, 100% ALL       8,175 nodes
+    <α 48-51:   0% CUT,   0% PV, 100% ALL      13,117 nodes
+    <α 44-47:   0% CUT,   0% PV, 100% ALL      19,760 nodes
+    <α 40-43:   0% CUT,   0% PV, 100% ALL      26,665 nodes
+    <α 36-39:   0% CUT,   0% PV, 100% ALL      32,058 nodes
+    <α 32-35:   0% CUT,   0% PV, 100% ALL      36,741 nodes
+    <α 28-31:   0% CUT,   0% PV, 100% ALL      39,275 nodes
+    <α 24-27:   1% CUT,   0% PV,  99% ALL      40,111 nodes
+    <α 20-23:   1% CUT,   0% PV,  99% ALL      38,205 nodes
+    <α 16-19:   3% CUT,   0% PV,  97% ALL      34,256 nodes
+    <α 12-15:   7% CUT,   0% PV,  93% ALL      28,759 nodes
+    <α  8-11:  13% CUT,   0% PV,  87% ALL      22,985 nodes
+    <α  4- 7:  24% CUT,   0% PV,  76% ALL      17,631 nodes
+    <α  0- 3:  38% CUT,   0% PV,  62% ALL      13,676 nodes
+    pv      :  29% CUT,  69% PV,   2% ALL         208 nodes
+    >ß  0- 3:  55% CUT,   0% PV,  45% ALL       9,100 nodes
+    >ß  4- 7:  69% CUT,   0% PV,  31% ALL       5,299 nodes
+    >ß  8-11:  81% CUT,   0% PV,  19% ALL       3,257 nodes
+    >ß 12-15:  88% CUT,   0% PV,  12% ALL       1,826 nodes
+    >ß 16-19:  94% CUT,   0% PV,   6% ALL       1,048 nodes
+    >ß 20-23:  98% CUT,   0% PV,   2% ALL         626 nodes
+    >ß 24-27:  98% CUT,   0% PV,   2% ALL         339 nodes
+    >ß 28-31:  99% CUT,   0% PV,   1% ALL         180 nodes
+    >ß 32-35:  99% CUT,   0% PV,   1% ALL         111 nodes
+    >ß 36-39: 100% CUT,   0% PV,   0% ALL          64 nodes
+    >ß 40-43: 100% CUT,   0% PV,   0% ALL          27 nodes
+    >ß 44-47: 100% CUT,   0% PV,   0% ALL          13 nodes
+    >ß 52-55: 100% CUT,   0% PV,   0% ALL           1 nodes
+
+    PRED_ALL:   8% CUT,   0% PV,  92% ALL     402,461 nodes
+
+    Statistics calculated for 402,461 total nodes
