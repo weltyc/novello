@@ -708,3 +708,24 @@ going with nEmpty >= 16.
 Hash Table
 ==========
 Tried increasing the table size at higher depths - helps a little in terms of nodes but not visible in the timing, so did not keep it.
+
+Coefficient calculator
+======================
+Using dense weights to estimate coefficients b (straight lines, mobility approximations, corner 3x3 boxes).
+Need to determine a function which approximates coefficients as a function of mobility, potMobs, potMobs2.
+Use a regression to determine, for each feature, which of the three functions {ax+b, a*log(x)+b, a*sqrt(x)+b}
+best approximates the feature values. Looking at coefficients b1 at 24 empties, and discarding instances with few
+occurrences, both Mover and Enemy mobility are best fit by sqrt; Mover and Enemy potMobs are best fit by x; and
+Mover and Enemy potMobs2 are best fit by log(x). Not sure what to do here, so using sqrt(x) for the dense weight
+for all these as I calculate b2 coefficients, the first using dense weights.
+
+After estimating coefficients at 24 empty using sqrt(x) for all six functions, sqrt() is now the best fitting
+of the functions for mobility and potMob2. PotMob still fits best to a line.
+
+    b1:2 vs b2:2: average result = 13.3
+This experiment appears not to work.
+
+b3 is calculated using dense features only for mover and enemy mobility, with the feature value proportional to sqrt(mobility).
+    b3:2 vs b1:2: average result = -0.8
+
+This also doesn't work.

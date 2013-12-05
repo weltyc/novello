@@ -1,5 +1,7 @@
 package com.welty.novello.eval;
 
+import com.orbanova.common.feed.Mapper;
+import com.orbanova.common.feed.NullableMapper;
 import com.orbanova.common.math.function.oned.Function;
 import com.orbanova.common.misc.Logger;
 import com.orbanova.common.misc.Require;
@@ -36,7 +38,7 @@ public class CoefficientCalculator {
      * 1 disk is worth how many evaluation points?
      */
     public static final int DISK_VALUE = 100;
-    private static final String target = "b2";
+    private static final String target = "b3";
     private static final EvalStrategy STRATEGY = EvalStrategies.strategy(target.substring(0, 1));
     private static final String COEFF_SET_NAME = target.substring(1);
     private static final double PENALTY = 100;
@@ -130,7 +132,24 @@ public class CoefficientCalculator {
         System.out.println("Loading pvs from " + pvFile + "...");
         final List<PositionValue> pvs;
         final long t0 = System.currentTimeMillis();
-        pvs = new ObjectFeed<>(pvFile, PositionValue.deserializer).asList();
+        NullableMapper<PositionValue, PositionValue> monitor = new Mapper<PositionValue , PositionValue>() {
+            long nItems;
+            long nextTime;
+
+            @NotNull @Override public PositionValue y(PositionValue x) {
+                nItems++;
+                if ((nItems&0x3FF)==0) {
+                    final long t = System.currentTimeMillis();
+                    if (t>=nextTime) {
+                        log.info((nItems >> 10) + "k items loaded");
+                        nextTime = t + 5000;
+                    }
+                }
+                //noinspection SuspiciousNameCombination
+                return x;
+            }
+        };
+        pvs = new ObjectFeed<>(pvFile, PositionValue.deserializer).map(monitor).asList();
         // Ram is tight... free some up
         ((ArrayList) pvs).trimToSize();
 
@@ -356,13 +375,9 @@ public class CoefficientCalculator {
  * Data about a single position and value
  */
 class PositionElement {
-    final
-    @NotNull
-    int[] indices;
+    final @NotNull int[] indices;
     private final int target;
-    final
-    @NotNull
-    float[] denseWeights;
+    private final @NotNull float[] denseWeights;
 
     private static final float[] EMPTY_ARRAY = new float[0];
 
@@ -397,6 +412,23 @@ class PositionElement {
         for (int index : indices) {
             counts[index]++;
         }
+    }
+
+    /**
+     * Determine if one of this Element's indices is rare
+     *
+     * Rare means it has occurred fewer than maximum times,
+     *
+     * @param counts histogram of index occurrences
+     * @param maximum  maximum number of times an index can occur and still be considered rare
+     */
+    boolean isRare(int[] counts, int maximum) {
+        for (int index : indices) {
+            if (counts[index] > maximum) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -447,10 +479,10 @@ class PositionElement {
         PositionElement that = (PositionElement) o;
 
         if (target != that.target) return false;
+        //noinspection SimplifiableIfStatement
         if (!Arrays.equals(denseWeights, that.denseWeights)) return false;
-        if (!Arrays.equals(indices, that.indices)) return false;
+        return Arrays.equals(indices, that.indices);
 
-        return true;
     }
 
     @Override

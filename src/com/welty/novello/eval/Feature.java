@@ -1,5 +1,6 @@
 package com.welty.novello.eval;
 
+import com.orbanova.common.math.function.oned.Function;
 import com.orbanova.common.misc.Require;
 import com.orbanova.common.misc.Vec;
 
@@ -54,6 +55,13 @@ class Features {
             "Enemy x-square"
     );
 
+    static final Function MOBILITY_WEIGHT = new Function() {
+
+        @Override public double y(double x) {
+            return Math.sqrt(x);
+        }
+    };
+
     static final SoloFeature moverDisks = new GridFeature("Mover Disks");
     static final SoloFeature enemyDisks = new GridFeature("Enemy Disks");
     static final SoloFeature moverMobilities = new GridFeature("Mover Mobilities");
@@ -80,7 +88,7 @@ class Features {
             final int coefficient = coefficients[orid];
             if (Math.abs(coefficient) >= minValue) {
                 final String desc = feature.oridDescription(orid);
-                System.out.format("%+5d  %s (i=%d, o=%d)%n", coefficient, desc, orid, orid);
+                System.out.format("%+5d  %s (orid %d)%n", coefficient, desc, orid);
                 nLarge++;
             }
         }
@@ -164,11 +172,10 @@ class SoloFeature implements Feature {
     }
 }
 
-class GridFeature extends SoloFeature implements DenseFeature {
+class GridFeature extends SoloFeature {
     public GridFeature(String name) {
         super(name, grid(name));
     }
-
 
     private static String[] grid(String name) {
         final String[] result = new String[65];
@@ -177,10 +184,25 @@ class GridFeature extends SoloFeature implements DenseFeature {
         }
         return result;
     }
+}
+class DenseGridFeature extends GridFeature implements DenseFeature {
+    private final Function weightFunction;
+    private static final Function IDENTITY = new Function() {
+        @Override public double y(double x) {
+            //noinspection SuspiciousNameCombination
+            return x;
+        }
+    };
+
+    public DenseGridFeature(String name, Function weightFunction) {
+        super(name);
+        this.weightFunction = weightFunction;
+    }
+
 
     @Override
     public float denseWeight(int orid) {
-        return orid;
+        return (float)weightFunction.y(orid);
     }
 }
 

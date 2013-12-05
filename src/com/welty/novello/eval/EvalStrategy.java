@@ -261,6 +261,12 @@ public class EvalStrategy {
     public double[] unpack(double[] x) {
         final int[] coefficientIndexStarts = Vec.accumulate0(nOridsByFeature());
         int iDenseWeight = coefficientIndexStarts[coefficientIndexStarts.length - 1];
+        if (iDenseWeight != Vec.sum(nOridsByFeature())) {
+            throw new IllegalStateException("internal error");
+        }
+        if (iDenseWeight + nDenseWeights != x.length) {
+            throw new IllegalStateException("internal error");
+        }
         final double[] unpack = Arrays.copyOf(x, iDenseWeight);
 
 
@@ -271,6 +277,7 @@ public class EvalStrategy {
                 final int iFeature = iFeatures[iTerm];
                 int nOrids = feature.nOrids();
                 final double weightCoefficient = x[iDenseWeight++];
+                System.out.println("dense weight for coefficient "  + iDenseWeight + " (" + feature + ") = " + weightCoefficient);
                 for (int orid = 0; orid < nOrids; orid++) {
                     float weight = ((DenseFeature) feature).denseWeight(orid);
                     final int coefficientIndex = orid + coefficientIndexStarts[iFeature];
