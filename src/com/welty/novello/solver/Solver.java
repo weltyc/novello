@@ -30,18 +30,6 @@ public class Solver {
     private static final int MIN_NEGASCOUT_DEPTH = 10;
 
     /**
-     * Only check for ETC at this depth or higher.
-     * <p/>
-     * if depth is Solver.MIN_HASH_DEPTH or below, the children will never be in hash.
-     */
-    private static final int MIN_ETC_DEPTH = MIN_HASH_DEPTH + 1;
-
-    /**
-     * Use the eval for sorting at this depth and higher.
-     */
-    static int MIN_EVAL_SORT_DEPTH = 12;
-
-    /**
      * At this depth and above, the search will do a full sort of the remaining moves
      */
     static final int MIN_SORT_DEPTH = 6;
@@ -341,24 +329,7 @@ public class Solver {
         int subNodeType = -nodeType;
         // do an actual move sort
         final MoveSorter sorter = moveSorters[nEmpties];
-        if (nEmpties >= MIN_ETC_DEPTH) {
-            final boolean useEvalSort;
-            if (nEmpties < MIN_EVAL_SORT_DEPTH) {
-                useEvalSort = false;
-            } else if (nEmpties >= MIN_EVAL_SORT_DEPTH + 2) {
-                useEvalSort = true;
-            } else {
-                final int localScore = MoveSorter.deepEval.eval(mover, enemy);
-                useEvalSort = localScore > (alpha - 15) * CoefficientCalculator.DISK_VALUE;
-            }
-            if (useEvalSort) {
-                sorter.createWithEtcAndEval(empties, mover, enemy, movesToCheck, hashTables, alpha, beta);
-            } else {
-                sorter.createWithEtc(empties, mover, enemy, parity, movesToCheck, hashTables, alpha, beta);
-            }
-        } else {
-            sorter.createWithoutEtc(empties, mover, enemy, parity, movesToCheck);
-        }
+        sorter.createSort(mover, enemy, alpha, beta, nEmpties, parity, movesToCheck, this.empties, this.hashTables);
         final int n = sorter.size();
         for (int i = 0; i < n; i++) {
             final Move move = sorter.moves[i];

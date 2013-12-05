@@ -45,6 +45,12 @@ final class MoveSorter {
      */
     private static final int MOVER_POT_MOB_WEIGHT = 0;
     private static final int ENEMY_POT_MOB_WEIGHT = 4;
+    /**
+     * Only check for ETC at this depth or higher.
+     * <p/>
+     * if depth is Solver.MIN_HASH_DEPTH or below, the children will never be in hash.
+     */
+    private static final int MIN_ETC_DEPTH = Solver.MIN_HASH_DEPTH + 1;
     static int DEEP_POT_MOB_WEIGHT = 4;
 
     private static final int BETA_MARGIN = 24;
@@ -61,6 +67,11 @@ final class MoveSorter {
         }
     }
 
+    /**
+     * Use the eval for sorting at this depth and higher.
+     */
+    static int MIN_EVAL_SORT_DEPTH = 12;
+
     private int size = 0;
     final Move[] moves = new Move[64];
 
@@ -71,6 +82,32 @@ final class MoveSorter {
     MoveSorter() {
         for (int i = 0; i < moves.length; i++) {
             moves[i] = new Move();
+        }
+    }
+
+    /**
+     * Choose a move sorting method appropriate for the position and sort the moves.
+     */
+    void createSort(long mover, long enemy, int alpha, int beta, int nEmpties, long parity, long movesToCheck, ListOfEmpties empties, HashTables hashTables) {
+        if (nEmpties >= MIN_ETC_DEPTH) {
+            final boolean useEvalSort;
+            if (nEmpties < MIN_EVAL_SORT_DEPTH) {
+                useEvalSort = false;
+            } else if (nEmpties >= MIN_EVAL_SORT_DEPTH + 2) {
+                useEvalSort = true;
+            } else {
+                final int localScore = deepEval.eval(mover, enemy);
+                useEvalSort = localScore > (alpha - 15) * CoefficientCalculator.DISK_VALUE;
+            }
+            if (useEvalSort) {
+                final int nEmpty = Long.bitCount(~(mover|enemy));
+                final int searchDepth = nEmpty >= 17 ? 1 : 0;
+                createWithEtcAndEval(empties, mover, enemy, movesToCheck, hashTables, alpha, beta, searchDepth);
+            } else {
+                createWithEtc(empties, mover, enemy, parity, movesToCheck, hashTables, alpha, beta);
+            }
+        } else {
+            createWithoutEtc(empties, mover, enemy, parity, movesToCheck);
         }
     }
 
@@ -89,8 +126,8 @@ final class MoveSorter {
      * as move sorting from a higher depth.
      */
     @SuppressWarnings("PointlessBitwiseExpression")
-    public void createWithEtcAndEval(ListOfEmpties empties, long mover, long enemy, long movesToCheck
-            , HashTables hashTables, int alpha, int beta) {
+    private void createWithEtcAndEval(ListOfEmpties empties, long mover, long enemy, long movesToCheck
+            , HashTables hashTables, int alpha, int beta, int searchDepth) {
         size = 0;
 
         for (ListOfEmpties.Node node = empties.first(); node != empties.end; node = node.next) {
@@ -106,7 +143,7 @@ final class MoveSorter {
                 final long nextEnemy = mover | flips | placement;
                 final long nextMover = enemy & ~flips;
                 final long enemyMoves = calcMoves(nextMover, nextEnemy);
-                int score = scoreWithEtcAndEval(hashTables, alpha, beta, nextEnemy, nextMover, enemyMoves);
+                int score = scoreWithEtcAndEval(hashTables, alpha, beta, nextEnemy, nextMover, enemyMoves, searchDepth);
 
                 insert(sq, score, flips, enemyMoves, node);
             }
@@ -114,13 +151,12 @@ final class MoveSorter {
     }
 
 
-    private static int scoreWithEtcAndEval(HashTables hashTables, int alpha, int beta, long nextEnemy, long nextMover, long nextMoverMoves) {
+    private static int scoreWithEtcAndEval(HashTables hashTables, int alpha, int beta, long nextEnemy, long nextMover, long nextMoverMoves, int searchDepth) {
         final int nMobs = Long.bitCount(nextMoverMoves);
-        final int nEmpty = Long.bitCount(~(nextEnemy | nextMover));
 
         final int evalScore;
-        if (nEmpty >= 16) {
-            evalScore = deepEvalPlayer.searchScore(nextMover, nextEnemy, -Integer.MAX_VALUE, Integer.MAX_VALUE, 1);
+        if (searchDepth > 0) {
+            evalScore = deepEvalPlayer.searchScore(nextMover, nextEnemy, -Integer.MAX_VALUE, Integer.MAX_VALUE, searchDepth);
         }
         else {
             evalScore = deepEval.eval(nextMover, nextEnemy, nextMoverMoves);
@@ -149,7 +185,7 @@ final class MoveSorter {
      * as move sorting from a higher depth.
      */
     @SuppressWarnings("PointlessBitwiseExpression")
-    public void createWithEtc(ListOfEmpties empties, long mover, long enemy, long parity, long movesToCheck
+    private void createWithEtc(ListOfEmpties empties, long mover, long enemy, long parity, long movesToCheck
             , HashTables hashTables, int alpha, int beta) {
         size = 0;
 
@@ -208,7 +244,7 @@ final class MoveSorter {
      * as move sorting from a higher depth.
      */
     @SuppressWarnings("PointlessBitwiseExpression")
-    public void createWithoutEtc(ListOfEmpties empties, long mover, long enemy, long parity, long movesToCheck) {
+    private void createWithoutEtc(ListOfEmpties empties, long mover, long enemy, long parity, long movesToCheck) {
         size = 0;
 
         for (ListOfEmpties.Node node = empties.first(); node != empties.end; node = node.next) {
