@@ -238,6 +238,7 @@ public class Solver {
     private int moverResultNoSort(long mover, long enemy, int alpha, int beta, int nEmpties, long parity, int nodeType, long movesToCheck) {
         int result = NO_MOVE;
         int subNodeType = -nodeType;
+
         // sort by parity only
         for (int desiredParity = 1; desiredParity >= 0; desiredParity--) {
             for (ListOfEmpties.Node node = empties.first(); node != empties.end; node = node.next) {
@@ -307,17 +308,31 @@ public class Solver {
                 hashTables.nUselessFind++;
             }
         }
-        if (nEmpties >= 6) {
+        if (nEmpties == 6) {
             // only do this expensive calculation if it has a chance of working
-            final int edgeStables = Long.bitCount(enemy & Stable.edgeStable(mover, enemy));
-            if (edgeStables >= 16 - (alpha >> 2)) {
+            // Estimate total stable disks at 2*edge stable disks and see if it cuts off -
+            // if it would, do the full stability calculation.
+            final long edgeStable = Stable.edgeStable(mover, enemy);
+            final int enemyEdgeStables = Long.bitCount(enemy & edgeStable);
+            final int moverEdgeStables = Long.bitCount(mover & edgeStable);
+            final int estimatedUpperBound = 64 - 4 * enemyEdgeStables;
+            final int estimatedLowerBound = 4 * moverEdgeStables - 64;
+
+            if (estimatedLowerBound >= beta || estimatedUpperBound <= alpha) {
+                // A lower bound on the score is 2*mover stables - 64.
+                // an upper bound on the score is 64-2*enemy stables
                 final long stable = Stable.stable(mover, enemy);
                 final int enemyStable = Long.bitCount(stable & enemy);
-                final int maxScore = 64 - 2 * enemyStable;
-                if (maxScore <= alpha) {
-                    return maxScore;
+                final int scoreUpperBound = 64 - 2 * enemyStable;
+                if (scoreUpperBound <= alpha) {
+                    return scoreUpperBound;
                 }
-                stableCounts[enemyStable]++;
+                final int moverStable = Long.bitCount(stable & mover);
+                final int scoreLowerBound = 2 * moverStable - 64;
+                if (scoreLowerBound >= beta) {
+                    return scoreLowerBound;
+                }
+                stableCounts[Math.max(enemyStable, moverStable)]++;
             }
         }
         final TreeSearchResult result = treeSearchResults[nEmpties];
