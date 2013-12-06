@@ -73,7 +73,7 @@ public class EvalStrategy {
      * @return slice
      */
     short[][] readSlice(int nEmpty, String coeffSetName) {
-        return readSlice(nEmpty, coeffDir(coeffSetName));
+        return readSlice(nEmpty, coeffDir(coeffSetName), coeffSetName.endsWith("s"));
     }
 
     /**
@@ -87,9 +87,7 @@ public class EvalStrategy {
      * @param nEmpty               # of empties of file to read
      * @param coefficientDirectory location to read from
      */
-    short[][] readSlice(int nEmpty, Path coefficientDirectory) {
-        nEmpty = (nEmpty&~7)+4;
-
+    short[][] readSlice(int nEmpty, Path coefficientDirectory, boolean isShort) {
         final Path path = coefficientDirectory.resolve(filename(nEmpty));
         try (DataInputStream in = new DataInputStream(new BufferedInputStream(Files.newInputStream(path)))) {
             final int nFeatures = nFeatures();
@@ -97,7 +95,11 @@ public class EvalStrategy {
 
             for (int iFeature = 0; iFeature < nFeatures; iFeature++) {
                 final Feature feature = getFeature(iFeature);
-                slice[iFeature] = readIntsAsShorts(in, feature.nOrids());
+                if (isShort) {
+                    slice[iFeature] = readShorts(in, feature.nOrids());
+                } else {
+                    slice[iFeature] = readIntsAsShorts(in, feature.nOrids());
+                }
             }
             return slice;
         } catch (IOException e) {
@@ -108,15 +110,15 @@ public class EvalStrategy {
     private static short[] readIntsAsShorts(DataInputStream in, int nOrids) throws IOException {
         final short[] coeffsByOrid = new short[nOrids];
         for (int i = 0; i < nOrids; i++) {
-            coeffsByOrid[i] = (short)in.readInt();
+            coeffsByOrid[i] = (short) in.readInt();
         }
         return coeffsByOrid;
     }
 
-    private static int[] readInts(DataInputStream in, int nOrids) throws IOException {
-        final int[] coeffsByOrid = new int[nOrids];
+    private static short[] readShorts(DataInputStream in, int nOrids) throws IOException {
+        final short[] coeffsByOrid = new short[nOrids];
         for (int i = 0; i < nOrids; i++) {
-            coeffsByOrid[i] = in.readInt();
+            coeffsByOrid[i] = in.readShort();
         }
         return coeffsByOrid;
     }
@@ -172,7 +174,7 @@ public class EvalStrategy {
         if (!Files.isDirectory(dir)) {
             throw new IllegalArgumentException("Can't create coefficient directory " + dir + " - a file with that name already exists");
         }
-        for (int nEmpty = 0; nEmpty < 64; nEmpty++) {
+        for (int nEmpty : CoefficientCalculator.nEmpties) {
             if (!Files.exists(dir.resolve(filename(nEmpty)))) {
                 return;
             }
@@ -207,7 +209,10 @@ public class EvalStrategy {
                 if (intCoeff != 0) {
                     nNonZero++;
                 }
-                out.writeInt(intCoeff);
+                if (intCoeff > Short.MAX_VALUE || intCoeff < Short.MIN_VALUE) {
+                    throw new IllegalArgumentException("Coefficient too big : " + intCoeff);
+                }
+                out.writeShort((short)intCoeff);
             }
         }
         System.out.println(nNonZero + " non-zero coefficients written");
@@ -262,10 +267,10 @@ public class EvalStrategy {
 
     /**
      * Convert coefficient calculator x to coefficients
-     *
+     * <p/>
      * This takes the values from the dense weights and puts them in the coefficients
      *
-     * @param x  coefficient calculator x
+     * @param x coefficient calculator x
      * @return coefficients
      */
     public double[] unpack(double[] x) {
@@ -287,15 +292,15 @@ public class EvalStrategy {
                 final int iFeature = iFeatures[iTerm];
                 int nOrids = feature.nOrids();
                 final double weightCoefficient = x[iDenseWeight++];
-                System.out.println("dense weight for coefficient "  + iDenseWeight + " (" + feature + ") = " + weightCoefficient);
+                System.out.println("dense weight for coefficient " + iDenseWeight + " (" + feature + ") = " + weightCoefficient);
                 for (int orid = 0; orid < nOrids; orid++) {
                     float weight = ((DenseFeature) feature).denseWeight(orid);
                     final int coefficientIndex = orid + coefficientIndexStarts[iFeature];
-                    unpack[coefficientIndex]+=weight*weightCoefficient;
+                    unpack[coefficientIndex] += weight * weightCoefficient;
                 }
             }
         }
-        if (iDenseWeight!=x.length) {
+        if (iDenseWeight != x.length) {
             throw new IllegalStateException("Internal error");
         }
         return unpack;

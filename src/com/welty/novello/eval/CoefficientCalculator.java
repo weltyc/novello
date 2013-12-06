@@ -38,11 +38,13 @@ public class CoefficientCalculator {
      * 1 disk is worth how many evaluation points?
      */
     public static final int DISK_VALUE = 100;
-    private static final String target = "b3";
+    private static final String target = "b4s";
     private static final EvalStrategy STRATEGY = EvalStrategies.strategy(target.substring(0, 1));
     private static final String COEFF_SET_NAME = target.substring(1);
     private static final double PENALTY = 100;
     private static final String PLAYOUT_PLAYER_NAME = "9A:2";
+
+    static final int[] nEmpties = {3,4,11,12,19,20,27,28,35,36,43,44,51,52,59,60};
 
     /**
      * Generate coefficients for evaluation.
@@ -63,7 +65,7 @@ public class CoefficientCalculator {
         final List<PositionValue> pvs = loadOrCreatePvs();
 
         System.out.format("a total of %,d pvs are available.%n", pvs.size());
-        for (int nEmpty = 0; nEmpty < 64; nEmpty++) {
+        for (int nEmpty : nEmpties) {
             if (STRATEGY.sliceExists(COEFF_SET_NAME, nEmpty)) {
                 continue;
             }

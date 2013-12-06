@@ -898,6 +898,37 @@ of the coefficients. Modified code for the coefficient loader:
 Test using DeepSolverTimer from 20 empties
 
  Original: 33,319,212 total nodes. Typical timings 3552 [3529-2570], 3559 [3530-3588]
- Modified: 32,930,096 total nodes. Typical timings 3477 [3460-3517], 3525 [3506-3561]
+ Modified: 32,930,096 total nodes. Typical timings 3477 [3460-3517], 3525 [3506-3561], 3572 [3508-3652]
 
  So this seems a slight improvement even without the cache consumption benefit.
+
+ Reusing the coefficients (so lower memory consumption):
+3542 [3522-3594], 3541 [3513-3574]
+
+This is not an unambiguous win. Testing a self-play session between the combined coefficients and the original:
+(b1 is the original version, b1x is the modified version)
+
+    b1:2 vs b1x:2: average result = 2.1
+
+Vary that method as follows: instead of combining all coefficients for an 8-wide range of nEmpty into one set,
+use separate sets for odd and even parity.
+
+    b1:2 vs b1x:2: average result = 0.5
+
+Also tried separate parity sets only at depth <=12 on the theory parity only matters at low # empties.
+
+    b1:2 vs b1x:2: average result = 1.8
+
+Going with separate parity as a reasonable compromise.
+
+Stable Disks
+============
+Checking stable disks at 6 empty. If edge disks >= 1/2 the necessary stables for a cutoff, perform a full stability
+calculation. Cut off if stable disks force a cutoff. How often does this occur at various depths?
+
+[18] stable beta cuts: 0.2%, alpha cuts: 1.3%. 17.5% received full stability calc out of 354,372 total nodes
+[20] stable beta cuts: 0.4%, alpha cuts: 1.8%. 23.2% received full stability calc out of 1,412,465 total nodes
+[22] stable beta cuts: 0.4%, alpha cuts: 4.0%. 28.6% received full stability calc out of 7,576,837 total nodes
+[24] stable beta cuts: 0.8%, alpha cuts: 2.5%. 28.0% received full stability calc out of 43,539,435 total nodes
+[26] stable beta cuts: 0.8%, alpha cuts: 2.8%. 28.5% received full stability calc out of 269,728,279 total nodes
+[28] stable beta cuts: 0.8%, alpha cuts: 3.3%. 29.0% received full stability calc out of 1,380,627,246 total nodes
