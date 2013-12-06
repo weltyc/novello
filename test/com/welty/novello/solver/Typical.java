@@ -10,7 +10,7 @@ import java.util.Arrays;
  * <p/>
  * Helps to reduce impact of timing outliers
  */
-class Typical implements Metric {
+public class Typical implements Metric {
     /**
      * mean of middle 50% of the data
      */
@@ -58,7 +58,7 @@ class Typical implements Metric {
      * @param nIters number of times to execute the runnable
      * @return typical timing for the runs.
      */
-    static @NotNull Typical timing(@NotNull Runnable runnable, int nIters) {
+    public static @NotNull Typical timing(@NotNull Runnable runnable, int nIters) {
         final double[] timings = new double[nIters];
 
         for (int i = 0; i < nIters; i++) {
