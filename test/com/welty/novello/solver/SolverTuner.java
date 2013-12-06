@@ -79,7 +79,7 @@ public class SolverTuner {
             metric = new FixedMetric(nNodes);
             System.out.format("%.4g Mn%n", nNodes * 1e-6);
         } else {
-            final Typical typical = Typical.timing(tunable, 16);
+            final Typical typical = Typical.timing(tunable);
             System.out.println(typical);
             metric = typical;
         }

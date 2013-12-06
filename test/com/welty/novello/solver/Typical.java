@@ -70,4 +70,16 @@ public class Typical implements Metric {
 
         return new Typical(timings);
     }
+
+    /**
+     * Time how long the runnable takes, and return typical timings.
+     *
+     * Calls {@link #timing(Runnable, int)} with 16 iterations.
+     *
+     * @param runnable runnable to be executed
+     * @return typical timing for the runs.
+     */
+    public static @NotNull Typical timing(@NotNull Runnable runnable) {
+        return timing(runnable, 16);
+    }
 }

@@ -22,7 +22,7 @@ public class EvalPlayerTimer implements Runnable {
 
         System.out.format("%d ms elapsed / %,d evals. %4.2f us/eval \n"  ,dt,dn , dt*1e3/dn);
 
-        System.out.println("typical : " + Typical.timing(new EvalPlayerTimer(), 16));
+        System.out.println("typical : " + Typical.timing(new EvalPlayerTimer()));
     }
 
     @Override public void run() {
