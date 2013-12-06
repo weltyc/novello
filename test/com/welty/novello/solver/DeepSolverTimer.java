@@ -20,16 +20,15 @@ public class DeepSolverTimer implements Tunable {
         // warm up Hot Spot
         new DeepSolverTimer(20).run();
 
-        System.out.println(Typical.timing(new DeepSolverTimer(20)));
+//        System.out.println(Typical.timing(new DeepSolverTimer(20)));
 
-//        final long t0 = System.currentTimeMillis();
-//        final DeepSolverTimer timer = new DeepSolverTimer(22);
-//        timer.run();
-//        final long dt = System.currentTimeMillis() - t0;
-//        final long nNodes = timer.nNodes();
-//        System.out.format("%,d ms elapsed; %,d total nodes\n", dt, nNodes);
-
-//        timer.solver.dumpStatistics();
+        final long t0 = System.currentTimeMillis();
+        final DeepSolverTimer timer = new DeepSolverTimer(20);
+        timer.run();
+        final long dt = System.currentTimeMillis() - t0;
+        final long nNodes = timer.nNodes();
+        System.out.format("%,d ms elapsed; %,d total nodes\n", dt, nNodes);
+        timer.solver.dumpStatistics();
 //        System.out.println(solver.nodeCounts.getNodeCountsByDepth());
 //        System.out.println(solver.hashTables.stats());
     }

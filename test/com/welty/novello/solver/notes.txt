@@ -887,3 +887,17 @@ And similarly for PRED_ALL nodes:
     PRED_ALL:   8% CUT,   0% PV,  92% ALL     402,461 nodes
 
     Statistics calculated for 402,461 total nodes
+
+Coefficient reuse
+=================
+Instead of using separate coefficients for each empty, we reuse coefficients. While the original plan was to decrease
+memory consumption and thus cache misses, we first see how it affects the node count by simply loading multiple copies
+of the coefficients. Modified code for the coefficient loader:
+            nEmpty = (nEmpty&~7)+4;
+
+Test using DeepSolverTimer from 20 empties
+
+ Original: 33,319,212 total nodes. Typical timings 3552 [3529-2570], 3559 [3530-3588]
+ Modified: 32,930,096 total nodes. Typical timings 3477 [3460-3517], 3525 [3506-3561]
+
+ So this seems a slight improvement even without the cache consumption benefit.

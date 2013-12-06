@@ -88,6 +88,8 @@ public class EvalStrategy {
      * @param coefficientDirectory location to read from
      */
     short[][] readSlice(int nEmpty, Path coefficientDirectory) {
+        nEmpty = (nEmpty&~7)+4;
+
         final Path path = coefficientDirectory.resolve(filename(nEmpty));
         try (DataInputStream in = new DataInputStream(new BufferedInputStream(Files.newInputStream(path)))) {
             final int nFeatures = nFeatures();
