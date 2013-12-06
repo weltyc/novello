@@ -15,7 +15,7 @@ public class CoefficientViewer {
     private static void dumpSlice(String eval, int nEmpty, int minValue) {
         final EvalStrategy strategy = EvalStrategies.strategy(eval.substring(0, 1));
         final String coeffSetName = eval.substring(1);
-        final int[][] slice = strategy.readSlice(nEmpty, coeffSetName);
+        final short[][] slice = strategy.readSlice(nEmpty, coeffSetName);
         System.out.println();
         System.out.println("=== Coefficients for " + strategy + coeffSetName + " with " + nEmpty + " empties ===");
         strategy.dumpCoefficients(slice, minValue);

@@ -78,7 +78,7 @@ class Features {
      * @param coefficients coefficients to print
      * @param minValue     minimum absolute value to print a coefficient
      */
-    static void dumpCoefficients(Feature feature, int[] coefficients, int minValue) {
+    static void dumpCoefficients(Feature feature, short[] coefficients, int minValue) {
         Require.eq(coefficients.length, "# coefficients", feature.nOrids());
 
         System.out.println();

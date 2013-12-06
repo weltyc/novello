@@ -72,7 +72,7 @@ public class EvalStrategy {
      *                     characters such as *?:
      * @return slice
      */
-    int[][] readSlice(int nEmpty, String coeffSetName) {
+    short[][] readSlice(int nEmpty, String coeffSetName) {
         return readSlice(nEmpty, coeffDir(coeffSetName));
     }
 
@@ -87,20 +87,28 @@ public class EvalStrategy {
      * @param nEmpty               # of empties of file to read
      * @param coefficientDirectory location to read from
      */
-    int[][] readSlice(int nEmpty, Path coefficientDirectory) {
+    short[][] readSlice(int nEmpty, Path coefficientDirectory) {
         final Path path = coefficientDirectory.resolve(filename(nEmpty));
         try (DataInputStream in = new DataInputStream(new BufferedInputStream(Files.newInputStream(path)))) {
             final int nFeatures = nFeatures();
-            final int[][] slice = new int[nFeatures][];
+            final short[][] slice = new short[nFeatures][];
 
             for (int iFeature = 0; iFeature < nFeatures; iFeature++) {
                 final Feature feature = getFeature(iFeature);
-                slice[iFeature] = readInts(in, feature.nOrids());
+                slice[iFeature] = readIntsAsShorts(in, feature.nOrids());
             }
             return slice;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private static short[] readIntsAsShorts(DataInputStream in, int nOrids) throws IOException {
+        final short[] coeffsByOrid = new short[nOrids];
+        for (int i = 0; i < nOrids; i++) {
+            coeffsByOrid[i] = (short)in.readInt();
+        }
+        return coeffsByOrid;
     }
 
     private static int[] readInts(DataInputStream in, int nOrids) throws IOException {
@@ -301,7 +309,7 @@ public class EvalStrategy {
     int eval(long mover, long enemy, long moverMoves, long enemyMoves, CoefficientSet coefficientSet) {
         assert moverMoves != 0;
 
-        final int[][] slice = coefficientSet.slice(BitBoardUtils.nEmpty(mover, enemy));
+        final short[][] slice = coefficientSet.slice(BitBoardUtils.nEmpty(mover, enemy));
 
         int eval = 0;
 
@@ -321,7 +329,7 @@ public class EvalStrategy {
     void explain(long mover, long enemy, long moverMoves, long enemyMoves, CoefficientSet coefficientSet) {
         assert moverMoves != 0;
 
-        final int[][] slice = coefficientSet.slice(BitBoardUtils.nEmpty(mover, enemy));
+        final short[][] slice = coefficientSet.slice(BitBoardUtils.nEmpty(mover, enemy));
 
         int eval = 0;
 
@@ -360,7 +368,7 @@ public class EvalStrategy {
      * @param slice    coefficients to print
      * @param minValue minimum value of coefficients to print
      */
-    public void dumpCoefficients(int[][] slice, int minValue) {
+    public void dumpCoefficients(short[][] slice, int minValue) {
         Require.eq(slice.length, "slice length", nFeatures());
         for (int iFeature = 0; iFeature < nFeatures(); iFeature++) {
             final Feature feature = getFeature(iFeature);

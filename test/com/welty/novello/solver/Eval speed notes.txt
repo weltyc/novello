@@ -24,3 +24,4 @@ Self-play b1:6:
 433 ms elapsed / 1,517,470 evals. 0.29 us/eval: Manually inline kogge-stone and reorder computations - not keeping
 slightly slower: use bit twiddling instead of if statements in CornerTerm2.
 
+about 12ms speedup: switch coefficients from int to short

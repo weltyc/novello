@@ -56,7 +56,7 @@ public class EvalStrategyTest extends ArrayTestCase {
         final int nEmpty = 12;
         strategy.writeSlice(nEmpty, coeffs, coefficientDirectory);
 
-        final int[][] slice = strategy.readSlice(nEmpty, coefficientDirectory);
+        final short[][] slice = strategy.readSlice(nEmpty, coefficientDirectory);
         assertEquals(nFeatures, slice.length);
 
         // test expected result for each feature
@@ -64,10 +64,16 @@ public class EvalStrategyTest extends ArrayTestCase {
         for (int iFeature = 0; iFeature < nFeatures; iFeature++) {
             final Feature feature = strategy.getFeature(iFeature);
             final int nOrids = feature.nOrids();
-            int[] expected = Vec.increasingInt(value, 1, nOrids);
+            short start = (short)value;
+            short[] increasing = new short[nOrids];
+            for (short i = 0; i < nOrids; i++) {
+                increasing[i] = start;
+                start += 1;
+            }
             value += nOrids;
 
-            assertEquals(expected, slice[iFeature]);
+            assertTrue(Arrays.equals(increasing, slice[iFeature]));
+//            assertEquals(increasing, slice[iFeature]);
         }
     }
 
