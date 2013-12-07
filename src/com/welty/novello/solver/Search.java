@@ -108,7 +108,7 @@ public class Search {
         int alpha;
     }
 
-    final long[] masks = {BitBoardUtils.CORNERS, ~(BitBoardUtils.CORNERS | BitBoardUtils.X_SQUARES), BitBoardUtils.X_SQUARES};
+    private static final long[] masks = {BitBoardUtils.CORNERS, ~(BitBoardUtils.CORNERS | BitBoardUtils.X_SQUARES), BitBoardUtils.X_SQUARES};
 
     /**
      * Find the best move in a position using tree search.
@@ -127,7 +127,28 @@ public class Search {
         ba.alpha = NO_MOVE;
 
         for (long mask : masks) {
-            treeMove(mover, enemy, moverMoves & mask, depth, ba);
+            long movesToCheck = moverMoves & mask;
+            while (movesToCheck != 0) {
+                final int sq = Long.numberOfTrailingZeros(movesToCheck);
+                final long placement = 1L << sq;
+                movesToCheck ^= placement;
+                final Square square = Square.of(sq);
+                nFlips++;
+                final long flips = square.calcFlips(mover, enemy);
+                final long subEnemy = mover | placement | flips;
+                final long subMover = enemy & ~flips;
+                if (shouldPrintSearch()) {
+                    System.out.format("%s[%d] (%+5d,%+5d) scoring(%s):\n", indent(depth), depth, NO_MOVE, -ba.alpha, BitBoardUtils.sqToText(sq));
+                }
+                final int subScore = -searchScore(subMover, subEnemy, NO_MOVE, -ba.alpha, depth - 1);
+                if (shouldPrintSearch()) {
+                    System.out.format("%s[%d] (%+5d,%+5d) score(%s)=%+5d\n", indent(depth), depth, NO_MOVE, -ba.alpha, BitBoardUtils.sqToText(sq), subScore);
+                }
+                if (subScore > ba.alpha) {
+                    ba.bestMove = sq;
+                    ba.alpha = subScore;
+                }
+            }
         }
 
         if (shouldPrintScore()) {
@@ -135,30 +156,6 @@ public class Search {
             System.out.format("%s score = %+5d (%s)\n", this, ba.alpha, BitBoardUtils.sqToText(ba.bestMove));
         }
         return new MoveScore(ba.bestMove, ba.alpha);
-    }
-
-    private void treeMove(long mover, long enemy, long moverMoves, int depth, BA ba) {
-        while (moverMoves != 0) {
-            final int sq = Long.numberOfTrailingZeros(moverMoves);
-            final long placement = 1L << sq;
-            moverMoves ^= placement;
-            final Square square = Square.of(sq);
-            nFlips++;
-            final long flips = square.calcFlips(mover, enemy);
-            final long subEnemy = mover | placement | flips;
-            final long subMover = enemy & ~flips;
-            if (shouldPrintSearch()) {
-                System.out.format("%s[%d] (%+5d,%+5d) scoring(%s):\n", indent(depth), depth, NO_MOVE, -ba.alpha, BitBoardUtils.sqToText(sq));
-            }
-            final int subScore = -searchScore(subMover, subEnemy, NO_MOVE, -ba.alpha, depth - 1);
-            if (shouldPrintSearch()) {
-                System.out.format("%s[%d] (%+5d,%+5d) score(%s)=%+5d\n", indent(depth), depth, NO_MOVE, -ba.alpha, BitBoardUtils.sqToText(sq), subScore);
-            }
-            if (subScore > ba.alpha) {
-                ba.bestMove = sq;
-                ba.alpha = subScore;
-            }
-        }
     }
 
     private boolean shouldPrintScore() {
@@ -213,9 +210,6 @@ public class Search {
 
         int result = NO_MOVE;
 
-//        final String indent = indent(depth);
-//        System.out.format("%s[%d] (%+5d,%+5d) -->\n", indent, depth, score, beta);
-
         while (moverMoves != 0) {
             final int sq = Long.numberOfTrailingZeros(moverMoves);
             final long placement = 1L << sq;
@@ -227,7 +221,6 @@ public class Search {
             final long subEnemy = mover | placement | flips;
             final long subMover = enemy & ~flips;
             final int subScore = -searchScore(subMover, subEnemy, -beta, -alpha, depth - 1);
-//            System.out.format("%s[%d] (%+5d,%+5d) score(%s)=%+5d\n", indent, depth, -beta, -score, BitBoardUtils.sqToText(sq), subScore);
             if (subScore >= beta) {
                 return subScore;
             }
