@@ -1,11 +1,13 @@
-package com.welty.novello.selfplay;
+package com.welty.novello.solver;
 
 import com.welty.novello.core.Move;
 import com.welty.novello.core.MutableGame;
 import com.welty.novello.core.Position;
 import com.welty.novello.core.SampleGames;
 import com.welty.novello.eval.Eval;
-import com.welty.novello.solver.Typical;
+import com.welty.novello.selfplay.Player;
+import com.welty.novello.selfplay.Players;
+import com.welty.novello.selfplay.SelfPlayGame;
 
 import java.util.List;
 

@@ -5,7 +5,6 @@ import com.welty.novello.core.Square;
 import com.welty.novello.eval.CoefficientCalculator;
 import com.welty.novello.eval.Eval;
 import com.welty.novello.selfplay.Players;
-import com.welty.novello.selfplay.Search;
 
 import static com.welty.novello.core.BitBoardUtils.calcMoves;
 import static com.welty.novello.core.BitBoardUtils.isBitClear;

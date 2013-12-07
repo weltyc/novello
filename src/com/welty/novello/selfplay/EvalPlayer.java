@@ -3,6 +3,7 @@ package com.welty.novello.selfplay;
 import com.welty.novello.core.MoveScore;
 import com.welty.novello.core.Position;
 import com.welty.novello.eval.Eval;
+import com.welty.novello.solver.Search;
 import org.jetbrains.annotations.NotNull;
 
 /**
