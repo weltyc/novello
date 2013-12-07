@@ -48,7 +48,8 @@ public class Search {
     public MoveScore calcMove(Position position, long moverMoves, int depth) {
         this.rootDepth = depth;
         nFlips = 0;
-        return treeMove(position.mover(), position.enemy(), moverMoves, depth);
+        final BA ba = treeMove(position.mover(), position.enemy(), moverMoves, NO_MOVE, -NO_MOVE, depth);
+        return new MoveScore(ba.bestMove, ba.alpha);
     }
 
     /**
@@ -121,10 +122,10 @@ public class Search {
      * @param depth      remaining search depth
      * @return index of square of best move
      */
-    private MoveScore treeMove(long mover, long enemy, long moverMoves, int depth) {
+    private BA treeMove(long mover, long enemy, long moverMoves, int alpha, int beta, int depth) {
         BA ba = new BA();
         ba.bestMove = -1;
-        ba.alpha = NO_MOVE;
+        ba.alpha = alpha;
 
         for (long mask : masks) {
             long movesToCheck = moverMoves & mask;
@@ -147,6 +148,9 @@ public class Search {
                 if (subScore > ba.alpha) {
                     ba.bestMove = sq;
                     ba.alpha = subScore;
+                    if (subScore > beta) {
+                        return ba;
+                    }
                 }
             }
         }
@@ -155,7 +159,7 @@ public class Search {
             System.out.println();
             System.out.format("%s score = %+5d (%s)\n", this, ba.alpha, BitBoardUtils.sqToText(ba.bestMove));
         }
-        return new MoveScore(ba.bestMove, ba.alpha);
+        return ba;
     }
 
     private boolean shouldPrintScore() {
@@ -210,24 +214,27 @@ public class Search {
 
         int result = NO_MOVE;
 
-        while (moverMoves != 0) {
-            final int sq = Long.numberOfTrailingZeros(moverMoves);
-            final long placement = 1L << sq;
-            moverMoves ^= placement;
-            final Square square = Square.of(sq);
+        for (long mask : masks) {
+            long movesToCheck = mask & moverMoves;
+            while (movesToCheck != 0) {
+                final int sq = Long.numberOfTrailingZeros(movesToCheck);
+                final long placement = 1L << sq;
+                movesToCheck ^= placement;
+                final Square square = Square.of(sq);
 
-            nFlips++;
-            final long flips = square.calcFlips(mover, enemy);
-            final long subEnemy = mover | placement | flips;
-            final long subMover = enemy & ~flips;
-            final int subScore = -searchScore(subMover, subEnemy, -beta, -alpha, depth - 1);
-            if (subScore >= beta) {
-                return subScore;
-            }
-            if (subScore > result) {
-                result = subScore;
-                if (subScore > alpha) {
-                    alpha = subScore;
+                nFlips++;
+                final long flips = square.calcFlips(mover, enemy);
+                final long subEnemy = mover | placement | flips;
+                final long subMover = enemy & ~flips;
+                final int subScore = -searchScore(subMover, subEnemy, -beta, -alpha, depth - 1);
+                if (subScore >= beta) {
+                    return subScore;
+                }
+                if (subScore > result) {
+                    result = subScore;
+                    if (subScore > alpha) {
+                        alpha = subScore;
+                    }
                 }
             }
         }
