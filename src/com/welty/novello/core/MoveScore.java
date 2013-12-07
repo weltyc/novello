@@ -1,7 +1,5 @@
 package com.welty.novello.core;
 
-import com.welty.novello.core.BitBoardUtils;
-
 /**
  * A move with an evaluation
 */
@@ -15,6 +13,6 @@ public class MoveScore {
     }
 
     @Override public String toString() {
-        return BitBoardUtils.sqToText(sq)+"//"+score;
+        return BitBoardUtils.sqToText(sq)+"/"+score;
     }
 }
