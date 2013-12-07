@@ -44,10 +44,6 @@ public class Eval {
      */
     public int eval(long mover, long enemy) {
         final long moverMoves = BitBoardUtils.calcMoves(mover, enemy);
-        return eval(mover, enemy, moverMoves);
-    }
-
-    public int eval(long mover, long enemy, long moverMoves) {
         final long enemyMoves = BitBoardUtils.calcMoves(enemy, mover);
         final int moveScore;
         if (moverMoves != 0) {
