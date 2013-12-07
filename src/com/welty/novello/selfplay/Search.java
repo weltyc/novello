@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * A reusable Search object.
  * <p/>
- * The public functions, calcMove() and calcScore(), are synchronized so this Search may be only used by one thread at a time.
+ * This class is not thread-safe.
  */
 public class Search {
     public static final int FLAG_PRINT_SCORE = 1;
@@ -23,7 +23,12 @@ public class Search {
     }
 
     /**
-     * @return the number of moves made by the search routine the last time a search was done.
+     * Get the number of times a move has been made (pieces have been flipped on the board).
+     *
+     * If called after the search has completed, returns the number of times a move was made during the search.
+     * If called during the search, returns the number of moves so far.
+     *
+     * @return the number of times a move has been made since the most recent search start.
      */
     public long nFlips() {
         return nFlips;
@@ -40,7 +45,7 @@ public class Search {
      * @param depth      search depth
      * @return the best move from this position, and its score in centi-disks
      */
-    public synchronized MoveScore calcMove(Position position, long moverMoves, int depth) {
+    public MoveScore calcMove(Position position, long moverMoves, int depth) {
         this.rootDepth = depth;
         nFlips = 0;
         return treeMove(position.mover(), position.enemy(), moverMoves, depth);
@@ -56,7 +61,7 @@ public class Search {
      * @param depth    search depth. If &le; 0, returns the eval.
      * @return score of the move.
      */
-    public synchronized int calcScore(Position position, int depth) {
+    public int calcScore(Position position, int depth) {
         return calcScore(position.mover(), position.enemy(), depth);
     }
 
@@ -71,7 +76,7 @@ public class Search {
      * @param depth      search depth. If &le; 0, returns the eval.
      * @return score of the move.
      */
-    public synchronized int calcScore(long mover, long enemy, int depth) {
+    public int calcScore(long mover, long enemy, int depth) {
         nFlips = 0;
         this.rootDepth = depth;
         return searchScore(mover, enemy, NO_MOVE, -NO_MOVE, depth);
