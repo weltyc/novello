@@ -1,11 +1,8 @@
 package com.welty.novello.selfplay;
 
 import com.welty.novello.core.MoveScore;
-import com.welty.novello.eval.CoefficientCalculator;
-import com.welty.novello.eval.Eval;
 import com.welty.novello.core.Position;
-import com.welty.novello.core.BitBoardUtils;
-import com.welty.novello.core.Square;
+import com.welty.novello.eval.Eval;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -21,160 +18,14 @@ public class EvalPlayer extends EndgamePlayer {
 
     @Override public MoveScore calcMove(@NotNull Position board, long moverMoves, int flags) {
         if (board.nEmpty() > 8) {
-            return searchMove(board.mover(), board.enemy(), moverMoves, searchDepth, flags);
+            return new Search(eval, flags).calcMove(board, board.calcMoves(), searchDepth);
         } else {
             return solveMove(board);
         }
     }
 
-    private static class BA {
-        int bestMove;
-        int alpha;
-    }
-
-    /**
-     * Find the best move in a position using tree search.
-     * <p/>
-     * Precondition: The mover is guaranteed to have a move.
-     *
-     * @param mover      mover disks
-     * @param enemy      enemy disks
-     * @param moverMoves mover legal moves
-     * @param depth      remaining search depth
-     * @return index of square of best move
-     */
-    private MoveScore searchMove(long mover, long enemy, long moverMoves, int depth, int flags) {
-        BA ba = new BA();
-        ba.bestMove = -1;
-        ba.alpha = NO_MOVE;
-        final String indent = indent(depth);
-
-        final long corners = moverMoves & BitBoardUtils.CORNERS;
-        final long xSquares = moverMoves & BitBoardUtils.X_SQUARES;
-        final long rest = moverMoves &~(BitBoardUtils.CORNERS | BitBoardUtils.X_SQUARES);
-
-        searchMoves(mover, enemy, corners, depth, flags, ba, indent);
-        searchMoves(mover, enemy, rest, depth, flags, ba, indent);
-        searchMoves(mover, enemy, xSquares, depth, flags, ba, indent);
-
-        if (0 != (flags & FLAG_PRINT_SCORE)) {
-            System.out.println();
-            System.out.format("%s score = %+5d (%s)\n", this, ba.alpha, BitBoardUtils.sqToText(ba.bestMove));
-        }
-        return new MoveScore(ba.bestMove, ba.alpha);
-    }
-
-    private void searchMoves(long mover, long enemy, long moverMoves, int depth, int flags, BA ba, String indent) {
-        while (moverMoves != 0) {
-            final int sq = Long.numberOfTrailingZeros(moverMoves);
-            final long placement = 1L << sq;
-            moverMoves ^= placement;
-            final Square square = Square.of(sq);
-            final long flips = square.calcFlips(mover, enemy);
-            final long subEnemy = mover | placement | flips;
-            final long subMover = enemy & ~flips;
-            if (0 != (flags & FLAG_PRINT_SEARCH)) {
-                System.out.format("%s[%d] (%+5d,%+5d) scoring(%s):\n", indent, depth, NO_MOVE, -ba.alpha, BitBoardUtils.sqToText(sq));
-            }
-            final int subScore = -searchScore(subMover, subEnemy, NO_MOVE, -ba.alpha, depth - 1);
-            if (0 != (flags & FLAG_PRINT_SEARCH)) {
-                System.out.format("%s[%d] (%+5d,%+5d) score(%s)=%+5d\n", indent, depth, NO_MOVE, -ba.alpha, BitBoardUtils.sqToText(sq), subScore);
-            }
-            if (subScore > ba.alpha) {
-                ba.bestMove = sq;
-                ba.alpha = subScore;
-            }
-        }
-    }
-
-    /**
-     * Score a position using tree search.
-     * <p/>
-     * The mover is not guaranteed to have a move.
-     * <p/>
-     * See {@link #searchScore(long, long, long, int, int, int)}  for parameter and output details.
-     */
-    public int searchScore(long mover, long enemy, int alpha, int beta, int depth) {
-        if (depth == 0) {
-            return eval.eval(mover, enemy);
-        }
-        final long moverMoves = BitBoardUtils.calcMoves(mover, enemy);
-        if (moverMoves != 0) {
-            return searchScore(mover, enemy, moverMoves, alpha, beta, depth);
-        } else {
-            final long enemyMoves = BitBoardUtils.calcMoves(enemy, mover);
-            if (enemyMoves != 0) {
-                return -searchScore(enemy, mover, enemyMoves, -beta, -alpha, depth);
-            } else {
-                return CoefficientCalculator.DISK_VALUE * BitBoardUtils.terminalScore(mover, enemy);
-            }
-        }
-    }
-
-    /**
-     * This is the score used when no move has yet been evaluated. It needs to be lower than
-     * any valid score.
-     * <p/>
-     * It is sometimes used as score in a search. When switching sides, the search uses -score as the new beta.
-     * This means NO_MOVE can't be Integer.MIN_VALUE, because -Integer.MIN_VALUE = Integer.MIN_VALUE and we would
-     * end up with new beta < new score.
-     */
-    static final int NO_MOVE = -Integer.MAX_VALUE;
-
-
-    /**
-     * Score a position using tree search.
-     * <p/>
-     * Precondition: The mover is guaranteed to have a move.
-     *
-     * @param mover      mover disks
-     * @param enemy      enemy disks
-     * @param moverMoves mover legal moves
-     * @param alpha      search score
-     * @param beta       search beta
-     * @param depth      remaining search depth
-     * @return score
-     */
-    private int searchScore(long mover, long enemy, long moverMoves, int alpha, int beta, int depth) {
-        int result = NO_MOVE;
-
-//        final String indent = indent(depth);
-//        System.out.format("%s[%d] (%+5d,%+5d) -->\n", indent, depth, score, beta);
-
-        while (moverMoves != 0) {
-            final int sq = Long.numberOfTrailingZeros(moverMoves);
-            final long placement = 1L << sq;
-            moverMoves ^= placement;
-            final Square square = Square.of(sq);
-            final long flips = square.calcFlips(mover, enemy);
-            final long subEnemy = mover | placement | flips;
-            final long subMover = enemy & ~flips;
-            final int subScore = -searchScore(subMover, subEnemy, -beta, -alpha, depth - 1);
-//            System.out.format("%s[%d] (%+5d,%+5d) score(%s)=%+5d\n", indent, depth, -beta, -score, BitBoardUtils.sqToText(sq), subScore);
-            if (subScore >= beta) {
-                return subScore;
-            }
-            if (subScore > result) {
-                result = subScore;
-                if (subScore > alpha) {
-                    alpha = subScore;
-                }
-            }
-        }
-
-        return result;
-    }
-
     @Override public String toString() {
         return eval.toString() + ":" + searchDepth;
-    }
-
-    private String indent(int depth) {
-        final StringBuilder sb = new StringBuilder();
-        for (int i = depth; i < searchDepth; i++) {
-            sb.append("  ");
-        }
-        return sb.toString();
     }
 }
 

@@ -23,14 +23,14 @@ public class DeepSolverTimer implements Tunable {
 //        System.out.println(Typical.timing(new DeepSolverTimer(20)));
 
         final long t0 = System.currentTimeMillis();
-        final DeepSolverTimer timer = new DeepSolverTimer(30);
+        final DeepSolverTimer timer = new DeepSolverTimer(24);
         timer.run();
         final long dt = System.currentTimeMillis() - t0;
         final long nNodes = timer.nNodes();
         System.out.format("%,d ms elapsed; %,d total nodes\n", dt, nNodes);
         timer.solver.dumpStatistics();
-//        System.out.println(timer.solver.nodeCounts.getNodeCountsByDepth());
-//        System.out.println(timer.solver.hashTables.stats());
+        System.out.println(timer.solver.nodeCounts.getNodeCountsByDepth());
+        System.out.println(timer.solver.hashTables.stats());
     }
 
     private static List<Position> getPositions(int nEmpty) {

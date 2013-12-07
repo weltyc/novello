@@ -4,8 +4,8 @@ import com.welty.novello.core.BitBoardUtils;
 import com.welty.novello.core.Square;
 import com.welty.novello.eval.CoefficientCalculator;
 import com.welty.novello.eval.Eval;
-import com.welty.novello.selfplay.EvalPlayer;
 import com.welty.novello.selfplay.Players;
+import com.welty.novello.selfplay.Search;
 
 import static com.welty.novello.core.BitBoardUtils.calcMoves;
 import static com.welty.novello.core.BitBoardUtils.isBitClear;
@@ -75,9 +75,8 @@ final class MoveSorter {
     private int size = 0;
     final Move[] moves = new Move[64];
 
-    static final Eval deepEval = Players.currentEval();
-
-    static final EvalPlayer deepEvalPlayer = new EvalPlayer(deepEval, 2);
+    static final Eval sortEval = Players.currentEval();
+    static final Search sortSearch = new Search(sortEval, 0);
 
     MoveSorter() {
         for (int i = 0; i < moves.length; i++) {
@@ -97,7 +96,7 @@ final class MoveSorter {
             } else if (nEmpties >= MIN_EVAL_SORT_DEPTH + 2) {
                 useEvalSort = true;
             } else {
-                int localScore = deepEval.eval(mover, enemy);
+                int localScore = sortEval.eval(mover, enemy);
                 if (predictedNodeType==Solver.PRED_ALL) {
                     localScore -= 10;
                 }
@@ -115,7 +114,7 @@ final class MoveSorter {
                     //
                     // The current eval has a small adjustment for the current predicted node type; it turns out
                     // that predicted ALL nodes cut off less frequently than predicted CUT nodes with the same eval.
-                    int localScore = deepEval.eval(mover, enemy);
+                    int localScore = sortEval.eval(mover, enemy);
                     if (predictedNodeType==Solver.PRED_ALL) {
                         localScore -= 10;
                     }
@@ -181,12 +180,7 @@ final class MoveSorter {
         final int nMobs = Long.bitCount(nextMoverMoves);
 
         final int evalScore;
-        if (searchDepth > 0) {
-            evalScore = deepEvalPlayer.searchScore(nextMover, nextEnemy, -Integer.MAX_VALUE, Integer.MAX_VALUE, searchDepth);
-        }
-        else {
-            evalScore = deepEval.eval(nextMover, nextEnemy, nextMoverMoves);
-        }
+        evalScore = sortSearch.calcScore(nextMover, nextEnemy, searchDepth);
         int margin = -evalScore - (beta + BETA_MARGIN) * CoefficientCalculator.DISK_VALUE;
         if (margin > 0) {
             margin >>= 1;

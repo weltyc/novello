@@ -479,7 +479,7 @@ public class Solver {
         if (nodeType != PRED_ALL) {
             return;
         }
-        final int eval = MoveSorter.deepEval.eval(mover, enemy) / CoefficientCalculator.DISK_VALUE;
+        final int eval = MoveSorter.sortEval.eval(mover, enemy) / CoefficientCalculator.DISK_VALUE;
         final Statistic statistic;
 
         if (eval >= beta) {

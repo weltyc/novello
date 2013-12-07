@@ -7,9 +7,6 @@ import org.jetbrains.annotations.NotNull;
 /**
  */
 public interface Player {
-    public static final int FLAG_PRINT_SCORE = 1;
-    public static final int FLAG_PRINT_SEARCH = 2;
-
     /**
      * Determine the player's next move.
      * <p/>
