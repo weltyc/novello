@@ -55,7 +55,8 @@ public class Eval {
         } else if (enemyMoves != 0) {
             moveScore = -eval(enemy, mover, enemyMoves, moverMoves);
         } else {
-            moveScore = CoefficientCalculator.DISK_VALUE * (Long.bitCount(mover) - Long.bitCount(enemy));
+            moveScore = CoefficientCalculator.DISK_VALUE * BitBoardUtils.terminalScore(mover, enemy);
+
         }
         return moveScore;
     }
@@ -105,7 +106,6 @@ public class Eval {
      * Evaluate a position
      * <p/>
      * This function will check for passes and return the terminal value if the game is over.
-     *
      *
      * @param position@return value of position.
      */

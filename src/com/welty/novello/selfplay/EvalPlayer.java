@@ -106,7 +106,7 @@ public class EvalPlayer extends EndgamePlayer {
             if (enemyMoves != 0) {
                 return -searchScore(enemy, mover, enemyMoves, -beta, -alpha, depth);
             } else {
-                return CoefficientCalculator.DISK_VALUE * (Long.bitCount(mover) - Long.bitCount(enemy));
+                return CoefficientCalculator.DISK_VALUE * BitBoardUtils.terminalScore(mover, enemy);
             }
         }
     }

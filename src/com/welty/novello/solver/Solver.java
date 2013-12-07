@@ -159,7 +159,7 @@ public class Solver {
     private int solve(long mover, long enemy, int alpha, int beta) {
         final int nEmpty = bitCount(~(mover | enemy));
         if (nEmpty == 0) {
-            return terminalScore(mover, enemy);
+            return BitBoardUtils.terminalScore(mover, enemy);
         }
         if (nEmpty == 1) {
             return solve1(mover, enemy, empties.first().square);
@@ -212,7 +212,7 @@ public class Solver {
         if (result == NO_MOVE) {
             final int enemyResult = moverResultDeep(enemy, mover, -beta, -alpha, nEmpties, parity, -nodeType, -1L);
             if (enemyResult == NO_MOVE) {
-                return terminalScore(mover, enemy);
+                return BitBoardUtils.terminalScore(mover, enemy);
             } else {
                 return -enemyResult;
             }
@@ -546,7 +546,7 @@ public class Solver {
         if (result == NO_MOVE) {
             final int enemyResult = moverResultNoParity(empties, enemy, mover, -beta, -alpha, nEmpties);
             if (enemyResult == NO_MOVE) {
-                return terminalScore(mover, enemy);
+                return BitBoardUtils.terminalScore(mover, enemy);
             } else {
                 return -enemyResult;
             }
@@ -591,7 +591,7 @@ public class Solver {
         if (result == NO_MOVE) {
             final int enemyResult = moverResult3(empties, enemy, mover, -beta, -alpha);
             if (enemyResult == NO_MOVE) {
-                return terminalScore(mover, enemy);
+                return BitBoardUtils.terminalScore(mover, enemy);
             } else {
                 return -enemyResult;
             }
@@ -636,7 +636,7 @@ public class Solver {
         if (result == NO_MOVE) {
             final int enemyResult = moverResult2(enemy, mover, -alpha, empty1, empty2);
             if (enemyResult == NO_MOVE) {
-                return terminalScore(mover, enemy);
+                return BitBoardUtils.terminalScore(mover, enemy);
             } else {
                 return -enemyResult;
             }
@@ -702,12 +702,15 @@ public class Solver {
             final int net = 62 - 2 * bitCount(enemy); // 62 because we didn't set the placed disk
             return net;
         }
-        final int net = 2 * bitCount(mover) - 63; // 63 because 1 empty square remains
+        int net = 2 * bitCount(mover) - 63; // 63 because 1 empty square remains
+        if (BitBoardUtils.WINNER_GETS_EMPTIES) {
+            if (net>0) {
+                net++;
+            } else {
+                net--;
+            }
+        }
         return net;
-    }
-
-    private static int terminalScore(long mover, long enemy) {
-        return bitCount(mover) - bitCount(enemy);
     }
 
     /**

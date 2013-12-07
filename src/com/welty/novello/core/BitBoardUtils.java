@@ -32,6 +32,7 @@ public class BitBoardUtils {
     private static final long EDGES = FilesAH | Ranks18;
     private static final long CENTER_36 = ~EDGES;
     public static final long CENTER_4 = 0x0000001818000000L;
+    public static final boolean WINNER_GETS_EMPTIES = true;
 
 
     /**
@@ -497,5 +498,18 @@ public class BitBoardUtils {
         final int moverCol = bitBoardColToRow(mover, col);
         final int enemyCol = bitBoardColToRow(enemy, col);
         return Base3.base2ToBase3(moverCol, enemyCol);
+    }
+
+    public static int terminalScore(long mover, long enemy) {
+        int netDisks = Long.bitCount(mover) - Long.bitCount(enemy);
+        if (BitBoardUtils.WINNER_GETS_EMPTIES) {
+            final int nEmpty = Long.bitCount(~(mover | enemy));
+            if (netDisks > 0) {
+                netDisks += nEmpty;
+            } else if (netDisks < 0) {
+                netDisks -= nEmpty;
+            }
+        }
+        return netDisks;
     }
 }

@@ -49,14 +49,12 @@ public class MutableGameTest extends TestCase {
         final List<PositionValue> pvs = game.calcPositionValues();
         assertEquals(4, pvs.size());
         final boolean[] blackToMoves = {true, false, false, false};
-        assertEquals(8, pvs.get(1).value);
-        assertEquals(8, pvs.get(2).value);
-        assertEquals(8, pvs.get(3).value);
+        final int expected = BitBoardUtils.WINNER_GETS_EMPTIES ? 64 : 8;
         for (int i = 0; i < 4; i++) {
             final PositionValue pv = pvs.get(i);
             assertEquals(60 - i, pv.nEmpty());
             final boolean blackToMove = blackToMoves[i];
-            final int netScore = blackToMove ? -8 : 8;
+            final int netScore = blackToMove ? -expected : expected;
             assertEquals(netScore, pv.value);
         }
         assertEquals(pvs.get(0).mover, startPosition.mover());
@@ -79,7 +77,7 @@ public class MutableGameTest extends TestCase {
         assertEquals("GGS/os", game.place);
         assertEquals("-------- -------- -------- ---O*--- ---*O--- -------- -------- -------- *", game.startPosition.positionString());
         assertEquals(0, game.getLastPosition().nEmpty());
-        assertEquals(0, game.getLastPosition().netDisks());
+        assertEquals(0, game.getLastPosition().terminalScore());
     }
 
     public void testCalcPositionAt() {

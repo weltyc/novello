@@ -270,8 +270,8 @@ public class Position implements Comparable<Position> {
     /**
      * @return black disks - white disks
      */
-    public int netDisks() {
-        return Long.bitCount(black) - Long.bitCount(white);
+    public int terminalScore() {
+        return BitBoardUtils.terminalScore(black, white);
     }
 
     /**

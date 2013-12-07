@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Play randomly except play perfectly with <= 8 empties
  */
-public class EndgamePlayer extends RandomPlayer {
+public class EndgamePlayer implements Player {
     private static final ThreadLocal<Solver> solvers = new ThreadLocal<Solver>() {
         @Override protected Solver initialValue() {
             return new Solver();
@@ -17,12 +17,7 @@ public class EndgamePlayer extends RandomPlayer {
     };
 
     @Override public MoveScore calcMove(@NotNull Position board, long moverMoves, int flags) {
-        if (board.nEmpty() <= 8) {
-            return solveMove(board);
-        }
-        else {
-            return super.calcMove(board, moverMoves, flags);
-        }
+        return solveMove(board);
     }
 
     /**

@@ -97,7 +97,7 @@ public class MutableGame {
      * @return a list of PositionValues, but only those where the mover has a legal move.
      */
     public List<PositionValue> calcPositionValues() {
-        final int netScore = getLastPosition().netDisks();
+        final int netScore = getLastPosition().terminalScore();
         final List<PositionValue> pvs = new ArrayList<>();
         Position pos = getStartPosition();
         for (MutableGame.Move move : moves) {
@@ -119,7 +119,7 @@ public class MutableGame {
      * @return number of black disks - number of white disks at the end of the game
      */
     public int netScore() {
-        return lastPosition.netDisks();
+        return lastPosition.terminalScore();
     }
 
     public static MutableGame ofGgf(String ggf) {

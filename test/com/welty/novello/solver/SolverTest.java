@@ -3,6 +3,9 @@ package com.welty.novello.solver;
 import com.welty.novello.core.BitBoardUtils;
 import com.welty.novello.core.Position;
 import com.welty.novello.core.MoveScore;
+import com.welty.novello.ntest.NTest;
+import com.welty.novello.selfplay.EndgamePlayer;
+import com.welty.novello.selfplay.SelfPlayGame;
 import junit.framework.TestCase;
 
 import static com.welty.novello.core.BitBoardUtils.reflection;
@@ -12,14 +15,14 @@ import static com.welty.novello.core.BitBoardUtils.reflection;
 public class SolverTest extends TestCase {
     private static final SolverTestCase[] testCases = {
 // some trivial positions:
-            new SolverTestCase("OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO..", 62),
+            new SolverTestCase("OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO..", 62, 64),
             new SolverTestCase("OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO*.", 64),
             new SolverTestCase("OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO*O..", 64),
             new SolverTestCase("OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO*OO.", 56),
-            new SolverTestCase("OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO*O...", 63),
-            new SolverTestCase("OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO*O*O....", 49),
+            new SolverTestCase("OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO*O...", 63, 64),
+            new SolverTestCase("OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO*O*O....", 49, 50),
             new SolverTestCase("**********************************************************O*O...", -64),
-            new SolverTestCase("***********************************************************O*...", -63),
+            new SolverTestCase("***********************************************************O*...", -63, -64),
             new SolverTestCase("************************************************************O*..", -64),
             new SolverTestCase("*************************************************************O*.", -58),
             new SolverTestCase("***********************************************O*******O*****O*.", -54),
@@ -69,7 +72,7 @@ public class SolverTest extends TestCase {
             new SolverTestCase(".O****.O..****.O.O*OOO*O.**OOOOO.**OOO*O.*O*O*OO.****OO.O*OOOOO.", 14),
             new SolverTestCase("..****..O.*OO...OO**OO..O**O*OOOO***OOOOO****O*O.**O***O.******O", -8),
             new SolverTestCase(".**.O....***OO.*O*O**O**OO*OO***OO*OOO*.OOO**OOO.OOOOOOO..*OOOO.", -8),
-            new SolverTestCase(".....O....OOOOOO**O***O*.*OOOOO****OO*O***O**O**********O*****..", 2),
+            new SolverTestCase(".....O....OOOOOO**O***O*.*OOOOO****OO*O***O**O**********O*****..", 2, 4),
             new SolverTestCase("O..*OO..*OO********O********O***..*OOO*...OO*OOO.OOOOOOO.OOOOOO.", -2),
             new SolverTestCase("OOOOO*O...OOOOO.**O*****.**OO***********.*OOO****.OOOO....OOOOO.", 18),
             new SolverTestCase("..O.O*..OO*OOO..OO**O*O.O**O**O.O***O*OOOO*OOO*OO******O*.**..*O", 8),
@@ -105,7 +108,7 @@ public class SolverTest extends TestCase {
             new SolverTestCase(".******...**O*..OO*O*OO*OOO*OOOOOOOO**O*.OOO**O..OO*OOO...*OOOO*", -4),
             new SolverTestCase(".***..OO*.*O*O**O*O*OO**O**OOO*OO*OO*O..OOOOOOO.O*OOO...OOOOOO..", 18),
             new SolverTestCase("..OOOO....OOOO*.**OOO**O*OOO*O*OOOOOOO*****O*O*O.***OO..*OOOOO..", 6),
-            new SolverTestCase(".*******.**O.O*.O**OO*O*O****O.OO*O**OO.O**OO*..O******..OOOOO..", -1),
+            new SolverTestCase(".*******.**O.O*.O**OO*O*O****O.OO*O**OO.O**OO*..O******..OOOOO..", -1, -2),
             new SolverTestCase("O***O*...****O..O*OOOOO*OO*OOO**OOOOO*O*OOO*OO**..O*OO.*..OOOO..", 2),
             new SolverTestCase("..O**...**O***..***OOO*O**O********O*O**.***O***OO*O***..OO**O..", -2),
             new SolverTestCase("*******..*OOO*.O.O*****O.OO**O*O.OOOO**O..OO*O*O...O***O.OOOOOOO", 2),
@@ -122,11 +125,11 @@ public class SolverTest extends TestCase {
             new SolverTestCase("O.O****O.O*****.**O**O*..*OO*O*O***O***OO******O..*****....OOOO.", 6),
             new SolverTestCase("..**.*....****.*OOOOOO**.*O*O*****************O**.OOOOO*..*OOOO*", 6),
             new SolverTestCase("..OOO*..*.OO**..****O******O******O*OO**.*O*O*OOO.****O...O****O", 6),
-            new SolverTestCase("*****O..*OO*.O..***OOO..**OOOOO.*OO*O*O.*O**OO*OO.**O**..OO****O", -25),
-            new SolverTestCase("..*****.O.****.*O*******O*****O*O*O*OOO.*.OOOOO..*OOOO...*******", -25),
+            new SolverTestCase("*****O..*OO*.O..***OOO..**OOOOO.*OO*O*O.*O**OO*OO.**O**..OO****O", -25, -26),
+            new SolverTestCase("..*****.O.****.*O*******O*****O*O*O*OOO.*.OOOOO..*OOOO...*******", -25, -26),
             new SolverTestCase("O.O****O.O*****.**O**O*..*OO*O*O***O***OO******O..*****....OOOO.", 6),
             new SolverTestCase("..O****O..*OOOOOO*O*O*OO***OOO*OO.O*O*OO.O*O*OOO..**OOO..****O..", 2),
-            new SolverTestCase("..****....****..OOOOO*O*OOOOOO**OOO*OO**OO*O*O*.O******O...****O", 33),
+            new SolverTestCase("..****....****..OOOOO*O*OOOOOO**OOO*OO**OO*O*O*.O******O...****O", 33, 34),
             new SolverTestCase(".******.OOOO*O..OOO*O*O.O*OOOO*.O*******OOOOOOO.O.O*OO....O*OOOO", -20),
             new SolverTestCase(".OOOOOO...****..*.**O***OO**O**.*O**O**.*OO****.OOOO*O*..*******", -4),
 
@@ -148,7 +151,7 @@ public class SolverTest extends TestCase {
             for (int i = 0; i < 8; i++) {
                 final long w = reflection(testCase.white, i);
                 final long b = reflection(testCase.black, i);
-                executeTestCase(solver, w, b, testCase.whitePerfectPlayValue);
+                executeTestCase(solver, w, b, testCase.expectedValue());
             }
         }
     }
@@ -175,10 +178,10 @@ public class SolverTest extends TestCase {
         for (int j = 0; j < testCases.length; j++) {
             solver.nodeCounts.resetNodeCount();
             final SolverTestCase testCase = testCases[j];
-            executeTestCase(solver, testCase.white, testCase.black, testCase.whitePerfectPlayValue);
+            executeTestCase(solver, testCase.white, testCase.black, testCase.expectedValue());
             final int nt = nodeCounts[j];
             final long no = solver.nodeCounts.getNNodes();
-            System.out.format("%,9d %,9d %s%n", nt, no, nt>6*no?"<-----":"");
+            System.out.format("%,9d %,9d %s%n", nt, no, nt > 6 * no ? "<-----" : "");
             ntest += nt;
             novello += no;
         }
@@ -190,8 +193,19 @@ public class SolverTest extends TestCase {
         final int nEmpties = BitBoardUtils.nEmpty(white, black);
         solver.clear(nEmpties); // we use this for benchmarking. Don't cheat!
         int actual = solver.solve(white, black);
-        assertEquals(expected, actual);
+        if (expected != actual) {
+            final Position position = new Position(black, white, false);
+            System.out.println(position.positionString());
+            assertEquals(position.toString(), expected, actual);
+        }
     }
+
+//    public static void main(String[] args) {
+//        final EndgamePlayer player = new EndgamePlayer();
+//        final NTest ntest = new NTest(4, false);
+//        Position position = new Position("-----O-- --OOOOOO **O***O* -*OOOOO* ***OO*O* **O**O** ******** O*****-- O");
+//        new SelfPlayGame(position, ntest, ntest, "", true, -1).call();
+//    }
 
     /**
      * A board position, with white-to-move, together with the value of the position to white with perfect play.
@@ -199,7 +213,12 @@ public class SolverTest extends TestCase {
      * This is used for testing solvers.
      */
     private static class SolverTestCase extends Position {
-        private final int whitePerfectPlayValue;
+        private final int nobodyGetsEmptiesValue;
+        private final int winnerTakesEmptiesValue;
+
+        public SolverTestCase(String boardString, int expectedValue) {
+            this(boardString, expectedValue, expectedValue);
+        }
 
         /**
          * Create a solver test case: A board and an expected value.
@@ -210,13 +229,18 @@ public class SolverTest extends TestCase {
          * @param expectedValue number of disks white will win by, given perfect play, with the winner NOT getting empty squares.
          * @throws IllegalArgumentException if the boardString is invalid
          */
-        public SolverTestCase(String boardString, int expectedValue) {
+        public SolverTestCase(String boardString, int expectedValue, int winnerTakesEmptiesValue) {
             super(boardString, false);
-            whitePerfectPlayValue = expectedValue;
+            nobodyGetsEmptiesValue = expectedValue;
+            this.winnerTakesEmptiesValue = winnerTakesEmptiesValue;
         }
 
         public String toString() {
-            return super.toString() + "White to play.\nExpected value to white with perfect play: " + whitePerfectPlayValue + '\n';
+            return super.toString() + "White to play.\nExpected value to white with perfect play: " + nobodyGetsEmptiesValue + '\n';
+        }
+
+        public int expectedValue() {
+            return BitBoardUtils.WINNER_GETS_EMPTIES ? winnerTakesEmptiesValue : nobodyGetsEmptiesValue;
         }
     }
 
@@ -225,15 +249,22 @@ public class SolverTest extends TestCase {
         final Solver solver = new Solver();
         // switch player to move because mover has no move.
         final MoveScore result = solver.solveWithMove(bb.enemy(), bb.mover());
-        assertEquals(1,result.sq);
+        assertEquals(1, result.sq);
     }
 
     public void testSolveWithMove2() {
-        Position bb= new Position("********************O*****OO*O****-********O*****O.OOO**--O---**", true);
+        Position bb = new Position("********************O*****OO*O****-********O*****O.OOO**--O---**", true);
         final Solver solver = new Solver();
         final MoveScore result = solver.solveWithMove(bb.mover(), bb.enemy());
         // A8, F8, C5 all win by 64.
         //noinspection OctalInteger
-        assertTrue(result.sq==007 || result.sq==002 || result.sq == 035);
+        assertTrue(result.sq == 007 || result.sq == 002 || result.sq == 035);
+    }
+
+    public void testFfo49() {
+        // gets a different answer from Zebra on this one, Novello gets +6 Zebra gets +16
+        final Position position = new Position("--OX-O----XXOO--OOOOOXX-OOOOOX--OOOXOXX-OOOOXX-----OOX----X-O---", true);
+        final Solver solver = new Solver();
+//        assertEquals(16, solver.solve(position.mover(), position.enemy()));
     }
 }
