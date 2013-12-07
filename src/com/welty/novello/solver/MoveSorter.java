@@ -190,6 +190,9 @@ final class MoveSorter {
         int margin = -evalScore - (beta + BETA_MARGIN) * CoefficientCalculator.DISK_VALUE;
         if (margin > 0) {
             margin >>= 1;
+            // doesn't help very much
+//            final int nStable = Long.bitCount(Stable.stable(nextMover, nextEnemy) & nextEnemy);
+//            margin += nStable * (CoefficientCalculator.DISK_VALUE/2);
         }
         int moverPotMob = Long.bitCount(BitBoardUtils.potMobs2(nextEnemy, ~(nextMover | nextEnemy)));
         int score = margin - (sortWeightFromMobility[nMobs] << DEEP_MOBILITY_WEIGHT)-(moverPotMob << DEEP_POT_MOB_WEIGHT);
@@ -227,16 +230,17 @@ final class MoveSorter {
                 final long placement = 1L << sq;
                 final long nextEnemy = mover | flips | placement;
                 final long nextMover = enemy & ~flips;
-                final long enemyMoves = calcMoves(nextMover, nextEnemy);
-                int score = scoreWithEtc(parity, hashTables, alpha, beta, sq, nextEnemy, nextMover, enemyMoves);
+                final long nextMoverMoves = calcMoves(nextMover, nextEnemy);
+                int score = scoreWithEtc(parity, hashTables, alpha, beta, sq, nextEnemy, nextMover, nextMoverMoves);
 
-                insert(sq, score, flips, enemyMoves, node);
+                insert(sq, score, flips, nextMoverMoves, node);
             }
         }
     }
 
-    private static int scoreWithEtc(long parity, HashTables hashTables, int alpha, int beta, int sq, long nextEnemy, long nextMover, long enemyMoves) {
-        int score = eval(parity, sq, enemyMoves, nextMover, nextEnemy);
+    private static int scoreWithEtc(long parity, HashTables hashTables, int alpha, int beta, int sq, long nextEnemy
+            , long nextMover, long nextMoverMoves) {
+        int score = eval(parity, sq, nextMoverMoves, nextMover, nextEnemy);
         final HashTables.Entry entry = hashTables.find(nextMover, nextEnemy);
         if (entry != null && entry.cutsOff(-beta, -alpha)) {
             score += 1 << ETC_WEIGHT;
@@ -245,13 +249,13 @@ final class MoveSorter {
     }
 
     @SuppressWarnings("PointlessBitwiseExpression")
-    private static int eval(long parity, int sq, long enemyMoves, long mover, long enemy) {
-        final long empty = ~(mover | enemy);
-        final int nMobs = bitCount(enemyMoves);
+    private static int eval(long parity, int sq, long nextMoverMoves, long nextMover, long nextEnemy) {
+        final long empty = ~(nextMover | nextEnemy);
+        final int nMobs = bitCount(nextMoverMoves);
         return (FixedMoveOrdering.getValue(sq) << FIXED_ORDERING_WEIGHT)
                 + (BitBoardUtils.getBitAsInt(parity, sq) << PARITY_WEIGHT)
-                - (nPotMobs(enemy, empty) << ENEMY_POT_MOB_WEIGHT)
-                + (nPotMobs(mover, empty) << MOVER_POT_MOB_WEIGHT)
+                - (nPotMobs(nextEnemy, empty) << ENEMY_POT_MOB_WEIGHT)
+                + (nPotMobs(nextMover, empty) << MOVER_POT_MOB_WEIGHT)
                 - sortWeightFromMobility[nMobs];
     }
 
