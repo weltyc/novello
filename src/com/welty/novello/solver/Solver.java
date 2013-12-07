@@ -274,6 +274,10 @@ public class Solver {
     }
 
     private static final long[] stableCounts = new long[65];
+    private static long stableAlphaCuts;
+    private static long stableBetaCuts;
+    private static long stableFails;
+    private static long stableUncalculated;
 
     private int moverResultWithHash(long mover, long enemy, int alpha, int beta, int nEmpties, long parity, int nodeType, long movesToCheck) {
         // searchAlpha and searchBeta are the alpha and beta used for the search.
@@ -324,15 +328,21 @@ public class Solver {
                 final long stable = Stable.stable(mover, enemy);
                 final int enemyStable = Long.bitCount(stable & enemy);
                 final int scoreUpperBound = 64 - 2 * enemyStable;
-                if (scoreUpperBound <= alpha) {
-                    return scoreUpperBound;
-                }
                 final int moverStable = Long.bitCount(stable & mover);
                 final int scoreLowerBound = 2 * moverStable - 64;
+                stableCounts[Math.max(enemyStable, moverStable)]++;
+                if (scoreUpperBound <= alpha) {
+                    stableAlphaCuts++;
+                    return scoreUpperBound;
+                }
                 if (scoreLowerBound >= beta) {
+                    stableBetaCuts++;
                     return scoreLowerBound;
                 }
-                stableCounts[Math.max(enemyStable, moverStable)]++;
+                stableFails++;
+            }
+            else {
+                stableUncalculated++;
             }
         }
         final TreeSearchResult result = treeSearchResults[nEmpties];
@@ -493,6 +503,11 @@ public class Solver {
                 System.out.format("%2d: %,9d\n", i, stableCounts[i]);
             }
         }
+        final long totalNodes = stableAlphaCuts + stableBetaCuts + stableFails + stableUncalculated;
+        final double pctBeta = 100.*stableBetaCuts / totalNodes;
+        final double pctAlpha = 100.*stableAlphaCuts / totalNodes;
+        final double pctCalculated = 100 - 100.*stableUncalculated / totalNodes;
+        System.out.format("stable beta cuts: %.1f%%, alpha cuts: %.1f%%. %3.1f%% received full stability calc out of %,d total nodes\n", pctBeta, pctAlpha, pctCalculated, totalNodes);
     }
 
     private void dumpCutoffStatistics() {
