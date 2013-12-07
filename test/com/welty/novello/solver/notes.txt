@@ -932,3 +932,30 @@ calculation. Cut off if stable disks force a cutoff. How often does this occur a
 [24] stable beta cuts: 0.8%, alpha cuts: 2.5%. 28.0% received full stability calc out of 43,539,435 total nodes
 [26] stable beta cuts: 0.8%, alpha cuts: 2.8%. 28.5% received full stability calc out of 269,728,279 total nodes
 [28] stable beta cuts: 0.8%, alpha cuts: 3.3%. 29.0% received full stability calc out of 1,380,627,246 total nodes
+
+Now try move sorting to create stable disks.
+1. In the eval-based sort, if eval > beta + BETA_MARGIN, add (# stable disks/2) to the move sort eval.
+[18] stable beta cuts: 0.2%, alpha cuts: 1.4%. 17.7% received full stability calc out of 354,324 total nodes
+[20] stable beta cuts: 0.5%, alpha cuts: 1.9%. 23.5% received full stability calc out of 1,413,527 total nodes
+[22] stable beta cuts: 0.5%, alpha cuts: 4.2%. 29.2% received full stability calc out of 7,562,330 total nodes
+[24] stable beta cuts: 0.8%, alpha cuts: 2.7%. 28.9% received full stability calc out of 43,267,355 total nodes
+
+2. As above, but add (# stable disks * 2) to the move sort eval.
+[18] stable beta cuts: 0.2%, alpha cuts: 1.4%. 18.3% received full stability calc out of 357,627 total nodes
+[20] stable beta cuts: 0.5%, alpha cuts: 2.0%. 24.6% received full stability calc out of 1,439,041 total nodes
+[22] stable beta cuts: 0.5%, alpha cuts: 4.5%. 30.7% received full stability calc out of 7,731,615 total nodes
+[24] stable beta cuts: 1.0%, alpha cuts: 3.1%. 31.0% received full stability calc out of 44,458,704 total nodes
+[26] stable beta cuts: 0.9%, alpha cuts: 3.0%. 29.6% received full stability calc out of 267,437,373 total nodes
+
+3. as 2. but non-eval-based sort (sort with ETC, down to 6 empties) adds 20*stable disk count to eval
+[18] stable beta cuts: 0.4%, alpha cuts: 2.5%. 24.4% received full stability calc out of 361,337 total nodes
+[20] stable beta cuts: 0.7%, alpha cuts: 3.5%. 32.1% received full stability calc out of 1,461,425 total nodes
+[22] stable beta cuts: 0.7%, alpha cuts: 7.0%. 39.9% received full stability calc out of 7,915,156 total nodes
+[24] stable beta cuts: 1.7%, alpha cuts: 5.1%. 40.4% received full stability calc out of 45,517,343 total nodes
+[26] stable beta cuts: 2.0%, alpha cuts: 5.6%. 41.4% received full stability calc out of 282,737,338 total nodes
+
+4. as 3. but the non-eval based addition is 20* edge stable count.
+[18] stable beta cuts: 0.3%, alpha cuts: 1.9%. 25.5% received full stability calc out of 361,625 total nodes
+[20] stable beta cuts: 0.6%, alpha cuts: 2.8%. 33.3% received full stability calc out of 1,449,209 total nodes
+[22] stable beta cuts: 0.6%, alpha cuts: 5.9%. 41.3% received full stability calc out of 7,823,242 total nodes
+[24] stable beta cuts: 1.3%, alpha cuts: 4.1%. 42.3% received full stability calc out of 45,096,462 total nodes
