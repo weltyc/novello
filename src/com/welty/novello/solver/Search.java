@@ -24,7 +24,7 @@ public class Search {
 
     /**
      * Get the number of times a move has been made (pieces have been flipped on the board).
-     *
+     * <p/>
      * If called after the search has completed, returns the number of times a move was made during the search.
      * If called during the search, returns the number of moves so far.
      *
@@ -71,9 +71,9 @@ public class Search {
      * The mover does not need to have a legal move - if he doesn't this method will pass or return a terminal value as
      * necessary.
      *
-     * @param mover      mover disks
-     * @param enemy      enemy disks
-     * @param depth      search depth. If &le; 0, returns the eval.
+     * @param mover mover disks
+     * @param enemy enemy disks
+     * @param depth search depth. If &le; 0, returns the eval.
      * @return score of the move.
      */
     public int calcScore(long mover, long enemy, int depth) {
@@ -108,6 +108,8 @@ public class Search {
         int alpha;
     }
 
+    final long[] masks = {BitBoardUtils.CORNERS, ~(BitBoardUtils.CORNERS | BitBoardUtils.X_SQUARES), BitBoardUtils.X_SQUARES};
+
     /**
      * Find the best move in a position using tree search.
      * <p/>
@@ -124,13 +126,9 @@ public class Search {
         ba.bestMove = -1;
         ba.alpha = NO_MOVE;
 
-        final long corners = moverMoves & BitBoardUtils.CORNERS;
-        final long xSquares = moverMoves & BitBoardUtils.X_SQUARES;
-        final long rest = moverMoves & ~(BitBoardUtils.CORNERS | BitBoardUtils.X_SQUARES);
-
-        treeMove(mover, enemy, corners, depth, ba);
-        treeMove(mover, enemy, rest, depth, ba);
-        treeMove(mover, enemy, xSquares, depth, ba);
+        for (long mask : masks) {
+            treeMove(mover, enemy, moverMoves & mask, depth, ba);
+        }
 
         if (shouldPrintScore()) {
             System.out.println();
