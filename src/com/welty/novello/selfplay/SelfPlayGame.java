@@ -14,24 +14,26 @@ public class SelfPlayGame implements Callable<MutableGame> {
     private @NotNull MutableGame game;
     private final @NotNull Player black;
     private final @NotNull Player white;
-    private final boolean printGame;
+    private final int gameFlags;
     private final int searchFlags;
 
+    public static final int FLAG_PRINT_GAME = 1;
+    public static final int FLAG_MEASURE_TIME = 2;
     /**
      *
      * @param board start position
      * @param black black player
      * @param white white player
      * @param place location of the match (often, Props.getHostName())
-     * @param printGame  if true prints out each position from the game, followed by the game ggf.
-     * @param searchFlags  as in {@link Player#calcMove(com.welty.novello.core.Position, long, int)}
+     * @param gameFlags  Sum of binary flags defined in SelfPlayGame (FLAG_PRINT_GAME, FLAG_MEASURE_TIME)
+     * @param searchFlags  as defined in {@link Player}
      */
-    public SelfPlayGame(@NotNull Position board, @NotNull Player black, @NotNull Player white, String place, boolean printGame
+    public SelfPlayGame(@NotNull Position board, @NotNull Player black, @NotNull Player white, String place, int gameFlags
             , int searchFlags) {
         this.game = new MutableGame(board, black.toString(), white.toString(), place);
         this.black = black;
         this.white = white;
-        this.printGame = printGame;
+        this.gameFlags = gameFlags;
         this.searchFlags = searchFlags;
     }
 
@@ -49,7 +51,7 @@ public class SelfPlayGame implements Callable<MutableGame> {
                 }
                 else {
                     game.finish();
-                    if (printGame) {
+                    if (printGame()) {
                         System.out.println(game.toGgf());
                         System.out.println("--- result : " + game.getLastPosition().terminalScore());
                     }
@@ -59,6 +61,10 @@ public class SelfPlayGame implements Callable<MutableGame> {
         }
     }
 
+    private boolean printGame() {
+        return (gameFlags & FLAG_PRINT_GAME)!=0;
+    }
+
     private @NotNull Player player(boolean blackToMove) {
         return blackToMove ? black : white;
     }
@@ -66,17 +72,27 @@ public class SelfPlayGame implements Callable<MutableGame> {
     private void move(long moves) {
         final Position board = game.getLastPosition();
         Require.isTrue(moves != 0, "has a move");
-        if (printGame) {
+        if (printGame()) {
             System.out.println(board.positionString());
             System.out.println();
             System.out.println(board);
             System.out.println(player(board.blackToMove) + " to move");
         }
+        final long t0 = measuredTime();
         final MoveScore moveScore = player(board.blackToMove).calcMove(board, moves, searchFlags);
-        game.play(moveScore, 0);
-        if (printGame) {
+        final long dt = measuredTime()-t0;
+        game.play(moveScore, dt*.001);
+        if (printGame()) {
             System.out.println("play " + moveScore);
             System.out.println();
+        }
+    }
+
+    private long measuredTime() {
+        if ((gameFlags & FLAG_MEASURE_TIME)!=0) {
+            return System.currentTimeMillis();
+        } else {
+            return 0;
         }
     }
 }

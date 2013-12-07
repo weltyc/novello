@@ -8,8 +8,14 @@ public class PositionTest extends BitBoardTestCase {
     public void testConstructor() {
         final Position bb = new Position(0x01020304050607L, 0x10203040506070L, true);
         final String positionString = bb.positionString();
-        assertEquals(bb, new Position(positionString));
+        assertEquals(bb, Position.of(positionString));
     }
+
+    public void testOfUsingFunnyChars() {
+        final Position bb = Position.of("-------- -------- -------- -------- -------- -------- -------- -------- X");
+        assertTrue(bb.blackToMove);
+    }
+
     public void testMinimalReflection() {
         final long black = 0x3141592653589793L;
         final long white = 0x2718281828459045L &~black;

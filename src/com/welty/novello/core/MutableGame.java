@@ -138,7 +138,7 @@ public class MutableGame {
         if (!bo.startsWith("8 ")) {
             throw new IllegalArgumentException("We can only handle 8x8 boards.");
         }
-        final Position startPosition = new Position(bo.substring(2));
+        final Position startPosition = Position.of(bo.substring(2));
 
         final MutableGame game = new MutableGame(startPosition, blackName, whiteName, place);
 

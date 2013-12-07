@@ -1,11 +1,8 @@
 package com.welty.novello.solver;
 
 import com.welty.novello.core.BitBoardUtils;
-import com.welty.novello.core.Position;
 import com.welty.novello.core.MoveScore;
-import com.welty.novello.ntest.NTest;
-import com.welty.novello.selfplay.EndgamePlayer;
-import com.welty.novello.selfplay.SelfPlayGame;
+import com.welty.novello.core.Position;
 import junit.framework.TestCase;
 
 import static com.welty.novello.core.BitBoardUtils.reflection;
@@ -259,12 +256,5 @@ public class SolverTest extends TestCase {
         // A8, F8, C5 all win by 64.
         //noinspection OctalInteger
         assertTrue(result.sq == 007 || result.sq == 002 || result.sq == 035);
-    }
-
-    public void testFfo49() {
-        // gets a different answer from Zebra on this one, Novello gets +6 Zebra gets +16
-        final Position position = new Position("--OX-O----XXOO--OOOOOXX-OOOOOX--OOOXOXX-OOOOXX-----OOX----X-O---", true);
-        final Solver solver = new Solver();
-//        assertEquals(16, solver.solve(position.mover(), position.enemy()));
     }
 }

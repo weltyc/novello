@@ -22,7 +22,7 @@ public class Ffo {
             for (Path file : files) {
                 final Solver solver = new Solver();
                 final List<String> strings = Files.readAllLines(file, Charset.defaultCharset());
-                final Position position = new Position(strings.get(0), strings.get(1).equals("Black"));
+                final Position position = new Position(strings.get(0), strings.get(1).toLowerCase().startsWith("black"));
 //                System.out.println(position);
                 final long t0 = System.currentTimeMillis();
                 final MoveScore moveScore = solver.solveWithMove(position.mover(), position.enemy());

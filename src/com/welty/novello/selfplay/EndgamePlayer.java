@@ -28,4 +28,8 @@ public class EndgamePlayer implements Player {
         final MoveScore moveScore = solvers.get().solveWithMove(board.mover(), board.enemy());
         return new MoveScore(moveScore.sq, moveScore.score * CoefficientCalculator.DISK_VALUE);
     }
+
+    @Override public String toString() {
+        return this.getClass().getSimpleName();
+    }
 }

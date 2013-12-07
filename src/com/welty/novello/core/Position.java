@@ -81,9 +81,11 @@ public class Position implements Comparable<Position> {
         this.blackToMove = blackToMove;
     }
 
-    public Position(String positionString) {
-        this(positionString.replaceAll("\\s+", "").substring(0, 64), positionString.replaceAll("\\s+", "").substring(64).equals("*"));
-        Require.eq(positionString.replaceAll("\\s+", "").length(), "position string length", 65);
+    public static Position of(String positionString) {
+        final String squished = positionString.replaceAll("\\s+", "");
+        Require.eq(squished.length(), "position string length", 65);
+        final boolean blackToMove = "*Xx".contains(squished.substring(64));
+        return new Position(squished.substring(0, 64), blackToMove);
     }
 
     private void validate() {

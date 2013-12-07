@@ -14,7 +14,7 @@ public class Explain {
 
         // I really can't understand why it wanted to play G7
         // in a two ply search.
-        final Position prev = new Position("--------\n" +
+        final Position prev = Position.of("--------\n" +
                 "--------\n" +
                 "-----*--\n" +
                 "---***--\n" +

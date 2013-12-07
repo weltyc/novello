@@ -14,7 +14,7 @@ public class EvalPlayerTest extends TestCase {
         final Eval eval = Players.eval("b1");
         final EvalPlayer player = new EvalPlayer(eval, 1);
 
-        final Position prev = new Position("--------\n" +
+        final Position prev = Position.of("--------\n" +
                 "--------\n" +
                 "-----*--\n" +
                 "---***--\n" +
@@ -56,7 +56,7 @@ public class EvalPlayerTest extends TestCase {
         final Eval eval = Players.eval("b1");
         final EvalPlayer player = new EvalPlayer(eval, 2);
 
-        final Position root = new Position("--OO-O-O\n" +
+        final Position root = Position.of("--OO-O-O\n" +
                 "--****OO\n" +
                 "*--*OOOO\n" +
                 "-***OOOO\n" +

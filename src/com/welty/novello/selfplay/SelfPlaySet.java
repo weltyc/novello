@@ -72,11 +72,11 @@ public class SelfPlaySet {
                 if (startPosition.hasLegalMove()) {
                     final int netResult;
                     final boolean printDetails = nComplete < nToPrint;
-                    final int searchFlags = printDetails ? -1 : 0;
-                    final MutableGame result = new SelfPlayGame(startPosition, black, white, hostName, printDetails, searchFlags).call();
+                    final int flags = printDetails ? -1 : 0;
+                    final MutableGame result = new SelfPlayGame(startPosition, black, white, hostName, flags, flags).call();
                     pvs.addAll(result.calcPositionValues());
                     if (white != black) {
-                        final MutableGame result2 = new SelfPlayGame(startPosition, white, black, hostName, printDetails, searchFlags).call();
+                        final MutableGame result2 = new SelfPlayGame(startPosition, white, black, hostName, flags, flags).call();
                         pvs.addAll(result2.calcPositionValues());
                         netResult = (result.netScore() - result2.netScore());
                     } else {

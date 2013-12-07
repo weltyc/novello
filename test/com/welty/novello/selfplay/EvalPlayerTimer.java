@@ -12,11 +12,11 @@ public class EvalPlayerTimer implements Runnable {
 
     public static void main(String[] args) {
         // first game is untimed, to warm up hotspot.
-        new SelfPlayGame(Position.START_POSITION, player, player, "test", false, 0).call();
+        new SelfPlayGame(Position.START_POSITION, player, player, "test", 0, 0).call();
         final long n0 = Eval.nEvals();
 
         final long t0 = System.currentTimeMillis();
-        new SelfPlayGame(Position.START_POSITION, player, player, "test", false, 0).call();
+        new SelfPlayGame(Position.START_POSITION, player, player, "test", 0, 0).call();
         final long dt = System.currentTimeMillis() - t0;
         final long dn = Eval.nEvals() - n0;
 
@@ -26,6 +26,6 @@ public class EvalPlayerTimer implements Runnable {
     }
 
     @Override public void run() {
-        new SelfPlayGame(Position.START_POSITION, player, player, "test", false, 0).call();
+        new SelfPlayGame(Position.START_POSITION, player, player, "test", 0, 0).call();
     }
 }
