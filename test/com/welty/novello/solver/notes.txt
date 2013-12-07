@@ -932,6 +932,7 @@ calculation. Cut off if stable disks force a cutoff. How often does this occur a
 [24] stable beta cuts: 0.8%, alpha cuts: 2.5%. 28.0% received full stability calc out of 43,539,435 total nodes
 [26] stable beta cuts: 0.8%, alpha cuts: 2.8%. 28.5% received full stability calc out of 269,728,279 total nodes
 [28] stable beta cuts: 0.8%, alpha cuts: 3.3%. 29.0% received full stability calc out of 1,380,627,246 total nodes
+[30] stable beta cuts: 1.9%, alpha cuts: 2.7%. 30.2% received full stability calc out of 9,381,891,258 total nodes
 
 Now try move sorting to create stable disks.
 1. In the eval-based sort, if eval > beta + BETA_MARGIN, add (# stable disks/2) to the move sort eval.
@@ -959,3 +960,213 @@ Now try move sorting to create stable disks.
 [20] stable beta cuts: 0.6%, alpha cuts: 2.8%. 33.3% received full stability calc out of 1,449,209 total nodes
 [22] stable beta cuts: 0.6%, alpha cuts: 5.9%. 41.3% received full stability calc out of 7,823,242 total nodes
 [24] stable beta cuts: 1.3%, alpha cuts: 4.1%. 42.3% received full stability calc out of 45,096,462 total nodes
+
+I think it's all bogus. I'm taking out the sorting but, for now, leaving in the check at 6 empty.
+
+Current DeepSolverTimer statistics
+==================================
+From 24 empties
+
+    104,764 ms elapsed; 883,116,853 total nodes
+
+
+    Statistics calculated for 0 total nodes
+    ## Stable disk counts at 6 empty ##
+     6:        33
+     7:       231
+     8:     2,789
+     9:     6,452
+    10:     9,739
+    11:    11,706
+    12:    16,798
+    13:    28,447
+    14:    48,974
+    15:    80,827
+    16:   164,341
+    17:   282,488
+    18:   432,193
+    19:   615,670
+    20:   776,163
+    21:   906,626
+    22:   962,578
+    23:   971,642
+    24:   949,636
+    25:   899,544
+    26:   835,181
+    27:   756,107
+    28:   664,942
+    29:   567,503
+    30:   467,684
+    31:   378,605
+    32:   286,460
+    33:   218,520
+    34:   161,863
+    35:   119,013
+    36:    86,200
+    37:    61,198
+    38:    42,390
+    39:    29,550
+    40:    20,273
+    41:    14,082
+    42:     9,737
+    43:     6,461
+    44:     4,394
+    45:     2,984
+    46:     2,013
+    47:     1,245
+    48:       807
+    49:       609
+    50:       427
+    51:       210
+    52:       105
+    53:       106
+    54:        66
+    55:        27
+    56:        10
+    57:        10
+    58:        13
+    stable beta cuts: 0.8%, alpha cuts: 2.6%. 28.2% received full stability calc out of 42,284,788 total nodes
+
+    Node fractions by depth:
+     1: 29.9%
+     2: 22.8%
+     3: 16.6%
+     4: 10.0%
+     5:  7.1%
+     6:  4.8%       First cut: 93%. Wasted: 0.08
+     7:  3.6%       First cut: 95%. Wasted: 0.07
+     8:  2.0%       First cut: 93%. Wasted: 0.10
+     9:  1.5%       First cut: 95%. Wasted: 0.06
+    10:  0.72%      First cut: 92%. Wasted: 0.11
+    11:  0.53%      First cut: 96%. Wasted: 0.06
+    12:  0.22%      First cut: 94%. Wasted: 0.08
+    13:  0.16%      First cut: 97%. Wasted: 0.04
+    14:  0.057%     First cut: 94%. Wasted: 0.08
+    15:  0.040%     First cut: 97%. Wasted: 0.04
+    16:  0.013%     First cut: 94%. Wasted: 0.08
+    17:  0.0083%    First cut: 97%. Wasted: 0.04
+    18:  0.0023%    First cut: 94%. Wasted: 0.10
+    19:  0.0014%    First cut: 95%. Wasted: 0.06
+    20:  0.00034%   First cut: 93%. Wasted: 0.12
+    21:  0.00018%   First cut: 93%. Wasted: 0.11
+    22:  3.6e-05%   First cut: 91%. Wasted: 0.20
+    23:  1.6e-05%   First cut: 90%. Wasted: 0.18
+    24:  1.4e-06%
+
+    Predicted node type distribution:
+    [ 5] ALL 34%, PV  0%, CUT 66%
+    [ 6] ALL 53%, PV  0%, CUT 47%
+    [ 7] ALL 26%, PV  0%, CUT 74%
+    [ 8] ALL 56%, PV  0%, CUT 44%
+    [ 9] ALL 20%, PV  0%, CUT 80%
+    [10] ALL 58%, PV  0%, CUT 42%
+    [11] ALL 17%, PV  0%, CUT 83%
+    [12] ALL 58%, PV  0%, CUT 42%
+    [13] ALL 15%, PV  0%, CUT 85%
+    [14] ALL 56%, PV  0%, CUT 44%
+    [15] ALL 14%, PV  0%, CUT 86%
+    [16] ALL 53%, PV  0%, CUT 47%
+    [17] ALL 14%, PV  0%, CUT 86%
+    [18] ALL 49%, PV  0%, CUT 51%
+    [19] ALL 14%, PV  0%, CUT 86%
+    [20] ALL 44%, PV  0%, CUT 55%
+    [21] ALL 12%, PV  1%, CUT 87%
+    [22] ALL 40%, PV  4%, CUT 56%
+    [23] ALL  3%, PV  9%, CUT 88%
+    [24] ALL  0%, PV 100%, CUT  0%
+
+    495,057,021 finds and 115,528,785 stores. 4,320,910 / 4,679,570 / 8 alpha/beta/pv cuts. 238,709 useless finds.
+
+FFO test
+========
+I can compare Novello to Zebra and ToolThought, both of which have node counts available on the internet.
+
+    Zebra: <http://www.radagast.se/othello/ffotest.html>
+    ToolThought:  <http://www.andreazinno.it/ffotest.html>
+    Edax: inside the edax help file.
+
+Note: Other programs were being run while the test was in progress, so times may be a bit slow.
+
+    #40  A2  38     1.7s  20 empty   17.0 Mn
+    #41  H4   0     2.0s  22 empty   17.5 Mn
+    #42  G2   6     2.9s  22 empty   31.7 Mn
+    #43  C7 -12     7.5s  23 empty   57.3 Mn
+    #44  B8 -14     3.7s  23 empty   31.1 Mn
+    #45  B2   6    37.9s  24 empty  378.2 Mn
+    #46  B3  -8     9.7s  24 empty   86.4 Mn
+    #47  G2   4     5.3s  25 empty   51.7 Mn
+    #48  F6  28    89.5s  25 empty  774.5 Mn
+    #49  E1  16    85.3s  26 empty  856.4 Mn
+    #50  D8  10    80.2s  26 empty  569.9 Mn
+    #51  E2   6    55.8s  27 empty  440.2 Mn
+    #52  A3   0    71.1s  27 empty  594.5 Mn
+    #53  D8  -2   648.5s  28 empty  5418.5 Mn
+    #54  C7  -2  1043.9s  28 empty  10000.0 Mn
+    #55  B7   0  2900.2s  29 empty  24284.6 Mn
+    #56  H5   2   386.0s  29 empty  2873.1 Mn
+    #57  A6 -10   690.6s  30 empty  5708.6 Mn
+    #58  G1   4   639.5s  30 empty  6051.4 Mn
+    #59  E8  64     0.0s  34 empty    0.0 Mn
+    Total:       6761.3s             58.2 Gn
+
+
+Comparison with edax
+--------------------
+From the edax help file: for edax 4.1, running on 4 cores on a Q9650 3.6GHz Quad core Intel CPU with 8GiB of memory,
+Total time for edax ffo 40-59  0:05:05.44 	82.9 MN/s.
+
+              edax	novello	ratio
+    time,s  305.44    6761    22.1
+    MN/s      82.9     8.6     9.6
+    MN       25320	 58240     2.3
+
+Novello's node count is much worse than Zebra and ToolThought too.
+
+Attempts to fix
+---------------
+Is it the hash table size? Multiply hash table size by 16 (above 8 empty) - this gets it up to 2^18 buckets per empty at
+ >= 12 empty and rerun:
+
+     #40  A2  38     1.7s  20 empty     16.3 Mn
+     #41  H4   0     2.0s  22 empty     16.6 Mn
+     #42  G2   6     3.0s  22 empty     30.9 Mn
+     #43  C7 -12     7.9s  23 empty     55.4 Mn
+     #44  B8 -14     3.8s  23 empty     29.6 Mn
+     #45  B2   6    37.9s  24 empty    359.5 Mn
+     #46  B3  -8    10.1s  24 empty     85.3 Mn
+     #47  G2   4     5.7s  25 empty     50.6 Mn
+     #48  F6  28    92.4s  25 empty    748.5 Mn
+     #49  E1  16    88.5s  26 empty    830.0 Mn
+     #50  D8  10    82.9s  26 empty    536.9 Mn
+     #51  E2   6    56.4s  27 empty    421.6 Mn
+     #52  A3   0    71.9s  27 empty    577.8 Mn
+     #53  D8  -2   655.8s  28 empty   5142.9 Mn
+     #54  C7  -2  1060.4s  28 empty   9577.8 Mn
+     #55  B7   0  3016.4s  29 empty  23375.6 Mn
+     #56  H5   2   412.3s  29 empty   2772.8 Mn
+     #57  A6 -10   716.4s  30 empty   5503.6 Mn
+     #58  G1   4   652.2s  30 empty   5819.3 Mn
+     #59  E8  64     0.0s  34 empty      0.0 Mn
+     Total:       6977.7s               55.0 Gn
+
+This is slower (though timings are somewhat suspect) and only drops the node count by 5%. Apparently it is not the
+magic bullet. Reverting.
+
+Going to try ordering by midgame search cost. This will require a midgame search! So that's up next.
+
+Midgame Search
+==============
+Main uses:
+
+1. Calculating midgame search cost in order to help with move ordering
+2. Calculating the move value to help with move ordering.
+3. Doing probable solves to make sure the selected move cuts off.
+
+"Search Cost" is basically node count, so we need a node counter. In preparation for multithreaded, it can't be global.
+So make a midgame class called Search. This should also mimic the node count cost in a full depth search, so the move sorting should be similar (I think).
+
+Calculating the move value also requires some move sorting to run in a reasonable time.
+
+Probable solves will require MPC and a Solver instance that runs in the same thread as the Search.
+
+We'll implement 1 and 2 first, so no MPC for now.
