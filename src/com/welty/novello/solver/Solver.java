@@ -114,7 +114,7 @@ public class Solver {
         final long parity = calcParity();
         moverResultWithSorting(result, mover, enemy, -64, 64, nEmpties, parity, PRED_PV, -1);
         final MoveSorter moveSorter = moveSorters[nEmpties];
-        final int sq = moveSorter.moves[result.iBestMove].sq;
+        final int sq = moveSorter.sorterMoves[result.iBestMove].sq;
         return new MoveScore(sq, result.score);
     }
 
@@ -372,11 +372,11 @@ public class Solver {
         sorter.createSort(mover, enemy, alpha, beta, nEmpties, parity, movesToCheck, this.empties, this.hashTables, nodeType);
         final int n = sorter.size();
         for (int i = 0; i < n; i++) {
-            final Move move = sorter.moves[i];
-            final long subMover = enemy & ~move.flips;
-            final Square square = move.node.square;
-            final long subEnemy = mover | move.flips | square.placement();
-            move.node.remove();
+            final SorterMove sorterMove = sorter.sorterMoves[i];
+            final long subMover = enemy & ~sorterMove.flips;
+            final Square square = sorterMove.node.square;
+            final long subEnemy = mover | sorterMove.flips | square.placement();
+            sorterMove.node.remove();
             int subResult;
             if (i > 0 && nEmpties >= MIN_NEGASCOUT_DEPTH) {
                 // use Negascout for nodes after the first. The thought is that nodes after the first will have values lower than
@@ -384,7 +384,7 @@ public class Solver {
                 // If we were correct, this value < alpha and we saved some nodes. If we were wrong, this value >= alpha
                 // and we need to re-search the position at full width.
                 subResult = -solveDeep(subMover, subEnemy, -alpha - 1, -alpha, nEmpties - 1
-                        , parity ^ square.parityRegion, subNodeType, move.enemyMoves);
+                        , parity ^ square.parityRegion, subNodeType, sorterMove.enemyMoves);
 
                 // Re-search if the score ended up between alpha and beta.
                 // This condition is always false if we were already in a Negascout search, because beta = alpha + 1
@@ -393,13 +393,13 @@ public class Solver {
                 // This re-search can't be a CUT node because it can't fail low. We'll predict ALL.
                 if (subResult > alpha && subResult < beta) {
                     subResult = -solveDeep(subMover, subEnemy, -beta, -subResult, nEmpties - 1
-                            , parity ^ square.parityRegion, PRED_ALL, move.enemyMoves);
+                            , parity ^ square.parityRegion, PRED_ALL, sorterMove.enemyMoves);
                 }
             } else {
                 subResult = -solveDeep(subMover, subEnemy, -beta, -alpha, nEmpties - 1
-                        , parity ^ square.parityRegion, subNodeType, move.enemyMoves);
+                        , parity ^ square.parityRegion, subNodeType, sorterMove.enemyMoves);
             }
-            move.node.restore();
+            sorterMove.node.restore();
 //            // todo remove once statistics are collected
 //            if (nEmpties >= MIN_EVAL_SORT_DEPTH) {
 //                collectStatistics(subMover, subEnemy, -beta, -alpha, -subResult, subNodeType);

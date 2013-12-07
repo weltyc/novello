@@ -8,7 +8,7 @@ import com.welty.novello.core.BitBoardUtils;
  *  Some information about the move (e.g. flip bitboard) is stored to
  *  save time compared to recalculating it.
  */
-class Move {
+class SorterMove {
     int sq;
     int score;
     long flips;

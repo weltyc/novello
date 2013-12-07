@@ -73,14 +73,14 @@ final class MoveSorter {
     static int MIN_EVAL_SORT_DEPTH = 12;
 
     private int size = 0;
-    final Move[] moves = new Move[64];
+    final SorterMove[] sorterMoves = new SorterMove[64];
 
     static final Eval sortEval = Players.currentEval();
     static final Search sortSearch = new Search(sortEval, 0);
 
     MoveSorter() {
-        for (int i = 0; i < moves.length; i++) {
-            moves[i] = new Move();
+        for (int i = 0; i < sorterMoves.length; i++) {
+            sorterMoves[i] = new SorterMove();
         }
     }
 
@@ -297,20 +297,20 @@ final class MoveSorter {
      * Insert the move into this MoveSorter, keeping the moves sorted.
      */
     void insert(int sq, int score, long flips, long enemyMoves, ListOfEmpties.Node node) {
-        final Move move = moves[size++];
+        final SorterMove sorterMove = sorterMoves[size++];
 
-        move.sq = sq;
-        move.score = score;
-        move.flips = flips;
-        move.enemyMoves = enemyMoves;
-        move.node = node;
+        sorterMove.sq = sq;
+        sorterMove.score = score;
+        sorterMove.flips = flips;
+        sorterMove.enemyMoves = enemyMoves;
+        sorterMove.node = node;
 
         int i = size - 1;
-        while (i > 0 && moves[i - 1].score < move.score) {
-            moves[i] = moves[i - 1];
+        while (i > 0 && sorterMoves[i - 1].score < sorterMove.score) {
+            sorterMoves[i] = sorterMoves[i - 1];
             i--;
         }
-        moves[i] = move;
+        sorterMoves[i] = sorterMove;
 
     }
 }
