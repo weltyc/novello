@@ -14,8 +14,7 @@ import org.jetbrains.annotations.NotNull;
  * This class is not thread-safe.
  */
 public class Search {
-    public static final int FLAG_PRINT_SCORE = 1;
-    public static final int FLAG_PRINT_SEARCH = 2;
+    public static final int FLAG_PRINT_SEARCH = 1;
 
     public Search(@NotNull Eval eval, int flags) {
         this.flags = flags;
@@ -171,10 +170,6 @@ public class Search {
             }
         }
 
-        if (shouldPrintScore()) {
-            System.out.println();
-            System.out.format("score = %+5d (%s) with alpha = %d\n", ba.score, BitBoardUtils.sqToText(ba.bestMove), alpha);
-        }
         return ba;
     }
 
@@ -192,10 +187,6 @@ public class Search {
             System.out.format("%s[%d] (%+5d,%+5d) score(%s)=%+5d\n", indent(depth), depth, alpha, beta, BitBoardUtils.sqToText(sq), subScore);
         }
         return subScore;
-    }
-
-    private boolean shouldPrintScore() {
-        return 0 != (flags & FLAG_PRINT_SCORE);
     }
 
     private boolean shouldPrintSearch() {

@@ -26,7 +26,7 @@ public class SelfPlayGame implements Callable<MutableGame> {
      * @param white white player
      * @param place location of the match (often, Props.getHostName())
      * @param gameFlags  Sum of binary flags defined in SelfPlayGame (FLAG_PRINT_GAME, FLAG_MEASURE_TIME)
-     * @param searchFlags  as defined in {@link Player}
+     * @param searchFlags  as defined in {@link Search}
      */
     public SelfPlayGame(@NotNull Position board, @NotNull Player black, @NotNull Player white, String place, int gameFlags
             , int searchFlags) {
