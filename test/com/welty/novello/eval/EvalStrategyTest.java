@@ -132,7 +132,6 @@ public class EvalStrategyTest extends ArrayTestCase {
         for (EvalStrategy strategy : EvalStrategies.knownStrategies()) {
             testAllReflectionsHaveTheSameOrids(strategy, sparsePosition);
             testAllReflectionsHaveTheSameOrids(strategy, densePosition);
-            System.out.println("Success with EvalStrategy " + strategy);
         }
     }
 

@@ -24,10 +24,8 @@ public class EvalPlayerTest extends TestCase {
                 "--------\n" +
                 "O");
 
-        System.out.println(prev);
-
         final long moves = prev.calcMoves();
-        final MoveScore moveScore = player.calcMove(prev, moves, -1);
+        final MoveScore moveScore = player.calcMove(prev, moves, 0);
         assertTrue("must be a legal move", BitBoardUtils.isBitSet(moves, moveScore.sq));
 
         final Position terminal = prev.play(moveScore.sq);

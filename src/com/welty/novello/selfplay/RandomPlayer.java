@@ -11,7 +11,7 @@ import java.util.Random;
 public class RandomPlayer implements Player {
     private final Random random = new Random(1337);
 
-    @Override public MoveScore calcMove(@NotNull Position board, long moverMoves, int flags) {
+    @Override public MoveScore calcMove(@NotNull Position board, long moverMoves, int searchFlags) {
         int n = random.nextInt(Long.bitCount(moverMoves));
         while (n-- > 0) {
             moverMoves &= moverMoves - 1;

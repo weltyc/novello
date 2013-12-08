@@ -12,8 +12,6 @@ public class Explain {
         final CoefficientEval eval = Players.eval(evalName);
         final EvalPlayer player = new EvalPlayer(eval, 1);
 
-        // I really can't understand why it wanted to play G7
-        // in a two ply search.
         final Position prev = Position.of("--------\n" +
                 "--------\n" +
                 "-----*--\n" +

@@ -24,7 +24,6 @@ public class PositionValue {
     public PositionValue(long mover, long enemy, int value) {
         final long moves = BitBoardUtils.calcMoves(mover, enemy);
         if (moves==0) {
-            System.err.println(new Position(mover, enemy, false));
             throw new IllegalArgumentException("must have a legal move");
         }
         this.mover = mover;

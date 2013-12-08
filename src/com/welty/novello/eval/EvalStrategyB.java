@@ -217,9 +217,6 @@ class EvalStrategyB extends EvalStrategy {
                             })
                             .join("\n     +  ")
             );
-//            for (Term term : featureTerms) {
-//                sb.append("eval += ").append(coefficientCode(coeffName, term)).append(";\n");
-//            }
             sb.append(";\n\n");
         } else if (featureTerms.size() != 0) {
             sb.append(String.format("eval += slice[%d][%s];\n", iFeature, featureTerms.get(0).oridGen()));

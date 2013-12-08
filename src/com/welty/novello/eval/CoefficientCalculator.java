@@ -58,7 +58,7 @@ public class CoefficientCalculator {
         try {
             STRATEGY.checkSlicesCanBeCreated(COEFF_SET_NAME);
         } catch (IllegalArgumentException e) {
-            System.err.println("Coefficient set already exists.\n\nOverwriting coefficient files is not allowed.");
+            log.warn("Coefficient set already exists.\n\nOverwriting coefficient files is not allowed.");
             System.exit(-1);
         }
 

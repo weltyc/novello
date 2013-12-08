@@ -87,7 +87,7 @@ public class NTest implements Player {
         }
     }
 
-    @Override public MoveScore calcMove(@NotNull Position board, long moverMoves, int flags) {
+    @Override public MoveScore calcMove(@NotNull Position board, long moverMoves, int searchFlags) {
         try {
             pingPong();
             println("set game " + new MutableGame(board, "me", "you", "here").toGgf());

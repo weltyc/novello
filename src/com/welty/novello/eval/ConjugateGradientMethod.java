@@ -1,6 +1,7 @@
 package com.welty.novello.eval;
 
 import com.orbanova.common.math.function.oned.Optimum;
+import com.orbanova.common.misc.Logger;
 import com.orbanova.common.misc.Vec;
 
 /**
@@ -9,6 +10,7 @@ import com.orbanova.common.misc.Vec;
  * algorithm copied from http://en.wikipedia.org/wiki/Nonlinear_conjugate_gradient_method
  */
 class ConjugateGradientMethod {
+    private static final Logger log = Logger.logger(ConjugateGradientMethod.class);
 
     /**
      * Return the location of an approximate minimum of f
@@ -57,7 +59,7 @@ class ConjugateGradientMethod {
                 final double improvement = prevFx - fx;
 //                System.out.format("improvement: %.4g to %.4g%n", improvement, fx);
                 if (improvement < 0) {
-                    System.out.println("WARNING: improvement was negative");
+                    log.warn("improvement was negative");
                 }
                 if (improvement < 1e-5 * Math.abs(fx)) {
                     // we're done!
@@ -66,7 +68,7 @@ class ConjugateGradientMethod {
                 prevFx = fx;
             }
         }
-        System.out.println("WARNING: might not have converged");
+        log.warn("might not have converged");
         return x;
     }
 

@@ -42,7 +42,6 @@ public class MutableGameTest extends TestCase {
         game.play("F4");
         game.play("PASS");
         game.play("F6");
-        System.out.println(game.toGgf());
         assertTrue(game.toGgf().contains("B[PASS]W[F4]B[PASS]W[F6]"));
         assertFalse("no final pass", game.toGgf().contains("B[PASS]W[F4]B[PASS]W[F6]B["));
 

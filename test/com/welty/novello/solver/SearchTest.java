@@ -14,7 +14,7 @@ import junit.framework.TestCase;
 public class SearchTest extends TestCase {
     public void test1PlySearch() throws Exception {
         final Eval eval = Players.eval("b1");
-        final Search search = new Search(eval, 1);
+        final Search search = new Search(eval, 0);
 
         final Position prev = Position.of("--------\n" +
                 "--------\n" +
@@ -26,7 +26,6 @@ public class SearchTest extends TestCase {
                 "--------\n" +
                 "O");
 
-        System.out.println(prev);
 
         final long moves = prev.calcMoves();
         final MoveScore moveScore = search.calcMove(prev, moves, 1);
@@ -57,7 +56,7 @@ public class SearchTest extends TestCase {
 
     public void testSearchScoreWithPass() {
         final Eval eval = Players.eval("b1");
-        final Search search = new Search(eval, 1);
+        final Search search = new Search(eval, 0);
 
         final Position root = Position.of("--OO-O-O\n" +
                 "--****OO\n" +
@@ -85,7 +84,6 @@ public class SearchTest extends TestCase {
         final long mover = position.mover();
         final long enemy = position.enemy();
         final long moverMoves = position.calcMoves();
-        System.out.println(position);
 
         // so the tests are readable
         final int c3 = BitBoardUtils.textToSq("C3");

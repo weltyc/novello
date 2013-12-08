@@ -17,9 +17,9 @@ public class EvalPlayer extends EndgamePlayer {
         this.searchDepth = searchDepth;
     }
 
-    @Override public MoveScore calcMove(@NotNull Position board, long moverMoves, int flags) {
+    @Override public MoveScore calcMove(@NotNull Position board, long moverMoves, int searchFlags) {
         if (board.nEmpty() > 8) {
-            return new Search(eval, flags).calcMove(board, board.calcMoves(), searchDepth);
+            return new Search(eval, searchFlags).calcMove(board, board.calcMoves(), searchDepth);
         } else {
             return solveMove(board);
         }

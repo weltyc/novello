@@ -45,7 +45,6 @@ public class SquareTest extends BitBoardTestCase {
         final long placement = 0x100;
         final long enemy = 0x04020000;
         final long mover = 0x0800000000L;
-        System.out.println(new Position(mover, enemy, true));
         assertBitBoardEquals(0x04020100, BitBoardUtils.fillUpLeft(placement, enemy));
         assertBitBoardEquals(0x0804020000L, BitBoardUtils.fillDownRight(mover, enemy));
     }

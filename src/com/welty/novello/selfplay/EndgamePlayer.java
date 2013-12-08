@@ -16,7 +16,7 @@ public class EndgamePlayer implements Player {
         }
     };
 
-    @Override public MoveScore calcMove(@NotNull Position board, long moverMoves, int flags) {
+    @Override public MoveScore calcMove(@NotNull Position board, long moverMoves, int searchFlags) {
         return solveMove(board);
     }
 

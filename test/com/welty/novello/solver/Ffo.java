@@ -26,7 +26,6 @@ public class Ffo {
                 final Solver solver = new Solver();
                 final List<String> strings = Files.readAllLines(file, Charset.defaultCharset());
                 final Position position = new Position(strings.get(0), strings.get(1).toLowerCase().startsWith("black"));
-//                System.out.println(position);
                 final long t0 = System.currentTimeMillis();
                 final MoveScore moveScore = solver.solveWithMove(position.mover(), position.enemy());
                 final double seconds = 0.001 * (System.currentTimeMillis() - t0);

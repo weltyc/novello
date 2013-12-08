@@ -57,12 +57,4 @@ public class MurmurTest extends TestCase {
             }
         }
     }
-
-    public void testFoo() {
-        for (long i = 0; i<10; i++)  {
-            final long hash = Murmur.hash(i, 0);
-            final String s = String.format("%016X", hash);
-            System.out.println(s);
-        }
-    }
 }

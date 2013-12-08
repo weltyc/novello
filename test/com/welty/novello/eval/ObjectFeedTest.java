@@ -29,7 +29,6 @@ public class ObjectFeedTest extends TestCase {
         out.writeUTF("Bar");
         out.close();
 
-        System.out.println(Files.size(path));
         final ObjectFeed<String> feed = new ObjectFeed<>(path, utfDeserializer);
         final List<String> expected = Arrays.asList("Foo", "Bar");
         assertEquals(expected, feed.asList());

@@ -292,7 +292,6 @@ public class EvalStrategy {
                 final int iFeature = iFeatures[iTerm];
                 int nOrids = feature.nOrids();
                 final double weightCoefficient = x[iDenseWeight++];
-                System.out.println("dense weight for coefficient " + iDenseWeight + " (" + feature + ") = " + weightCoefficient);
                 for (int orid = 0; orid < nOrids; orid++) {
                     float weight = ((DenseFeature) feature).denseWeight(orid);
                     final int coefficientIndex = orid + coefficientIndexStarts[iFeature];
