@@ -1177,5 +1177,14 @@ Combine search for move and search for score into one function so sorting needs 
 new SearchTiming test:
     1980 ms elapsed. 8,628,215 flips / 6,485,173 evals. 0.31 us/eval
 
-Add iid at depths > 4:
+Add iid at depths > 4, at depth d-4:
     1045 ms elapsed. 4,601,409 flips / 3,364,334 evals. 0.31 us/eval
+
+Add iid at depths > 2, at depth d-2:
+    734 ms elapsed. 3,303,109 flips / 2,361,971 evals. 0.31 us/eval
+
+iid at depths >2, at depth 1:
+    777 ms elapsed. 3,425,900 flips / 2,486,709 evals. 0.31 us/eval
+
+iid at depth >2, at depth 1 when depth = 3, depth=2 otherwise
+    725 ms elapsed. 3,201,492 flips / 2,311,664 evals. 0.31 us/eval

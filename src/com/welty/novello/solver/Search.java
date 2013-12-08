@@ -133,9 +133,9 @@ public class Search {
         ba.bestMove = -1;
         ba.score = NO_MOVE;
 
-        if (depth > 4) {
+        if (depth > 2) {
             // internal iterative deepening
-            final int iidMove = treeMove(mover, enemy, moverMoves, alpha, beta, depth - 4).bestMove;
+            final int iidMove = treeMove(mover, enemy, moverMoves, alpha, beta, depth>3?2:1).bestMove;
             if (iidMove >=0) {
                 final int subScore = calcMoveScore(mover, enemy, alpha, beta, depth, iidMove);
                 if (subScore > ba.score) {
