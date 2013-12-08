@@ -1188,3 +1188,8 @@ iid at depths >2, at depth 1:
 
 iid at depth >2, at depth 1 when depth = 3, depth=2 otherwise
     725 ms elapsed. 3,201,492 flips / 2,311,664 evals. 0.31 us/eval
+
+Endgame cost estimation
+-----------------------
+Use node counts as an estimate of the node count of a full solve. Before changes, DeepSolverTimer from 24 empties:
+    Total node count : 883,116 kn
