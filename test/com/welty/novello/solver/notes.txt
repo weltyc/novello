@@ -1176,3 +1176,6 @@ Simplify Search
 Combine search for move and search for score into one function so sorting needs only be implemented once.
 new SearchTiming test:
     1980 ms elapsed. 8,628,215 flips / 6,485,173 evals. 0.31 us/eval
+
+Add iid at depths > 4:
+    1045 ms elapsed. 4,601,409 flips / 3,364,334 evals. 0.31 us/eval

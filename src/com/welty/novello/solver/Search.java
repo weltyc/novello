@@ -133,24 +133,31 @@ public class Search {
         ba.bestMove = -1;
         ba.score = NO_MOVE;
 
+        if (depth > 4) {
+            // internal iterative deepening
+            final int iidMove = treeMove(mover, enemy, moverMoves, alpha, beta, depth - 4).bestMove;
+            if (iidMove >=0) {
+                final int subScore = calcMoveScore(mover, enemy, alpha, beta, depth, iidMove);
+                if (subScore > ba.score) {
+                    ba.score = subScore;
+                    if (subScore > alpha) {
+                        ba.bestMove = iidMove;
+                        alpha = subScore;
+                        if (subScore >= beta) {
+                            return ba;
+                        }
+                    }
+                }
+                moverMoves &=~ (1L<< iidMove);
+            }
+        }
         for (long mask : masks) {
             long movesToCheck = moverMoves & mask;
             while (movesToCheck != 0) {
                 final int sq = Long.numberOfTrailingZeros(movesToCheck);
                 final long placement = 1L << sq;
                 movesToCheck ^= placement;
-                final Square square = Square.of(sq);
-                nFlips++;
-                final long flips = square.calcFlips(mover, enemy);
-                final long subEnemy = mover | placement | flips;
-                final long subMover = enemy & ~flips;
-                if (shouldPrintSearch()) {
-                    System.out.format("%s[%d] (%+5d,%+5d) scoring(%s):\n", indent(depth), depth, alpha, beta, BitBoardUtils.sqToText(sq));
-                }
-                final int subScore = -searchScore(subMover, subEnemy, -beta, -alpha, depth - 1);
-                if (shouldPrintSearch()) {
-                    System.out.format("%s[%d] (%+5d,%+5d) score(%s)=%+5d\n", indent(depth), depth, alpha, beta, BitBoardUtils.sqToText(sq), subScore);
-                }
+                final int subScore = calcMoveScore(mover, enemy, alpha, beta, depth, sq);
                 if (subScore > ba.score) {
                     ba.score = subScore;
                     if (subScore > alpha) {
@@ -169,6 +176,22 @@ public class Search {
             System.out.format("score = %+5d (%s) with alpha = %d\n", ba.score, BitBoardUtils.sqToText(ba.bestMove), alpha);
         }
         return ba;
+    }
+
+    private int calcMoveScore(long mover, long enemy, int alpha, int beta, int depth, int sq) {
+        final Square square = Square.of(sq);
+        nFlips++;
+        final long flips = square.calcFlips(mover, enemy);
+        final long subEnemy = mover | (1L<<sq) | flips;
+        final long subMover = enemy & ~flips;
+        if (shouldPrintSearch()) {
+            System.out.format("%s[%d] (%+5d,%+5d) scoring(%s):\n", indent(depth), depth, alpha, beta, BitBoardUtils.sqToText(sq));
+        }
+        final int subScore = -searchScore(subMover, subEnemy, -beta, -alpha, depth - 1);
+        if (shouldPrintSearch()) {
+            System.out.format("%s[%d] (%+5d,%+5d) score(%s)=%+5d\n", indent(depth), depth, alpha, beta, BitBoardUtils.sqToText(sq), subScore);
+        }
+        return subScore;
     }
 
     private boolean shouldPrintScore() {
