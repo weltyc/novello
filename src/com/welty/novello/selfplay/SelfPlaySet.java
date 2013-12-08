@@ -2,7 +2,7 @@ package com.welty.novello.selfplay;
 
 import com.welty.novello.core.MutableGame;
 import com.welty.novello.core.Props;
-import com.welty.novello.eval.Eval;
+import com.welty.novello.eval.CoefficientEval;
 import com.welty.novello.core.PositionValue;
 import com.welty.novello.core.Position;
 import org.jetbrains.annotations.NotNull;
@@ -25,7 +25,7 @@ public class SelfPlaySet {
 
         final Result result = new SelfPlaySet(black, white, 2, true).call();
         System.out.format("%s vs %s: average result = %.1f\n", black, white, result.averageResult);
-        System.out.format("%,d position evaluations performed.\n", Eval.nEvals());
+        System.out.format("%,d position evaluations performed.\n", CoefficientEval.nEvals());
     }
 
     private final @NotNull Player black;

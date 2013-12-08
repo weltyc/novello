@@ -9,7 +9,7 @@ import com.welty.novello.core.Position;
 public class Explain {
     public static void main(String[] args) {
         final String evalName = "7B";
-        final Eval eval = Players.eval(evalName);
+        final CoefficientEval eval = Players.eval(evalName);
         final EvalPlayer player = new EvalPlayer(eval, 1);
 
         // I really can't understand why it wanted to play G7

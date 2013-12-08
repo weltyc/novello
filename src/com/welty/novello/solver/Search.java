@@ -49,7 +49,7 @@ public class Search {
         this.rootDepth = depth;
         nFlips = 0;
         final BA ba = treeMove(position.mover(), position.enemy(), moverMoves, NO_MOVE, -NO_MOVE, depth);
-        return new MoveScore(ba.bestMove, ba.alpha);
+        return new MoveScore(ba.bestMove, ba.score);
     }
 
     /**
@@ -104,9 +104,9 @@ public class Search {
      */
     private long nFlips;
 
-    private static class BA {
+    static class BA {
         int bestMove;
-        int alpha;
+        int score;
     }
 
     private static final long[] masks = {BitBoardUtils.CORNERS, ~(BitBoardUtils.CORNERS | BitBoardUtils.X_SQUARES), BitBoardUtils.X_SQUARES};
@@ -115,17 +115,22 @@ public class Search {
      * Find the best move in a position using tree search.
      * <p/>
      * Precondition: The mover is guaranteed to have a move.
+     * <p/>
+     * The return value is a structure containing a move square and a score
+     * The score is a fail-soft alpha beta score. The move square will be -1 if score &lt; alpha
+     * and will be a legal move if score >= alpha.
      *
      * @param mover      mover disks
      * @param enemy      enemy disks
      * @param moverMoves mover legal moves
      * @param depth      remaining search depth
-     * @return index of square of best move
+     * @return BA see above
      */
-    private BA treeMove(long mover, long enemy, long moverMoves, int alpha, int beta, int depth) {
+    BA treeMove(long mover, long enemy, long moverMoves, int alpha, int beta, int depth) {
+        assert beta > alpha;
         BA ba = new BA();
         ba.bestMove = -1;
-        ba.alpha = alpha;
+        ba.score = NO_MOVE;
 
         for (long mask : masks) {
             long movesToCheck = moverMoves & mask;
@@ -139,17 +144,20 @@ public class Search {
                 final long subEnemy = mover | placement | flips;
                 final long subMover = enemy & ~flips;
                 if (shouldPrintSearch()) {
-                    System.out.format("%s[%d] (%+5d,%+5d) scoring(%s):\n", indent(depth), depth, NO_MOVE, -ba.alpha, BitBoardUtils.sqToText(sq));
+                    System.out.format("%s[%d] (%+5d,%+5d) scoring(%s):\n", indent(depth), depth, alpha, beta, BitBoardUtils.sqToText(sq));
                 }
-                final int subScore = -searchScore(subMover, subEnemy, NO_MOVE, -ba.alpha, depth - 1);
+                final int subScore = -searchScore(subMover, subEnemy, -beta, -alpha, depth - 1);
                 if (shouldPrintSearch()) {
-                    System.out.format("%s[%d] (%+5d,%+5d) score(%s)=%+5d\n", indent(depth), depth, NO_MOVE, -ba.alpha, BitBoardUtils.sqToText(sq), subScore);
+                    System.out.format("%s[%d] (%+5d,%+5d) score(%s)=%+5d\n", indent(depth), depth, alpha, beta, BitBoardUtils.sqToText(sq), subScore);
                 }
-                if (subScore > ba.alpha) {
-                    ba.bestMove = sq;
-                    ba.alpha = subScore;
-                    if (subScore > beta) {
-                        return ba;
+                if (subScore > ba.score) {
+                    ba.score = subScore;
+                    if (subScore > alpha) {
+                        ba.bestMove = sq;
+                        alpha = subScore;
+                        if (subScore >= beta) {
+                            return ba;
+                        }
                     }
                 }
             }
@@ -157,7 +165,7 @@ public class Search {
 
         if (shouldPrintScore()) {
             System.out.println();
-            System.out.format("%s score = %+5d (%s)\n", this, ba.alpha, BitBoardUtils.sqToText(ba.bestMove));
+            System.out.format("score = %+5d (%s) with alpha = %d\n", ba.score, BitBoardUtils.sqToText(ba.bestMove), alpha);
         }
         return ba;
     }
@@ -183,11 +191,15 @@ public class Search {
     private int searchScore(long mover, long enemy, int alpha, int beta, int depth) {
         final long moverMoves = BitBoardUtils.calcMoves(mover, enemy);
         if (moverMoves != 0) {
-            return treeScore(mover, enemy, moverMoves, alpha, beta, depth);
+//            final int score = treeScore(mover, enemy, moverMoves, alpha, beta, depth);
+            final int score = treeScore2(mover, enemy, moverMoves, alpha, beta, depth);
+            return score;
         } else {
             final long enemyMoves = BitBoardUtils.calcMoves(enemy, mover);
             if (enemyMoves != 0) {
-                return -treeScore(enemy, mover, enemyMoves, -beta, -alpha, depth);
+                final int score = treeScore(enemy, mover, enemyMoves, -beta, -alpha, depth);
+                assert score == treeScore2(enemy, mover, enemyMoves, -beta, -alpha, depth);
+                return -score;
             } else {
                 return CoefficientCalculator.DISK_VALUE * BitBoardUtils.terminalScore(mover, enemy);
             }
@@ -207,7 +219,7 @@ public class Search {
      * @param depth      remaining search depth. If &le; 0, this returns the eval.
      * @return score, in centi-disks
      */
-    private int treeScore(long mover, long enemy, long moverMoves, int alpha, int beta, int depth) {
+    int treeScore(long mover, long enemy, long moverMoves, int alpha, int beta, int depth) {
         if (depth <= 0) {
             return eval.eval(mover, enemy);
         }
@@ -240,6 +252,14 @@ public class Search {
         }
 
         return result;
+    }
+
+    int treeScore2(long mover, long enemy, long moverMoves, int alpha, int beta, int depth) {
+        if (depth <= 0) {
+            return eval.eval(mover, enemy);
+        }
+
+        return treeMove(mover, enemy, moverMoves, alpha, beta, depth).score;
     }
 
     private String indent(int depth) {

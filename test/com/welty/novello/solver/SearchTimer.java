@@ -4,7 +4,7 @@ import com.welty.novello.core.Move;
 import com.welty.novello.core.MutableGame;
 import com.welty.novello.core.Position;
 import com.welty.novello.core.SampleGames;
-import com.welty.novello.eval.Eval;
+import com.welty.novello.eval.CoefficientEval;
 import com.welty.novello.selfplay.Player;
 import com.welty.novello.selfplay.Players;
 import com.welty.novello.selfplay.SelfPlayGame;
@@ -23,7 +23,7 @@ public class SearchTimer {
     public static void main(String[] args) {
         // first game is untimed, to warm up hotspot.
         new SelfPlayGame(Position.START_POSITION, player, player, "test", 0, 0).call();
-        final long n0 = Eval.nEvals();
+        final long n0 = CoefficientEval.nEvals();
         long nFlips = 0;
 
         final Search search = new Search(Players.eval("b1"), 0);
@@ -48,7 +48,7 @@ public class SearchTimer {
         }
 
         final long dt = System.currentTimeMillis() - t0;
-        final long dn = Eval.nEvals() - n0;
+        final long dn = CoefficientEval.nEvals() - n0;
 
         System.out.format("%d ms elapsed. %,d flips / %,d evals. %4.2f us/eval \n"  ,dt, nFlips, dn , dt*1e3/dn);
     }

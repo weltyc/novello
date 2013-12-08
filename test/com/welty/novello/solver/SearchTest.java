@@ -4,6 +4,7 @@ import com.welty.novello.core.BitBoardUtils;
 import com.welty.novello.core.MoveScore;
 import com.welty.novello.core.Position;
 import com.welty.novello.eval.CoefficientCalculator;
+import com.welty.novello.eval.DiskEval;
 import com.welty.novello.eval.Eval;
 import com.welty.novello.selfplay.Players;
 import junit.framework.TestCase;
@@ -74,6 +75,62 @@ public class SearchTest extends TestCase {
         final int subScore = -search.calcScore(g1, 1);
         // had a bug where it was returning the terminal value (+6) if the opponent passes. This position is way
         // better than that!
-        assertTrue(subScore > 20* CoefficientCalculator.DISK_VALUE);
+        assertTrue(subScore > 20 * CoefficientCalculator.DISK_VALUE);
+    }
+
+    public void testScoresMatch() {
+        testScoresMatch("-------- -------- ------*- ---OO*-- ---O*--- --O-*--- -------- -------- *", -1073741824, -458, 2, 44118440935424L);
+        testScoresMatch("-------- -------- -------- --OOO--- --*O*--- ----OOO- -------- -------- *", 922, 954, 1, 43980465113600L);
+    }
+
+    private static void testScoresMatch(String positionString, int alpha, int beta, int depth, long moverMoves) {
+        final Position position = Position.of(positionString);
+        final Search search = new Search(Players.eval("b1"), -1);
+
+        System.out.println(position);
+        assertEquals(moverMoves, position.calcMoves());
+        final long mover = position.mover();
+        final long enemy = position.enemy();
+        System.out.println("\nscoring using treeScore");
+        final int score = search.treeScore(mover, enemy, moverMoves, alpha, beta, depth);
+        System.out.println("\nscoring using treeScore2");
+        final int score2 = search.treeScore2(mover, enemy, moverMoves, alpha, beta, depth);
+        assertEquals(score, score2);
+    }
+
+    public void testTreeMove() {
+        final Eval eval = new DiskEval();
+        final Search search = new Search(eval, 0);
+        final Position position = Position.of("-------- -------- -------- --OO---- --*O*--- ----OO-- -------- -------- *");
+        final long mover = position.mover();
+        final long enemy = position.enemy();
+        final long moverMoves = position.calcMoves();
+        System.out.println(position);
+
+        // so the tests are readable
+        final int c3 = BitBoardUtils.textToSq("C3");
+        final int e3 = BitBoardUtils.textToSq("E3");
+        final int g7 = BitBoardUtils.textToSq("G7");
+
+        // true value is within the window
+        Search.BA ba = search.treeMove(mover, enemy, moverMoves, -6400, 6400, 1);
+        assertEquals(200, ba.score);
+        assertEquals(c3, ba.bestMove);
+
+        // true value is above the window
+        ba = search.treeMove(mover, enemy, moverMoves, -6400, 80, 1);
+        assertTrue(100 <= ba.score);
+        assertTrue(ba.score <= 200);
+        assertTrue(ba.bestMove==c3 || ba.bestMove==e3 || ba.bestMove==g7);
+
+        // true value is at the bottom of the window
+        ba = search.treeMove(mover, enemy, moverMoves, 200, 6400, 1);
+        assertEquals(200, ba.score);
+        assertEquals(-1, ba.bestMove);
+
+        // true value is below the window
+        ba = search.treeMove(mover, enemy, moverMoves, 300, 6400, 1);
+        assertEquals(200, ba.score); // required by fail-soft. Fail-hard would return 300.
+        assertEquals(-1, ba.bestMove);
     }
 }
