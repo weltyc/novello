@@ -1170,3 +1170,9 @@ Calculating the move value also requires some move sorting to run in a reasonabl
 Probable solves will require MPC and a Solver instance that runs in the same thread as the Search.
 
 We'll implement 1 and 2 first, so no MPC for now.
+
+Simplify Search
+---------------
+Combine search for move and search for score into one function so sorting needs only be implemented once.
+new SearchTiming test:
+    1980 ms elapsed. 8,628,215 flips / 6,485,173 evals. 0.31 us/eval

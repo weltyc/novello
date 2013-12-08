@@ -78,26 +78,6 @@ public class SearchTest extends TestCase {
         assertTrue(subScore > 20 * CoefficientCalculator.DISK_VALUE);
     }
 
-    public void testScoresMatch() {
-        testScoresMatch("-------- -------- ------*- ---OO*-- ---O*--- --O-*--- -------- -------- *", -1073741824, -458, 2, 44118440935424L);
-        testScoresMatch("-------- -------- -------- --OOO--- --*O*--- ----OOO- -------- -------- *", 922, 954, 1, 43980465113600L);
-    }
-
-    private static void testScoresMatch(String positionString, int alpha, int beta, int depth, long moverMoves) {
-        final Position position = Position.of(positionString);
-        final Search search = new Search(Players.eval("b1"), -1);
-
-        System.out.println(position);
-        assertEquals(moverMoves, position.calcMoves());
-        final long mover = position.mover();
-        final long enemy = position.enemy();
-        System.out.println("\nscoring using treeScore");
-        final int score = search.treeScore(mover, enemy, moverMoves, alpha, beta, depth);
-        System.out.println("\nscoring using treeScore2");
-        final int score2 = search.treeScore2(mover, enemy, moverMoves, alpha, beta, depth);
-        assertEquals(score, score2);
-    }
-
     public void testTreeMove() {
         final Eval eval = new DiskEval();
         final Search search = new Search(eval, 0);

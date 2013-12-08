@@ -114,7 +114,7 @@ public class Search {
     /**
      * Find the best move in a position using tree search.
      * <p/>
-     * Precondition: The mover is guaranteed to have a move.
+     * Precondition: The mover is guaranteed to have a move. depth > 0.
      * <p/>
      * The return value is a structure containing a move square and a score
      * The score is a fail-soft alpha beta score. The move square will be -1 if score &lt; alpha
@@ -128,6 +128,7 @@ public class Search {
      */
     BA treeMove(long mover, long enemy, long moverMoves, int alpha, int beta, int depth) {
         assert beta > alpha;
+        assert depth > 0;
         BA ba = new BA();
         ba.bestMove = -1;
         ba.score = NO_MOVE;
@@ -192,13 +193,12 @@ public class Search {
         final long moverMoves = BitBoardUtils.calcMoves(mover, enemy);
         if (moverMoves != 0) {
 //            final int score = treeScore(mover, enemy, moverMoves, alpha, beta, depth);
-            final int score = treeScore2(mover, enemy, moverMoves, alpha, beta, depth);
+            final int score = treeScore(mover, enemy, moverMoves, alpha, beta, depth);
             return score;
         } else {
             final long enemyMoves = BitBoardUtils.calcMoves(enemy, mover);
             if (enemyMoves != 0) {
                 final int score = treeScore(enemy, mover, enemyMoves, -beta, -alpha, depth);
-                assert score == treeScore2(enemy, mover, enemyMoves, -beta, -alpha, depth);
                 return -score;
             } else {
                 return CoefficientCalculator.DISK_VALUE * BitBoardUtils.terminalScore(mover, enemy);
@@ -206,55 +206,7 @@ public class Search {
         }
     }
 
-    /**
-     * Score a position using tree search.
-     * <p/>
-     * Precondition: The mover is guaranteed to have a move.
-     *
-     * @param mover      mover disks
-     * @param enemy      enemy disks
-     * @param moverMoves mover legal moves
-     * @param alpha      search score
-     * @param beta       search beta
-     * @param depth      remaining search depth. If &le; 0, this returns the eval.
-     * @return score, in centi-disks
-     */
     int treeScore(long mover, long enemy, long moverMoves, int alpha, int beta, int depth) {
-        if (depth <= 0) {
-            return eval.eval(mover, enemy);
-        }
-
-        int result = NO_MOVE;
-
-        for (long mask : masks) {
-            long movesToCheck = mask & moverMoves;
-            while (movesToCheck != 0) {
-                final int sq = Long.numberOfTrailingZeros(movesToCheck);
-                final long placement = 1L << sq;
-                movesToCheck ^= placement;
-                final Square square = Square.of(sq);
-
-                nFlips++;
-                final long flips = square.calcFlips(mover, enemy);
-                final long subEnemy = mover | placement | flips;
-                final long subMover = enemy & ~flips;
-                final int subScore = -searchScore(subMover, subEnemy, -beta, -alpha, depth - 1);
-                if (subScore >= beta) {
-                    return subScore;
-                }
-                if (subScore > result) {
-                    result = subScore;
-                    if (subScore > alpha) {
-                        alpha = subScore;
-                    }
-                }
-            }
-        }
-
-        return result;
-    }
-
-    int treeScore2(long mover, long enemy, long moverMoves, int alpha, int beta, int depth) {
         if (depth <= 0) {
             return eval.eval(mover, enemy);
         }
