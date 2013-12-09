@@ -22,20 +22,21 @@ public class CutoffStatistics {
 //        if (nodeType != Solver.PRED_ALL) {
 //            return;
 //        }
-        final int eval = MoveSorter.sortEval.eval(mover, enemy) / CoefficientCalculator.DISK_VALUE;
-        final Statistic statistic;
-
-        if (eval >= beta) {
-            statistic = aboveBeta[(eval - beta) / 4];
-        } else if (eval <= alpha) {
-            statistic = belowAlpha[(alpha - eval) / 4];
-        } else {
-            statistic = pvCutoffs;
-        }
-        statistic.update(score, alpha, beta);
-
-        predictedType[nodeType + 1].update(score, alpha, beta);
-
+        // todo will need to get eval somehow
+//        final int eval = MoveSorter.sortEval.eval(mover, enemy) / CoefficientCalculator.DISK_VALUE;
+//        final Statistic statistic;
+//
+//        if (eval >= beta) {
+//            statistic = aboveBeta[(eval - beta) / 4];
+//        } else if (eval <= alpha) {
+//            statistic = belowAlpha[(alpha - eval) / 4];
+//        } else {
+//            statistic = pvCutoffs;
+//        }
+//        statistic.update(score, alpha, beta);
+//
+//        predictedType[nodeType + 1].update(score, alpha, beta);
+//
     }
 
     @Override public String toString() {

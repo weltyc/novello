@@ -75,7 +75,7 @@ final class MoveSorter {
 
     final SorterMove[] sorterMoves = new SorterMove[64];
 
-    static final CountingEval sortEval = new CountingEval(Players.currentEval());
+    private final CountingEval sortEval = new CountingEval(Players.currentEval());
     private final Search sortSearch = new Search(sortEval, 0);
 
     MoveSorter() {

@@ -615,7 +615,7 @@ public class Solver {
 
     public long getNodeStats() {
         // todo return both flips and evals
-        return nodeCounts.getNNodes();// + moveSorters.getNodeStats().nFlips;
+        return nodeCounts.getNNodes() + moveSorters.getNodeStats().nFlips;
     }
 
     public String getNodeCountsByDepth() {

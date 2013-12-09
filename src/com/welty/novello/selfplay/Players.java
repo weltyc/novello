@@ -44,7 +44,9 @@ public class Players {
         return players;
     }
 
+    public static final Eval currentEval = eval("b1");
+
     public static Eval currentEval() {
-        return eval("b1");
+        return currentEval;
     }
 }
