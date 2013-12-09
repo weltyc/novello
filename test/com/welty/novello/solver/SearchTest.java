@@ -14,8 +14,8 @@ import junit.framework.TestCase;
 public class SearchTest extends TestCase {
     public void test1PlySearch() throws Exception {
         final Eval eval = Players.eval("b1");
-        final CountingFlipCalc flipCalc = new CountingFlipCalc();
-        final Search search = new Search(new CountingEval(eval), flipCalc, 0);
+        final Counter counter = new Counter(eval);
+        final Search search = new Search(counter, 0);
 
         final Position prev = Position.of("--------\n" +
                 "--------\n" +
@@ -31,7 +31,7 @@ public class SearchTest extends TestCase {
         final long moves = prev.calcMoves();
         final MoveScore moveScore = search.calcMove(prev, moves, 1);
         assertTrue("must be a legal move", BitBoardUtils.isBitSet(moves, moveScore.sq));
-        assertEquals(Long.bitCount(moves), flipCalc.nFlips());
+        assertEquals(Long.bitCount(moves), counter.nFlips());
 
         final Position terminal = prev.play(moveScore.sq);
         assertEquals(-eval.eval(terminal), moveScore.score);
@@ -57,7 +57,7 @@ public class SearchTest extends TestCase {
 
     public void testSearchScoreWithPass() {
         final Eval eval = Players.eval("b1");
-        final Search search = new Search(new CountingEval(eval), new CountingFlipCalc(), 0);
+        final Search search = new Search(new Counter(eval), 0);
 
         final Position root = Position.of("--OO-O-O\n" +
                 "--****OO\n" +
@@ -80,7 +80,7 @@ public class SearchTest extends TestCase {
 
     public void testTreeMove() {
         final Eval eval = new DiskEval();
-        final Search search = new Search(new CountingEval(eval), new CountingFlipCalc(), 0);
+        final Search search = new Search(new Counter(eval), 0);
         final Position position = Position.of("-------- -------- -------- --OO---- --*O*--- ----OO-- -------- -------- *");
         final long mover = position.mover();
         final long enemy = position.enemy();

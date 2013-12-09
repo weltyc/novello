@@ -5,7 +5,6 @@ import com.welty.novello.core.MoveScore;
 import com.welty.novello.core.Position;
 import com.welty.novello.core.Square;
 import com.welty.novello.eval.CoefficientCalculator;
-import com.welty.novello.eval.Eval;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -16,14 +15,9 @@ import org.jetbrains.annotations.NotNull;
 public class Search {
     public static final int FLAG_PRINT_SEARCH = 1;
 
-    public Search(@NotNull CountingEval eval, @NotNull CountingFlipCalc flipCalc, int flags) {
-        this.flipCalc = flipCalc;
+    public Search(@NotNull Counter counter, int flags) {
         this.flags = flags;
-        this.eval = eval;
-    }
-
-    public Search(CountingEval eval, int searchFlags) {
-        this(eval, new CountingFlipCalc(), searchFlags);
+        this.counter = counter;
     }
 
     /**
@@ -33,7 +27,7 @@ public class Search {
      * @return the number of times a move has been made since the search was constructed.
      */
     public long nFlips() {
-        return flipCalc.nFlips();
+        return counter.nFlips();
     }
 
     /**
@@ -91,9 +85,8 @@ public class Search {
      */
     static final int NO_MOVE = Integer.MIN_VALUE >> 1;
 
-    private final @NotNull CountingFlipCalc flipCalc;
     private final int flags;
-    private final @NotNull CountingEval eval;
+    private final @NotNull Counter counter;
 
     /**
      * Depth of the search passed to move() or score() by the client.
@@ -172,7 +165,7 @@ public class Search {
 
     private int calcMoveScore(long mover, long enemy, int alpha, int beta, int depth, int sq) {
         final Square square = Square.of(sq);
-        final long flips = flipCalc.calcFlips(square, mover, enemy);
+        final long flips = counter.calcFlips(square, mover, enemy);
         final long subEnemy = mover | (1L<<sq) | flips;
         final long subMover = enemy & ~flips;
         if (shouldPrintSearch()) {
@@ -218,7 +211,7 @@ public class Search {
 
     int treeScore(long mover, long enemy, long moverMoves, int alpha, int beta, int depth) {
         if (depth <= 0) {
-            return eval.eval(mover, enemy);
+            return counter.eval(mover, enemy);
         }
 
         return treeMove(mover, enemy, moverMoves, alpha, beta, depth).score;

@@ -25,7 +25,7 @@ public class SearchTimer {
         final long n0 = CoefficientEval.nEvals();
         long nFlips = 0;
 
-        final Search search = new Search(new CountingEval(Players.eval("b1")), 0);
+        final Search search = new Search(new Counter(Players.eval("b1")), 0);
         final int depth = 6;
 
         final List<MutableGame> games = SampleGames.saioGames();

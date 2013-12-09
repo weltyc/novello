@@ -1,5 +1,6 @@
 package com.welty.novello.solver;
 
+import com.welty.novello.core.Square;
 import com.welty.novello.eval.Eval;
 import org.jetbrains.annotations.NotNull;
 
@@ -12,12 +13,22 @@ import org.jetbrains.annotations.NotNull;
  * 1. Evals are assumed to be thread-safe, and this isn't.
  * 2. To avoid vtbl lookups for speed.
  */
-public class CountingEval {
+public class Counter {
     private final @NotNull Eval eval;
     private long nEvals;
+    private long nFlips = 0;
 
-    public CountingEval(@NotNull Eval eval) {
+    public Counter(@NotNull Eval eval) {
         this.eval = eval;
+    }
+
+    public long nFlips() {
+        return nFlips;
+    }
+
+    public long calcFlips(Square square, long mover, long enemy) {
+        nFlips++;
+        return square.calcFlips(mover, enemy);
     }
 
     public int eval(long mover, long enemy) {

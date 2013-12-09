@@ -5,7 +5,7 @@ import com.welty.novello.core.Position;
 /**
  * Evaluates a position.
  *
- * This class is thread-safe. If your implementation is not thread-safe, it should be a CountingEval.
+ * This class is thread-safe. If your implementation is not thread-safe, it should be a Counter.
  */
 public abstract class Eval {
     public abstract int eval(long mover, long enemy);

@@ -76,16 +76,15 @@ final class MoveSorter {
 
     final SorterMove[] sorterMoves = new SorterMove[64];
 
-    private final @NotNull CountingFlipCalc flipCalc;
-    private final @NotNull CountingEval sortEval = new CountingEval(Players.currentEval());
+    private final @NotNull Counter counter;
     private final @NotNull Search sortSearch;
 
-    MoveSorter(@NotNull CountingFlipCalc flipCalc) {
-        this.flipCalc = flipCalc;
+    MoveSorter(@NotNull Counter counter) {
+        this.counter = counter;
         for (int i = 0; i < sorterMoves.length; i++) {
             sorterMoves[i] = new SorterMove();
         }
-        sortSearch = new Search(sortEval, flipCalc, 0);
+        sortSearch = new Search(counter, 0);
     }
 
     /**
@@ -100,7 +99,7 @@ final class MoveSorter {
             } else if (nEmpties >= MIN_EVAL_SORT_DEPTH + 2) {
                 useEvalSort = true;
             } else {
-                int localScore = sortEval.eval(mover, enemy);
+                int localScore = counter.eval(mover, enemy);
                 if (predictedNodeType == Solver.PRED_ALL) {
                     localScore -= 10;
                 }
@@ -118,7 +117,7 @@ final class MoveSorter {
                     //
                     // The current eval has a small adjustment for the current predicted node type; it turns out
                     // that predicted ALL nodes cut off less frequently than predicted CUT nodes with the same eval.
-                    int localScore = sortEval.eval(mover, enemy);
+                    int localScore = counter.eval(mover, enemy);
                     if (predictedNodeType == Solver.PRED_ALL) {
                         localScore -= 10;
                     }
@@ -165,7 +164,7 @@ final class MoveSorter {
                 continue;
             }
 
-            final long flips = flipCalc.calcFlips(square, mover, enemy);
+            final long flips = counter.calcFlips(square, mover, enemy);
             if (flips != 0) {
                 final long placement = 1L << sq;
                 final long nextEnemy = mover | flips | placement;
@@ -232,7 +231,7 @@ final class MoveSorter {
                 continue;
             }
 
-            final long flips = flipCalc.calcFlips(square, mover, enemy);
+            final long flips = counter.calcFlips(square, mover, enemy);
             if (flips != 0) {
                 final long placement = 1L << sq;
                 final long nextEnemy = mover | flips | placement;
@@ -290,7 +289,7 @@ final class MoveSorter {
                 continue;
             }
 
-            final long flips = flipCalc.calcFlips(square, mover, enemy);
+            final long flips = counter.calcFlips(square, mover, enemy);
             if (flips != 0) {
                 final long placement = 1L << square.sq;
                 final long nextEnemy = mover | flips | placement;
@@ -338,6 +337,6 @@ final class MoveSorter {
     }
 
     public NodeStats getNodeStats() {
-        return new NodeStats(sortSearch.nFlips(), sortEval.nEvals());
+        return new NodeStats(sortSearch.nFlips(), counter.nEvals());
     }
 }

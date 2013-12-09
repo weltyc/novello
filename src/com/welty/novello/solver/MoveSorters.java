@@ -11,9 +11,9 @@ import org.jetbrains.annotations.NotNull;
 class MoveSorters {
     private final MoveSorter[] sorters = new MoveSorter[64];
 
-    MoveSorters(@NotNull CountingFlipCalc flipCalc) {
+    MoveSorters(@NotNull Counter counter) {
         for (int i = 0; i < sorters.length; i++) {
-            sorters[i] = new MoveSorter(flipCalc);
+            sorters[i] = new MoveSorter(counter);
         }
     }
 

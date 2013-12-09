@@ -1,5 +1,7 @@
 package com.welty.novello.solver;
 
+import com.welty.novello.selfplay.Players;
+
 /**
  */
 public class MoveSorterTest extends BitBoardTestCase {
@@ -7,7 +9,7 @@ public class MoveSorterTest extends BitBoardTestCase {
      * Test insertion of squares in to the move sorter keeps moves correctly ordered
      */
     public void testInsert() {
-        final MoveSorter sorter = new MoveSorter(new CountingFlipCalc());
+        final MoveSorter sorter = new MoveSorter(new Counter(Players.currentEval()));
 
         sorter.insert(33, 10, 0x88, 0x404, null);
         assertEquals(1, sorter.size());

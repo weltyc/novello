@@ -30,7 +30,7 @@ public class DeepSolverTimer implements Tunable {
 
 //        System.out.println(Typical.timing(new DeepSolverTimer(20)));
 
-        final DeepSolverTimer timer = new DeepSolverTimer(24, true);
+        final DeepSolverTimer timer = new DeepSolverTimer(20, true);
         timer.runMultithreaded();
 //        final long t0 = System.currentTimeMillis();
 //        final DeepSolverTimer timer = new DeepSolverTimer(24, true);
@@ -80,10 +80,10 @@ public class DeepSolverTimer implements Tunable {
             }
         }
 
-        final long dt = System.currentTimeMillis() - t0;
+        final double dt = (System.currentTimeMillis() - t0)/1000;
 
-        final long kf = nFlips / 1000;
-        log.info(String.format("Total flip count at %d: %,d kn / %,d ms = %3.1f Mn/s", pvs.get(0).nEmpty(), kf, dt, kf/(double)dt));
+        final long mf = nFlips / 1000000;
+        log.info(String.format("Total flip count at %d: %,d Mn / %,.0f s = %3.1f Mn/s", pvs.get(0).nEmpty(), mf, dt, mf/dt));
     }
 
     private class SolveTask implements Callable<Long> {
@@ -100,7 +100,7 @@ public class DeepSolverTimer implements Tunable {
             final int score = solver.solve(pv.mover, pv.enemy);
             final long nFlips = solver.getNodeStats();
             if (logResults) {
-                final String msg = String.format("position %2d:   score %+3d   %,6d kf", i, score, nFlips / 1000);
+                final String msg = String.format("position %2d:   score %+3d %,6d Mn", i, score, nFlips / 1000000);
                 log.info(msg);
             }
             return nFlips;
