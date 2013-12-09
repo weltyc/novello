@@ -1,6 +1,7 @@
 package com.welty.novello.solver;
 
 import com.orbanova.common.misc.Logger;
+import com.welty.novello.core.Counts;
 import com.welty.novello.core.PositionValue;
 
 import java.util.ArrayList;
@@ -30,14 +31,14 @@ public class DeepSolverTimer implements Tunable {
 
 //        System.out.println(Typical.timing(new DeepSolverTimer(20)));
 
-        final DeepSolverTimer timer = new DeepSolverTimer(20, true);
+        final DeepSolverTimer timer = new DeepSolverTimer(24, true);
         timer.runMultithreaded();
 //        final long t0 = System.currentTimeMillis();
 //        final DeepSolverTimer timer = new DeepSolverTimer(24, true);
 //        timer.run();
 //        final long dt = System.currentTimeMillis() - t0;
-//        final long nNodes = timer.nNodes();
-//        System.out.format("%,d ms elapsed; %,d total nodes\n", dt, nNodes);
+//        final long getCounts = timer.getCounts();
+//        System.out.format("%,d ms elapsed; %,d total nodes\n", dt, getCounts);
 //        timer.solver.dumpStatistics();
 //        System.out.println(timer.solver.nodeCounts.getNodeCountsByDepth());
 //        System.out.println(timer.solver.hashTables.stats());
@@ -45,8 +46,8 @@ public class DeepSolverTimer implements Tunable {
 
     private Solver solver;
 
-    @Override public long nNodes() {
-        return solver.getNodeStats();
+    @Override public Counts getCounts() {
+        return solver.getCounts();
     }
 
     @Override public void run() {
@@ -62,7 +63,7 @@ public class DeepSolverTimer implements Tunable {
 
     public void runMultithreaded() {
         final ExecutorService executorService = Executors.newFixedThreadPool(8);
-        final ArrayList<Future<Long>> futures = new ArrayList<>();
+        final ArrayList<Future<Counts>> futures = new ArrayList<>();
 
         final long t0 = System.currentTimeMillis();
 
@@ -71,10 +72,11 @@ public class DeepSolverTimer implements Tunable {
             futures.add(executorService.submit(task));
         }
         executorService.shutdown();
-        long nFlips = 0;
-        for (Future<Long> future : futures) {
+        Counts counts = new Counts(0,0);
+
+        for (Future<Counts> future : futures) {
             try {
-                nFlips += future.get();
+               counts = counts.plus(future.get());
             } catch (InterruptedException | ExecutionException e) {
                 throw new RuntimeException(e);
             }
@@ -82,11 +84,11 @@ public class DeepSolverTimer implements Tunable {
 
         final double dt = (System.currentTimeMillis() - t0)/1000;
 
-        final long mf = nFlips / 1000000;
+        final long mf = counts.nFlips / 1000000;
         log.info(String.format("Total flip count at %d: %,d Mn / %,.0f s = %3.1f Mn/s", pvs.get(0).nEmpty(), mf, dt, mf/dt));
     }
 
-    private class SolveTask implements Callable<Long> {
+    private class SolveTask implements Callable<Counts> {
         private final PositionValue pv;
         private final int i;
 
@@ -95,15 +97,15 @@ public class DeepSolverTimer implements Tunable {
             this.i = i;
         }
 
-        @Override public Long call() throws Exception {
+        @Override public Counts call() throws Exception {
             final Solver solver = new Solver();
             final int score = solver.solve(pv.mover, pv.enemy);
-            final long nFlips = solver.getNodeStats();
+            final Counts counts = solver.getCounts();
             if (logResults) {
-                final String msg = String.format("position %2d:   score %+3d %,6d Mn", i, score, nFlips / 1000000);
+                final String msg = String.format("position %2d:   score %+3d %s", i, score, counts.toString(2));
                 log.info(msg);
             }
-            return nFlips;
+            return counts;
         }
     }
 }

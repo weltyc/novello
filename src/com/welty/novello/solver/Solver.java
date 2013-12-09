@@ -1,9 +1,11 @@
 package com.welty.novello.solver;
 
 import com.welty.novello.core.BitBoardUtils;
+import com.welty.novello.core.Counts;
 import com.welty.novello.core.MoveScore;
 import com.welty.novello.core.Square;
 import com.welty.novello.selfplay.Players;
+import org.jetbrains.annotations.NotNull;
 
 import static java.lang.Long.bitCount;
 
@@ -616,9 +618,8 @@ public class Solver {
         hashTables.clear(maxNEmpties);
     }
 
-    public long getNodeStats() {
-        // todo return both flips and evals
-        return counter.nFlips();
+    public @NotNull Counts getCounts() {
+        return counter.getNodeStats();
     }
 
     public String getNodeCountsByDepth() {

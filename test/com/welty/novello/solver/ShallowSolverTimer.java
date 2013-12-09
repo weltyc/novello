@@ -1,5 +1,7 @@
 package com.welty.novello.solver;
 
+import com.welty.novello.core.Counts;
+
 /**
  */
 public class ShallowSolverTimer implements Tunable {
@@ -18,8 +20,8 @@ public class ShallowSolverTimer implements Tunable {
     public ShallowSolverTimer() {
     }
 
-    @Override public long nNodes() {
-        return solver.getNodeStats();
+    @Override public Counts getCounts() {
+        return solver.getCounts();
     }
 
     @Override public void run() {
@@ -43,7 +45,7 @@ public class ShallowSolverTimer implements Tunable {
         final ShallowSolverTimer timer = new ShallowSolverTimer();
         final Typical typical = Typical.timing(timer, nIters);
         final Solver solver = timer.solver;
-        final long nNodes = solver.getNodeStats();
+        final long nNodes = solver.getCounts().nFlips;
         final double Mnps = nNodes / typical.sum * 0.001;
         final double nsPerNode = 1000 / Mnps;
         System.out.format("Typical %s ms. %.3g Mn; %.3g Mn/s; %.3g ns/n%n", typical, 1e-6 * nNodes / nIters, Mnps, nsPerNode);

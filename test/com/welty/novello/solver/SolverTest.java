@@ -176,7 +176,7 @@ public class SolverTest extends TestCase {
             final SolverTestCase testCase = testCases[j];
             executeTestCase(solver, testCase.white, testCase.black, testCase.expectedValue());
             final int nt = nodeCounts[j];
-            final long no = solver.getNodeStats();
+            final long no = solver.getCounts().nFlips;
             System.out.format("%,9d %,9d %s%n", nt, no, nt > 6 * no ? "<-----" : "");
             ntest += nt;
             novello += no;

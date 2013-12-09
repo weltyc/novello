@@ -31,7 +31,7 @@ public class Ffo {
                 final double seconds = 0.001 * (System.currentTimeMillis() - t0);
                 totalSeconds += seconds;
 
-                final double mn = solver.getNodeStats() *1e-6;
+                final double mn = solver.getCounts().nFlips *1e-6;
                 totalMn += mn;
                 System.out.format("%s  %s %3d  %6.1fs  %d empty  %7.1f Mn    %4.1f Mn/s\n", strings.get(2).substring(18),
                         BitBoardUtils.sqToText(moveScore.sq), moveScore.score, seconds, position.nEmpty(), mn, mn/seconds);

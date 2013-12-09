@@ -1,5 +1,6 @@
 package com.welty.novello.solver;
 
+import com.welty.novello.core.Counts;
 import com.welty.novello.core.Square;
 import com.welty.novello.eval.Eval;
 import org.jetbrains.annotations.NotNull;
@@ -16,7 +17,7 @@ import org.jetbrains.annotations.NotNull;
 public class Counter {
     private final @NotNull Eval eval;
     private long nEvals;
-    private long nFlips = 0;
+    private long nFlips;
 
     public Counter(@NotNull Eval eval) {
         this.eval = eval;
@@ -38,5 +39,9 @@ public class Counter {
 
     public long nEvals() {
         return nEvals;
+    }
+
+    public @NotNull Counts getNodeStats() {
+        return new Counts(nFlips, nEvals);
     }
 }

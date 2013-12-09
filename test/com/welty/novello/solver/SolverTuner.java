@@ -1,6 +1,7 @@
 package com.welty.novello.solver;
 
 import com.welty.novello.core.BitBoardUtils;
+import com.welty.novello.core.Counts;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
@@ -75,7 +76,7 @@ public class SolverTuner {
         final Solver solver = new Solver();
         if (tuneByNodes) {
             tunable.run();
-            final long nNodes = tunable.nNodes();
+            final long nNodes = tunable.getCounts().cost();
             metric = new FixedMetric(nNodes);
             System.out.format("%.4g Mn%n", nNodes * 1e-6);
         } else {
@@ -245,7 +246,7 @@ interface Tunable extends Runnable {
     /**
      * @return the number of nodes from the most recent run.
      */
-    long nNodes();
+    Counts getCounts();
 }
 
 /**
