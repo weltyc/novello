@@ -26,8 +26,8 @@ public class DeepSolverTimer implements Tunable {
     }
 
     public static void main(String[] args) {
-        // warm up Hot Spot
-        new DeepSolverTimer(18).run();
+        warmUpHotSpot();
+
 
 //        System.out.println(Typical.timing(new DeepSolverTimer(20)));
 
@@ -42,6 +42,13 @@ public class DeepSolverTimer implements Tunable {
 //        timer.solver.dumpStatistics();
 //        System.out.println(timer.solver.nodeCounts.getNodeCountsByDepth());
 //        System.out.println(timer.solver.hashTables.stats());
+    }
+
+    /**
+     * Allow the JVM to efficiently compile classes
+     */
+    static void warmUpHotSpot() {
+        new DeepSolverTimer(18).run();
     }
 
     private Solver solver;

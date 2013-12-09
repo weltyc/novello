@@ -50,7 +50,7 @@ public class SolverTuner {
         final int originalValue = parameter.get();
         System.out.println("Tuning " + parameter);
         System.out.println("-- original value: " + originalValue + " --");
-        final double metric = getMetric().highMetric();
+        final double metric = getMetric(false);
         best = new Best(metric, originalValue);
 
         tune(originalValue, +1);
@@ -68,21 +68,26 @@ public class SolverTuner {
 
     /**
      * Get the value of the metric that we're tuning
+     * <p/>
+     * If the metric has a margin of error, for example in timings, this returns either an optimistic (low) value of the metric
+     * or a pessimistic (high) value depending on the value of 'high'.
+     * If the metric has no margin of error, for example node counts, this function
+     * returns the same value for both low and high.
      *
+     * @param high if true, return a pessimistic view of the metric
      * @return value of the metric with the currently set parameters
      */
-    private Metric getMetric() {
-        final Metric metric;
+    private double getMetric(boolean high) {
         final Solver solver = new Solver();
+        final double metric;
         if (tuneByNodes) {
             tunable.run();
-            final long nNodes = tunable.getCounts().cost();
-            metric = new FixedMetric(nNodes);
-            System.out.format("%.4g Mn%n", nNodes * 1e-6);
+            metric = tunable.getCounts().cost();
+            System.out.format("%.4g M$%n", metric * 1e-6);
         } else {
             final Typical typical = Typical.timing(tunable);
             System.out.println(typical);
-            metric = typical;
+            metric = high ? typical.q3() : typical.q1();
         }
         return metric;
     }
@@ -96,7 +101,7 @@ public class SolverTuner {
         for (int proposedValue = originalValue + dv; ok && proposedValue >= parameter.min(); proposedValue += dv) {
             System.out.println("-- proposed value: " + proposedValue + " --");
             parameter.set(proposedValue);
-            final double metric = getMetric().lowMetric();
+            final double metric = getMetric(false);
             ok = best.update(metric, proposedValue);
         }
     }
@@ -112,7 +117,7 @@ public class SolverTuner {
 
         /**
          * Check whether time is better than the current best time; if so, update this.
-         *
+         * <p/>
          * This returns 'true' if the search should be continued. In order to allow for large flat spaces
          * in the search, it returns true if the metric is exactly equal to the old best metric.
          *
@@ -207,7 +212,7 @@ public class SolverTuner {
     private static final Parameter MIN_EVAL_SORT_DEPTH = new StaticFieldParameter(Solver.class, "MIN_EVAL_SORT_DEPTH", 0);
     private static final Parameter MIN_SORT_DEPTH = new StaticFieldParameter(Solver.class, "MIN_SORT_DEPTH", 5);
     private static final Parameter MIN_HASH_DEPTH = new StaticFieldParameter(Solver.class, "MIN_HASH_DEPTH", Solver.MIN_SORT_DEPTH);
-    private static final Parameter MIN_ETC_DEPTH = new StaticFieldParameter(Solver.class, "MIN_ETC_DEPTH", Solver.MIN_HASH_DEPTH+1);
+    private static final Parameter MIN_ETC_DEPTH = new StaticFieldParameter(Solver.class, "MIN_ETC_DEPTH", Solver.MIN_HASH_DEPTH + 1);
     private static final Parameter MIN_NEGASCOUT_DEPTH = new StaticFieldParameter(Solver.class, "MIN_NEGASCOUT_DEPTH", Solver.MIN_SORT_DEPTH);
 
     private static class FixedWeightParameter extends Parameter {
@@ -247,38 +252,4 @@ interface Tunable extends Runnable {
      * @return the number of nodes from the most recent run.
      */
     Counts getCounts();
-}
-
-/**
- * A performance estimate
- */
-interface Metric {
-    /**
-     * Low, conservative estimate of performance
-     */
-    double lowMetric();
-
-    /**
-     * High, optimistic estimate of performance
-     */
-    double highMetric();
-}
-
-/**
- * A simple Metric that returns the same value for both high and low
- */
-class FixedMetric implements Metric {
-    private final double value;
-
-    FixedMetric(double value) {
-        this.value = value;
-    }
-
-    @Override public double lowMetric() {
-        return value;
-    }
-
-    @Override public double highMetric() {
-        return value;
-    }
 }

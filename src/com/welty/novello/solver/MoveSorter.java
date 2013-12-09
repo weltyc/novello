@@ -334,8 +334,4 @@ final class MoveSorter {
     public int sq(int iBestMove) {
         return sorterMoves[iBestMove].sq;
     }
-
-    public Counts getNodeStats() {
-        return new Counts(sortSearch.nFlips(), counter.nEvals());
-    }
 }

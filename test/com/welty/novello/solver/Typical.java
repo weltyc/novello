@@ -10,7 +10,7 @@ import java.util.Arrays;
  * <p/>
  * Helps to reduce impact of timing outliers
  */
-public class Typical implements Metric {
+public class Typical  {
     /**
      * mean of middle 50% of the data
      */
@@ -43,11 +43,11 @@ public class Typical implements Metric {
         return String.format("%4.0f [%4.0f-%4.0f]", value, q1, q3);
     }
 
-    @Override public double lowMetric() {
+    public double q1() {
         return q1;
     }
 
-    @Override public double highMetric() {
+    public double q3() {
         return q3;
     }
 

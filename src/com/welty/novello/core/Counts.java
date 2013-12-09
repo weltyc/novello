@@ -50,6 +50,6 @@ public class Counts {
      * @return a number proportional to the cost of the search
      */
     public long cost() {
-        return nFlips + 5*nEvals;
+        return nFlips + 11*nEvals;
     }
 }
