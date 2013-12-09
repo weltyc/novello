@@ -3,7 +3,6 @@ package com.welty.novello.solver;
 import com.orbanova.common.misc.Logger;
 import com.welty.novello.core.MutableGame;
 import com.welty.novello.core.Position;
-import com.welty.novello.core.SampleGames;
 
 import java.util.ArrayList;
 import java.util.List;

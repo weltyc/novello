@@ -1,7 +1,8 @@
-package com.welty.novello.core;
+package com.welty.novello.solver;
 
 import com.orbanova.common.feed.Feed;
 import com.orbanova.common.feed.Feeds;
+import com.welty.novello.core.MutableGame;
 
 import java.util.ArrayList;
 import java.util.List;
