@@ -1,7 +1,6 @@
 package com.welty.novello.solver;
 
 import com.welty.novello.core.BitBoardUtils;
-import com.welty.novello.core.Counts;
 import com.welty.novello.core.Square;
 import com.welty.novello.eval.CoefficientCalculator;
 import org.jetbrains.annotations.NotNull;
