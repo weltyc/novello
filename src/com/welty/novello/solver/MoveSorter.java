@@ -194,8 +194,8 @@ final class MoveSorter {
         if (searchDepth < 1) {
             costPenalty = sortWeightFromMobility[nMobs] << DEEP_MOBILITY_WEIGHT;
         } else {
-//            costPenalty = sortWeightFromMobility[nMobs] << DEEP_MOBILITY_WEIGHT;
-            costPenalty = (int) ((2<<8) * Math.log(dFlips + 0.5));
+            costPenalty = 4*sortWeightFromMobility[nMobs];
+//            costPenalty = (int) ((2<<8) * Math.log(dFlips + 0.5));
         }
         int moverPotMob = Long.bitCount(BitBoardUtils.potMobs2(nextEnemy, ~(nextMover | nextEnemy)));
         int score = margin - costPenalty - (moverPotMob << DEEP_POT_MOB_WEIGHT);

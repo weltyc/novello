@@ -1206,3 +1206,15 @@ Questions
 1. Is the node count improvement due to the deeper search and fancy costing or just due to less fastest-first weight at high depths?
 2. Should we use a move sort search with beta as a minimum bound?
 3. Should the move sort place expected cutoff moves before other moves regardless of costing?
+
+Answers
+1. To answer this one,
+  a. keep the deeper search but use the old costing
+    Total node count at 24: 8,728,148 kn / 297,320 ms = 29.4 Mn/s
+  b. keep the deeper search but use reduced-power mobility-based costing.
+    Total node count at 24: 6,579,122 kn / 256,410 ms = 25.7 Mn/s: penalty = 2*sortWeightFromMobility[nMobs]
+    Total node count at 24: 6,886,664 kn / 271,215 ms = 25.4 Mn/s: penalty = 1*sortWeightFromMobility[nMobs]
+    Total node count at 24: 6,301,284 kn / 236,531 ms = 26.6 Mn/s: penalty = 4*sortWeightFromMobility[nMobs]
+    Total node count at 24: 6,678,235 kn / 241,513 ms = 27.7 Mn/s: penalty = 8*sortWeightFromMobility[nMobs]
+   Going with 4*
+  c. drop the deeper search using the result of b
