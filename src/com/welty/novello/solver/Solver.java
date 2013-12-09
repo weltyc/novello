@@ -3,7 +3,6 @@ package com.welty.novello.solver;
 import com.welty.novello.core.BitBoardUtils;
 import com.welty.novello.core.Square;
 import com.welty.novello.core.MoveScore;
-import com.welty.novello.eval.CoefficientCalculator;
 
 import static java.lang.Long.bitCount;
 
@@ -42,7 +41,7 @@ public class Solver {
      * <p/>
      * These are now member variables to allow multiple Threads to each run a Solver.
      */
-    private final MoveSorter[] moveSorters;
+    private final MoveSorters moveSorters = new MoveSorters();
 
     /**
      * A TreeSearchResult is created for each search tree depth.
@@ -77,10 +76,8 @@ public class Solver {
      * This Solver can be reused to solve multiple positions, but may only run in one thread at a time.
      */
     public Solver() {
-        moveSorters = new MoveSorter[64];
         treeSearchResults = new TreeSearchResult[64];
-        for (int i = 0; i < moveSorters.length; i++) {
-            moveSorters[i] = new MoveSorter();
+        for (int i = 0; i < treeSearchResults.length; i++) {
             treeSearchResults[i] = new TreeSearchResult();
         }
     }
@@ -115,8 +112,8 @@ public class Solver {
 
         final long parity = calcParity();
         moverResultWithSorting(result, mover, enemy, -64, 64, nEmpties, parity, PRED_PV, -1);
-        final MoveSorter moveSorter = moveSorters[nEmpties];
-        final int sq = moveSorter.sorterMoves[result.iBestMove].sq;
+        final MoveSorter moveSorter = moveSorters.get(nEmpties);
+        final int sq = moveSorter.sq(result.iBestMove);
         return new MoveScore(sq, result.score);
     }
 
@@ -363,7 +360,7 @@ public class Solver {
 
         int subNodeType = -nodeType;
         // do an actual move sort
-        final MoveSorter sorter = moveSorters[nEmpties];
+        final MoveSorter sorter = moveSorters.get(nEmpties);
         sorter.createSort(mover, enemy, alpha, beta, nEmpties, parity, movesToCheck, this.empties, this.hashTables, nodeType);
         final int n = sorter.size();
         for (int i = 0; i < n; i++) {

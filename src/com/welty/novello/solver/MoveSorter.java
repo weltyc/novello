@@ -3,7 +3,6 @@ package com.welty.novello.solver;
 import com.welty.novello.core.BitBoardUtils;
 import com.welty.novello.core.Square;
 import com.welty.novello.eval.CoefficientCalculator;
-import com.welty.novello.eval.Eval;
 import com.welty.novello.selfplay.Players;
 
 import static com.welty.novello.core.BitBoardUtils.calcMoves;
@@ -180,7 +179,7 @@ final class MoveSorter {
 
         final int evalScore;
         evalScore = sortSearch.calcScore(nextMover, nextEnemy, searchDepth);
-        final long dFlips = sortSearch.nFlips();
+//        final long dFlips = sortSearch.nFlips();
 
         int margin = -evalScore - (beta + BETA_MARGIN) * CoefficientCalculator.DISK_VALUE;
         if (margin > 0) {
@@ -194,7 +193,7 @@ final class MoveSorter {
         if (searchDepth < 1) {
             costPenalty = sortWeightFromMobility[nMobs] << DEEP_MOBILITY_WEIGHT;
         } else {
-            costPenalty = 4*sortWeightFromMobility[nMobs];
+            costPenalty = 4 * sortWeightFromMobility[nMobs];
 //            costPenalty = (int) ((2<<8) * Math.log(dFlips + 0.5));
         }
         int moverPotMob = Long.bitCount(BitBoardUtils.potMobs2(nextEnemy, ~(nextMover | nextEnemy)));
@@ -321,5 +320,15 @@ final class MoveSorter {
         }
         sorterMoves[i] = sorterMove;
 
+    }
+
+    /**
+     * Get square of the best move (after sort is complete)
+     *
+     * @param iBestMove index of the best move
+     * @return square of the best move
+     */
+    public int sq(int iBestMove) {
+        return sorterMoves[iBestMove].sq;
     }
 }
