@@ -72,10 +72,11 @@ final class MoveSorter {
     static int MIN_EVAL_SORT_DEPTH = 12;
 
     private int size = 0;
+
     final SorterMove[] sorterMoves = new SorterMove[64];
 
     static final Eval sortEval = Players.currentEval();
-    static final Search sortSearch = new Search(sortEval, 0);
+    private final Search sortSearch = new Search(sortEval, 0);
 
     MoveSorter() {
         for (int i = 0; i < sorterMoves.length; i++) {
@@ -96,13 +97,13 @@ final class MoveSorter {
                 useEvalSort = true;
             } else {
                 int localScore = sortEval.eval(mover, enemy);
-                if (predictedNodeType==Solver.PRED_ALL) {
+                if (predictedNodeType == Solver.PRED_ALL) {
                     localScore -= 10;
                 }
                 useEvalSort = localScore > (alpha - 20) * CoefficientCalculator.DISK_VALUE;
             }
             if (useEvalSort) {
-                final int nEmpty = Long.bitCount(~(mover|enemy));
+                final int nEmpty = Long.bitCount(~(mover | enemy));
                 final int searchDepth;
                 if (nEmpty >= 16) {
                     // decide if we should use an eval or a 1-ply search for valuing the subnodes.
@@ -114,12 +115,11 @@ final class MoveSorter {
                     // The current eval has a small adjustment for the current predicted node type; it turns out
                     // that predicted ALL nodes cut off less frequently than predicted CUT nodes with the same eval.
                     int localScore = sortEval.eval(mover, enemy);
-                    if (predictedNodeType==Solver.PRED_ALL) {
+                    if (predictedNodeType == Solver.PRED_ALL) {
                         localScore -= 10;
                     }
-                    searchDepth = nEmpty >= 19 || scoreInRange(localScore, alpha-20, beta+20) ? 1 : 0;
-                }
-                else {
+                    searchDepth = nEmpty >= 19 || scoreInRange(localScore, alpha - 20, beta + 20) ? 3 : 0;
+                } else {
                     searchDepth = 0;
                 }
                 createWithEtcAndEval(empties, mover, enemy, movesToCheck, hashTables, alpha, beta, searchDepth);
@@ -132,7 +132,7 @@ final class MoveSorter {
     }
 
     private boolean scoreInRange(int localScore, int min, int max) {
-        return localScore >= min*CoefficientCalculator.DISK_VALUE && localScore <= max*CoefficientCalculator.DISK_VALUE;
+        return localScore >= min * CoefficientCalculator.DISK_VALUE && localScore <= max * CoefficientCalculator.DISK_VALUE;
     }
 
     int size() {
@@ -175,11 +175,13 @@ final class MoveSorter {
     }
 
 
-    private static int scoreWithEtcAndEval(HashTables hashTables, int alpha, int beta, long nextEnemy, long nextMover, long nextMoverMoves, int searchDepth) {
+    private int scoreWithEtcAndEval(HashTables hashTables, int alpha, int beta, long nextEnemy, long nextMover, long nextMoverMoves, int searchDepth) {
         final int nMobs = Long.bitCount(nextMoverMoves);
 
         final int evalScore;
         evalScore = sortSearch.calcScore(nextMover, nextEnemy, searchDepth);
+        final long dFlips = sortSearch.nFlips();
+
         int margin = -evalScore - (beta + BETA_MARGIN) * CoefficientCalculator.DISK_VALUE;
         if (margin > 0) {
             margin >>= 1;
@@ -187,8 +189,16 @@ final class MoveSorter {
 //            final int nStable = Long.bitCount(Stable.stable(nextMover, nextEnemy) & nextEnemy);
 //            margin += nStable * (CoefficientCalculator.DISK_VALUE/2);
         }
+
+        final int costPenalty;
+        if (searchDepth < 1) {
+            costPenalty = sortWeightFromMobility[nMobs] << DEEP_MOBILITY_WEIGHT;
+        } else {
+//            costPenalty = sortWeightFromMobility[nMobs] << DEEP_MOBILITY_WEIGHT;
+            costPenalty = (int) ((2<<8) * Math.log(dFlips + 0.5));
+        }
         int moverPotMob = Long.bitCount(BitBoardUtils.potMobs2(nextEnemy, ~(nextMover | nextEnemy)));
-        int score = margin - (sortWeightFromMobility[nMobs] << DEEP_MOBILITY_WEIGHT)-(moverPotMob << DEEP_POT_MOB_WEIGHT);
+        int score = margin - costPenalty - (moverPotMob << DEEP_POT_MOB_WEIGHT);
         final HashTables.Entry entry = hashTables.find(nextMover, nextEnemy);
         if (entry != null && entry.cutsOff(-beta, -alpha)) {
             score += 1 << ETC_WEIGHT;
