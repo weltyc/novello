@@ -63,6 +63,8 @@ public class Solver {
      * Statistics on nodes, cutoffs, etc.
      */
     final NodeCounts nodeCounts = new NodeCounts();
+    final CutoffStatistics cutoffStatistics = new CutoffStatistics();
+    final StableStatistics stableStatistics = new StableStatistics();
 
     /**
      * Transposition table.
@@ -273,12 +275,6 @@ public class Solver {
         return result;
     }
 
-    private static final long[] stableCounts = new long[65];
-    private static long stableAlphaCuts;
-    private static long stableBetaCuts;
-    private static long stableFails;
-    private static long stableUncalculated;
-
     private int moverResultWithHash(long mover, long enemy, int alpha, int beta, int nEmpties, long parity, int nodeType, long movesToCheck) {
         // searchAlpha and searchBeta are the alpha and beta used for the search.
         // They are normally equal to the original alpha and beta.
@@ -330,19 +326,18 @@ public class Solver {
                 final int scoreUpperBound = 64 - 2 * enemyStable;
                 final int moverStable = Long.bitCount(stable & mover);
                 final int scoreLowerBound = 2 * moverStable - 64;
-                stableCounts[Math.max(enemyStable, moverStable)]++;
+                stableStatistics.counts[Math.max(enemyStable, moverStable)]++;
                 if (scoreUpperBound <= alpha) {
-                    stableAlphaCuts++;
+                    stableStatistics.alphaCuts++;
                     return scoreUpperBound;
                 }
                 if (scoreLowerBound >= beta) {
-                    stableBetaCuts++;
+                    stableStatistics.betaCuts++;
                     return scoreLowerBound;
                 }
-                stableFails++;
-            }
-            else {
-                stableUncalculated++;
+                stableStatistics.fails++;
+            } else {
+                stableStatistics.uncalculated++;
             }
         }
         final TreeSearchResult result = treeSearchResults[nEmpties];
@@ -426,116 +421,11 @@ public class Solver {
         assert iBestMove >= 0 || score == NO_MOVE;
     }
 
-    private final static class Statistic {
-        private long nCutoffs;
-        private long nImprovements;
-        private long nFails;
-
-        void update(int score, int alpha, int beta) {
-            if (score >= beta) {
-                nCutoffs++;
-            } else if (score <= alpha) {
-                nFails++;
-            } else {
-                nImprovements++;
-            }
-        }
-
-        long nChances() {
-            return nCutoffs + nImprovements + nFails;
-        }
-
-        @Override public String toString() {
-            final long nChances = nChances();
-            return String.format("%3d%% CUT, %3d%% PV, %3d%% ALL   %,9d nodes", percent(nCutoffs)
-                    , percent(nImprovements), percent(nFails), nChances);
-        }
-
-        public void dump(String description) {
-            if (nChances() > 0) {
-                System.out.println(description + ": " + toString());
-            }
-        }
-
-        private int percent(long numerator) {
-            return Math.round((float) numerator * 100f / nChances());
-        }
-    }
-
-    private final Statistic[] aboveBeta = createStatistics(100);
-    private final Statistic[] belowAlpha = createStatistics(100);
-    private final Statistic pvCutoffs = new Statistic();
-    private final Statistic[] predictedType = createStatistics(3);
-
-    private static Statistic[] createStatistics(int length) {
-        final Statistic[] statistics = new Statistic[length];
-        for (int i = 0; i < length; i++) {
-            statistics[i] = new Statistic();
-        }
-        return statistics;
-    }
-
-    private void collectStatistics(long mover, long enemy, int alpha, int beta, int score, int nodeType) {
-        if (nodeType != PRED_ALL) {
-            return;
-        }
-        final int eval = MoveSorter.sortEval.eval(mover, enemy) / CoefficientCalculator.DISK_VALUE;
-        final Statistic statistic;
-
-        if (eval >= beta) {
-            statistic = aboveBeta[(eval - beta) / 4];
-        } else if (eval <= alpha) {
-            statistic = belowAlpha[(alpha - eval) / 4];
-        } else {
-            statistic = pvCutoffs;
-        }
-        statistic.update(score, alpha, beta);
-
-        predictedType[nodeType + 1].update(score, alpha, beta);
-
-    }
-
     void dumpStatistics() {
-        dumpCutoffStatistics();
-        System.out.println("## Stable disk counts at 6 empty ##");
-        for (int i = 0; i <= 64; i++) {
-            if (stableCounts[i] > 0) {
-                System.out.format("%2d: %,9d\n", i, stableCounts[i]);
-            }
-        }
-        final long totalNodes = stableAlphaCuts + stableBetaCuts + stableFails + stableUncalculated;
-        final double pctBeta = 100.*stableBetaCuts / totalNodes;
-        final double pctAlpha = 100.*stableAlphaCuts / totalNodes;
-        final double pctCalculated = 100 - 100.*stableUncalculated / totalNodes;
-        System.out.format("stable beta cuts: %.1f%%, alpha cuts: %.1f%%. %3.1f%% received full stability calc out of %,d total nodes\n", pctBeta, pctAlpha, pctCalculated, totalNodes);
+        System.out.println(cutoffStatistics);
+        System.out.println(stableStatistics);
     }
 
-    private void dumpCutoffStatistics() {
-        long totalNodes = 0;
-
-        for (int margin = belowAlpha.length; margin-- > 0; ) {
-            final Statistic statistic = belowAlpha[margin];
-            statistic.dump("<α " + String.format("%2d-%2d", margin * 4, margin * 4 + 3));
-            totalNodes += statistic.nChances();
-        }
-        pvCutoffs.dump("pv      ");
-        totalNodes += pvCutoffs.nChances();
-        for (int margin = 0; margin < aboveBeta.length; margin++) {
-            final Statistic statistic = aboveBeta[margin];
-            statistic.dump(">ß " + String.format("%2d-%2d", margin * 4, margin * 4 + 3));
-            totalNodes += statistic.nChances();
-        }
-        System.out.println();
-
-
-        final String[] predictedTypeNames = {"PRED_ALL", "PRED_PV ", "PRED_CUT"};
-        for (int i = 0; i < predictedType.length; i++) {
-            predictedType[i].dump(predictedTypeNames[i]);
-        }
-
-        System.out.println();
-        System.out.format("Statistics calculated for %,d total nodes\n", totalNodes);
-    }
 
     private int solveNoParity(long mover, long enemy, int alpha, int beta, ListOfEmpties empties, int nEmpties) {
         if (nEmpties == 3) {
@@ -704,7 +594,7 @@ public class Solver {
         }
         int net = 2 * bitCount(mover) - 63; // 63 because 1 empty square remains
         if (BitBoardUtils.WINNER_GETS_EMPTIES) {
-            if (net>0) {
+            if (net > 0) {
                 net++;
             } else {
                 net--;
