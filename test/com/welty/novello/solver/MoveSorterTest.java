@@ -7,7 +7,7 @@ public class MoveSorterTest extends BitBoardTestCase {
      * Test insertion of squares in to the move sorter keeps moves correctly ordered
      */
     public void testInsert() {
-        final MoveSorter sorter = new MoveSorter();
+        final MoveSorter sorter = new MoveSorter(new CountingFlipCalc());
 
         sorter.insert(33, 10, 0x88, 0x404, null);
         assertEquals(1, sorter.size());

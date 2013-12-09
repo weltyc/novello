@@ -5,6 +5,7 @@ import com.welty.novello.core.NodeStats;
 import com.welty.novello.core.Square;
 import com.welty.novello.eval.CoefficientCalculator;
 import com.welty.novello.selfplay.Players;
+import org.jetbrains.annotations.NotNull;
 
 import static com.welty.novello.core.BitBoardUtils.calcMoves;
 import static com.welty.novello.core.BitBoardUtils.isBitClear;
@@ -75,13 +76,16 @@ final class MoveSorter {
 
     final SorterMove[] sorterMoves = new SorterMove[64];
 
-    private final CountingEval sortEval = new CountingEval(Players.currentEval());
-    private final Search sortSearch = new Search(sortEval, 0);
+    private final @NotNull CountingFlipCalc flipCalc;
+    private final @NotNull CountingEval sortEval = new CountingEval(Players.currentEval());
+    private final @NotNull Search sortSearch;
 
-    MoveSorter() {
+    MoveSorter(@NotNull CountingFlipCalc flipCalc) {
+        this.flipCalc = flipCalc;
         for (int i = 0; i < sorterMoves.length; i++) {
             sorterMoves[i] = new SorterMove();
         }
+        sortSearch = new Search(sortEval, flipCalc, 0);
     }
 
     /**
@@ -161,7 +165,7 @@ final class MoveSorter {
                 continue;
             }
 
-            final long flips = square.calcFlips(mover, enemy);
+            final long flips = flipCalc.calcFlips(square, mover, enemy);
             if (flips != 0) {
                 final long placement = 1L << sq;
                 final long nextEnemy = mover | flips | placement;
@@ -228,7 +232,7 @@ final class MoveSorter {
                 continue;
             }
 
-            final long flips = square.calcFlips(mover, enemy);
+            final long flips = flipCalc.calcFlips(square, mover, enemy);
             if (flips != 0) {
                 final long placement = 1L << sq;
                 final long nextEnemy = mover | flips | placement;
@@ -286,7 +290,7 @@ final class MoveSorter {
                 continue;
             }
 
-            final long flips = square.calcFlips(mover, enemy);
+            final long flips = flipCalc.calcFlips(square, mover, enemy);
             if (flips != 0) {
                 final long placement = 1L << square.sq;
                 final long nextEnemy = mover | flips | placement;

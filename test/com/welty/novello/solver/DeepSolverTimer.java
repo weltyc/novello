@@ -71,10 +71,10 @@ public class DeepSolverTimer implements Tunable {
             futures.add(executorService.submit(task));
         }
         executorService.shutdown();
-        long nNodes = 0;
+        long nFlips = 0;
         for (Future<Long> future : futures) {
             try {
-                nNodes += future.get();
+                nFlips += future.get();
             } catch (InterruptedException | ExecutionException e) {
                 throw new RuntimeException(e);
             }
@@ -82,8 +82,8 @@ public class DeepSolverTimer implements Tunable {
 
         final long dt = System.currentTimeMillis() - t0;
 
-        final long kn = nNodes / 1000;
-        log.info(String.format("Total node count at %d: %,d kn / %,d ms = %3.1f Mn/s", pvs.get(0).nEmpty(), kn, dt, kn/(double)dt));
+        final long kf = nFlips / 1000;
+        log.info(String.format("Total flip count at %d: %,d kn / %,d ms = %3.1f Mn/s", pvs.get(0).nEmpty(), kf, dt, kf/(double)dt));
     }
 
     private class SolveTask implements Callable<Long> {
@@ -98,12 +98,12 @@ public class DeepSolverTimer implements Tunable {
         @Override public Long call() throws Exception {
             final Solver solver = new Solver();
             final int score = solver.solve(pv.mover, pv.enemy);
-            final long nNodes = solver.getNodeStats();
+            final long nFlips = solver.getNodeStats();
             if (logResults) {
-                final String msg = String.format("position %2d:   score %+3d   %,6d kn", i, score, nNodes / 1000);
+                final String msg = String.format("position %2d:   score %+3d   %,6d kf", i, score, nFlips / 1000);
                 log.info(msg);
             }
-            return nNodes;
+            return nFlips;
         }
     }
 }

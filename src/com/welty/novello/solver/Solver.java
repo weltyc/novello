@@ -42,7 +42,7 @@ public class Solver {
      * <p/>
      * These are now member variables to allow multiple Threads to each run a Solver.
      */
-    private final MoveSorters moveSorters = new MoveSorters();
+    private final MoveSorters moveSorters;
 
     /**
      * A TreeSearchResult is created for each search tree depth.
@@ -59,6 +59,7 @@ public class Solver {
      */
     private ListOfEmpties empties;
 
+    private CountingFlipCalc flipCalc = new CountingFlipCalc();
     /**
      * Statistics on nodes, cutoffs, etc.
      */
@@ -81,6 +82,7 @@ public class Solver {
         for (int i = 0; i < treeSearchResults.length; i++) {
             treeSearchResults[i] = new TreeSearchResult();
         }
+        moveSorters = new MoveSorters(flipCalc);
     }
 
     /**
@@ -248,7 +250,7 @@ public class Solver {
                     continue;
                 }
                 if (BitBoardUtils.getBit(parity, square.sq) == desiredParity) {
-                    long flips = square.calcFlips(mover, enemy);
+                    final long flips = flipCalc.calcFlips(square, mover, enemy);
                     if (flips != 0) {
                         final long subMover = enemy & ~flips;
                         final long subEnemy = mover | flips | square.placement();
@@ -452,7 +454,7 @@ public class Solver {
         int result = NO_MOVE;
         for (ListOfEmpties.Node node = empties.first(); node != empties.end; node = node.next) {
             final Square square = node.square;
-            long flips = square.calcFlips(mover, enemy);
+            final long flips = flipCalc.calcFlips(square, mover, enemy);
             if (flips != 0) {
                 final long subMover = enemy & ~flips;
                 final long subEnemy = mover | flips | square.placement();
@@ -497,7 +499,7 @@ public class Solver {
         int result = NO_MOVE;
         for (ListOfEmpties.Node node = empties.first(); node != empties.end; node = node.next) {
             final Square square = node.square;
-            long flips = square.calcFlips(mover, enemy);
+            final long flips = flipCalc.calcFlips(square, mover, enemy);
             if (flips != 0) {
                 final long subMover = enemy & ~flips;
                 final long subEnemy = mover | flips | square.placement();
@@ -540,7 +542,7 @@ public class Solver {
      */
     private int moverResult2(long mover, long enemy, int beta, Square empty1, Square empty2) {
         int result = NO_MOVE;
-        final long flips1 = empty1.calcFlips(mover, enemy);
+        final long flips1 = flipCalc.calcFlips(empty1, mover, enemy);
         if (flips1 != 0) {
             final long subMover = enemy & ~flips1;
             final long subEnemy = mover | flips1 | empty1.placement();
@@ -553,7 +555,7 @@ public class Solver {
             }
         }
 
-        final long flips2 = empty2.calcFlips(mover, enemy);
+        final long flips2 = flipCalc.calcFlips(empty2, mover, enemy);
         if (flips2 != 0) {
             final long subMover = enemy & ~flips2;
             final long subEnemy = mover | flips2 | empty2.placement();
@@ -578,13 +580,13 @@ public class Solver {
     private int solve1(long mover, long enemy, Square empty) {
         nodeCounts.update(1);
 
-        final long moverFlips = empty.calcFlips(mover, enemy);
+        final long moverFlips = flipCalc.calcFlips(empty, mover, enemy);
         if (moverFlips != 0) {
             mover |= moverFlips;
             final int net = 2 * bitCount(mover) - 62; // -62 because we didn't set the placed disk
             return net;
         }
-        final long enemyFlips = empty.calcFlips(enemy, mover);
+        final long enemyFlips = flipCalc.calcFlips(empty, enemy, mover);
         if (enemyFlips != 0) {
             enemy |= enemyFlips;
             final int net = 62 - 2 * bitCount(enemy); // 62 because we didn't set the placed disk
@@ -615,7 +617,7 @@ public class Solver {
 
     public long getNodeStats() {
         // todo return both flips and evals
-        return nodeCounts.getNNodes() + moveSorters.getNodeStats().nFlips;
+        return flipCalc.nFlips();
     }
 
     public String getNodeCountsByDepth() {

@@ -1,6 +1,6 @@
 package com.welty.novello.solver;
 
-import com.welty.novello.core.NodeStats;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * A MoveSorter for each depth
@@ -11,21 +11,13 @@ import com.welty.novello.core.NodeStats;
 class MoveSorters {
     private final MoveSorter[] sorters = new MoveSorter[64];
 
-    MoveSorters() {
+    MoveSorters(@NotNull CountingFlipCalc flipCalc) {
         for (int i = 0; i < sorters.length; i++) {
-            sorters[i] = new MoveSorter();
+            sorters[i] = new MoveSorter(flipCalc);
         }
     }
 
     public MoveSorter get(int nEmpties) {
         return sorters[nEmpties];
-    }
-
-    public NodeStats getNodeStats() {
-        NodeStats stats = new NodeStats(0,0);
-        for (MoveSorter sorter : sorters) {
-            stats = stats.plus(sorter.getNodeStats());
-        }
-        return stats;
     }
 }

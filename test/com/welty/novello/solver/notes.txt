@@ -1230,3 +1230,4 @@ proportional to nFlips + 2*nEvals. Currently the search only returns flips, and 
 moveSorter.
 
 Total node count at 24: 7,483,403 kn / 233,288 ms = 32.1 Mn/s: Include flips from MoveSorter (try 1)
+Total flip count at 24: 15,392,105 kf / 236,498 ms = 65.1 Mf/s: Include all calls to calcFlips()

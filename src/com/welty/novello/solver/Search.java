@@ -16,9 +16,14 @@ import org.jetbrains.annotations.NotNull;
 public class Search {
     public static final int FLAG_PRINT_SEARCH = 1;
 
-    public Search(@NotNull CountingEval eval, int flags) {
+    public Search(@NotNull CountingEval eval, @NotNull CountingFlipCalc flipCalc, int flags) {
+        this.flipCalc = flipCalc;
         this.flags = flags;
         this.eval = eval;
+    }
+
+    public Search(CountingEval eval, int searchFlags) {
+        this(eval, new CountingFlipCalc(), searchFlags);
     }
 
     /**
@@ -28,7 +33,7 @@ public class Search {
      * @return the number of times a move has been made since the search was constructed.
      */
     public long nFlips() {
-        return nFlips;
+        return flipCalc.nFlips();
     }
 
     /**
@@ -86,6 +91,7 @@ public class Search {
      */
     static final int NO_MOVE = Integer.MIN_VALUE >> 1;
 
+    private final @NotNull CountingFlipCalc flipCalc;
     private final int flags;
     private final @NotNull CountingEval eval;
 
@@ -93,11 +99,6 @@ public class Search {
      * Depth of the search passed to move() or score() by the client.
      */
     private int rootDepth;
-
-    /**
-     * Number of nodes completed by this Search since it was constructed
-     */
-    private long nFlips;
 
     static class BA {
         int bestMove;
@@ -171,8 +172,7 @@ public class Search {
 
     private int calcMoveScore(long mover, long enemy, int alpha, int beta, int depth, int sq) {
         final Square square = Square.of(sq);
-        nFlips++;
-        final long flips = square.calcFlips(mover, enemy);
+        final long flips = flipCalc.calcFlips(square, mover, enemy);
         final long subEnemy = mover | (1L<<sq) | flips;
         final long subMover = enemy & ~flips;
         if (shouldPrintSearch()) {
