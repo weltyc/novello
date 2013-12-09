@@ -28,7 +28,7 @@ public class SearchTimer {
         final Search search = new Search(Players.eval("b1"), 0);
         final int depth = 6;
 
-        final List<MutableGame> games = SampleGames.games();
+        final List<MutableGame> games = SampleGames.saioGames();
 
         final long t0 = System.currentTimeMillis();
         for (MutableGame game : games) {

@@ -85,4 +85,15 @@ public class MutableGameTest extends TestCase {
         assertEquals("-------- -------- ---*---- ---**--- ---*O--- -------- -------- -------- O", game.calcPositionAt(59).positionString());
         assertEquals(game.getLastPosition(), game.calcPositionAt(0));
     }
+
+    public void testOfVong() {
+        final String text = "-WZebra   +00 d16      EML=4B:TJ,532+$\"%*-K>F#?S6][\\^UN!Z7/RYOIGW19@80AQHXP_V'&. ()";
+        final MutableGame game = MutableGame.ofVong(text);
+        assertEquals("WZebra",game.blackName);
+        assertEquals("d16", game.whiteName);
+        assertEquals(0, game.netScore());
+        assertEquals(0, game.getLastPosition().nEmpty());
+
+        System.out.println(game.toGgf());
+    }
 }

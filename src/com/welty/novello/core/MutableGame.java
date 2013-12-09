@@ -226,5 +226,28 @@ public class MutableGame {
         }
     }
 
+    /**
+     * Construct a game from the very old Ntest game format.
+     *
+     * An example is
+     * -WZebra   +00 d16      EML=4B:TJ,532+$"%*-K>F#?S6][\^UN!Z7/RYOIGW19@80AQHXP_V'&. ()
+     *
+     * @param s game string in very old Ntest game format
+     * @return MutableGame
+     */
+    public static MutableGame ofVong(String s) {
+        final String blackName = s.substring(1, 9).trim();
+        final String whiteName = s.substring(14,22).trim();
+        final MutableGame game = new MutableGame(Position.START_POSITION, blackName, whiteName, "Vong");
 
+        final char[] moves = s.substring(23).toCharArray();
+        for (char c : moves) {
+            if (game.getLastPosition().calcMoves()==0) {
+                game.pass();
+            }
+            game.play(BitBoardUtils.sqToText(c-' '));
+        }
+        return game;
+
+    }
 }

@@ -1193,3 +1193,16 @@ Endgame cost estimation
 -----------------------
 Use node counts as an estimate of the node count of a full solve. Before changes, DeepSolverTimer from 24 empties:
     Total node count : 883,116 kn
+After change: ~600 kn. FFO complete in 27.0Gn. But the change is not yet picking up the nodes from move sorting so the
+node count is an underestimate.
+
+
+I am not happy with GGF game timing as a metric; with only 12 games it depends too much on whether the move sorting gets lucky at the root node.
+Instead, create a new metric based on the very old Ntest games (vong). There are 100 games, we can solve all these
+from a reasonable depth using 8 threads. Using the new move sorting:
+    Total node count at 24 : 6,448,071 kn / 253,622 ms = 25.4 Mn/s
+
+Questions
+1. Is the node count improvement due to the deeper search and fancy costing or just due to less fastest-first weight at high depths?
+2. Should we use a move sort search with beta as a minimum bound?
+3. Should the move sort place expected cutoff moves before other moves regardless of costing?
