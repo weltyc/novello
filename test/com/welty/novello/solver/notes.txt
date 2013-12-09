@@ -1216,11 +1216,12 @@ Answers
     Total node count at 24: 6,886,664 kn / 271,215 ms = 25.4 Mn/s: penalty = 1*sortWeightFromMobility[nMobs]
     Total node count at 24: 6,301,284 kn / 236,531 ms = 26.6 Mn/s: penalty = 4*sortWeightFromMobility[nMobs]
     Total node count at 24: 6,678,235 kn / 241,513 ms = 27.7 Mn/s: penalty = 8*sortWeightFromMobility[nMobs]
-   Going with 4*
+   --> Going with 4*
   c. drop the deeper search using the result of b
     Total node count at 24: 8,562,382 kn / 252,420 ms = 33.9 Mn/s: deeper search depth 1
     Total node count at 24: 7,276,819 kn / 230,218 ms = 31.6 Mn/s: deeper search depth 2
     Total node count at 24: 5,622,770 kn / 297,488 ms = 18.9 Mn/s: deeper search depth 4
+    --> Going with depth 2
 
 Better search statistics
 ------------------------
@@ -1235,3 +1236,4 @@ Total flip count at 24: 15,392,105 kf / 236,498 ms = 65.1 Mf/s: Include all call
 Rearrange test games in vong.txt so the cores are used more efficiently (this does not make the program faster but it does make
 testing faster)
 Total flip count at 24: 15,392 Mn / 216 s = 71.3 Mn/s
+Total flip count at 24: 15,454 Mn / 218 s = 70.9 Mn/s

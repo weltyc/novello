@@ -85,7 +85,7 @@ public class DeepSolverTimer implements Tunable {
         final double dt = (System.currentTimeMillis() - t0)/1000;
 
         final long mf = counts.nFlips / 1000000;
-        log.info(String.format("Total flip count at %d: %,d Mn / %,.0f s = %3.1f Mn/s", pvs.get(0).nEmpty(), mf, dt, mf/dt));
+        log.info(String.format("Total flip count at %d: %s / %,.0f s = %3.1f Mn/s", pvs.get(0).nEmpty(), counts, dt, mf/dt));
     }
 
     private class SolveTask implements Callable<Counts> {

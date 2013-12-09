@@ -31,18 +31,18 @@ public class Counts {
      * @return string representation of the counts
      */
     public @NotNull String toString(int prefixIndex) {
-        return format(nFlips, prefixIndex) + " flips and " + format(nEvals,prefixIndex) + " evals ";
+        return format(nFlips, prefixIndex) + "n  " + format(nEvals,prefixIndex) + "evals ";
     }
 
     private String format(long nFlips, int prefixIndex) {
         for (int i=0; i<prefixIndex; i++) {
             nFlips /=1000;
         }
-        return String.format("%,5d%c", nFlips, prefixes[prefixIndex]);
+        return String.format("%,5d %c", nFlips, prefixes[prefixIndex]);
     }
 
     public Counts plus(Counts counts) {
-        return new Counts(nFlips + counts.nFlips, nEvals + counts.nFlips);
+        return new Counts(nFlips + counts.nFlips, nEvals + counts.nEvals);
     }
 
     /**
