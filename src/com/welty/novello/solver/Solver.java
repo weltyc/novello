@@ -1,6 +1,7 @@
 package com.welty.novello.solver;
 
 import com.welty.novello.core.BitBoardUtils;
+import com.welty.novello.core.NodeStats;
 import com.welty.novello.core.Square;
 import com.welty.novello.core.MoveScore;
 
@@ -61,9 +62,9 @@ public class Solver {
     /**
      * Statistics on nodes, cutoffs, etc.
      */
-    final NodeCounts nodeCounts = new NodeCounts();
-    final CutoffStatistics cutoffStatistics = new CutoffStatistics();
-    final StableStatistics stableStatistics = new StableStatistics();
+    private final NodeCounts nodeCounts = new NodeCounts();
+    private final CutoffStatistics cutoffStatistics = new CutoffStatistics();
+    private final StableStatistics stableStatistics = new StableStatistics();
 
     /**
      * Transposition table.
@@ -594,6 +595,7 @@ public class Solver {
             if (net > 0) {
                 net++;
             } else {
+                // net can't be 0 because 1 empty remains, so must be negative
                 net--;
             }
         }
@@ -610,6 +612,16 @@ public class Solver {
     public void clear(int maxNEmpties) {
         hashTables.clear(maxNEmpties);
     }
+
+    public long getNodeStats() {
+        // todo return both flips and evals
+        return nodeCounts.getNNodes();// + moveSorters.getNodeStats().nFlips;
+    }
+
+    public String getNodeCountsByDepth() {
+        return nodeCounts.getNodeCountsByDepth();
+    }
+
 
     /**
      * A class which holds the results of a tree search.

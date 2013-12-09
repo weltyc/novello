@@ -1221,3 +1221,12 @@ Answers
     Total node count at 24: 8,562,382 kn / 252,420 ms = 33.9 Mn/s: deeper search depth 1
     Total node count at 24: 7,276,819 kn / 230,218 ms = 31.6 Mn/s: deeper search depth 2
     Total node count at 24: 5,622,770 kn / 297,488 ms = 18.9 Mn/s: deeper search depth 4
+
+Better search statistics
+------------------------
+Really what we want from "node count" is a repeatable measurement of search cost. The actual search cost comes
+mainly from two things: flipping disks and calling eval(). The total cost of a search is, at current speeds, approximately
+proportional to nFlips + 2*nEvals. Currently the search only returns flips, and only from the Solver and not from the
+moveSorter.
+
+Total node count at 24: 7,483,403 kn / 233,288 ms = 32.1 Mn/s: Include flips from MoveSorter (try 1)

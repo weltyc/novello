@@ -24,10 +24,8 @@ public class Search {
     /**
      * Get the number of times a move has been made (pieces have been flipped on the board).
      * <p/>
-     * If called after the search has completed, returns the number of times a move was made during the search.
-     * If called during the search, returns the number of moves so far.
      *
-     * @return the number of times a move has been made since the most recent search start.
+     * @return the number of times a move has been made since the search was constructed.
      */
     public long nFlips() {
         return nFlips;
@@ -46,7 +44,6 @@ public class Search {
      */
     public MoveScore calcMove(Position position, long moverMoves, int depth) {
         this.rootDepth = depth;
-        nFlips = 0;
         final BA ba = treeMove(position.mover(), position.enemy(), moverMoves, NO_MOVE, -NO_MOVE, depth);
         return new MoveScore(ba.bestMove, ba.score);
     }
@@ -77,7 +74,6 @@ public class Search {
      * @return score of the move.
      */
     public int calcScore(long mover, long enemy, int depth) {
-        nFlips = 0;
         this.rootDepth = depth;
         return searchScore(mover, enemy, NO_MOVE, -NO_MOVE, depth);
     }

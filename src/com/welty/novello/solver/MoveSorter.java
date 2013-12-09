@@ -1,6 +1,7 @@
 package com.welty.novello.solver;
 
 import com.welty.novello.core.BitBoardUtils;
+import com.welty.novello.core.NodeStats;
 import com.welty.novello.core.Square;
 import com.welty.novello.eval.CoefficientCalculator;
 import com.welty.novello.selfplay.Players;
@@ -330,5 +331,9 @@ final class MoveSorter {
      */
     public int sq(int iBestMove) {
         return sorterMoves[iBestMove].sq;
+    }
+
+    public NodeStats getNodeStats() {
+        return new NodeStats(sortSearch.nFlips(), sortEval.nEvals());
     }
 }

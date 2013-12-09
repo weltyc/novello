@@ -46,7 +46,7 @@ public class DeepSolverTimer implements Tunable {
     private Solver solver;
 
     @Override public long nNodes() {
-        return solver.nodeCounts.getNNodes();
+        return solver.getNodeStats();
     }
 
     @Override public void run() {
@@ -98,7 +98,7 @@ public class DeepSolverTimer implements Tunable {
         @Override public Long call() throws Exception {
             final Solver solver = new Solver();
             final int score = solver.solve(pv.mover, pv.enemy);
-            final long nNodes = solver.nodeCounts.getNNodes();
+            final long nNodes = solver.getNodeStats();
             if (logResults) {
                 final String msg = String.format("position %2d:   score %+3d   %,6d kn", i, score, nNodes / 1000);
                 log.info(msg);

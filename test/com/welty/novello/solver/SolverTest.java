@@ -171,13 +171,12 @@ public class SolverTest extends TestCase {
         System.out.println("--------- ---------");
         int ntest = 0;
         int novello = 0;
-        final Solver solver = new Solver();
         for (int j = 0; j < testCases.length; j++) {
-            solver.nodeCounts.resetNodeCount();
+            final Solver solver = new Solver();
             final SolverTestCase testCase = testCases[j];
             executeTestCase(solver, testCase.white, testCase.black, testCase.expectedValue());
             final int nt = nodeCounts[j];
-            final long no = solver.nodeCounts.getNNodes();
+            final long no = solver.getNodeStats();
             System.out.format("%,9d %,9d %s%n", nt, no, nt > 6 * no ? "<-----" : "");
             ntest += nt;
             novello += no;

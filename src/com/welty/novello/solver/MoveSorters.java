@@ -1,5 +1,7 @@
 package com.welty.novello.solver;
 
+import com.welty.novello.core.NodeStats;
+
 /**
  * A MoveSorter for each depth
  * <p/>
@@ -17,5 +19,13 @@ class MoveSorters {
 
     public MoveSorter get(int nEmpties) {
         return sorters[nEmpties];
+    }
+
+    public NodeStats getNodeStats() {
+        NodeStats stats = new NodeStats(0,0);
+        for (MoveSorter sorter : sorters) {
+            stats = stats.plus(sorter.getNodeStats());
+        }
+        return stats;
     }
 }

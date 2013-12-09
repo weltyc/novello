@@ -65,23 +65,6 @@ class NodeCounts {
         }
     }
 
-    void resetNodeCount() {
-        clearLongs(nNodes);
-        for (long[] longs : nNodesByDepthAndType) {
-            clearLongs(longs);
-        }
-        for (long[] longs : nNodesByCutIndex) {
-            clearLongs(longs);
-        }
-    }
-
-    private static void clearLongs(long[] longs) {
-        for (int i = 0; i < longs.length; i++) {
-            longs[i] = 0;
-        }
-    }
-
-
     /**
      * Update the stats with a node of a given type
      *
