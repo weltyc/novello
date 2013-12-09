@@ -16,7 +16,7 @@ import org.jetbrains.annotations.NotNull;
 public class Search {
     public static final int FLAG_PRINT_SEARCH = 1;
 
-    public Search(@NotNull Eval eval, int flags) {
+    public Search(@NotNull CountingEval eval, int flags) {
         this.flags = flags;
         this.eval = eval;
     }
@@ -91,7 +91,7 @@ public class Search {
     static final int NO_MOVE = Integer.MIN_VALUE >> 1;
 
     private final int flags;
-    private final @NotNull Eval eval;
+    private final @NotNull CountingEval eval;
 
     /**
      * Depth of the search passed to move() or score() by the client.

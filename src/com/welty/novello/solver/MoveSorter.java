@@ -75,7 +75,7 @@ final class MoveSorter {
 
     final SorterMove[] sorterMoves = new SorterMove[64];
 
-    static final Eval sortEval = Players.currentEval();
+    static final CountingEval sortEval = new CountingEval(Players.currentEval());
     private final Search sortSearch = new Search(sortEval, 0);
 
     MoveSorter() {
@@ -118,7 +118,7 @@ final class MoveSorter {
                     if (predictedNodeType == Solver.PRED_ALL) {
                         localScore -= 10;
                     }
-                    searchDepth = nEmpty >= 19 || scoreInRange(localScore, alpha - 20, beta + 20) ? 3 : 0;
+                    searchDepth = nEmpty >= 19 || scoreInRange(localScore, alpha - 20, beta + 20) ? 2 : 0;
                 } else {
                     searchDepth = 0;
                 }

@@ -3,17 +3,18 @@ package com.welty.novello.selfplay;
 import com.welty.novello.core.MoveScore;
 import com.welty.novello.core.Position;
 import com.welty.novello.eval.Eval;
+import com.welty.novello.solver.CountingEval;
 import com.welty.novello.solver.Search;
 import org.jetbrains.annotations.NotNull;
 
 /**
  */
 public class EvalPlayer extends EndgamePlayer {
-    private final Eval eval;
+    private final @NotNull CountingEval eval;
     private final int searchDepth;
 
-    public EvalPlayer(Eval eval, int searchDepth) {
-        this.eval = eval;
+    public EvalPlayer(@NotNull Eval eval, int searchDepth) {
+        this.eval = new CountingEval(eval);
         this.searchDepth = searchDepth;
     }
 

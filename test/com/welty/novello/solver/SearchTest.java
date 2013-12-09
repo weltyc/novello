@@ -14,7 +14,7 @@ import junit.framework.TestCase;
 public class SearchTest extends TestCase {
     public void test1PlySearch() throws Exception {
         final Eval eval = Players.eval("b1");
-        final Search search = new Search(eval, 0);
+        final Search search = new Search(new CountingEval(eval), 0);
 
         final Position prev = Position.of("--------\n" +
                 "--------\n" +
@@ -56,7 +56,7 @@ public class SearchTest extends TestCase {
 
     public void testSearchScoreWithPass() {
         final Eval eval = Players.eval("b1");
-        final Search search = new Search(eval, 0);
+        final Search search = new Search(new CountingEval(eval), 0);
 
         final Position root = Position.of("--OO-O-O\n" +
                 "--****OO\n" +
@@ -79,7 +79,7 @@ public class SearchTest extends TestCase {
 
     public void testTreeMove() {
         final Eval eval = new DiskEval();
-        final Search search = new Search(eval, 0);
+        final Search search = new Search(new CountingEval(eval), 0);
         final Position position = Position.of("-------- -------- -------- --OO---- --*O*--- ----OO-- -------- -------- *");
         final long mover = position.mover();
         final long enemy = position.enemy();
