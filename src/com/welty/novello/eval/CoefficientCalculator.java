@@ -38,11 +38,11 @@ public class CoefficientCalculator {
      * 1 disk is worth how many evaluation points?
      */
     public static final int DISK_VALUE = 100;
-    private static final String target = "b4s";
+    private static final String target = "b5s";
     private static final EvalStrategy STRATEGY = EvalStrategies.strategy(target.substring(0, 1));
     private static final String COEFF_SET_NAME = target.substring(1);
     private static final double PENALTY = 100;
-    private static final String PLAYOUT_PLAYER_NAME = "9A:2";
+    private static final String PLAYOUT_PLAYER_NAME = "b1:2";
 
     static final int[] nEmpties = {3,4,11,12,19,20,27,28,35,36,43,44,51,52,59,60};
 
@@ -126,7 +126,15 @@ public class CoefficientCalculator {
 
     private static List<PositionValue> loadOrCreatePvs() throws IOException {
         final String playerComponent = PLAYOUT_PLAYER_NAME.replace(':', '-');
-        final Path pvFile = Paths.get("c:/temp/novello/" + playerComponent + ".pvs");
+        final boolean isMac = System.getProperty("os.name").startsWith("Mac OS");
+        final Path cacheDir;
+        if (isMac) {
+            cacheDir = Paths.get(System.getProperty("user.home") + "/Library/Caches/" + "com.welty.novello");
+        }
+        else {
+            cacheDir = Paths.get("c:/temp/novello");
+        }
+        final Path pvFile = cacheDir.resolve(playerComponent + ".pvs");
         if (!Files.exists(pvFile)) {
             final Player PLAYOUT_PLAYER = Players.player(PLAYOUT_PLAYER_NAME);
             createPvs(pvFile, PLAYOUT_PLAYER);

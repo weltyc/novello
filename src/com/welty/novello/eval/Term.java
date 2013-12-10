@@ -2,7 +2,7 @@ package com.welty.novello.eval;
 
 import com.welty.novello.core.BitBoardUtils;
 
-import static com.welty.novello.core.BitBoardUtils.getBitAsInt;
+import static com.welty.novello.core.BitBoardUtils.*;
 
 /**
  */
@@ -387,3 +387,71 @@ class UldrTerm extends DiagonalTerm {
         return diagonal >= 0 ? 56 : 56 - diagonal;
     }
 }
+
+class Edge2XTerm extends Term {
+    private static final Feature feature = LinePatternFeatureFactory.of("edge2X", 10);
+    static final Edge2XTerm[] terms = {new Edge2XTerm(0), new Edge2XTerm(1), new Edge2XTerm(2), new Edge2XTerm(3)};
+
+    private final int direction;
+
+    Edge2XTerm(int direction) {
+        super(feature);
+        this.direction = direction;
+    }
+
+    @Override
+    public int instance(long mover, long enemy, long moverMoves, long enemyMoves) {
+        if (direction==0) {
+            return instance0(mover, enemy);
+        }
+        else if (direction==1) {
+            return instance1(mover, enemy);
+        }
+        else if (direction==2) {
+            return instance2(mover, enemy);
+        }
+        else if (direction==3) {
+            return instance3(mover, enemy);
+        }
+        else throw new IllegalStateException("not implemented");
+    }
+
+    static int instance0(long mover, long enemy) {
+        return Base3.base2ToBase3(extractBottom(mover), extractBottom(enemy));
+    }
+
+    static int instance1(long mover, long enemy) {
+        return Base3.base2ToBase3(extractTop(mover), extractTop(enemy));
+    }
+
+    static int instance2(long mover, long enemy) {
+        return Base3.base2ToBase3(extractLeft(mover), extractLeft(enemy));
+    }
+
+    static int instance3(long mover, long enemy) {
+        return Base3.base2ToBase3(extractRight(mover), extractRight(enemy));
+    }
+
+    static int extractBottom(long mover) {
+        return (int)(((mover&Rank1)<<1)|((mover&G7)>>011)|((mover&B7)>>5));
+    }
+
+    static int extractTop(long mover) {
+        return (int)(((mover&Rank8)>>>067)|((mover&G2)>>061)|((mover&B2)>>055));
+    }
+
+    static int extractLeft(long mover) {
+        final int leftRow = BitBoardUtils.bitBoardColToRow(mover, 7);
+        return (int)(2*leftRow | ((mover&B2)>>066) | ((mover&B7)>>5));
+    }
+
+    static int extractRight(long mover) {
+        final int rightRow = BitBoardUtils.bitBoardColToRow(mover, 0);
+        return (int)(2*rightRow | ((mover&G2)>>061) | (mover&G7));
+    }
+
+    @Override String oridGen() {
+        return "OridTable.orid10(Edge2XTerm.instance"+direction+"(mover, enemy))";
+    }
+}
+

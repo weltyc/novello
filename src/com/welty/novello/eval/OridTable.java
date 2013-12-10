@@ -4,6 +4,10 @@ package com.welty.novello.eval;
  * Lookup table for orids
  */
 public class OridTable {
+    public static int orid10(int instance) {
+        return orid10[instance];
+    }
+
     public static int orid8(int instance8) {
         return orid8[instance8];
     }
@@ -24,6 +28,7 @@ public class OridTable {
         return orid4[instance];
     }
 
+    private static int[] orid10 = calcOrids(10);
     private static int[] orid8 = calcOrids(8);
     private static int[] orid7 = calcOrids(7);
     private static int[] orid6 = calcOrids(6);

@@ -5,6 +5,7 @@ import com.welty.novello.eval.Base3;
 
 /**
  */
+@SuppressWarnings("OctalInteger")
 public class BitBoardUtils {
 
     //
@@ -21,13 +22,18 @@ public class BitBoardUtils {
     public static final long multiplier = 0x8040201008040201L;
     private static final long FilesAH = AFile | HFile;
 
-    private static final long Rank1 = 0xFF;
-    private static final long Rank8 = 0xFFL << 56;
+    public static final long Rank1 = 0xFF;
+    public static final long Rank8 = 0xFFL << 56;
     private static final long Ranks18 = Rank1 | Rank8;
 
     public static final long CORNERS = 0x8100000000000081L;
     public static final long C_SQUARES = 0x4281000000008142L;
     public static final long X_SQUARES = 0x0042000000004200L;
+
+    public static final long B2 = 1L<<066;
+    public static final long G2 = 1L<<061;
+    public static final long B7 = 1L<<016;
+    public static final long G7 = 1L<<011;
 
     private static final long EDGES = FilesAH | Ranks18;
     private static final long CENTER_36 = ~EDGES;

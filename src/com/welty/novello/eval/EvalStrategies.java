@@ -93,6 +93,7 @@ public class EvalStrategies {
                 new UrdlTerm(4)
         );
         new EvalStrategyB();
+        new EvalStrategyC();
     }
 
     public static class StrategyStore {
