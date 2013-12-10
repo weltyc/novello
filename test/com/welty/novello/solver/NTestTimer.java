@@ -23,6 +23,9 @@ public class NTestTimer {
         final long t0 = System.currentTimeMillis();
         for (MutableGame game : games) {
             final Position position = game.calcPositionAt(22);
+            if (position==null) {
+                throw new IllegalStateException("ntest games file is messed up");
+            }
             log.info(solver.solveWithMove(position.mover(), position.enemy()));
         }
         final long dt = System.currentTimeMillis() - t0;
