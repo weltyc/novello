@@ -16,14 +16,22 @@ public class Players {
     }
 
     public static Player player(String name) {
-        final String [] parts = name.split(":",2);
-        final int depth = parts.length > 1 ? Integer.parseInt(parts[1]):1;
+        final String[] parts = name.split(":", 2);
+        if (parts.length < 2) {
+            throw new IllegalArgumentException("require an eval and a search depth, for instance 'a1:3w'; had " + name);
+        }
+
+        final boolean fullWidth = parts[1].endsWith("w");
+        final boolean mpc = !fullWidth;
+        final String depthString = mpc ? parts[1] : parts[1].substring(0, parts[1].length() - 1);
+        final int depth = Integer.parseInt(depthString);
+
         final String evalName = parts[0];
         if (evalName.equals("ntest")) {
             return new NTest(depth, false);
         }
         final Eval eval = eval(evalName);
-        return new EvalPlayer(eval, depth);
+        return new EvalPlayer(eval, depth, mpc);
     }
 
     /**
@@ -44,9 +52,12 @@ public class Players {
         return players;
     }
 
-    public static final Eval currentEval = eval("b1");
+    private static Eval currentEval;
 
-    public static Eval currentEval() {
+    public static synchronized Eval currentEval() {
+        if (currentEval == null) {
+            currentEval = eval("b1");
+        }
         return currentEval;
     }
 }

@@ -1,8 +1,15 @@
-package com.welty.novello.solver;
+package com.welty.novello.core;
 
 /**
  */
-class Murmur {
+public class NovelloUtils {
+    /**
+     * This is the score used when no move has yet been evaluated. It needs to be lower than
+     * any valid score. But it also needs to be well away from the bounds for an int, so we can add MPC margins to
+     * it and not overflow.
+     */
+    public static final int NO_MOVE = Integer.MIN_VALUE >> 1;
+
     private static long murmurMix(long h) {
         h *= 0xc6a4a7935bd1e995L;
         h ^= h >>> 47 | h << 17;

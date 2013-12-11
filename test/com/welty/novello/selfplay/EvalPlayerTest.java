@@ -1,10 +1,9 @@
 package com.welty.novello.selfplay;
 
-import com.welty.novello.core.MoveScore;
-import com.welty.novello.eval.CoefficientCalculator;
-import com.welty.novello.eval.Eval;
-import com.welty.novello.core.Position;
 import com.welty.novello.core.BitBoardUtils;
+import com.welty.novello.core.MoveScore;
+import com.welty.novello.core.Position;
+import com.welty.novello.eval.Eval;
 import junit.framework.TestCase;
 
 /**
@@ -12,7 +11,7 @@ import junit.framework.TestCase;
 public class EvalPlayerTest extends TestCase {
     public void test1PlySearch() throws Exception {
         final Eval eval = Players.eval("b1");
-        final EvalPlayer player = new EvalPlayer(eval, 1);
+        final EvalPlayer player = new EvalPlayer(eval, 1, true);
 
         final Position prev = Position.of("--------\n" +
                 "--------\n" +

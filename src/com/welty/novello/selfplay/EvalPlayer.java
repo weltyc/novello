@@ -10,24 +10,28 @@ import org.jetbrains.annotations.NotNull;
 /**
  */
 public class EvalPlayer extends EndgamePlayer {
-    private final @NotNull Counter eval;
+    private final @NotNull Counter counter;
     private final int searchDepth;
+    private final @NotNull String name;
+    private final boolean mpc;
 
-    public EvalPlayer(@NotNull Eval eval, int searchDepth) {
-        this.eval = new Counter(eval);
+    public EvalPlayer(@NotNull Eval eval, int searchDepth, boolean mpc) {
+        this.mpc = mpc;
+        this.counter = new Counter(eval);
         this.searchDepth = searchDepth;
+        this.name = eval + ":" + searchDepth + (mpc?"":"w");
     }
 
     @Override public MoveScore calcMove(@NotNull Position board, long moverMoves, int searchFlags) {
         if (board.nEmpty() > 8) {
-            return new Search(eval, searchFlags).calcMove(board, board.calcMoves(), searchDepth);
+            return new Search(counter, searchFlags).calcMove(board, board.calcMoves(), searchDepth, mpc);
         } else {
             return solveMove(board);
         }
     }
 
     @Override public String toString() {
-        return eval.toString() + ":" + searchDepth;
+        return name;
     }
 }
 

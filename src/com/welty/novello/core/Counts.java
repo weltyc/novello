@@ -31,7 +31,7 @@ public class Counts {
      * @return string representation of the counts
      */
     public @NotNull String toString(int prefixIndex) {
-        return format(nFlips, prefixIndex) + "n  " + format(nEvals,prefixIndex) + "evals ";
+        return format(nFlips, prefixIndex) + "n, " + format(nEvals,prefixIndex) + "evals, " + format(cost(), prefixIndex) + "$";
     }
 
     private String format(long nFlips, int prefixIndex) {
@@ -50,6 +50,6 @@ public class Counts {
      * @return a number proportional to the cost of the search
      */
     public long cost() {
-        return nFlips + 11*nEvals;
+        return nFlips + 5*nEvals;
     }
 }

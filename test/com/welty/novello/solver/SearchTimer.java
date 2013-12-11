@@ -1,12 +1,10 @@
 package com.welty.novello.solver;
 
+import com.welty.novello.core.Counts;
 import com.welty.novello.core.Move;
 import com.welty.novello.core.MutableGame;
 import com.welty.novello.core.Position;
-import com.welty.novello.eval.CoefficientEval;
-import com.welty.novello.selfplay.Player;
 import com.welty.novello.selfplay.Players;
-import com.welty.novello.selfplay.SelfPlayGame;
 
 import java.util.List;
 
@@ -14,19 +12,35 @@ import java.util.List;
  * Time the midgame search for performance tuning
  */
 public class SearchTimer {
-    private static final Player player = Players.player("b1:6");
-
     /**
      * Time searches from all positions from 12 games with 10-40 empties (so 360 positions total).
      */
     public static void main(String[] args) {
-        // first game is untimed, to warm up hotspot.
-        new SelfPlayGame(Position.START_POSITION, player, player, "test", 0, 0).call();
-        final long n0 = CoefficientEval.nEvals();
-        long nFlips = 0;
+//        DeepSolverTimer.warmUpHotSpot();
 
-        final Search search = new Search(new Counter(Players.eval("b1")), 0);
-        final int depth = 6;
+        final int depth;
+        if (args.length >= 1) {
+            depth = Integer.parseInt(args[0]);
+        } else {
+            depth = 10;
+        }
+
+        countNodes(true, depth, true);
+
+//        generateTable();
+    }
+
+    private static void generateTable() {
+        System.out.println();
+        for (int depth = 1; depth <= 9; depth++) {
+            final long noMpc = countNodes(false, depth, false);
+            final long mpc = countNodes(true, depth, false);
+            System.out.format("%d %,6d %,6d\n", depth, noMpc / 1000, mpc / 1000);
+        }
+    }
+
+    private static long countNodes(boolean mpc, int depth, boolean printStats) {
+        final Search search = new Search(new Counter(Players.eval("c1s")), 0);
 
         final List<MutableGame> games = SampleGames.saioGames();
 
@@ -39,16 +53,19 @@ public class SearchTimer {
                 if (nEmpty >= 10 && nEmpty <= 40) {
                     final long moves = pos.calcMoves();
                     if (moves != 0) {
-                        search.calcMove(pos, moves, depth);
-                        nFlips += search.nFlips();
+                        search.calcMove(pos, moves, depth, mpc);
                     }
                 }
             }
         }
 
         final long dt = System.currentTimeMillis() - t0;
-        final long dn = CoefficientEval.nEvals() - n0;
-
-        System.out.format("%d ms elapsed. %,d flips / %,d evals. %4.2f us/eval \n"  ,dt, nFlips, dn , dt*1e3/dn);
+        final Counts counts = search.counts();
+        if (printStats) {
+            final long nEvals = counts.nEvals;
+            System.out.format("[%d %3s] %,d ms elapsed. %s. %4.2f us/eval \n"
+                    , depth, mpc ? "mpc" : "", dt, counts, dt * 1e3 / nEvals);
+        }
+        return counts.nFlips;
     }
 }

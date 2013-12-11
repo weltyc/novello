@@ -1,8 +1,8 @@
 package com.welty.novello.selfplay;
 
 import com.welty.novello.core.MoveScore;
-import com.welty.novello.eval.CoefficientCalculator;
 import com.welty.novello.core.Position;
+import com.welty.novello.eval.CoefficientCalculator;
 import com.welty.novello.solver.Solver;
 import org.jetbrains.annotations.NotNull;
 

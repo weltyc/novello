@@ -1,0 +1,7 @@
+* Coefficient Calculator
+  * Sub coefficients
+  * Rare coefficients
+  * Deeper search for playouts
+
+* Midgame Search
+  * MPC

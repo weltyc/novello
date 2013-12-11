@@ -1,7 +1,16 @@
 package com.welty.novello.eval;
 
-import com.welty.novello.core.Position;
+import com.orbanova.common.misc.Logger;
 import com.welty.novello.core.BitBoardUtils;
+import com.welty.novello.core.Position;
+import org.jetbrains.annotations.Nullable;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
 
 /**
  * The evaluation function evaluates positions.
@@ -14,16 +23,17 @@ public class CoefficientEval extends Eval {
     private final EvalStrategy evalStrategy;
 
     private static final boolean debug = false;
+    private static final Logger log = Logger.logger(CoefficientEval.class);
 
-    // todo WARNING - this will not work multithreaded.
-    private static int nEvals = 0;
-
-    public static int nEvals() {
-        return nEvals;
-    }
 
     /**
+     * The Multi-probcut calcs.
+     * <p/>
+     * It is possible for this to be null (for example, when calculating MPC statistics for the first time).
+     * This will lead to a NullPointerException if any Search tries to use it.
      */
+    public @Nullable Mpc mpc;
+
     public CoefficientEval(EvalStrategy evalStrategy, String coeffSetName) {
         this(evalStrategy, new CoefficientSet(evalStrategy, coeffSetName));
     }
@@ -31,6 +41,50 @@ public class CoefficientEval extends Eval {
     private CoefficientEval(EvalStrategy evalStrategy, CoefficientSet coeffSet) {
         this.evalStrategy = evalStrategy;
         coefficientSet = coeffSet;
+        mpc = createMpc();
+    }
+
+    private Mpc createMpc() {
+        try {
+            return new Mpc(getMpcSliceData());
+        } catch (IOException e) {
+            log.warn("Creating eval with no MPC");
+            return null;
+        }
+    }
+
+    private static int readInt(String line, int beginIndex, int endIndex) {
+        return Integer.parseInt(line.substring(beginIndex, endIndex).trim());
+    }
+
+    ArrayList<int[]>[] getMpcSliceData() throws IOException {
+        final Path path = getCoeffDir().resolve("mpc.txt");
+        //noinspection unchecked
+        final ArrayList<int[]>[] sliceData = new ArrayList[64];
+        for (int i = 0; i < sliceData.length; i++) {
+            sliceData[i] = new ArrayList<>();
+        }
+
+        try (BufferedReader in = Files.newBufferedReader(path, Charset.defaultCharset())) {
+            String line;
+            while (null != (line = in.readLine())) {
+                final int beginIndex = 0;
+                final int endIndex = 2;
+                final int nEmpty = readInt(line, beginIndex, endIndex);
+                final int n = (line.length() - 2) / 6;
+                int[] values = new int[n];
+                for (int i = 0; i < n; i++) {
+                    try {
+                        values[i] = readInt(line, 2 + 6 * i, 8 + 6 * i);
+                    } catch (NumberFormatException e) {
+                        System.out.println("line : " + line);
+                        throw (e);
+                    }
+                }
+                sliceData[nEmpty].add(values);
+            }
+        }
+        return sliceData;
     }
 
     /**
@@ -74,7 +128,6 @@ public class CoefficientEval extends Eval {
             System.out.println(Position.ofMover(mover, enemy, false));
         }
         final int eval = evalStrategy.eval(mover, enemy, moverMoves, enemyMoves, coefficientSet);
-        nEvals++;
         if (debug) {
             System.out.println("Eval = " + eval);
             System.out.println();
@@ -98,4 +151,10 @@ public class CoefficientEval extends Eval {
         return evalStrategy + "" + coefficientSet;
     }
 
+    /**
+     * @return the directory where coefficients for this eval are stored
+     */
+    public Path getCoeffDir() {
+        return evalStrategy.coeffDir(coefficientSet.name);
+    }
 }

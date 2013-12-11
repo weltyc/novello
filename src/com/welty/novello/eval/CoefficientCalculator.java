@@ -14,6 +14,7 @@ import com.welty.novello.selfplay.*;
 import com.welty.novello.core.Position;
 import org.jetbrains.annotations.NotNull;
 
+import javax.swing.*;
 import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -38,7 +39,7 @@ public class CoefficientCalculator {
      * 1 disk is worth how many evaluation points?
      */
     public static final int DISK_VALUE = 100;
-    private static final String target = "b5s";
+    private static final String target = "c1s";
     private static final EvalStrategy STRATEGY = EvalStrategies.strategy(target.substring(0, 1));
     private static final String COEFF_SET_NAME = target.substring(1);
     private static final double PENALTY = 100;
@@ -124,7 +125,7 @@ public class CoefficientCalculator {
         return min + "-" + max + " times";
     }
 
-    private static List<PositionValue> loadOrCreatePvs() throws IOException {
+    public static List<PositionValue> loadOrCreatePvs() throws IOException {
         final String playerComponent = PLAYOUT_PLAYER_NAME.replace(':', '-');
         final boolean isMac = System.getProperty("os.name").startsWith("Mac OS");
         final Path cacheDir;
@@ -139,6 +140,9 @@ public class CoefficientCalculator {
             final Player PLAYOUT_PLAYER = Players.player(PLAYOUT_PLAYER_NAME);
             createPvs(pvFile, PLAYOUT_PLAYER);
         }
+        final int nPvs = (int)((Files.size(pvFile)/20)>>20)+1;
+
+        final ProgressMonitor progressMonitor = new ProgressMonitor(null, "Loading pvs from file", "", 0, nPvs);
         System.out.println("Loading pvs from " + pvFile + "...");
         final List<PositionValue> pvs;
         final long t0 = System.currentTimeMillis();
@@ -148,10 +152,13 @@ public class CoefficientCalculator {
 
             @NotNull @Override public PositionValue y(PositionValue x) {
                 nItems++;
-                if ((nItems&0x3FF)==0) {
+                if ((nItems&0xFFFFF)==0) {
+                    final int mItems = (int) (nItems >> 20);
+                    progressMonitor.setProgress(mItems);
+                    progressMonitor.setNote(mItems + "M items loaded");
                     final long t = System.currentTimeMillis();
                     if (t>=nextTime) {
-                        log.info((nItems >> 10) + "k items loaded");
+                        log.info(mItems + "M items loaded");
                         nextTime = t + 5000;
                     }
                 }
@@ -160,6 +167,7 @@ public class CoefficientCalculator {
             }
         };
         pvs = new ObjectFeed<>(pvFile, PositionValue.deserializer).map(monitor).asList();
+        progressMonitor.close();
         // Ram is tight... free some up
         ((ArrayList) pvs).trimToSize();
 

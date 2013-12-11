@@ -1,12 +1,13 @@
 package com.welty.novello.selfplay;
 
 import com.welty.novello.core.MutableGame;
-import com.welty.novello.core.Props;
-import com.welty.novello.eval.CoefficientEval;
-import com.welty.novello.core.PositionValue;
 import com.welty.novello.core.Position;
+import com.welty.novello.core.PositionValue;
+import com.welty.novello.core.Props;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+import javax.swing.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -25,13 +26,13 @@ public class SelfPlaySet {
 
         final Result result = new SelfPlaySet(black, white, 2, true).call();
         System.out.format("%s vs %s: average result = %.1f\n", black, white, result.averageResult);
-        System.out.format("%,d position evaluations performed.\n", CoefficientEval.nEvals());
     }
 
     private final @NotNull Player black;
     private final @NotNull Player white;
     private final int nToPrint;
     private final boolean printUpdates;
+    private final @Nullable JProgressBar progressBar;
 
     /**
      * Construct a SelfPlaySet.
@@ -44,13 +45,32 @@ public class SelfPlaySet {
      * @param printUpdates if true, print out statistics during the course of the set
      */
     public SelfPlaySet(@NotNull Player black, @NotNull Player white, int nToPrint, boolean printUpdates) {
+        this(black, white, nToPrint, printUpdates, null);
+    }
+
+    /**
+     * Construct a SelfPlaySet.
+     * <p/>
+     * call() plays the games.
+     *
+     * @param black        black player
+     * @param white        white player
+     * @param nToPrint     print the first nToPrint games to System.out.
+     * @param printUpdates if true, print out statistics during the course of the set
+     */
+    public SelfPlaySet(@NotNull Player black, @NotNull Player white, int nToPrint, boolean printUpdates, @Nullable JProgressBar progressBar) {
         this.black = black;
         this.white = white;
         this.nToPrint = nToPrint;
         this.printUpdates = printUpdates;
+        this.progressBar = progressBar;
     }
 
     public Result call() {
+        if (progressBar != null) {
+            progressBar.setMaximum(50777);
+        }
+
         final List<PositionValue> pvs = new ArrayList<>();
 
         final StartPosGenerator generator = new StartPosGenerator(9);
@@ -88,6 +108,9 @@ public class SelfPlaySet {
                     nComplete++;
                     if (printUpdates && nComplete % 5000 == 0) {
                         printStats(nComplete, sum, sumSq);
+                    }
+                    if (progressBar != null) {
+                        progressBar.setValue(nComplete);
                     }
                 }
             }

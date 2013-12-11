@@ -180,7 +180,7 @@ final class MoveSorter {
         final int nMobs = Long.bitCount(nextMoverMoves);
 
         final int evalScore;
-        evalScore = sortSearch.calcScore(nextMover, nextEnemy, searchDepth);
+        evalScore = sortSearch.calcScore(nextMover, nextEnemy, searchDepth, true);
 //        final long dFlips = sortSearch.nFlips();
 
         int margin = -evalScore - (beta + BETA_MARGIN) * CoefficientCalculator.DISK_VALUE;

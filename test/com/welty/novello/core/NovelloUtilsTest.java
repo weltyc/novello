@@ -1,12 +1,13 @@
-package com.welty.novello.solver;
+package com.welty.novello.core;
 
+import com.welty.novello.core.NovelloUtils;
 import junit.framework.TestCase;
 
 import java.util.Random;
 
 /**
  */
-public class MurmurTest extends TestCase {
+public class NovelloUtilsTest extends TestCase {
     // counts[byte index 0-7][byte] = number of times a collision has appeared.
     private long nHashes = 0;
     private final int[][] counts = new int[8][256];
@@ -16,7 +17,7 @@ public class MurmurTest extends TestCase {
     private final long enemy = ~(mover | empty);
 
     private void insert(long mover, long enemy) {
-        final long hash = Murmur.hash(mover, enemy);
+        final long hash = NovelloUtils.hash(mover, enemy);
         for (int bi = 0; bi < 8; bi++) {
             counts[bi][(int) ((hash >> bi * 8) & 0xFF)]++;
         }

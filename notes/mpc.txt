@@ -1,0 +1,35 @@
+Initial implementation
+======================
+data from SearchTimer
+
+kNodes, using eval b1 (eval c1s results are virtually identical):
+
+    depth full-width    mpc
+    1             4       4
+    2            19      19
+    3           100      60
+    4           279     136
+    5          1149     361
+    6          3201     856
+    7         12163    1819
+
+A tournament between the same eval, with depths 4 and 5 (with mpc) and 3 and 4 (without mpc):  w=full-width
+
+    +16.4  c1s:5
+     +4.4  c1s:4w
+     -1.4  c1s:4
+    -19.4  c1s:3w
+
+Looking at a graph of tournament result vs log (nodes), mpc is quite a bit above full-width search.
+
+A tournament with lower-depth players:
+
+    +11.4  c1s:3w
+     +8.6  c1s:3
+    -20.0  c1s:2
+
+Estimated strength differences between various MPC plies is therefore:
+    2-3 28.8
+    3-4 20.8
+    4-5 15.0
+    5-6 13.4

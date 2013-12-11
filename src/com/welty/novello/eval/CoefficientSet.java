@@ -9,7 +9,7 @@ package com.welty.novello.eval;
  */
 class CoefficientSet {
     private final short[][][] slices;
-    private final String name;
+    final String name;
 
     public CoefficientSet(EvalStrategy strategy, String name) {
         this(readSlices(strategy, name), name);

@@ -1237,3 +1237,14 @@ Rearrange test games in vong.txt so the cores are used more efficiently (this do
 testing faster)
 Total flip count at 24: 15,392 Mn / 216 s = 71.3 Mn/s
 Total flip count at 24: 15,454 Mn / 218 s = 70.9 Mn/s
+
+Eval notes
+----------
+[f83fb59] Checking whether there's an improvement using playouts from b1 instead of 9A.
+b1 is calculated from 9A:2 playouts.
+b5s is calculated from b1:2 playouts.
+    b5s:2 vs b1:2: average result = 0.5
+
+This did not help a whole lot.
+Try calculating coefficients c1s from b1:2 playouts.
+    c1s:2 vs b5s:2: average result = 4.3

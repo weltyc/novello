@@ -1,5 +1,6 @@
 package com.welty.novello.solver;
 
+import com.welty.novello.core.NovelloUtils;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -174,7 +175,7 @@ public class HashTables {
          * @return the Entry
          */
         public Entry getEntry(long mover, long enemy) {
-            final int hash = (entries.length - 1) & (int) Murmur.hash(mover, enemy);
+            final int hash = (entries.length - 1) & (int) NovelloUtils.hash(mover, enemy);
             return entries[hash];
         }
 

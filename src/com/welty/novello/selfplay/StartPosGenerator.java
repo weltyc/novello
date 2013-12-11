@@ -3,8 +3,8 @@ package com.welty.novello.selfplay;
 import com.orbanova.common.feed.Feed;
 import com.orbanova.common.misc.Require;
 import com.orbanova.common.misc.Utils;
-import com.welty.novello.core.Position;
 import com.welty.novello.core.BitBoardUtils;
+import com.welty.novello.core.Position;
 import org.jetbrains.annotations.Nullable;
 
 /**

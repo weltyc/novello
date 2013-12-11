@@ -2,7 +2,9 @@ package com.welty.novello.solver;
 
 import com.welty.novello.core.Counts;
 import com.welty.novello.core.Square;
+import com.welty.novello.eval.CoefficientEval;
 import com.welty.novello.eval.Eval;
+import com.welty.novello.eval.Mpc;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -18,9 +20,15 @@ public class Counter {
     private final @NotNull Eval eval;
     private long nEvals;
     private long nFlips;
+    final @NotNull Mpc mpcs;
 
     public Counter(@NotNull Eval eval) {
         this.eval = eval;
+        if (eval instanceof CoefficientEval) {
+            mpcs = ((CoefficientEval)eval).mpc;
+        } else {
+            mpcs = Mpc.NULL;
+        }
     }
 
     public long nFlips() {
