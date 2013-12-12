@@ -30,7 +30,7 @@ public class MpcGenerator {
 
 
         final CoefficientEval eval = Players.eval(evalName);
-        final Search search = new Search(new Counter(eval), 0);
+        final Search search = new Search(new Counter(eval, false), 0);
         final Path outputPath = eval.getCoeffDir().resolve("mpc.txt");
 
         final List<PositionValue> pvs = getPvs(limit);

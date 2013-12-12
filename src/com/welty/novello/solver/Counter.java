@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
  * Like an Eval, but keeps track of node counts.
  * <p/>
  * Unlike an Eval, this is not thread-safe. So create one for each thread.
- *
+ * <p/>
  * This does not implement the Eval interface for two reasons:
  * 1. Evals are assumed to be thread-safe, and this isn't.
  * 2. To avoid vtbl lookups for speed.
@@ -22,13 +22,26 @@ public class Counter {
     private long nFlips;
     final @NotNull Mpc mpcs;
 
-    public Counter(@NotNull Eval eval) {
+    public Counter(@NotNull Eval eval, boolean mpcRequired) {
         this.eval = eval;
         if (eval instanceof CoefficientEval) {
-            mpcs = ((CoefficientEval)eval).mpc;
+            final Mpc mpc = ((CoefficientEval) eval).mpc;
+            if (mpc == null) {
+                if (mpcRequired) {
+                    throw new IllegalStateException("can't get mpc coefficients for " + eval);
+                } else {
+                    mpcs = Mpc.NULL;
+                }
+            } else {
+                mpcs = mpc;
+            }
         } else {
             mpcs = Mpc.NULL;
         }
+    }
+
+    public Counter(@NotNull Eval eval) {
+        this(eval, true);
     }
 
     public long nFlips() {
