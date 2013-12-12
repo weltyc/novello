@@ -1,6 +1,7 @@
 package com.welty.novello.solver;
 
 import com.welty.novello.core.BitBoardUtils;
+import com.welty.novello.core.Me;
 import com.welty.novello.core.Square;
 
 import java.util.Random;
@@ -47,9 +48,10 @@ public class StableTest extends BitBoardTestCase {
     }
 
     private void testRandomPosition(Random random, int i) {
-        final long empty = random.nextLong() & random.nextLong();
-        final long mover = random.nextLong() &~empty;
-        final long enemy = ~(mover|empty);
+        final Me pos = Me.late(random);
+
+        final long mover = pos.mover;
+        final long enemy = pos.enemy;
         final long stable = Stable.stable(mover, enemy);
         long moves = BitBoardUtils.calcMoves(mover, enemy);
         long moveStable = -1;

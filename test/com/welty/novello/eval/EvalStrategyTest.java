@@ -3,6 +3,7 @@ package com.welty.novello.eval;
 import com.orbanova.common.misc.ArrayTestCase;
 import com.orbanova.common.misc.Vec;
 import com.orbanova.common.ramfs.RamFileSystem;
+import com.welty.novello.core.Me;
 import com.welty.novello.selfplay.Players;
 import com.welty.novello.core.Position;
 import com.welty.novello.core.BitBoardUtils;
@@ -101,43 +102,17 @@ public class EvalStrategyTest extends ArrayTestCase {
         }
     }
 
-    /**
-     * A test position with a small number of disks on the board
-     */
-    public static final Position sparsePosition;
-
-    /**
-     * A test position with a large number of disks on the board
-     */
-    public static final Position densePosition;
-
-    static {
-        final Random random = new Random(1337);
-
-        // test with small # of disks on the board
-        final long empty1 = random.nextLong() | random.nextLong();
-        final long mover1 = random.nextLong() & ~empty1;
-        final long enemy1 = ~(empty1 | mover1);
-        sparsePosition = new Position(mover1, enemy1, true);
-
-        // test with large # of disks on the board
-        final long empty2 = random.nextLong() | random.nextLong();
-        final long mover2 = random.nextLong() & ~empty2;
-        final long enemy2 = ~(empty2 | mover2);
-        densePosition = new Position(mover2, enemy2, true);
-    }
-
     public void testAllReflectionsHaveSameOrids() {
 
         for (EvalStrategy strategy : EvalStrategies.knownStrategies()) {
-            testAllReflectionsHaveTheSameOrids(strategy, sparsePosition);
-            testAllReflectionsHaveTheSameOrids(strategy, densePosition);
+            testAllReflectionsHaveTheSameOrids(strategy, Me.early);
+            testAllReflectionsHaveTheSameOrids(strategy, Me.late);
         }
     }
 
-    private void testAllReflectionsHaveTheSameOrids(EvalStrategy strategy, Position position) {
-        final long mover = position.mover();
-        final long enemy = position.enemy();
+    private void testAllReflectionsHaveTheSameOrids(EvalStrategy strategy, Me position) {
+        final long mover = position.mover;
+        final long enemy = position.enemy;
 
         PositionElement expected = strategy.coefficientIndices(mover, enemy, 0);
         expected.sortIndices();

@@ -7,24 +7,18 @@ import com.orbanova.common.misc.Logger;
 import com.orbanova.common.misc.Require;
 import com.orbanova.common.misc.Utils;
 import com.orbanova.common.misc.Vec;
-import com.welty.novello.core.MutableGame;
-import com.welty.novello.core.ObjectFeed;
-import com.welty.novello.core.PositionValue;
+import com.welty.novello.coca.ConjugateGradientMethod;
+import com.welty.novello.coca.FunctionWithGradient;
+import com.welty.novello.core.*;
 import com.welty.novello.selfplay.*;
-import com.welty.novello.core.Position;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
-import java.io.BufferedOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 /**
  */
@@ -32,132 +26,164 @@ public class CoefficientCalculator {
     private static final Logger log = Logger.logger(CoefficientCalculator.class);
 
     /**
-     * 1/randomFraction of the self-play positions will have all subpositions valued and used in the regression
-     */
-    private static final int randomFraction = 1;
-    /**
      * 1 disk is worth how many evaluation points?
      */
     public static final int DISK_VALUE = 100;
-    private static final String target = "c1s";
+    private static final String target = "c3s";
     private static final EvalStrategy STRATEGY = EvalStrategies.strategy(target.substring(0, 1));
     private static final String COEFF_SET_NAME = target.substring(1);
     private static final double PENALTY = 100;
     private static final String PLAYOUT_PLAYER_NAME = "b1:2";
 
-    static final int[] nEmpties = {3,4,11,12,19,20,27,28,35,36,43,44,51,52,59,60};
+    static final int[] nEmpties = {3, 4, 11, 12, 19, 20, 27, 28, 35, 36, 43, 44, 51, 52, 59, 60};
 
     /**
      * Generate coefficients for evaluation.
      * <p/>
      * This program generates a large number of PositionValues by self-play, then uses
      * those values to generate coefficients for the Evaluation function.
+     * <p/>
+     * With no arguments, this generates coefficients for the target EvalStrategy, but only for those slices that don't
+     * already exist. If no slices can be generated, the program terminates early.
+     * <p/>
+     * With -h, display orid histograms without generating coefficients. This displays histograms regardless of whether
+     * coefficients have already been generated.
+     * <p/>
+     * With -d, use only distinct positions when generating coefficients. This is the default.
+     * If a position occurs more than once, discard the duplicates.
+     * <p/>
+     * With -D, do not use distinct mode (-d). If positions occur multiple times they are used multiple times when
+     * calculating the coefficients, thus effectively weighting them in proportion to
+     * the number of times they occur.
      */
     public static void main(String[] args) throws Exception {
+        StringBuilder options = new StringBuilder();
+        for (String arg : args) {
+            if (arg.startsWith("-")) {
+                options.append(arg.substring(1));
+            }
+        }
+        final boolean histogramOnly = options.toString().contains("h");
+        final boolean distinct = !options.toString().contains("D");
 
-        // better to learn this now than after all the computations
-        try {
-            STRATEGY.checkSlicesCanBeCreated(COEFF_SET_NAME);
-        } catch (IllegalArgumentException e) {
-            log.warn("Coefficient set already exists.\n\nOverwriting coefficient files is not allowed.");
-            System.exit(-1);
+        if (histogramOnly) {
+            System.out.println("Not generating coefficients - histograms only");
         }
 
-        final List<PositionValue> pvs = loadOrCreatePvs();
+        // better to learn this now than after all the computations
+        if (!histogramOnly) {
+            try {
+                STRATEGY.checkSlicesCanBeCreated(COEFF_SET_NAME);
+            } catch (IllegalArgumentException e) {
+                log.warn("Coefficient set already exists.\n\nOverwriting coefficient files is not allowed.");
+                System.exit(-1);
+            }
+        }
+
+        final List<PositionValue> pvs = loadOrCreatePvsx(distinct);
 
         System.out.format("a total of %,d pvs are available.%n", pvs.size());
+        System.out.println();
         for (int nEmpty : nEmpties) {
-            if (STRATEGY.sliceExists(COEFF_SET_NAME, nEmpty)) {
+            if (!histogramOnly && STRATEGY.sliceExists(COEFF_SET_NAME, nEmpty)) {
                 continue;
             }
-            System.out.println();
             System.out.println("--- " + nEmpty + " ---");
             final PositionElement[] elements = elementsFromPvs(pvs, nEmpty);
             dumpElementDistribution(elements, STRATEGY.nCoefficientIndices());
-            System.out.format("estimating coefficients using %,d positions\n", elements.length);
-            final long t0 = System.currentTimeMillis();
-            final double[] x = estimateCoefficients(elements, STRATEGY.nCoefficientIndices(), STRATEGY.nDenseWeights, PENALTY);
-            final double[] coefficients = STRATEGY.unpack(x);
-            final long dt = System.currentTimeMillis() - t0;
-            System.out.format("%,d ms elapsed\n", dt);
-            System.out.format("sum of coefficients squared = %.3g\n", Vec.sumSq(coefficients));
+            if (!histogramOnly) {
+                System.out.format("estimating coefficients using %,d positions\n", elements.length);
+                final long t0 = System.currentTimeMillis();
+                final double[] x = estimateCoefficients(elements, STRATEGY.nCoefficientIndices(), STRATEGY.nDenseWeights, PENALTY);
+                final double[] coefficients = STRATEGY.unpack(x);
+                final long dt = System.currentTimeMillis() - t0;
+                System.out.format("%,d ms elapsed\n", dt);
+                System.out.format("sum of coefficients squared = %.3g\n", Vec.sumSq(coefficients));
+                System.out.println();
 
-            // write to file
-            STRATEGY.writeSlice(nEmpty, coefficients, COEFF_SET_NAME);
+                // write to file
+                STRATEGY.writeSlice(nEmpty, coefficients, COEFF_SET_NAME);
+            }
         }
     }
+
 
     private static void dumpElementDistribution(PositionElement[] elements, int nIndices) {
-        final int[] counts = new int[nIndices];
-        for (PositionElement element : elements) {
-            element.updateHistogram(counts);
-        }
-        final int[] histogram = new int[12];
-        for (int count : counts) {
-            int lg = 32 - Integer.numberOfLeadingZeros(count);
-            if (lg > 11) {
-                lg = 11;
-            }
-            histogram[lg]++;
-        }
-        System.out.println("== instance counts ==");
-        for (int i = 0; i < histogram.length; i++) {
-            final int h = histogram[i];
-            if (h > 0) {
-                System.out.format("%,8d coefficients occurred %s%n", h, rangeText(i));
-            }
-        }
-        System.out.println();
+        new OridHistogram(elements, nIndices).dump();
     }
 
-    private static String rangeText(int i) {
-        if (i == 0) {
-            return "0 times";
-        }
-        if (i == 1) {
-            return "1 time";
-        }
-        int min = 1 << (i - 1);
-        if (i == 11) {
-            return min + "+ times";
-        }
-        int max = (1 << i) - 1;
-        return min + "-" + max + " times";
-    }
-
-    public static List<PositionValue> loadOrCreatePvs() throws IOException {
+    public static List<PositionValue> loadOrCreatePvsx(boolean distinct) throws IOException {
         final String playerComponent = PLAYOUT_PLAYER_NAME.replace(':', '-');
-        final boolean isMac = System.getProperty("os.name").startsWith("Mac OS");
-        final Path cacheDir;
-        if (isMac) {
-            cacheDir = Paths.get(System.getProperty("user.home") + "/Library/Caches/" + "com.welty.novello");
+        final List<PositionValue> pvs = loadOrCreatePvs(playerComponent);
+
+        final Path cacheDir = getCacheDir();
+        final Path pvxFile = cacheDir.resolve(playerComponent + "x.pvs");
+        if (!Files.exists(pvxFile)) {
+            final Player PLAYOUT_PLAYER = Players.player(PLAYOUT_PLAYER_NAME);
+            createPvx(pvxFile, pvs, PLAYOUT_PLAYER);
         }
-        else {
-            cacheDir = Paths.get("c:/temp/novello");
+        final List<PositionValue> pvx = loadPvs(pvxFile);
+        log.info(String.format("%,d pvs from pv file and %,d pvs from pvx file\n", pvs.size(), pvx.size()));
+        pvs.addAll(pvx);
+
+        if (distinct) {
+            log.info("Selecting distinct pvs");
+            final Set<Mr> alreadySeen = new HashSet<>();
+            final List<PositionValue> distinctPvs = new ArrayList<>();
+
+            for (PositionValue pv : pvs) {
+                final Mr mr = new Mr(pv.mover, pv.enemy);
+                if (alreadySeen.add(mr)) {
+                    distinctPvs.add(pv);
+                }
+            }
+            log.info(String.format("selected %,d distinct pvs from %,d total pvs", distinctPvs.size(), pvs.size()));
+            return distinctPvs;
+        } else {
+            return pvs;
         }
+    }
+
+    public static List<PositionValue> loadOrCreatePvs(String playerComponent) throws IOException {
+        final Path cacheDir = getCacheDir();
         final Path pvFile = cacheDir.resolve(playerComponent + ".pvs");
         if (!Files.exists(pvFile)) {
             final Player PLAYOUT_PLAYER = Players.player(PLAYOUT_PLAYER_NAME);
             createPvs(pvFile, PLAYOUT_PLAYER);
         }
-        final int nPvs = (int)((Files.size(pvFile)/20)>>20)+1;
+        return loadPvs(pvFile);
+    }
+
+    private static Path getCacheDir() {
+        final boolean isMac = System.getProperty("os.name").startsWith("Mac OS");
+        final Path cacheDir;
+        if (isMac) {
+            cacheDir = Paths.get(System.getProperty("user.home") + "/Library/Caches/" + "com.welty.novello");
+        } else {
+            cacheDir = Paths.get("c:/temp/novello");
+        }
+        return cacheDir;
+    }
+
+    private static List<PositionValue> loadPvs(Path pvFile) throws IOException {
+        final int nPvs = (int) ((Files.size(pvFile) / 20) >> 20) + 1;
 
         final ProgressMonitor progressMonitor = new ProgressMonitor(null, "Loading pvs from file", "", 0, nPvs);
         System.out.println("Loading pvs from " + pvFile + "...");
         final List<PositionValue> pvs;
         final long t0 = System.currentTimeMillis();
-        NullableMapper<PositionValue, PositionValue> monitor = new Mapper<PositionValue , PositionValue>() {
+        NullableMapper<PositionValue, PositionValue> monitor = new Mapper<PositionValue, PositionValue>() {
             long nItems;
             long nextTime;
 
             @NotNull @Override public PositionValue y(PositionValue x) {
                 nItems++;
-                if ((nItems&0xFFFFF)==0) {
+                if ((nItems & 0xFFFFF) == 0) {
                     final int mItems = (int) (nItems >> 20);
                     progressMonitor.setProgress(mItems);
                     progressMonitor.setNote(mItems + "M items loaded");
                     final long t = System.currentTimeMillis();
-                    if (t>=nextTime) {
+                    if (t >= nextTime) {
                         log.info(mItems + "M items loaded");
                         nextTime = t + 5000;
                     }
@@ -185,6 +211,54 @@ public class CoefficientCalculator {
     static double[] estimateCoefficients(PositionElement[] elements, int nCoefficients, int nDenseWeights, double penalty) {
         final FunctionWithGradient f = new ErrorFunction(elements, nCoefficients, nDenseWeights, penalty);
         return ConjugateGradientMethod.minimize(f);
+    }
+
+    /**
+     * Generate a set containing minimal reflections of all Mes that are
+     * (a) subpositions of a position in positionValues
+     * (b) rare, and
+     * (c) not in positionValues
+     *
+     * @return set of minimal reflections
+     */
+    public static Set<Mr> generateRareSubpositions(EvalStrategy strategy, List<PositionValue> pvs) {
+        log.info("Starting generateRareSubpositions()");
+
+        final int[][] countSlices = new int[64][strategy.nCoefficientIndices()];
+
+        final Set<Mr> original = new HashSet<>();
+        for (PositionValue pv : pvs) {
+            original.add(new Mr(pv.mover, pv.enemy));
+        }
+
+        log.info(String.format("collected source positions. %,d distinct positions from %,d pvs", original.size(), pvs.size()));
+
+        final ProgressMonitor progressMonitor = new ProgressMonitor(null, "Generate rare subpositions", "", 0, pvs.size());
+
+        final HashSet<Mr> mrs = new HashSet<>();
+        for (int i = 0; i < pvs.size(); i++) {
+            final PositionValue pv = pvs.get(i);
+
+            final Mr mr = new Mr(pv.mover, pv.enemy);
+            final Collection<Mr> subs = mr.subPositions();
+            for (Mr sub : subs) {
+                if (!original.contains(sub) && !mrs.contains(sub)) {
+                    final PositionElement element = strategy.coefficientIndices(mr.mover, mr.enemy, 0);
+                    final int[] counts = countSlices[mr.nEmpty()];
+                    if (element.isRare(counts, 10)) {
+                        mrs.add(sub);
+                        element.updateHistogram(counts);
+                    }
+                }
+            }
+            if ((i & 0x3FFFF) == 0) {
+                progressMonitor.setProgress(i);
+                log.info((i >> 10) + "k pvs processed; " + (mrs.size() >> 10) + "k rare positions generated");
+            }
+        }
+        log.info("A total of " + (mrs.size() >> 10) + "k rare positions were created.");
+        progressMonitor.close();
+        return mrs;
     }
 
     /**
@@ -255,8 +329,7 @@ public class CoefficientCalculator {
         }
 
         @NotNull
-        @Override
-        Function getLineFunction(double[] x, double[] dx) {
+        public @Override Function getLineFunction(double[] x, double[] dx) {
             return new LineFunction(x, dx);
         }
 
@@ -324,41 +397,84 @@ public class CoefficientCalculator {
      */
     private static void createPvs(Path pvFile, Player playoutPlayer) throws IOException {
         log.info("Creating Pvs in " + pvFile + " ...");
-        final ArrayList<PositionValue> pvs = new ArrayList<>();
-        pvs.addAll(new SelfPlaySet(playoutPlayer, playoutPlayer, 0, false).call().pvs);
+        final ArrayList<Mr> mrs = getOrCreateMrs(playoutPlayer);
         Files.createDirectories(pvFile.getParent());
         try (final DataOutputStream out = new DataOutputStream(new BufferedOutputStream(Files.newOutputStream(pvFile)))) {
-            writeRandomSubpositions(pvs, playoutPlayer, out);
+            writeSubpositions(mrs, playoutPlayer, out);
         }
     }
 
+    private static ArrayList<Mr> getOrCreateMrs(Player playoutPlayer) throws IOException {
+        final Path mrsPath = getCacheDir().resolve("base.mrs");
+        if (!Files.exists(mrsPath)) {
+            final Set<Mr> mrSet = new HashSet<>();
+            Files.createDirectories(mrsPath.getParent());
+            final List<PositionValue> pvs = new SelfPlaySet(playoutPlayer, playoutPlayer, 0, false).call().pvs;
+            for (PositionValue pv : pvs) {
+                mrSet.add(new Mr(pv.mover, pv.enemy));
+            }
+            try (DataOutputStream out = new DataOutputStream(new BufferedOutputStream(Files.newOutputStream(mrsPath)))) {
+                for (Mr mr : mrSet) {
+                    mr.write(out);
+                }
+            }
+            log.info(String.format("created %s with %,d mrs", mrsPath, mrSet.size()));
+        }
+
+        ArrayList<Mr> mrs = new ArrayList<>();
+
+        try (DataInputStream in = new DataInputStream(new BufferedInputStream(Files.newInputStream(mrsPath)))) {
+            mrs.add(Mr.deserializer.read(in));
+        }
+        return mrs;
+    }
+
+
+    private static void createPvx(Path pvxFile, List<PositionValue> pvs, Player playoutPlayer) throws IOException {
+        log.info("Creating Pvx in " + pvxFile + " ...");
+        final Set<Mr> rares = generateRareSubpositions(STRATEGY, pvs);
+        final ProgressMonitor progressMonitor = new ProgressMonitor(null, "Create pvx", "", 0, rares.size());
+        Files.createDirectories(pvxFile.getParent());
+        final HashSet<Mr> alreadyWritten = new HashSet<>();
+        try (final DataOutputStream out = new DataOutputStream(new BufferedOutputStream(Files.newOutputStream(pvxFile)))) {
+            int progress = 0;
+            for (Mr rare : rares) {
+                writeFirstTwoPvs(out, playoutPlayer, rare.toPosition(), alreadyWritten);
+                progress++;
+                if ((progress & 0xFFF) == 0) {
+                    progressMonitor.setProgress(progress);
+                }
+            }
+        }
+
+        progressMonitor.close();
+    }
+
+
     /**
-     * Value randomly selected positions and write out their pvs.
+     * Value all positions and write out their pvs.
      * <p/>
-     * Pick a random selection of positions from the list; for each chosen position, play a game from that
+     * For all positions in the list, play a game from that
      * position and append the first two positions from that game to out.
      * <p/>
      * The positions are valued by the playout. The playout is played by eval4/A, which is the current best
      * evaluator.
      * <p/>
-     * 1/randomFraction of the positions will be chosen
-     * <p/>
      * This function does NOT close the DataOutputStream.
      *
-     * @param pvs positions that might get chosen
+     * @param mrs positions that might get chosen
      */
-    private static void writeRandomSubpositions(List<PositionValue> pvs, Player player, DataOutputStream out) throws IOException {
-        final Random random = new Random(1337);
+    private static void writeSubpositions(List<Mr> mrs, Player player, DataOutputStream out) throws IOException {
         int nextMessage = 50000;
         int nWritten = 0;
 
-        log.info(String.format("%,d original positions", pvs.size()));
-        for (PositionValue pv : pvs) {
-            if (random.nextInt(randomFraction) == 0) {
-                nWritten += writeSubPositions(out, pv.mover, pv.enemy, player);
-            }
+        final HashSet<Mr> alreadyWritten = new HashSet<>();
+
+        log.info(String.format("%,d original positions", mrs.size()));
+        for (Mr mr : mrs) {
+            nWritten += writeSubPositions(out, mr.mover, mr.enemy, player, alreadyWritten);
             if (nWritten >= nextMessage) {
-                log.info(String.format(" Added %,d random positions", nWritten));
+                log.info(String.format(" Added %,d sub-positions", nWritten));
                 nextMessage += 50000;
             }
         }
@@ -369,7 +485,7 @@ public class CoefficientCalculator {
      *
      * @return number of positions written
      */
-    private static int writeSubPositions(DataOutputStream out, long mover, long enemy, Player player) throws IOException {
+    private static int writeSubPositions(DataOutputStream out, long mover, long enemy, Player player, HashSet<Mr> alreadyWritten) throws IOException {
         int nWritten = 0;
         final Position pos = new Position(mover, enemy, true);
         long moves = pos.calcMoves();
@@ -377,146 +493,34 @@ public class CoefficientCalculator {
             final int sq = Long.numberOfTrailingZeros(moves);
             moves ^= 1L << sq;
             final Position subPos = pos.play(sq);
-            final MutableGame game = new SelfPlayGame(subPos, player, player, "", 0, 0).call();
-            final List<PositionValue> gamePvs = game.calcPositionValues();
-            final List<PositionValue> toAdd = gamePvs.subList(0, Math.min(2, gamePvs.size()));
-            for (PositionValue pv : toAdd) {
-                pv.write(out);
-                nWritten++;
-            }
+            nWritten += writeFirstTwoPvs(out, player, subPos, alreadyWritten);
         }
         return nWritten;
     }
-}
-
-/**
- * Data about a single position and value
- */
-class PositionElement {
-    final @NotNull int[] indices;
-    private final int target;
-    private final @NotNull float[] denseWeights;
-
-    private static final float[] EMPTY_ARRAY = new float[0];
-
-    PositionElement(int[] indices, int target) {
-        this(indices, target, EMPTY_ARRAY);
-    }
-
-    public PositionElement(@NotNull int[] indices, int target, @NotNull float[] denseWeights) {
-        this.indices = indices;
-        this.target = target;
-        this.denseWeights = denseWeights;
-    }
 
     /**
-     * Update the gradient of the optimization function (sum of squared errors)
+     * Value the position and write both it and its successor position to file as PositionValues.
+     * <p/>
+     * This implementation values using a playout.
      *
-     * @param x             location at which to calculate the gradient
-     * @param minusGradient (negative) gradient of the optimization function
+     * @param out            Stream to write PositionValues to.
+     * @param player         player to value a position.
+     * @param position       the position
+     * @param alreadyWritten list of Mrs that have already been written to file
+     * @return number of PVs written. 2 unless the game ends after the first move.
+     * @throws IOException
      */
-    void updateGradient(double[] x, double[] minusGradient) {
-        final double error = error(x);
-        for (int i : indices) {
-            minusGradient[i] += 2 * error;
-        }
-        final int denseBase = minusGradient.length - denseWeights.length;
-        for (int j = 0; j < denseWeights.length; j++) {
-            minusGradient[denseBase + j] += 2 * error * denseWeights[j];
-        }
-    }
-
-    void updateHistogram(int[] counts) {
-        for (int index : indices) {
-            counts[index]++;
-        }
-    }
-
-    /**
-     * Determine if one of this Element's indices is rare
-     *
-     * Rare means it has occurred fewer than maximum times,
-     *
-     * @param counts histogram of index occurrences
-     * @param maximum  maximum number of times an index can occur and still be considered rare
-     */
-    boolean isRare(int[] counts, int maximum) {
-        for (int index : indices) {
-            if (counts[index] > maximum) {
-                return false;
+    private static int writeFirstTwoPvs(DataOutputStream out, Player player, Position position, HashSet<Mr> alreadyWritten) throws IOException {
+        final MutableGame game = new SelfPlayGame(position, player, player, "", 0, 0).call();
+        final List<PositionValue> gamePvs = game.calcPositionValues();
+        final List<PositionValue> toAdd = gamePvs.subList(0, Math.min(2, gamePvs.size()));
+        for (PositionValue pv : toAdd) {
+            final Mr mr = new Mr(pv.mover, pv.enemy);
+            if (alreadyWritten.add(mr)) {
+                pv.write(out);
             }
         }
-        return true;
-    }
-
-    /**
-     * Calculate the error in the position value estimation
-     * <p/>
-     * error = target - &Sigma;<sub>i</sub> c<sub>i</sub> x<sub>i</sub>
-     *
-     * @param x vector of coefficient values
-     * @return error
-     */
-    double error(double[] x) {
-        double error = target;
-        for (int i : indices) {
-            error -= x[i];
-        }
-        final int denseBase = x.length - denseWeights.length;
-        for (int j = 0; j < denseWeights.length; j++) {
-            int i = denseBase + j;
-            error -= x[i] * denseWeights[j];
-        }
-        return error;
-    }
-
-    /**
-     * Calculate the directional derivative of error.
-     *
-     * @param deltaX direction
-     * @return sum_i d(error)/dx_i * deltaX[i]
-     */
-    public double dError(double[] deltaX) {
-        double dError = 0;
-        for (int i : indices) {
-            dError -= deltaX[i];
-        }
-        final int denseBase = deltaX.length - denseWeights.length;
-        for (int j = 0; j < denseWeights.length; j++) {
-            int i = denseBase + j;
-            dError -= deltaX[i] * denseWeights[j];
-        }
-        return dError;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        PositionElement that = (PositionElement) o;
-
-        if (target != that.target) return false;
-        //noinspection SimplifiableIfStatement
-        if (!Arrays.equals(denseWeights, that.denseWeights)) return false;
-        return Arrays.equals(indices, that.indices);
-
-    }
-
-    @Override
-    public int hashCode() {
-        int result = Arrays.hashCode(indices);
-        result = 31 * result + target;
-        result = 31 * result + Arrays.hashCode(denseWeights);
-        return result;
-    }
-
-    /**
-     * Sort indices.
-     * <p/>
-     * The only function this affects is equals, which will work correctly once the indices are sorted.
-     */
-    public void sortIndices() {
-        Arrays.sort(indices);
+        return toAdd.size();
     }
 }
+

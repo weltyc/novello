@@ -23,6 +23,7 @@ public class NovelloUtils {
      * @return hash
      */
     public static long hash(long mover, long enemy) {
-        return murmurMix(mover ^ murmurMix(enemy));
+        final long a = murmurMix(mover ^ murmurMix(enemy));
+        return a ^ (a>>>47);
     }
 }

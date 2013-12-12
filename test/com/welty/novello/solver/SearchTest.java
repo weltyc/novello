@@ -14,7 +14,7 @@ import junit.framework.TestCase;
  */
 public class SearchTest extends TestCase {
     public void test1PlySearch() throws Exception {
-        final Eval eval = Players.eval("b1");
+        final Eval eval = Players.currentEval();
         final Counter counter = new Counter(eval);
         final Search search = new Search(counter, 0);
 
@@ -57,7 +57,7 @@ public class SearchTest extends TestCase {
     }
 
     public void testSearchScoreWithPass() {
-        final Eval eval = Players.eval("b1");
+        final Eval eval = Players.currentEval();
         final Search search = new Search(new Counter(eval), 0);
 
         final Position root = Position.of("--OO-O-O\n" +
@@ -131,8 +131,8 @@ public class SearchTest extends TestCase {
     }
 
     public void testFlipToEvalRatio() {
-
-        final Search search = new Search(new Counter(Players.eval("b1")), 0);
+        final Eval eval = Players.currentEval();
+        final Search search = new Search(new Counter(eval), 0);
         final int depth = 4;
 
         Position position = Position.START_POSITION;

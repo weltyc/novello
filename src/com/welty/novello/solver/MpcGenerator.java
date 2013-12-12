@@ -62,7 +62,7 @@ public class MpcGenerator {
      * @throws IOException
      */
     private static List<PositionValue> getPvs(int limit) throws IOException {
-        final List<PositionValue> pvs = CoefficientCalculator.loadOrCreatePvs();
+        final List<PositionValue> pvs = CoefficientCalculator.loadOrCreatePvs("b1-2");
         final ArrayList<PositionValue> result = new ArrayList<>();
         final int[] counts = new int[64];
         for (int i = 0; i < pvs.size(); i++) {

@@ -1,6 +1,7 @@
 package com.welty.novello.eval;
 
 import com.orbanova.common.misc.ArrayTestCase;
+import com.welty.novello.core.Me;
 import com.welty.novello.core.Position;
 
 import java.util.Arrays;
@@ -38,11 +39,12 @@ public class CornerBlockTermTest extends ArrayTestCase {
     }
 
     public void testReflectionOrids() {
-        testReflectionOrids(EvalStrategyTest.sparsePosition);
-        testReflectionOrids(EvalStrategyTest.densePosition);
+        testReflectionOrids(Me.early);
+        testReflectionOrids(Me.late);
     }
 
-    private static void testReflectionOrids(Position position) {
+    private static void testReflectionOrids(Me tp) {
+        final Position position = tp.toPosition();
         int[] expected = calcOrids(position, 0);
         for (int r=1; r<8; r++) {
             assertEquals(""+r, expected, calcOrids(position, r));

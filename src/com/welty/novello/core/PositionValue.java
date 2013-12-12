@@ -50,4 +50,24 @@ public class PositionValue {
             return new PositionValue(mover, enemy, value);
         }
     };
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        PositionValue that = (PositionValue) o;
+
+        return enemy == that.enemy && mover == that.mover && value == that.value;
+
+    }
+
+    @Override
+    public int hashCode() {
+        return (int)NovelloUtils.hash(mover, enemy);
+    }
+
+    @Override public String toString() {
+        return new Position(mover, enemy, true) + "\n" + value;
+    }
 }

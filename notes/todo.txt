@@ -5,3 +5,6 @@
 
 * Midgame Search
   * MPC
+
+* Tidying up
+  * Generate only distinct positions in .pvs file; right now 2/3 are duplicates

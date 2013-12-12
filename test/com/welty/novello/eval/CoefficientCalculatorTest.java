@@ -2,6 +2,12 @@ package com.welty.novello.eval;
 
 import com.orbanova.common.misc.ArrayTestCase;
 import com.orbanova.common.misc.Vec;
+import com.welty.novello.core.Me;
+import com.welty.novello.core.Mr;
+import com.welty.novello.core.PositionValue;
+
+import java.util.Arrays;
+import java.util.Set;
 
 /**
  */
@@ -159,5 +165,22 @@ public class CoefficientCalculatorTest extends ArrayTestCase {
         final double[] x = CoefficientCalculator.estimateCoefficients(elements, 2, 1, 0);
         final double[] coeffs = strategy.unpack(x);
         assertEquals(new double[]{5., 3.}, coeffs, 1e-3);
+    }
+
+    public void testGenerateRareSubpositions() {
+        final Me me = Me.early;
+        final PositionValue pv = new PositionValue(me.mover, me.enemy, 13);
+
+        // check with 1 position in pv
+        final Set<Mr> subs = CoefficientCalculator.generateRareSubpositions(EvalStrategies.eval1, Arrays.asList(pv));
+        final int nMoves = Long.bitCount(me.calcMoves());
+        assertEquals(nMoves, subs.size());
+
+        // check with 2 positions in pv, one of which will also be a subposition
+        final Mr me2 = subs.iterator().next();
+        final PositionValue pv2 = new PositionValue(me2.mover, me2.enemy, -13);
+        final Set<Mr> subs2 = CoefficientCalculator.generateRareSubpositions(EvalStrategies.eval1, Arrays.asList(pv, pv2));
+        final int nMoves2 = Long.bitCount(me2.calcMoves());
+        assertEquals(nMoves + nMoves2 - 1, subs2.size());
     }
 }

@@ -92,7 +92,7 @@ class Features {
                 nLarge++;
             }
         }
-        System.out.println("(" + nLarge + " coefficients valued at least " + minValue + " out of " + feature.nInstances() + " total coefficients)");
+        System.out.println(feature + ": " + nLarge + " coefficients valued at least " + minValue + " out of " + feature.nOrids() + " total coefficients");
     }
 }
 

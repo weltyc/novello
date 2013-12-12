@@ -47,18 +47,16 @@ public class BitBoardUtilsTest extends BitBoardTestCase {
         testCalcMoves(0x04009450001F0830L, "**.*O.O*OO*OO*OO.OO.O..**.O.*..*.**O*.****O.....**OO.OO.O*..***.");
 
         // generate random test cases
-//        final Random random = new Random(1337);
+//        Random random = new Random(1337);
 //        generateRandomCalcMovesTest(random);
 //        generateRandomCalcMovesTest(random);
     }
 
     private static void generateRandomCalcMovesTest(Random random) {
-        final long empty = random.nextLong()&random.nextLong();
-        final long mover = random.nextLong()&~empty;
-        final long enemy = ~(mover|empty);
+        final Me tp = Me.early(random);
 
-        final Position board = new Position(mover, enemy, true);
-        System.out.format("testCalcMoves(0x%016XL, \"%s\");%n", calcMoves(board.mover(), board.enemy()), board.boardString());
+        final Position position = new Position(tp.mover, tp.enemy, true);
+        System.out.format("testCalcMoves(0x%016XL, \"%s\");%n", calcMoves(position.mover(), position.enemy()), position.boardString());
     }
 
     /**

@@ -10,7 +10,7 @@ import junit.framework.TestCase;
  */
 public class EvalPlayerTest extends TestCase {
     public void test1PlySearch() throws Exception {
-        final Eval eval = Players.eval("b1");
+        final Eval eval = Players.currentEval();
         final EvalPlayer player = new EvalPlayer(eval, 1, true);
 
         final Position prev = Position.of("--------\n" +

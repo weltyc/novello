@@ -1,0 +1,263 @@
+Rare project
+============
+Add positions with rare orids to the coefficient calculator's input set.
+
+'rare' means < 10 occurrences at that # of empties. With (say) 30k rare orids, if we add enough positions to make all
+orids non-rare this would result in ~300k extra positions per slice. Positions from 7 different slices are
+used to generate each coefficient slice, which means the coefficient slice would be generated with 70 positions with
+each orid, which seems sufficient for reasonable accuracy. The total number of pvs would increase from ~43M now to
+~58M. The number of Elements stored during coefficient generation would increase from ~7M to ~9M.
+
+Tracking success
+----------------
+1. Add the ability to display a histogram of orid frequencies.
+For evaluation function c:
+
+*Before:*
+
+    --- 3 ---
+      25,405 coefficients occurred 0 times
+       8,683 coefficients occurred 1-9 times
+      11,611 coefficients occurred 10-99 times
+       5,774 coefficients occurred 100-999 times
+       3,883 coefficients occurred 1000+ times
+
+    --- 4 ---
+      24,756 coefficients occurred 0 times
+       8,347 coefficients occurred 1-9 times
+      11,756 coefficients occurred 10-99 times
+       6,324 coefficients occurred 100-999 times
+       4,173 coefficients occurred 1000+ times
+
+    --- 11 ---
+      23,119 coefficients occurred 0 times
+       7,411 coefficients occurred 1-9 times
+      10,817 coefficients occurred 10-99 times
+       7,966 coefficients occurred 100-999 times
+       6,043 coefficients occurred 1000+ times
+
+    --- 12 ---
+      23,704 coefficients occurred 0 times
+       7,247 coefficients occurred 1-9 times
+      10,438 coefficients occurred 10-99 times
+       7,781 coefficients occurred 100-999 times
+       6,186 coefficients occurred 1000+ times
+
+    --- 19 ---
+      28,862 coefficients occurred 0 times
+       6,257 coefficients occurred 1-9 times
+       7,691 coefficients occurred 10-99 times
+       6,379 coefficients occurred 100-999 times
+       6,167 coefficients occurred 1000+ times
+
+    --- 20 ---
+      29,914 coefficients occurred 0 times
+       5,932 coefficients occurred 1-9 times
+       7,346 coefficients occurred 10-99 times
+       6,052 coefficients occurred 100-999 times
+       6,112 coefficients occurred 1000+ times
+
+    --- 27 ---
+      35,520 coefficients occurred 0 times
+       4,453 coefficients occurred 1-9 times
+       5,244 coefficients occurred 10-99 times
+       4,756 coefficients occurred 100-999 times
+       5,383 coefficients occurred 1000+ times
+
+    --- 28 ---
+      36,312 coefficients occurred 0 times
+       4,232 coefficients occurred 1-9 times
+       4,922 coefficients occurred 10-99 times
+       4,573 coefficients occurred 100-999 times
+       5,317 coefficients occurred 1000+ times
+
+    --- 35 ---
+      40,317 coefficients occurred 0 times
+       3,344 coefficients occurred 1-9 times
+       3,808 coefficients occurred 10-99 times
+       3,473 coefficients occurred 100-999 times
+       4,414 coefficients occurred 1000+ times
+
+    --- 36 ---
+      40,978 coefficients occurred 0 times
+       3,115 coefficients occurred 1-9 times
+       3,695 coefficients occurred 10-99 times
+       3,280 coefficients occurred 100-999 times
+       4,288 coefficients occurred 1000+ times
+
+    --- 43 ---
+      44,691 coefficients occurred 0 times
+       2,586 coefficients occurred 1-9 times
+       2,897 coefficients occurred 10-99 times
+       2,213 coefficients occurred 100-999 times
+       2,969 coefficients occurred 1000+ times
+
+    --- 44 ---
+      45,270 coefficients occurred 0 times
+       2,518 coefficients occurred 1-9 times
+       2,713 coefficients occurred 10-99 times
+       2,097 coefficients occurred 100-999 times
+       2,758 coefficients occurred 1000+ times
+
+    --- 51 ---
+      49,793 coefficients occurred 0 times
+       1,590 coefficients occurred 1-9 times
+       1,439 coefficients occurred 10-99 times
+       1,094 coefficients occurred 100-999 times
+       1,440 coefficients occurred 1000+ times
+
+    --- 52 ---
+      50,543 coefficients occurred 0 times
+       1,344 coefficients occurred 1-9 times
+       1,223 coefficients occurred 10-99 times
+         981 coefficients occurred 100-999 times
+       1,265 coefficients occurred 1000+ times
+
+    --- 59 ---
+      54,552 coefficients occurred 0 times
+          91 coefficients occurred 1-9 times
+         132 coefficients occurred 10-99 times
+         189 coefficients occurred 100-999 times
+         392 coefficients occurred 1000+ times
+
+    --- 60 ---
+      54,966 coefficients occurred 0 times
+          18 coefficients occurred 1-9 times
+          28 coefficients occurred 10-99 times
+          79 coefficients occurred 100-999 times
+         265 coefficients occurred 1000+ times
+
+After adding rare positions:
+    --- 3 ---
+      17,751 coefficients occurred 0 times
+       8,083 coefficients occurred 1-9 times
+      15,535 coefficients occurred 10-99 times
+       9,141 coefficients occurred 100-999 times
+       4,846 coefficients occurred 1000+ times
+
+    --- 4 ---
+      17,369 coefficients occurred 0 times
+       7,395 coefficients occurred 1-9 times
+      15,251 coefficients occurred 10-99 times
+      10,060 coefficients occurred 100-999 times
+       5,281 coefficients occurred 1000+ times
+
+    --- 11 ---
+      16,009 coefficients occurred 0 times
+       6,308 coefficients occurred 1-9 times
+      13,073 coefficients occurred 10-99 times
+      12,188 coefficients occurred 100-999 times
+       7,778 coefficients occurred 1000+ times
+
+    --- 12 ---
+      16,167 coefficients occurred 0 times
+       6,520 coefficients occurred 1-9 times
+      12,781 coefficients occurred 10-99 times
+      11,928 coefficients occurred 100-999 times
+       7,960 coefficients occurred 1000+ times
+
+    --- 19 ---
+      19,398 coefficients occurred 0 times
+       7,842 coefficients occurred 1-9 times
+      11,001 coefficients occurred 10-99 times
+       9,378 coefficients occurred 100-999 times
+       7,737 coefficients occurred 1000+ times
+
+    --- 20 ---
+      20,224 coefficients occurred 0 times
+       7,984 coefficients occurred 1-9 times
+      10,537 coefficients occurred 10-99 times
+       9,022 coefficients occurred 100-999 times
+       7,589 coefficients occurred 1000+ times
+
+    --- 27 ---
+      26,197 coefficients occurred 0 times
+       7,610 coefficients occurred 1-9 times
+       7,837 coefficients occurred 10-99 times
+       7,145 coefficients occurred 100-999 times
+       6,567 coefficients occurred 1000+ times
+
+    --- 28 ---
+      27,135 coefficients occurred 0 times
+       7,467 coefficients occurred 1-9 times
+       7,381 coefficients occurred 10-99 times
+       6,980 coefficients occurred 100-999 times
+       6,393 coefficients occurred 1000+ times
+
+    --- 35 ---
+      32,705 coefficients occurred 0 times
+       6,238 coefficients occurred 1-9 times
+       5,831 coefficients occurred 10-99 times
+       5,487 coefficients occurred 100-999 times
+       5,095 coefficients occurred 1000+ times
+
+    --- 36 ---
+      33,410 coefficients occurred 0 times
+       6,125 coefficients occurred 1-9 times
+       5,632 coefficients occurred 10-99 times
+       5,300 coefficients occurred 100-999 times
+       4,889 coefficients occurred 1000+ times
+
+    --- 43 ---
+      39,009 coefficients occurred 0 times
+       4,986 coefficients occurred 1-9 times
+       4,635 coefficients occurred 10-99 times
+       3,421 coefficients occurred 100-999 times
+       3,305 coefficients occurred 1000+ times
+
+    --- 44 ---
+      39,809 coefficients occurred 0 times
+       4,855 coefficients occurred 1-9 times
+       4,462 coefficients occurred 10-99 times
+       3,172 coefficients occurred 100-999 times
+       3,058 coefficients occurred 1000+ times
+
+    --- 51 ---
+      46,878 coefficients occurred 0 times
+       3,213 coefficients occurred 1-9 times
+       2,298 coefficients occurred 10-99 times
+       1,442 coefficients occurred 100-999 times
+       1,525 coefficients occurred 1000+ times
+
+    --- 52 ---
+      48,006 coefficients occurred 0 times
+       2,774 coefficients occurred 1-9 times
+       1,999 coefficients occurred 10-99 times
+       1,237 coefficients occurred 100-999 times
+       1,340 coefficients occurred 1000+ times
+
+    --- 59 ---
+      54,537 coefficients occurred 0 times
+         103 coefficients occurred 1-9 times
+         133 coefficients occurred 10-99 times
+         190 coefficients occurred 100-999 times
+         393 coefficients occurred 1000+ times
+
+    --- 60 ---
+      54,966 coefficients occurred 0 times
+          18 coefficients occurred 1-9 times
+          28 coefficients occurred 10-99 times
+          79 coefficients occurred 100-999 times
+         265 coefficients occurred 1000+ times
+
+
+Generate new positions
+----------------------
+We'll get positions from  the existing pvs file (b1-2.pvs), and store some subpositions in a new file (b1-2x.pvs).
+Subpositions will be stored in the new file if
+ a. They do not already exist in b1-2.pvs or b1-2x.pvs
+ b. They have a rare orid
+
+We now have three ways of generating coefficients:
+1. (c1s) The old way with no rare orids
+2. (c2s) With rare orids
+3. (c3s) With rare orids and in 'distinct' mode (-d), which means that we only use positions once even
+if they occur multiple times in the data set.
+
+Running coefficients in 'distinct' mode (-d) has the additional advantage that coefficient calculation
+takes less memory and time.
+
+Tournament results:
+    +1.4  c3s:2
+    -0.3  c2s:2
+    -1.1  c1s:2

@@ -1,4 +1,4 @@
-package com.welty.novello.eval;
+package com.welty.novello.coca;
 
 import com.orbanova.common.math.function.oned.Function;
 import com.orbanova.common.math.function.oned.Functions;
@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  */
-abstract class FunctionWithGradient {
+public abstract class FunctionWithGradient {
     /**
      * Calculate the direction of steepest descent (negative of the gradient)
      * <p/>
@@ -55,7 +55,7 @@ abstract class FunctionWithGradient {
      * @param dx direction of the line
      * @return a function: a -> this.y(x + a * dx)
      */
-    @NotNull Function getLineFunction(double[] x, double[] dx) {
+    public @NotNull Function getLineFunction(double[] x, double[] dx) {
         return new LineFunction(this, x, dx);
     }
 

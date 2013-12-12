@@ -1,4 +1,4 @@
-package com.welty.novello.eval;
+package com.welty.novello.coca;
 
 import com.orbanova.common.math.function.oned.Optimum;
 import com.orbanova.common.misc.Logger;
@@ -9,7 +9,7 @@ import com.orbanova.common.misc.Vec;
  * <p/>
  * algorithm copied from http://en.wikipedia.org/wiki/Nonlinear_conjugate_gradient_method
  */
-class ConjugateGradientMethod {
+public class ConjugateGradientMethod {
     private static final Logger log = Logger.logger(ConjugateGradientMethod.class);
 
     /**
@@ -18,7 +18,7 @@ class ConjugateGradientMethod {
      * @param f function to minimize
      * @return approximate minimum location
      */
-    static double[] minimize(FunctionWithGradient f) {
+    public static double[] minimize(FunctionWithGradient f) {
         final double[] x = new double[f.nDimensions()];
         return minimize(f, x);
     }
@@ -29,7 +29,7 @@ class ConjugateGradientMethod {
      * @param f function to minimize
      * @return approximate minimum location. Note, this will be overwritten with the result.
      */
-    static double[] minimize(FunctionWithGradient f, double[] x) {
+    public static double[] minimize(FunctionWithGradient f, double[] x) {
         // reset directions every so often because of nonlinearity and roundoff error
         for (int resetSize = 2; resetSize <= 1024; resetSize *= 2) {
             final double[] deltaX0 = f.minusGradient(x);
