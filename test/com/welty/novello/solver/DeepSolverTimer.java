@@ -31,8 +31,7 @@ public class DeepSolverTimer implements Tunable {
 
 //        System.out.println(Typical.timing(new DeepSolverTimer(20)));
 
-        final DeepSolverTimer timer = new DeepSolverTimer(24, true);
-        timer.runMultithreaded();
+        new DeepSolverTimer(24, true).cost();
 //        final long t0 = System.currentTimeMillis();
 //        final DeepSolverTimer timer = new DeepSolverTimer(24, true);
 //        timer.run();
@@ -48,27 +47,15 @@ public class DeepSolverTimer implements Tunable {
      * Allow the JVM to efficiently compile classes
      */
     static void warmUpHotSpot() {
-        new DeepSolverTimer(18).run();
+        new DeepSolverTimer(18).cost();
     }
 
-    private Solver solver;
-
-    @Override public Counts getCounts() {
-        return solver.getCounts();
-    }
-
-    @Override public void run() {
-        this.solver = new Solver();
-
-        for (PositionValue pv : pvs) {
-            final int score = solver.solve(pv.mover, pv.enemy);
-            if (logResults) {
-                log.info("score : " + score);
-            }
-        }
-    }
-
-    public void runMultithreaded() {
+    /**
+     * Solve the positions with 8 threads.
+     *
+     * @return total node counts for solution
+     */
+    @Override public double cost() {
         final ExecutorService executorService = Executors.newFixedThreadPool(8);
         final ArrayList<Future<Counts>> futures = new ArrayList<>();
 
@@ -89,10 +76,12 @@ public class DeepSolverTimer implements Tunable {
             }
         }
 
-        final double dt = (System.currentTimeMillis() - t0)/1000;
+        final double dt = (System.currentTimeMillis() - t0)/1000.;
 
         final long mf = counts.nFlips / 1000000;
         log.info(String.format("Total flip count at %d: %s / %,.0f s = %3.1f Mn/s", pvs.get(0).nEmpty(), counts, dt, mf/dt));
+
+        return (double)counts.cost();
     }
 
     private class SolveTask implements Callable<Counts> {

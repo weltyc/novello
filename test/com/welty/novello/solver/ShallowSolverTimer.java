@@ -20,13 +20,10 @@ public class ShallowSolverTimer implements Tunable {
     public ShallowSolverTimer() {
     }
 
-    @Override public Counts getCounts() {
-        return solver.getCounts();
-    }
-
-    @Override public void run() {
+    @Override public double cost() {
         solver = new Solver();
         SolverTest.testSolveValues(solver);
+        return solver.getCounts().cost();
     }
 
     /**

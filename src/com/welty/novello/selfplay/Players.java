@@ -56,7 +56,7 @@ public class Players {
 
     public static synchronized Eval currentEval() {
         if (currentEval == null) {
-            currentEval = eval("b1");
+            currentEval = eval("c1s");
         }
         return currentEval;
     }

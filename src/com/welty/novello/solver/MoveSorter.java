@@ -7,6 +7,7 @@ import org.jetbrains.annotations.NotNull;
 
 import static com.welty.novello.core.BitBoardUtils.calcMoves;
 import static com.welty.novello.core.BitBoardUtils.isBitClear;
+import static com.welty.novello.eval.CoefficientCalculator.DISK_VALUE;
 import static java.lang.Long.bitCount;
 
 /**
@@ -85,45 +86,55 @@ final class MoveSorter {
         sortSearch = new Search(counter, 0);
     }
 
+    static final int[][] searchDepths = {
+            {-1, 0, 0, 0, -1, 2}, // 12-13
+            {-1, 0, 0, 0, 0, 1},  // 14-15
+            {-1, 0, 2, 1, 0, 4},  //16-17
+            {0, 2, 2, 2, 0, 3}, // 18-19
+            {0, 2, 3, 4, 2, 4}, // 20-21
+            {2, 2, 4, 4, 2, 5}, // 22-23
+            {2, 2, 2, 2, 2, 6}, // 24-25
+            {2, 2, 2, 2, 2, 7}, // 26-27
+            {2, 2, 2, 2, 2, 8}, // 28-29
+            {2, 2, 2, 2, 2, 9}, // 30-31
+            {2, 2, 2, 2, 2, 10}, // 32-33
+            {2, 2, 2, 2, 2, 11}, // 34-35
+    };
+
+    static final int[][] fastestFirsts = {
+            {4,3,3,3,4,3},
+            {4,3,3,3,3,3},
+            {5,3,2,3,3,2},
+            {4,1,2,3,3,2},
+            {2,1,1,3,3,3},
+            {0,3,2,2,2,2},
+            {2,2,2,2,2,2},
+            {2,2,2,2,2,2},
+            {2,2,2,2,2,2},
+            {2,2,2,2,2,2},
+            {2,2,2,2,2,2},
+            {2,2,2,2,2,2},
+    };
+
     /**
      * Choose a move sorting method appropriate for the position and sort the moves.
      */
     void createSort(long mover, long enemy, int alpha, int beta, int nEmpties, long parity, long movesToCheck
             , ListOfEmpties empties, HashTables hashTables, int predictedNodeType) {
         if (nEmpties >= MIN_ETC_DEPTH) {
-            final boolean useEvalSort;
+            final int searchDepth; // search depth for createWithEtcAndEval, or -1 to use createWithEtc.
+            final int fastestFirstWeight;
             if (nEmpties < MIN_EVAL_SORT_DEPTH) {
-                useEvalSort = false;
-            } else if (nEmpties >= MIN_EVAL_SORT_DEPTH + 2) {
-                useEvalSort = true;
+                searchDepth = -1;
+                fastestFirstWeight = 0; // currently ignored when searchDepth = -1.
             } else {
-                int localScore = counter.eval(mover, enemy);
-                if (predictedNodeType == Solver.PRED_ALL) {
-                    localScore -= 10;
-                }
-                useEvalSort = localScore > (alpha - 20) * CoefficientCalculator.DISK_VALUE;
+                final int emptyBucket = (nEmpties - MIN_EVAL_SORT_DEPTH)/2;
+                final int evalBucket = calcEvalBucket(mover, enemy, alpha, beta, predictedNodeType);
+                searchDepth = searchDepths[emptyBucket][evalBucket];
+                fastestFirstWeight = fastestFirsts[emptyBucket][evalBucket];
             }
-            if (useEvalSort) {
-                final int nEmpty = Long.bitCount(~(mover | enemy));
-                final int searchDepth;
-                if (nEmpty >= 16) {
-                    // decide if we should use an eval or a 1-ply search for valuing the subnodes.
-                    // 1-ply search is better but expensive; use it only if it's going to help.
-                    //
-                    // We guess whether it will help by looking at the current eval; if it's close to the range
-                    // (alpha, beta) it's likely to help.
-                    //
-                    // The current eval has a small adjustment for the current predicted node type; it turns out
-                    // that predicted ALL nodes cut off less frequently than predicted CUT nodes with the same eval.
-                    int localScore = counter.eval(mover, enemy);
-                    if (predictedNodeType == Solver.PRED_ALL) {
-                        localScore -= 10;
-                    }
-                    searchDepth = nEmpty >= 19 || scoreInRange(localScore, alpha - 20, beta + 20) ? 2 : 0;
-                } else {
-                    searchDepth = 0;
-                }
-                createWithEtcAndEval(empties, mover, enemy, movesToCheck, hashTables, alpha, beta, searchDepth);
+            if (searchDepth >= 0) {
+                createWithEtcAndEval(empties, mover, enemy, movesToCheck, hashTables, alpha, beta, searchDepth, fastestFirstWeight);
             } else {
                 createWithEtc(empties, mover, enemy, parity, movesToCheck, hashTables, alpha, beta);
             }
@@ -132,8 +143,36 @@ final class MoveSorter {
         }
     }
 
-    private boolean scoreInRange(int localScore, int min, int max) {
-        return localScore >= min * CoefficientCalculator.DISK_VALUE && localScore <= max * CoefficientCalculator.DISK_VALUE;
+    /**
+     * Put the position into one of five buckets, depending on its eval vs the (alpha, beta) range
+     *
+     * @return bucket number, 0..4
+     */
+    private int calcEvalBucket(long mover, long enemy, int alpha, int beta, int predictedNodeType) {
+        int localScore = counter.eval(mover, enemy);
+        if (predictedNodeType == Solver.PRED_ALL) {
+            localScore -= 10;
+        }
+        final int evalBucket;
+        if (predictedNodeType == Solver.PRED_PV) {
+            evalBucket = 5;
+        }
+        else if (localScore > beta + 20* DISK_VALUE) {
+            evalBucket = 4;
+        }
+        else if (localScore > beta + 7*DISK_VALUE) {
+            evalBucket = 3;
+        }
+        else if (localScore >= alpha - 7*DISK_VALUE) {
+            evalBucket = 2;
+        }
+        else if (localScore >= alpha - 20*DISK_VALUE) {
+            evalBucket = 1;
+        }
+        else {
+            evalBucket = 0;
+        }
+        return evalBucket;
     }
 
     int size() {
@@ -152,7 +191,7 @@ final class MoveSorter {
      */
     @SuppressWarnings("PointlessBitwiseExpression")
     private void createWithEtcAndEval(ListOfEmpties empties, long mover, long enemy, long movesToCheck
-            , HashTables hashTables, int alpha, int beta, int searchDepth) {
+            , HashTables hashTables, int alpha, int beta, int searchDepth, int fastestFirstWeight) {
         size = 0;
 
         for (ListOfEmpties.Node node = empties.first(); node != empties.end; node = node.next) {
@@ -168,7 +207,7 @@ final class MoveSorter {
                 final long nextEnemy = mover | flips | placement;
                 final long nextMover = enemy & ~flips;
                 final long enemyMoves = calcMoves(nextMover, nextEnemy);
-                int score = scoreWithEtcAndEval(hashTables, alpha, beta, nextEnemy, nextMover, enemyMoves, searchDepth);
+                int score = scoreWithEtcAndEval(hashTables, alpha, beta, nextEnemy, nextMover, enemyMoves, searchDepth, fastestFirstWeight);
 
                 insert(sq, score, flips, enemyMoves, node);
             }
@@ -176,14 +215,15 @@ final class MoveSorter {
     }
 
 
-    private int scoreWithEtcAndEval(HashTables hashTables, int alpha, int beta, long nextEnemy, long nextMover, long nextMoverMoves, int searchDepth) {
+    private int scoreWithEtcAndEval(HashTables hashTables, int alpha, int beta, long nextEnemy, long nextMover
+            , long nextMoverMoves, int searchDepth, int fastestFirstWeight) {
         final int nMobs = Long.bitCount(nextMoverMoves);
 
         final int evalScore;
         evalScore = sortSearch.calcScore(nextMover, nextEnemy, searchDepth, true);
 //        final long dFlips = sortSearch.nFlips();
 
-        int margin = -evalScore - (beta + BETA_MARGIN) * CoefficientCalculator.DISK_VALUE;
+        int margin = -evalScore - (beta + BETA_MARGIN) * DISK_VALUE;
         if (margin > 0) {
             margin >>= 1;
             // doesn't help very much
@@ -191,13 +231,7 @@ final class MoveSorter {
 //            margin += nStable * (CoefficientCalculator.DISK_VALUE/2);
         }
 
-        final int costPenalty;
-        if (searchDepth < 1) {
-            costPenalty = sortWeightFromMobility[nMobs] << DEEP_MOBILITY_WEIGHT;
-        } else {
-            costPenalty = 4 * sortWeightFromMobility[nMobs];
-//            costPenalty = (int) ((2<<8) * Math.log(dFlips + 0.5));
-        }
+        final int costPenalty = sortWeightFromMobility[nMobs] << fastestFirstWeight;
         int moverPotMob = Long.bitCount(BitBoardUtils.potMobs2(nextEnemy, ~(nextMover | nextEnemy)));
         int score = margin - costPenalty - (moverPotMob << DEEP_POT_MOB_WEIGHT);
         final HashTables.Entry entry = hashTables.find(nextMover, nextEnemy);

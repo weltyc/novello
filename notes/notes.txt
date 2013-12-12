@@ -1238,6 +1238,23 @@ testing faster)
 Total flip count at 24: 15,392 Mn / 216 s = 71.3 Mn/s
 Total flip count at 24: 15,454 Mn / 218 s = 70.9 Mn/s
 
+Endgame Tuning
+--------------
+Tune endgame search. We will choose search depth and fastest-first weight based on # empties (in buckets 2 empties wide) and
+eval - [alpha, beta] (in buckets of <= alpha-20, <= alpha-10, rest, >= beta+10, >= beta+20).
+Before tuning, DeepSolverSearch from 24 empties with vong positions:
+    15,392 Mn    447 Mevals  / 217 s = 70.9 Mn/s
+
+After introducing the tunable matrices (which are close to, but don't exactly match, what the code was doing before):
+    15,567 Mn    446 Mevals  / 219 s = 71.1 Mn/s
+
+Now let it tune... After tuning using a depth of 20 empties (where the cost decreased by 7% as a result of tuning), let it
+run at 24 empties again:
+    15,471 Mn    239 Mevals  / 207 s = 74.7 Mn/s
+
+Comparing the before and after results (no change in nodes, a 200M decrease in evals, leads to a 12s time decrease) suggests evals are
+around 60ns and nodes around 14ns; therefore I'm decreasing the cost of an eval back down to 5x the cost of a flip in cost().Now let it tune...
+
 Eval notes
 ----------
 [f83fb59] Checking whether there's an improvement using playouts from b1 instead of 9A.

@@ -54,16 +54,16 @@ public class Typical  {
     /**
      * Time how long the runnable takes, and return typical timings.
      *
-     * @param runnable runnable to be executed
+     * @param tunable runnable to be executed
      * @param nIters number of times to execute the runnable
      * @return typical timing for the runs.
      */
-    public static @NotNull Typical timing(@NotNull Runnable runnable, int nIters) {
+    public static @NotNull Typical timing(@NotNull Tunable tunable, int nIters) {
         final double[] timings = new double[nIters];
 
         for (int i = 0; i < nIters; i++) {
             final long t0 = System.currentTimeMillis();
-            runnable.run();
+            tunable.cost();
             final long dt = System.currentTimeMillis() - t0;
             timings[i] = dt;
         }
@@ -76,10 +76,10 @@ public class Typical  {
      *
      * Calls {@link #timing(Runnable, int)} with 16 iterations.
      *
-     * @param runnable runnable to be executed
+     * @param tunable Tunable to be executed
      * @return typical timing for the runs.
      */
-    public static @NotNull Typical timing(@NotNull Runnable runnable) {
-        return timing(runnable, 16);
+    public static @NotNull Typical timing(@NotNull Tunable tunable) {
+        return timing(tunable, 16);
     }
 }

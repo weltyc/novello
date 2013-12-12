@@ -8,6 +8,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
 /**
+ * Automatically tunes Solver parameters
  */
 @SuppressWarnings("UnusedDeclaration")
 public class SolverTuner {
@@ -22,7 +23,33 @@ public class SolverTuner {
      * lowMetric of the original is higher than highMetric of the new by random chance is 0.60%.
      */
     public static void main(String[] args) {
-        new SolverTuner(DEEP_POT_MOB_WEIGHT, new DeepSolverTimer(22), true).run();
+        final int nEmpty = 24;
+
+        final StringBuilder results = new StringBuilder();
+
+        final boolean tuneByNodes = true;
+
+        if (!tuneByNodes) {
+            DeepSolverTimer.warmUpHotSpot();
+        }
+
+        for (int emptyBucket = 0; emptyBucket < 5; emptyBucket++) {
+            for (int evalBucket = 0; evalBucket < 6; evalBucket++) {
+                final Parameter sd = new SearchDepthParameter(emptyBucket, evalBucket);
+                if (sd.get() >= 0) {
+                    // ff parameter is ignored if sd < 0. Since this Tuner keeps going if there are ties,
+                    // it will run forever.
+                    final Parameter ff = new FastestFirstParameter(emptyBucket, evalBucket);
+                    final String ffTune = new SolverTuner(ff, new DeepSolverTimer(nEmpty), tuneByNodes).tune();
+                    results.append(ffTune);
+                }
+                final String sdTune = new SolverTuner(sd, new DeepSolverTimer(nEmpty), tuneByNodes).tune();
+                results.append(sdTune);
+            }
+        }
+
+        System.out.println(results);
+//        new SolverTuner(DEEP_POT_MOB_WEIGHT, new DeepSolverTimer(22), true).tune();
     }
 
     private final @NotNull Parameter parameter;
@@ -43,10 +70,12 @@ public class SolverTuner {
         this.tunable = tunable;
     }
 
-    private void run() {
-        // warm up hotspot
-        new DeepSolverTimer(20).run();
-
+    /**
+     * Tune a parameter.
+     *
+     * @return sample code if the parameter has changed, or "" if not
+     */
+    private String tune() {
         final int originalValue = parameter.get();
         System.out.println("Tuning " + parameter);
         System.out.println("-- original value: " + originalValue + " --");
@@ -59,31 +88,33 @@ public class SolverTuner {
         parameter.set(originalValue);
 
         System.out.print("Recommended value of " + parameter + ": ");
+        // set the parameter to its recommended value in preparation for further tuning.
+        parameter.set(best.value);
         if (best.value == originalValue) {
             System.out.println("unchanged at " + originalValue);
+            return "";
         } else {
             System.out.println("change from " + originalValue + " to " + best.value);
+            return parameter + " = " + best.value + ";\n";
         }
     }
 
     /**
-     * Get the value of the metric that we're tuning
+     * Get the value of the cost that we're tuning
      * <p/>
-     * If the metric has a margin of error, for example in timings, this returns either an optimistic (low) value of the metric
+     * If the cost has a margin of error, for example in timings, this returns either an optimistic (low) value of the cost
      * or a pessimistic (high) value depending on the value of 'high'.
-     * If the metric has no margin of error, for example node counts, this function
+     * If the cost has no margin of error, for example node counts, this function
      * returns the same value for both low and high.
      *
-     * @param high if true, return a pessimistic view of the metric
-     * @return value of the metric with the currently set parameters
+     * @param high if true, return a pessimistic view of the cost
+     * @return value of the cost with the currently set parameters
      */
     private double getMetric(boolean high) {
-        final Solver solver = new Solver();
         final double metric;
         if (tuneByNodes) {
-            tunable.run();
-            metric = tunable.getCounts().cost();
-            System.out.format("%.4g M$%n", metric * 1e-6);
+            metric = tunable.cost();
+            System.out.println("Cost : " + Counts.format((long)metric) + "$");
         } else {
             final Typical typical = Typical.timing(tunable);
             System.out.println(typical);
@@ -119,7 +150,7 @@ public class SolverTuner {
          * Check whether time is better than the current best time; if so, update this.
          * <p/>
          * This returns 'true' if the search should be continued. In order to allow for large flat spaces
-         * in the search, it returns true if the metric is exactly equal to the old best metric.
+         * in the search, it returns true if the cost is exactly equal to the old best cost.
          *
          * @param time  time of new run
          * @param value parameter value of new run
@@ -207,12 +238,12 @@ public class SolverTuner {
     private static final Parameter ENEMY_POT_MOB_WEIGHT = new StaticFieldParameter(MoveSorter.class, "ENEMY_POT_MOB_WEIGHT", 0);
     private static final Parameter MOVER_POT_MOB_WEIGHT = new StaticFieldParameter(MoveSorter.class, "MOVER_POT_MOB_WEIGHT", 0);
     private static final Parameter BETA_MARGIN = new StaticFieldParameter(MoveSorter.class, "BETA_MARGIN", 0);
+    private static final Parameter MIN_EVAL_SORT_DEPTH = new StaticFieldParameter(MoveSorter.class, "MIN_EVAL_SORT_DEPTH", 0);
+    private static final Parameter MIN_ETC_DEPTH = new StaticFieldParameter(MoveSorter.class, "MIN_ETC_DEPTH", Solver.MIN_HASH_DEPTH + 1);
 
     // Solver parameters
-    private static final Parameter MIN_EVAL_SORT_DEPTH = new StaticFieldParameter(Solver.class, "MIN_EVAL_SORT_DEPTH", 0);
     private static final Parameter MIN_SORT_DEPTH = new StaticFieldParameter(Solver.class, "MIN_SORT_DEPTH", 5);
     private static final Parameter MIN_HASH_DEPTH = new StaticFieldParameter(Solver.class, "MIN_HASH_DEPTH", Solver.MIN_SORT_DEPTH);
-    private static final Parameter MIN_ETC_DEPTH = new StaticFieldParameter(Solver.class, "MIN_ETC_DEPTH", Solver.MIN_HASH_DEPTH + 1);
     private static final Parameter MIN_NEGASCOUT_DEPTH = new StaticFieldParameter(Solver.class, "MIN_NEGASCOUT_DEPTH", Solver.MIN_SORT_DEPTH);
 
     private static class FixedWeightParameter extends Parameter {
@@ -242,14 +273,64 @@ public class SolverTuner {
     private static final Parameter CORNER_WEIGHT = new FixedWeightParameter(BitBoardUtils.CORNERS, "corner weight");
     private static final Parameter C_SQUARE_WEIGHT = new FixedWeightParameter(BitBoardUtils.C_SQUARES, "c-square weight");
     private static final Parameter X_SQUARE_WEIGHT = new FixedWeightParameter(BitBoardUtils.X_SQUARES, "x-square weight");
+
+    private static class FastestFirstParameter extends Parameter {
+        private final int emptyBucket;
+        private final int evalBucket;
+
+        public FastestFirstParameter(int emptyBucket, int evalBucket) {
+            super(0);
+            this.emptyBucket = emptyBucket;
+            this.evalBucket = evalBucket;
+        }
+
+        @Override int get() {
+            return MoveSorter.fastestFirsts[emptyBucket][evalBucket];
+        }
+
+        @Override void set(int value) {
+            MoveSorter.fastestFirsts[emptyBucket][evalBucket] = value;
+        }
+
+        @Override public String toString() {
+            return "fastestFirsts[" + emptyBucket + "][" + evalBucket + "]";
+        }
+    }
+
+    private static class SearchDepthParameter extends Parameter {
+        private final int emptyBucket;
+        private final int evalBucket;
+
+        public SearchDepthParameter(int emptyBucket, int evalBucket) {
+            super(-1);
+            this.emptyBucket = emptyBucket;
+            this.evalBucket = evalBucket;
+        }
+
+        @Override int get() {
+            return MoveSorter.searchDepths[emptyBucket][evalBucket];
+        }
+
+        @Override void set(int value) {
+            MoveSorter.searchDepths[emptyBucket][evalBucket] = value;
+        }
+
+        @Override public String toString() {
+            return "searchDepths[" + emptyBucket + "][" + evalBucket + "]";
+        }
+    }
 }
 
 /**
  * Something whose performance can be estimated, either by timing its run() method or by counting its nodes.
  */
-interface Tunable extends Runnable {
+interface Tunable {
     /**
-     * @return the number of nodes from the most recent run.
+     * Run the method and return its cost.
+     * <p/>
+     * The Tuner may use either the return value of this method, or the elapsed time taken by this method, to tune parameters.
+     *
+     * @return cost of the method
      */
-    Counts getCounts();
+    double cost();
 }
