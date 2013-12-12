@@ -44,9 +44,9 @@ public class MpcGenerator {
                 for (int depth = 0; depth <= maxDepth; depth++) {
                     final int score = search.calcScore(pv.mover, pv.enemy, depth, false);
                     out.write(String.format("%+5d ", score));
-                    progressMonitor.setProgress(++nComplete);
                 }
                 out.newLine();
+                progressMonitor.setProgress(++nComplete);
             }
         }
         log.info("MPC generation complete");
