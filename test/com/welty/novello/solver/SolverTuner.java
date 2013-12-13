@@ -230,7 +230,6 @@ public class SolverTuner {
 
     // MoveSorter parameters
     private static final Parameter MOBILITY_WEIGHT = new StaticFieldParameter(MoveSorter.class, "MOBILITY_WEIGHT", 0);
-    private static final Parameter DEEP_MOBILITY_WEIGHT = new StaticFieldParameter(MoveSorter.class, "DEEP_MOBILITY_WEIGHT", 0);
     private static final Parameter FIXED_ORDERING_WEIGHT = new StaticFieldParameter(MoveSorter.class, "FIXED_ORDERING_WEIGHT", 0);
     private static final Parameter ETC_WEIGHT = new StaticFieldParameter(MoveSorter.class, "ETC_WEIGHT", 0);
     private static final Parameter PARITY_WEIGHT = new StaticFieldParameter(MoveSorter.class, "PARITY_WEIGHT", 0);

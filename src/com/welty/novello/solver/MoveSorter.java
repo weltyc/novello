@@ -2,7 +2,6 @@ package com.welty.novello.solver;
 
 import com.welty.novello.core.BitBoardUtils;
 import com.welty.novello.core.Square;
-import com.welty.novello.eval.CoefficientCalculator;
 import org.jetbrains.annotations.NotNull;
 
 import static com.welty.novello.core.BitBoardUtils.calcMoves;
@@ -23,11 +22,6 @@ final class MoveSorter {
      * mobility value << MOBILITY_WEIGHT is added to the move sort score
      */
     private static final int MOBILITY_WEIGHT = 4;
-
-    /**
-     * mobility value << DEEP_MOBILITY_WEIGHT is added to the move sort score when using eval
-     */
-    private static final int DEEP_MOBILITY_WEIGHT = 4;
 
     /**
      * 1 << ETC_WEIGHT is added to the move sort score if the position is in the hash table and will immediately cut off.
