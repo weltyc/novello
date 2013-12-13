@@ -5,10 +5,7 @@ import com.welty.novello.core.BitBoardUtils;
 import com.welty.novello.core.Position;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 
@@ -53,38 +50,10 @@ public class CoefficientEval extends Eval {
         }
     }
 
-    private static int readInt(String line, int beginIndex, int endIndex) {
-        return Integer.parseInt(line.substring(beginIndex, endIndex).trim());
-    }
-
     ArrayList<int[]>[] getMpcSliceData() throws IOException {
         final Path path = getCoeffDir().resolve("mpc.txt");
-        //noinspection unchecked
-        final ArrayList<int[]>[] sliceData = new ArrayList[64];
-        for (int i = 0; i < sliceData.length; i++) {
-            sliceData[i] = new ArrayList<>();
-        }
+        return Mpc.readSliceData(path);
 
-        try (BufferedReader in = Files.newBufferedReader(path, Charset.defaultCharset())) {
-            String line;
-            while (null != (line = in.readLine())) {
-                final int beginIndex = 0;
-                final int endIndex = 2;
-                final int nEmpty = readInt(line, beginIndex, endIndex);
-                final int n = (line.length() - 2) / 6;
-                int[] values = new int[n];
-                for (int i = 0; i < n; i++) {
-                    try {
-                        values[i] = readInt(line, 2 + 6 * i, 8 + 6 * i);
-                    } catch (NumberFormatException e) {
-                        System.out.println("line : " + line);
-                        throw (e);
-                    }
-                }
-                sliceData[nEmpty].add(values);
-            }
-        }
-        return sliceData;
     }
 
     /**

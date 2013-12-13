@@ -13,3 +13,6 @@ target/
 
 # Mac files
 .DS_Store
+
+# OpenOffice temp files
+.~*

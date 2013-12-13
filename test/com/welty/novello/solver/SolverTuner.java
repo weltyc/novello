@@ -25,31 +25,32 @@ public class SolverTuner {
     public static void main(String[] args) {
         final int nEmpty = 24;
 
-        final StringBuilder results = new StringBuilder();
-
         final boolean tuneByNodes = true;
 
         if (!tuneByNodes) {
             DeepSolverTimer.warmUpHotSpot();
         }
 
-        for (int emptyBucket = 0; emptyBucket < 5; emptyBucket++) {
-            for (int evalBucket = 0; evalBucket < 6; evalBucket++) {
-                final Parameter sd = new SearchDepthParameter(emptyBucket, evalBucket);
-                if (sd.get() >= 0) {
-                    // ff parameter is ignored if sd < 0. Since this Tuner keeps going if there are ties,
-                    // it will run forever.
-                    final Parameter ff = new FastestFirstParameter(emptyBucket, evalBucket);
-                    final String ffTune = new SolverTuner(ff, new DeepSolverTimer(nEmpty), tuneByNodes).tune();
-                    results.append(ffTune);
-                }
-                final String sdTune = new SolverTuner(sd, new DeepSolverTimer(nEmpty), tuneByNodes).tune();
-                results.append(sdTune);
-            }
-        }
-
-        System.out.println(results);
-//        new SolverTuner(DEEP_POT_MOB_WEIGHT, new DeepSolverTimer(22), true).tune();
+//        for (int emptyBucket = 0; emptyBucket < 5; emptyBucket++) {
+//            for (int evalBucket = 0; evalBucket < 6; evalBucket++) {
+//                final Parameter sd = new SearchDepthParameter(emptyBucket, evalBucket);
+//                if (sd.get() >= 0) {
+//                    // ff parameter is ignored if sd < 0. Since this Tuner keeps going if there are ties,
+//                    // it will run forever.
+//                    final Parameter ff = new FastestFirstParameter(emptyBucket, evalBucket);
+//                    final String ffTune = new SolverTuner(ff, new DeepSolverTimer(nEmpty), tuneByNodes).tune();
+//                    results.append(ffTune);
+//                }
+//                final String sdTune = new SolverTuner(sd, new DeepSolverTimer(nEmpty), tuneByNodes).tune();
+//                results.append(sdTune);
+//            }
+//        }
+//
+//        System.out.println(results);
+        new SolverTuner(MIN_SORT_DEPTH, new DeepSolverTimer(20), true).tune();
+        new SolverTuner(MOBILITY_WEIGHT, new DeepSolverTimer(20), true).tune();
+        new SolverTuner(MOVER_POT_MOB_WEIGHT, new DeepSolverTimer(20), true).tune();
+        new SolverTuner(ENEMY_POT_MOB_WEIGHT, new DeepSolverTimer(20), true).tune();
     }
 
     private final @NotNull Parameter parameter;
@@ -163,7 +164,7 @@ public class SolverTuner {
                 System.out.println("Improved parameter value: " + value);
                 return true;
             } else {
-                return time <= this.time;
+                return time < this.time;
             }
         }
     }

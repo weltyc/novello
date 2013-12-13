@@ -34,7 +34,7 @@ public class Solver {
     /**
      * At this depth and above, the search will do a full sort of the remaining moves
      */
-    static final int MIN_SORT_DEPTH = 6;
+    static int MIN_SORT_DEPTH = 6;
 
     /**
      * A MoveSorter is created for each search tree depth.

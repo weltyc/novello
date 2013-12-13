@@ -31,7 +31,7 @@ public class DeepSolverTimer implements Tunable {
 
 //        System.out.println(Typical.timing(new DeepSolverTimer(20)));
 
-        new DeepSolverTimer(24, true).cost();
+        new DeepSolverTimer(20, true).cost();
 //        final long t0 = System.currentTimeMillis();
 //        final DeepSolverTimer timer = new DeepSolverTimer(24, true);
 //        timer.run();

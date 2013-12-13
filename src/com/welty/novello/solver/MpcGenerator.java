@@ -68,7 +68,7 @@ public class MpcGenerator {
         @Override public void run() {
             Search search = searches.get();
             if (search == null) {
-                search = new Search(new Counter(eval, false), 0);
+                search = new Search(new Counter(eval), 0);
                 searches.set(search);
             }
 

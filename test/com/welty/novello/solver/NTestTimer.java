@@ -43,7 +43,7 @@ public class NTestTimer {
     }
 
     private static void timeMidgame(int depth ) {
-        final Search search = new Search(new Counter(Players.eval("c1s")), 0);
+        final Search search = new Search(new Counter(Players.eval("c4s")), 0);
         final List<MutableGame> games = SampleGames.saioGames();
         final long t0 = System.currentTimeMillis();
         for (MutableGame game : games) {

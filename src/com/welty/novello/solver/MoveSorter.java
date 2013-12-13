@@ -21,7 +21,7 @@ final class MoveSorter {
     /**
      * mobility value << MOBILITY_WEIGHT is added to the move sort score
      */
-    private static final int MOBILITY_WEIGHT = 4;
+    static int MOBILITY_WEIGHT = 4;
 
     /**
      * 1 << ETC_WEIGHT is added to the move sort score if the position is in the hash table and will immediately cut off.
@@ -36,8 +36,8 @@ final class MoveSorter {
     /**
      * net potential mobility << POT_MOB_WEIGHT is added to the move sort score
      */
-    private static final int MOVER_POT_MOB_WEIGHT = 0;
-    private static final int ENEMY_POT_MOB_WEIGHT = 4;
+    static int MOVER_POT_MOB_WEIGHT = 2;
+    static int ENEMY_POT_MOB_WEIGHT = 4;
     /**
      * Only check for ETC at this depth or higher.
      * <p/>

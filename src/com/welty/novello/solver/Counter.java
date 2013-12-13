@@ -22,26 +22,18 @@ public class Counter {
     private long nFlips;
     final @NotNull Mpc mpcs;
 
-    public Counter(@NotNull Eval eval, boolean mpcRequired) {
+    public Counter(@NotNull Eval eval) {
         this.eval = eval;
         if (eval instanceof CoefficientEval) {
             final Mpc mpc = ((CoefficientEval) eval).mpc;
             if (mpc == null) {
-                if (mpcRequired) {
-                    throw new IllegalStateException("can't get mpc coefficients for " + eval);
-                } else {
-                    mpcs = Mpc.NULL;
-                }
+                mpcs = Mpc.DEFAULT;
             } else {
                 mpcs = mpc;
             }
         } else {
-            mpcs = Mpc.NULL;
+            mpcs = Mpc.DEFAULT;
         }
-    }
-
-    public Counter(@NotNull Eval eval) {
-        this(eval, true);
     }
 
     public long nFlips() {

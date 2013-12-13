@@ -5,6 +5,11 @@ import com.orbanova.common.misc.Require;
 import com.welty.novello.core.NovelloUtils;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 
 public class Mpc {
@@ -12,21 +17,45 @@ public class Mpc {
 
     private final Slice[] slices = new Slice[64];
 
-    /**
-     * Create an Mpc with no cuts at all
-     */
-    private Mpc() {
-        for (int nEmpty = 0; nEmpty < slices.length; nEmpty++) {
-            slices[nEmpty] = new Slice(new ArrayList<int[]>());
-        }
-    }
-
     Mpc(ArrayList<int[]>[] sliceData) {
         log.debug("creating Mpc");
         Require.eqLength(sliceData, slices);
         for (int nEmpty = 0; nEmpty < slices.length; nEmpty++) {
-            slices[nEmpty] = new Slice(sliceData[nEmpty]);
+            slices[nEmpty] = new Slice(nEmpty, sliceData[nEmpty]);
         }
+    }
+
+    private static int readInt(String line, int beginIndex, int endIndex) {
+        return Integer.parseInt(line.substring(beginIndex, endIndex).trim());
+    }
+
+    static ArrayList<int[]>[] readSliceData(Path path) throws IOException {
+        //noinspection unchecked
+        final ArrayList<int[]>[] sliceData = new ArrayList[64];
+        for (int i = 0; i < sliceData.length; i++) {
+            sliceData[i] = new ArrayList<>();
+        }
+
+        try (BufferedReader in = Files.newBufferedReader(path, Charset.defaultCharset())) {
+            String line;
+            while (null != (line = in.readLine())) {
+                final int beginIndex = 0;
+                final int endIndex = 2;
+                final int nEmpty = readInt(line, beginIndex, endIndex);
+                final int n = (line.length() - 2) / 6;
+                int[] values = new int[n];
+                for (int i = 0; i < n; i++) {
+                    try {
+                        values[i] = readInt(line, 2 + 6 * i, 8 + 6 * i);
+                    } catch (NumberFormatException e) {
+                        System.out.println("line : " + line);
+                        throw (e);
+                    }
+                }
+                sliceData[nEmpty].add(values);
+            }
+        }
+        return sliceData;
     }
 
     /**
@@ -49,36 +78,49 @@ public class Mpc {
     }
 
     static final int[][] cutDepths = {
-            {}, // depth 0
-            {}, // depth 1
-            {0}, // depth 2
-            {1}, // depth 3
-            {2}, // depth 4
-            {3}, // depth 5
-            {2}, // depth 6
-            {3}, // depth 7
-            {4}, // depth 8
-            {5}, // depth 9
-            {4}, // depth 10
-            {5}, // depth 11
+            {}, {}, // depth 0-1
+            {0}, {1}, // depth 2-3
+            {2}, {3}, // depth 4-5
+            {2}, {3}, // depth 6-7
+            {4}, {5}, // depth 8-9
+            {4}, {5}, // depth 10-11
+            {4}, {5}, // depth 12-13
+            {4}, {5}, // depth 14-15
+            {6}, {7}, // depth 16-17
+            {6}, {7}, // depth 18-19
+            {8}, {9}, // depth 20-21
+            {8}, {9}, // depth 22-23
+            {10}, {11}, // depth 24-25
+            {10}, {11}, // depth 26-27
+            {12}, {13}, // depth 28-29
+            {12}, {13}, // depth 30-31
     };
 
     private static class Slice {
         private final Cutter[][] cutters = new Cutter[64][];
 
-        public Slice(ArrayList<int[]> ints) {
+        public Slice(int nEmpty, ArrayList<int[]> ints) {
             if (ints.size() > 2) {
-                final int maxDepth = Math.min(ints.get(0).length, cutDepths.length);
+                final int maxDataDepth = ints.get(0).length - 1;
 
-                for (int depth = 0; depth < maxDepth; depth++) {
+                int depth = 0;
+                for (; depth < cutDepths.length; depth++) {
                     final int[] shallowDepths = cutDepths[depth];
                     final int nPairs = shallowDepths.length;
                     cutters[depth] = new Cutter[nPairs];
                     for (int p = 0; p < nPairs; p++) {
-                        cutters[depth][p] = new Cutter(ints, depth, shallowDepths[p]);
+                        final int shallow = shallowDepths[p];
+                        final Cutter cutter;
+                        if (depth <= maxDataDepth) {
+                            cutter = new Cutter(ints, depth, shallow);
+                        } else {
+                            cutter = new Cutter(nEmpty, depth, shallow);
+                        }
+
+                        cutters[depth][p] = cutter;
                     }
                 }
-                for (int depth = maxDepth; depth < cutters.length; depth++) {
+                for (; depth < cutters.length; depth++) {
                     cutters[depth] = new Cutter[0];
                 }
             } else {
@@ -91,12 +133,12 @@ public class Mpc {
 
         @Override public String toString() {
             final StringBuilder sb = new StringBuilder();
-            for (int depth = 0; depth < cutters.length; depth++) {
+            for (int depth = 0; depth < cutDepths.length; depth++) {
                 final Cutter[] pairCutters = cutters[depth];
                 final int[] shallowDepths = cutDepths[depth];
                 for (int pair = 0; pair < pairCutters.length; pair++) {
                     final Cutter cutter = pairCutters[pair];
-                    sb.append(String.format(" %d/%d -> %s\n", shallowDepths[pair], depth, cutter));
+                    sb.append(String.format(" %d/%2d -> %s\n", shallowDepths[pair], depth, cutter));
                 }
             }
             return sb.toString();
@@ -108,6 +150,39 @@ public class Mpc {
         private final double b;
         private final double shallowSd;
         public final int shallowDepth;
+
+        /**
+         * Programmatic estimation of Cutter, when we have no data
+         */
+        public Cutter(int nEmpty, int depth, int shallow) {
+            a = b = 1;
+            shallowSd = approximateSd(nEmpty, depth, shallow);
+            shallowDepth = shallow;
+        }
+
+        private static double approximateSd(int nEmpty, int depth, int shallow) {
+            // approximate cut sd as
+            // f(shallow) g(delta) h(nEmpty)
+            // where delta = min(depth, nEmpty)-shallow
+            final int delta = Math.min(depth, nEmpty) - shallow;
+            if (delta <= 0) {
+                return 0;
+            }
+            final double f = 1. / (.71 + .1 * shallow);
+            final double[] gs = {.8, 1.0, 1.1, 1.16, 1.21, 1.25, 1.28, 1.30, 1.31};
+            final double g = gs[(delta - 1) / 2];
+            double h;
+            if (nEmpty >= 30) {
+                h = .85;
+            } else if (nEmpty >= 15) {
+                h = 1.15 - .02 * (nEmpty - 15);
+            } else {
+                h = 1.15 - .02 * (15 - nEmpty);
+            }
+            h *= (80 - nEmpty) / 14.;
+
+            return f * g * h;
+        }
 
         public Cutter(ArrayList<int[]> ints, int depth, int shallowDepth) {
             this.shallowDepth = shallowDepth;
@@ -175,8 +250,21 @@ public class Mpc {
         @Override public String toString() {
             return String.format("shallow = %3.1f * deep %+3.1f   +/- %3.1f", a, b / 100, shallowSd / 100);
         }
+
+        public double getSd() {
+            return shallowSd;
+        }
     }
 
-    public static final Mpc NULL = new Mpc();
+    public static final Mpc DEFAULT;
+
+    static {
+        //noinspection unchecked
+        ArrayList<int[]>[] noData = new ArrayList[64];
+        for (int i=0; i<64; i++) {
+            noData[i] = new ArrayList<>();
+        }
+        DEFAULT = new Mpc(noData);
+    }
 
 }
