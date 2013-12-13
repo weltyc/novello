@@ -59,6 +59,8 @@ public class Mpc {
             {3}, // depth 7
             {4}, // depth 8
             {5}, // depth 9
+            {4}, // depth 10
+            {5}, // depth 11
     };
 
     private static class Slice {

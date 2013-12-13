@@ -46,3 +46,50 @@ Costs at the beginning [3ec7]:
     7  9,272
     8 17,845
     9 36,072
+
+Costs after mpc move sorting [da65], (with very slightly different MPC coefficients, using evaluator c1s)
+    depth   fw     mpc
+     1      22      22
+     2      97      97
+     3     525     313
+     4   1,310     627
+     5   5,831   1,505
+     6  15,009   3,172
+     7  61,659   6,276
+     8          10,913
+     9          20,429
+    10          34,173
+    11          88,810
+    12         186,205
+
+Note the poor performance past 10 ply. MPC cuts are defined only up to 9 ply. In order to do deeper cuts, we'll
+get new MPC stats (copied from c4s, which causes a slight difference in costs). Without deeper cuts, but with the new
+MPC stats, mpc costs are:
+      1      22
+      2      97
+      3     318
+      4     644
+      5   1,549
+      6   3,287
+      7   6,661
+      8  11,606
+      9  21,761
+     10  38,002
+     11 101,178
+     12 224,106
+
+With mpc cuts added at depth 10 and 11, this becomes
+     1      22
+     2      97
+     3     318
+     4     644
+     5   1,549
+     6   3,287
+     7   6,661
+     8  11,606
+     9  21,761
+    10  38,002
+    11  67,114
+    12 115,228
+
+Having MPC at all depths up to search depth-1 is thus vital for ensuring good performance.

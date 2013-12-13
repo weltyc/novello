@@ -27,21 +27,21 @@ public class SearchTimer {
 
 //        countNodes(true, depth, true);
 
-        generateTable(false, true);
+        generateTable(depth, false, true);
     }
 
-    private static void generateTable(boolean doFw, boolean doMpc) {
+    private static void generateTable(int maxDepth, boolean doFw, boolean doMpc) {
         System.out.println();
-        for (int depth = 1; depth <= 9; depth++) {
+        for (int depth = 1; depth <= maxDepth; depth++) {
             final StringBuilder sb = new StringBuilder();
-            sb.append(depth);
+            sb.append(String.format("%2d", depth));
             if (doFw) {
                 final long fw = countNodes(false, depth, false);
-                sb.append(String.format(" %,6d", fw / 1000));
+                sb.append(String.format(" %,7d", fw / 1000));
             }
             if (doMpc) {
                 final long mpc = countNodes(true, depth, false);
-                sb.append(String.format(" %,6d", mpc / 1000));
+                sb.append(String.format(" %,7d", mpc / 1000));
             }
             System.out.println(sb);
         }

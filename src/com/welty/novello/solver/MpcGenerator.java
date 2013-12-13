@@ -2,11 +2,11 @@ package com.welty.novello.solver;
 
 import com.orbanova.common.misc.Logger;
 import com.welty.novello.core.PositionValue;
+import com.welty.novello.core.ProgressUpdater;
 import com.welty.novello.eval.CoefficientCalculator;
 import com.welty.novello.eval.CoefficientEval;
 import com.welty.novello.selfplay.Players;
 
-import javax.swing.*;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -35,7 +35,7 @@ public class MpcGenerator {
         final List<PositionValue> pvs = getPvs(limit);
         final ExecutorService executorService = Executors.newFixedThreadPool(4);
 
-        try (ProgressUpdater pu = new ProgressUpdater(pvs.size())) {
+        try (ProgressUpdater pu = new ProgressUpdater("Generating MPC", pvs.size())) {
             try (BufferedWriter out = Files.newBufferedWriter(outputPath, Charset.defaultCharset())) {
                 for (PositionValue pv : pvs) {
                     executorService.submit(new MpcPrinter(out, eval, pv, maxDepth, pu));
@@ -47,28 +47,6 @@ public class MpcGenerator {
 
 
         log.info("MPC generation complete");
-    }
-
-    /**
-     * Thread-safe progress monitor
-     */
-    private static class ProgressUpdater implements AutoCloseable {
-        private int nComplete;
-        private final ProgressMonitor progressMonitor;
-
-        private ProgressUpdater(int max) {
-            progressMonitor = new ProgressMonitor(null, "MPC progress", "", 0, max);
-        }
-
-        private synchronized void update() {
-            nComplete++;
-            progressMonitor.setProgress(nComplete);
-            progressMonitor.setNote(String.format("%,d / %,d", nComplete, progressMonitor.getMaximum()));
-        }
-
-        public synchronized void close() {
-            progressMonitor.close();
-        }
     }
 
     private static class MpcPrinter implements Runnable {

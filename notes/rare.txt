@@ -261,3 +261,11 @@ Tournament results:
     +1.4  c3s:2
     -0.3  c2s:2
     -1.1  c1s:2
+
+Run after an (unknown) change to the cached playouts, and get a new evaluator c4s which appears slightly stronger than
+the others:
+    Tournament results:
+     +1.8  c4s:2
+     +0.8  c3s:2
+     -0.8  c2s:2
+     -1.8  c1s:2

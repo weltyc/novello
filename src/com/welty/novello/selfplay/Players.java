@@ -15,10 +15,27 @@ public class Players {
         return new CoefficientEval(strategy, name.substring(1));
     }
 
-    public static Player player(String name) {
-        final String[] parts = name.split(":", 2);
+    /**
+     * Construct a Player from a text string
+     * <p/>
+     * The text string has the format
+     * {eval}:{depth}
+     * <p/>
+     * {eval} is an evaluation strategy followed by a coefficient set, for example "c4s"
+     * <p/>
+     * {depth} is an integer, optionally followed by 'w' for full width, for example "8" or "5w". If 'w'
+     * is not specified, the Player will use MPC.
+     * <p/>
+     * {eval} may also be "ntest", in which case an external NTest process is launched. NTest always
+     * uses MPC regardless of trailing 'w'.
+     *
+     * @param textString player text string
+     * @return a newly constructed Player.
+     */
+    public static Player player(String textString) {
+        final String[] parts = textString.split(":", 2);
         if (parts.length < 2) {
-            throw new IllegalArgumentException("require an eval and a search depth, for instance 'a1:3w'; had " + name);
+            throw new IllegalArgumentException("require an eval and a search depth, for instance 'a1:3w'; had " + textString);
         }
 
         final boolean fullWidth = parts[1].endsWith("w");

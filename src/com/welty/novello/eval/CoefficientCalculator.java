@@ -1,7 +1,5 @@
 package com.welty.novello.eval;
 
-import com.orbanova.common.feed.Mapper;
-import com.orbanova.common.feed.NullableMapper;
 import com.orbanova.common.math.function.oned.Function;
 import com.orbanova.common.misc.Logger;
 import com.orbanova.common.misc.Require;
@@ -29,11 +27,11 @@ public class CoefficientCalculator {
      * 1 disk is worth how many evaluation points?
      */
     public static final int DISK_VALUE = 100;
-    private static final String target = "c3s";
+    private static final String target = "c5s";
     private static final EvalStrategy STRATEGY = EvalStrategies.strategy(target.substring(0, 1));
     private static final String COEFF_SET_NAME = target.substring(1);
     private static final double PENALTY = 100;
-    private static final String PLAYOUT_PLAYER_NAME = "b1:2";
+    private static final String PLAYOUT_PLAYER_NAME = "c4s:4";
 
     static final int[] nEmpties = {3, 4, 11, 12, 19, 20, 27, 28, 35, 36, 43, 44, 51, 52, 59, 60};
 
@@ -168,38 +166,17 @@ public class CoefficientCalculator {
     private static List<PositionValue> loadPvs(Path pvFile) throws IOException {
         final int nPvs = (int) ((Files.size(pvFile) / 20) >> 20) + 1;
 
-        final ProgressMonitor progressMonitor = new ProgressMonitor(null, "Loading pvs from file", "", 0, nPvs);
-        System.out.println("Loading pvs from " + pvFile + "...");
-        final List<PositionValue> pvs;
-        final long t0 = System.currentTimeMillis();
-        NullableMapper<PositionValue, PositionValue> monitor = new Mapper<PositionValue, PositionValue>() {
-            long nItems;
-            long nextTime;
+        try (final Monitor<PositionValue> monitor = new Monitor<>("Loading pvs from file", nPvs)) {
+            final List<PositionValue> pvs;
+            final long t0 = System.currentTimeMillis();
+            pvs = new ObjectFeed<>(pvFile, PositionValue.deserializer).map(monitor).asList();
+            // Ram is tight... free some up
+            ((ArrayList) pvs).trimToSize();
 
-            @NotNull @Override public PositionValue y(PositionValue x) {
-                nItems++;
-                if ((nItems & 0xFFFFF) == 0) {
-                    final int mItems = (int) (nItems >> 20);
-                    progressMonitor.setProgress(mItems);
-                    progressMonitor.setNote(mItems + "M items loaded");
-                    final long t = System.currentTimeMillis();
-                    if (t >= nextTime) {
-                        log.info(mItems + "M items loaded");
-                        nextTime = t + 5000;
-                    }
-                }
-                //noinspection SuspiciousNameCombination
-                return x;
-            }
-        };
-        pvs = new ObjectFeed<>(pvFile, PositionValue.deserializer).map(monitor).asList();
-        progressMonitor.close();
-        // Ram is tight... free some up
-        ((ArrayList) pvs).trimToSize();
-
-        final long dt = System.currentTimeMillis() - t0;
-        System.out.format("...  loaded %,d pvs in %.3f s\n", pvs.size(), dt * .001);
-        return pvs;
+            final long dt = System.currentTimeMillis() - t0;
+            System.out.format("...  loaded %,d pvs in %.3f s\n", pvs.size(), dt * .001);
+            return pvs;
+        }
     }
 
     /**
@@ -397,14 +374,14 @@ public class CoefficientCalculator {
      */
     private static void createPvs(Path pvFile, Player playoutPlayer) throws IOException {
         log.info("Creating Pvs in " + pvFile + " ...");
-        final ArrayList<Mr> mrs = getOrCreateMrs(playoutPlayer);
+        final List<Mr> mrs = getOrCreateMrs(playoutPlayer);
         Files.createDirectories(pvFile.getParent());
         try (final DataOutputStream out = new DataOutputStream(new BufferedOutputStream(Files.newOutputStream(pvFile)))) {
             writeSubpositions(mrs, playoutPlayer, out);
         }
     }
 
-    private static ArrayList<Mr> getOrCreateMrs(Player playoutPlayer) throws IOException {
+    private static List<Mr> getOrCreateMrs(Player playoutPlayer) throws IOException {
         final Path mrsPath = getCacheDir().resolve("base.mrs");
         if (!Files.exists(mrsPath)) {
             final Set<Mr> mrSet = new HashSet<>();
@@ -421,33 +398,28 @@ public class CoefficientCalculator {
             log.info(String.format("created %s with %,d mrs", mrsPath, mrSet.size()));
         }
 
-        ArrayList<Mr> mrs = new ArrayList<>();
 
-        try (DataInputStream in = new DataInputStream(new BufferedInputStream(Files.newInputStream(mrsPath)))) {
-            mrs.add(Mr.deserializer.read(in));
-        }
-        return mrs;
+        return new ObjectFeed<>(mrsPath, Mr.deserializer).asList();
     }
 
 
     private static void createPvx(Path pvxFile, List<PositionValue> pvs, Player playoutPlayer) throws IOException {
         log.info("Creating Pvx in " + pvxFile + " ...");
         final Set<Mr> rares = generateRareSubpositions(STRATEGY, pvs);
-        final ProgressMonitor progressMonitor = new ProgressMonitor(null, "Create pvx", "", 0, rares.size());
-        Files.createDirectories(pvxFile.getParent());
-        final HashSet<Mr> alreadyWritten = new HashSet<>();
-        try (final DataOutputStream out = new DataOutputStream(new BufferedOutputStream(Files.newOutputStream(pvxFile)))) {
-            int progress = 0;
-            for (Mr rare : rares) {
-                writeFirstTwoPvs(out, playoutPlayer, rare.toPosition(), alreadyWritten);
-                progress++;
-                if ((progress & 0xFFF) == 0) {
-                    progressMonitor.setProgress(progress);
+        try (ProgressUpdater pu = new ProgressUpdater("Create pvx", rares.size())) {
+            Files.createDirectories(pvxFile.getParent());
+            final HashSet<Mr> alreadyWritten = new HashSet<>();
+            try (final DataOutputStream out = new DataOutputStream(new BufferedOutputStream(Files.newOutputStream(pvxFile)))) {
+                int progress = 0;
+                for (Mr rare : rares) {
+                    writeFirstTwoPvs(out, playoutPlayer, rare.toPosition(), alreadyWritten);
+                    progress++;
+                    if ((progress & 0xFFF) == 0) {
+                        pu.setProgress(progress);
+                    }
                 }
             }
         }
-
-        progressMonitor.close();
     }
 
 
@@ -522,5 +494,6 @@ public class CoefficientCalculator {
         }
         return toAdd.size();
     }
+
 }
 
