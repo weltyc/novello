@@ -46,13 +46,6 @@ public class CoefficientCalculator {
      * <p/>
      * With -h, display orid histograms without generating coefficients. This displays histograms regardless of whether
      * coefficients have already been generated.
-     * <p/>
-     * With -d, use only distinct positions when generating coefficients. This is the default.
-     * If a position occurs more than once, discard the duplicates.
-     * <p/>
-     * With -D, do not use distinct mode (-d). If positions occur multiple times they are used multiple times when
-     * calculating the coefficients, thus effectively weighting them in proportion to
-     * the number of times they occur.
      */
     public static void main(String[] args) throws Exception {
         StringBuilder options = new StringBuilder();
@@ -62,7 +55,6 @@ public class CoefficientCalculator {
             }
         }
         final boolean histogramOnly = options.toString().contains("h");
-        final boolean distinct = !options.toString().contains("D");
 
         if (histogramOnly) {
             System.out.println("Not generating coefficients - histograms only");
@@ -78,7 +70,7 @@ public class CoefficientCalculator {
             }
         }
 
-        final List<PositionValue> pvs = loadOrCreatePvsx(distinct);
+        final List<PositionValue> pvs = loadOrCreatePvsx();
 
         System.out.format("a total of %,d pvs are available.%n", pvs.size());
         System.out.println();
@@ -110,7 +102,7 @@ public class CoefficientCalculator {
         new OridHistogram(elements, nIndices).dump();
     }
 
-    public static List<PositionValue> loadOrCreatePvsx(boolean distinct) throws IOException {
+    public static List<PositionValue> loadOrCreatePvsx() throws IOException {
         final String playerComponent = PLAYOUT_PLAYER_NAME.replace(':', '-');
         final List<PositionValue> pvs = loadOrCreatePvs(playerComponent);
 
@@ -124,22 +116,18 @@ public class CoefficientCalculator {
         log.info(String.format("%,d pvs from pv file and %,d pvs from pvx file\n", pvs.size(), pvx.size()));
         pvs.addAll(pvx);
 
-        if (distinct) {
-            log.info("Selecting distinct pvs");
-            final Set<Mr> alreadySeen = new HashSet<>();
-            final List<PositionValue> distinctPvs = new ArrayList<>();
+        log.info("Selecting distinct pvs");
+        final Set<Mr> alreadySeen = new HashSet<>();
+        final List<PositionValue> distinctPvs = new ArrayList<>();
 
-            for (PositionValue pv : pvs) {
-                final Mr mr = new Mr(pv.mover, pv.enemy);
-                if (alreadySeen.add(mr)) {
-                    distinctPvs.add(pv);
-                }
+        for (PositionValue pv : pvs) {
+            final Mr mr = new Mr(pv.mover, pv.enemy);
+            if (alreadySeen.add(mr)) {
+                distinctPvs.add(pv);
             }
-            log.info(String.format("selected %,d distinct pvs from %,d total pvs", distinctPvs.size(), pvs.size()));
-            return distinctPvs;
-        } else {
-            return pvs;
         }
+        log.info(String.format("selected %,d distinct pvs from %,d total pvs", distinctPvs.size(), pvs.size()));
+        return distinctPvs;
     }
 
     public static List<PositionValue> loadOrCreatePvs(String playerComponent) throws IOException {
