@@ -62,17 +62,22 @@ public class Mpc {
     };
 
     private static class Slice {
-        private final Cutter[][] cutters = new Cutter[cutDepths.length][];
+        private final Cutter[][] cutters = new Cutter[64][];
 
         public Slice(ArrayList<int[]> ints) {
             if (ints.size() > 2) {
-                for (int depth = 0; depth < cutDepths.length; depth++) {
+                final int maxDepth = Math.min(ints.get(0).length, cutDepths.length);
+
+                for (int depth = 0; depth < maxDepth; depth++) {
                     final int[] shallowDepths = cutDepths[depth];
                     final int nPairs = shallowDepths.length;
                     cutters[depth] = new Cutter[nPairs];
                     for (int p = 0; p < nPairs; p++) {
                         cutters[depth][p] = new Cutter(ints, depth, shallowDepths[p]);
                     }
+                }
+                for (int depth = maxDepth; depth < cutters.length; depth++) {
+                    cutters[depth] = new Cutter[0];
                 }
             } else {
                 for (int depth = 0; depth < cutDepths.length; depth++) {
@@ -158,15 +163,15 @@ public class Mpc {
          * @return the shallow alpha that, if cut off, predicts at least a 2/3 chance of a deep alpha cutoff
          */
         public int shallowAlpha(int deepAlpha) {
-            return deepAlpha== NovelloUtils.NO_MOVE ? NovelloUtils.NO_MOVE : (int) (a * deepAlpha + b - shallowSd);
+            return deepAlpha == NovelloUtils.NO_MOVE ? NovelloUtils.NO_MOVE : (int) (a * deepAlpha + b - shallowSd);
         }
 
         public int shallowBeta(int deepBeta) {
-            return deepBeta==-NovelloUtils.NO_MOVE ? -NovelloUtils.NO_MOVE : (int) (a * deepBeta + b + shallowSd);
+            return deepBeta == -NovelloUtils.NO_MOVE ? -NovelloUtils.NO_MOVE : (int) (a * deepBeta + b + shallowSd);
         }
 
         @Override public String toString() {
-            return String.format("shallow = %3.1f * deep %+3.1f   +/- %3.1f", a, b/100, shallowSd/100);
+            return String.format("shallow = %3.1f * deep %+3.1f   +/- %3.1f", a, b / 100, shallowSd / 100);
         }
     }
 

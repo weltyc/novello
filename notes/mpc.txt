@@ -33,3 +33,16 @@ Estimated strength differences between various MPC plies is therefore:
     3-4 20.8
     4-5 15.0
     5-6 13.4
+
+Move Sorting
+------------
+Costs at the beginning [3ec7]:
+    1     22
+    2     97
+    3    318
+    4    694
+    5  1,889
+    6  4,468
+    7  9,272
+    8 17,845
+    9 36,072

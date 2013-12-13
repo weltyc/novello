@@ -14,11 +14,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.*;
 
 public class MpcGenerator {
     private static final Logger log = Logger.logger(MpcGenerator.class);
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, InterruptedException {
         if (args.length < 3) {
             System.err.println("usage: {evalName} {maxDepth} {limit}");
             System.exit(-1);
@@ -28,31 +29,90 @@ public class MpcGenerator {
         final int maxDepth = Integer.parseInt(args[1]);
         final int limit = Integer.parseInt(args[2]);
 
-
         final CoefficientEval eval = Players.eval(evalName);
-        final Search search = new Search(new Counter(eval, false), 0);
         final Path outputPath = eval.getCoeffDir().resolve("mpc.txt");
 
         final List<PositionValue> pvs = getPvs(limit);
+        final ExecutorService executorService = Executors.newFixedThreadPool(4);
 
-        final ProgressMonitor progressMonitor = new ProgressMonitor(null, "Computing MPC data", "", 0, pvs.size());
-
-        try (BufferedWriter out = Files.newBufferedWriter(outputPath, Charset.defaultCharset())) {
-            int nComplete = 0;
-            for (PositionValue pv : pvs) {
-                out.write(String.format("%2d ", pv.nEmpty()));
-                for (int depth = 0; depth <= maxDepth; depth++) {
-                    final int score = search.calcScore(pv.mover, pv.enemy, depth, false);
-                    out.write(String.format("%+5d ", score));
+        try (ProgressUpdater pu = new ProgressUpdater(pvs.size())) {
+            try (BufferedWriter out = Files.newBufferedWriter(outputPath, Charset.defaultCharset())) {
+                for (PositionValue pv : pvs) {
+                    executorService.submit(new MpcPrinter(out, eval, pv, maxDepth, pu));
                 }
-                out.newLine();
-                progressMonitor.setProgress(++nComplete);
+                executorService.shutdown();
+                executorService.awaitTermination(Integer.MAX_VALUE, TimeUnit.DAYS);
             }
         }
+
+
         log.info("MPC generation complete");
-        progressMonitor.close();
-        System.exit(0);
     }
+
+    /**
+     * Thread-safe progress monitor
+     */
+    private static class ProgressUpdater implements AutoCloseable {
+        private int nComplete;
+        private final ProgressMonitor progressMonitor;
+
+        private ProgressUpdater(int max) {
+            progressMonitor = new ProgressMonitor(null, "MPC progress", "", 0, max);
+        }
+
+        private synchronized void update() {
+            nComplete++;
+            progressMonitor.setProgress(nComplete);
+            progressMonitor.setNote(String.format("%,d / %,d", nComplete, progressMonitor.getMaximum()));
+        }
+
+        public synchronized void close() {
+            progressMonitor.close();
+        }
+    }
+
+    private static class MpcPrinter implements Runnable {
+        private static final ThreadLocal<Search> searches = new ThreadLocal<>();
+        private final BufferedWriter out;
+        private final CoefficientEval eval;
+        private final PositionValue pv;
+        private final int maxDepth;
+        private final ProgressUpdater progressUpdater;
+
+        MpcPrinter(BufferedWriter out, CoefficientEval eval, PositionValue pv, int maxDepth, ProgressUpdater progressUpdater) {
+            this.out = out;
+            this.eval = eval;
+            this.pv = pv;
+            this.maxDepth = maxDepth;
+            this.progressUpdater = progressUpdater;
+        }
+
+        @Override public void run() {
+            Search search = searches.get();
+            if (search == null) {
+                search = new Search(new Counter(eval, false), 0);
+                searches.set(search);
+            }
+
+            final StringBuilder sb = new StringBuilder();
+            sb.append(String.format("%2d ", pv.nEmpty()));
+            for (int depth = 0; depth <= maxDepth; depth++) {
+                final int score = search.calcScore(pv.mover, pv.enemy, depth, false);
+                sb.append(String.format("%+5d ", score));
+            }
+            sb.append('\n');
+
+            synchronized(out) {
+                try {
+                    out.write(sb.toString());
+                } catch (IOException e) {
+                    System.err.println(e);
+                }
+            }
+            progressUpdater.update();
+        }
+    }
+
 
     /**
      * Select positions for MPC calculations

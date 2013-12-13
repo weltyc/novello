@@ -25,17 +25,25 @@ public class SearchTimer {
             depth = 10;
         }
 
-        countNodes(true, depth, true);
+//        countNodes(true, depth, true);
 
-//        generateTable();
+        generateTable(false, true);
     }
 
-    private static void generateTable() {
+    private static void generateTable(boolean doFw, boolean doMpc) {
         System.out.println();
         for (int depth = 1; depth <= 9; depth++) {
-            final long noMpc = countNodes(false, depth, false);
-            final long mpc = countNodes(true, depth, false);
-            System.out.format("%d %,6d %,6d\n", depth, noMpc / 1000, mpc / 1000);
+            final StringBuilder sb = new StringBuilder();
+            sb.append(depth);
+            if (doFw) {
+                final long fw = countNodes(false, depth, false);
+                sb.append(String.format(" %,6d", fw / 1000));
+            }
+            if (doMpc) {
+                final long mpc = countNodes(true, depth, false);
+                sb.append(String.format(" %,6d", mpc / 1000));
+            }
+            System.out.println(sb);
         }
     }
 
@@ -66,6 +74,6 @@ public class SearchTimer {
             System.out.format("[%d %3s] %,d ms elapsed. %s. %4.2f us/eval \n"
                     , depth, mpc ? "mpc" : "", dt, counts, dt * 1e3 / nEvals);
         }
-        return counts.nFlips;
+        return counts.cost();
     }
 }

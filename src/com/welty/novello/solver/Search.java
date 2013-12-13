@@ -19,7 +19,6 @@ public class Search {
     }
 
     /**
-     *
      * @return node counts (flips, evals) since the search was constructed.
      */
     public Counts counts() {
@@ -85,8 +84,8 @@ public class Search {
     private int rootDepth;
 
     static class BA {
-        int bestMove;
-        int score;
+        int bestMove = -1;
+        int score = NovelloUtils.NO_MOVE;
     }
 
     private static final long[] masks = {BitBoardUtils.CORNERS, ~(BitBoardUtils.CORNERS | BitBoardUtils.X_SQUARES), BitBoardUtils.X_SQUARES};
@@ -109,28 +108,38 @@ public class Search {
     BA treeMove(long mover, long enemy, long moverMoves, int alpha, int beta, int depth, boolean mpc) {
         assert beta > alpha;
         assert depth > 0;
-        BA ba = new BA();
-        ba.bestMove = -1;
-        ba.score = NovelloUtils.NO_MOVE;
 
         if (depth > 2) {
             // internal iterative deepening
-            final int iidMove = treeMove(mover, enemy, moverMoves, alpha, beta, depth > 3 ? 2 : 1, mpc).bestMove;
-            if (iidMove >= 0) {
-                final int subScore = calcMoveScore(mover, enemy, alpha, beta, depth, iidMove, mpc);
-                if (subScore > ba.score) {
-                    ba.score = subScore;
-                    if (subScore > alpha) {
-                        ba.bestMove = iidMove;
-                        alpha = subScore;
-                        if (subScore >= beta) {
-                            return ba;
-                        }
-                    }
-                }
-                moverMoves &= ~(1L << iidMove);
+            final int suggestedMove = treeMove(mover, enemy, moverMoves, alpha, beta, depth > 3 ? 2 : 1, mpc).bestMove;
+            if (suggestedMove >= 0) {
+                return treeMoveWithSuggestion(mover, enemy, moverMoves, alpha, beta, depth, mpc, suggestedMove);
             }
         }
+        return treeMoveNoSuggestion(mover, enemy, moverMoves, alpha, beta, depth, mpc, new BA());
+    }
+
+    /**
+     * @return best move and score.
+     */
+    private BA treeMoveWithSuggestion(long mover, long enemy, long moverMoves, int alpha, int beta, int depth, boolean mpc, int suggestedMove) {
+        BA ba = new BA();
+        final int subScore = calcMoveScore(mover, enemy, alpha, beta, depth, suggestedMove, mpc);
+        if (subScore > ba.score) {
+            ba.score = subScore;
+            if (subScore > alpha) {
+                ba.bestMove = suggestedMove;
+                alpha = subScore;
+                if (subScore >= beta) {
+                    return ba;
+                }
+            }
+        }
+        moverMoves &= ~(1L << suggestedMove);
+        return treeMoveNoSuggestion(mover, enemy, moverMoves, alpha, beta, depth, mpc, ba);
+    }
+
+    private BA treeMoveNoSuggestion(long mover, long enemy, long moverMoves, int alpha, int beta, int depth, boolean mpc, BA ba) {
         for (long mask : masks) {
             long movesToCheck = moverMoves & mask;
             while (movesToCheck != 0) {
@@ -205,23 +214,58 @@ public class Search {
         }
 
         if (mpc && depth >= 2) {
-            final int nEmpty = BitBoardUtils.nEmpty(mover, enemy);
-            Mpc.Cutter[] cutters = counter.mpcs.cutters(nEmpty, depth);
-            for (Mpc.Cutter cutter : cutters) {
-                final int shallowAlpha = cutter.shallowAlpha(alpha);
-                final int shallowBeta = cutter.shallowBeta(beta);
-                final int shallowDepth = cutter.shallowDepth;
-                final int mpcScore = treeScore(mover, enemy, moverMoves, shallowAlpha, shallowBeta, shallowDepth, true);
-                if (mpcScore >= shallowBeta) {
-                    return beta;
-                }
-                if (mpcScore <= shallowAlpha) {
-                    return alpha;
-                }
-                // todo test passing the best move to treeMove instead of having it do iid at shallowDepth > 1.
-            }
+            return mpcTreeScore(mover, enemy, moverMoves, alpha, beta, depth).score;
         }
         return treeMove(mover, enemy, moverMoves, alpha, beta, depth, mpc).score;
+    }
+
+    /**
+     * Search using MPC. return score and, if available, best move
+     * <p/>
+     * This is kind of a funny one. Due to MPC we might get a depth-0 cutoff instead of a move; in this case ba.move
+     * will not be updated.
+     *
+     * @return best move (or -1 if no best move) and score
+     */
+    private BA mpcTreeScore(long mover, long enemy, long moverMoves, int alpha, int beta, int depth) {
+        BA ba = new BA();
+
+        final int nEmpty = BitBoardUtils.nEmpty(mover, enemy);
+        Mpc.Cutter[] cutters = counter.mpcs.cutters(nEmpty, depth);
+
+        for (Mpc.Cutter cutter : cutters) {
+            final int shallowAlpha = cutter.shallowAlpha(alpha);
+            final int shallowBeta = cutter.shallowBeta(beta);
+            final int shallowDepth = cutter.shallowDepth;
+            if (shallowDepth <= 0) {
+                final int mpcScore = treeScore(mover, enemy, moverMoves, shallowAlpha, shallowBeta, shallowDepth, true);
+                if (mpcScore >= shallowBeta) {
+                    ba.score = beta;
+                    return ba;
+                }
+                if (mpcScore <= shallowAlpha) {
+                    ba.score = alpha;
+                    return ba;
+                }
+            } else {
+                BA mpcBa = mpcTreeScore(mover, enemy, moverMoves, shallowAlpha, shallowBeta, shallowDepth);
+                if (mpcBa.score >= shallowBeta) {
+                    ba.score = beta;
+                    ba.bestMove = mpcBa.bestMove;
+                    return ba;
+                }
+                if (mpcBa.score <= shallowAlpha) {
+                    ba.score = alpha;
+                    return ba;
+                }
+                ba.bestMove = mpcBa.bestMove;
+            }
+        }
+        if (ba.bestMove >= 0) {
+            return treeMoveWithSuggestion(mover, enemy, moverMoves, alpha, beta, depth, true, ba.bestMove);
+        } else {
+            return treeMove(mover, enemy, moverMoves, alpha, beta, depth, true);
+        }
     }
 
     private String indent(int depth) {
