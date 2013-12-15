@@ -240,11 +240,11 @@ public class Mpc {
          * @return the shallow alpha that, if cut off, predicts at least a 2/3 chance of a deep alpha cutoff
          */
         public int shallowAlpha(int deepAlpha) {
-            return deepAlpha == NovelloUtils.NO_MOVE ? NovelloUtils.NO_MOVE : (int) (a * deepAlpha + b - shallowSd);
+            return deepAlpha == NovelloUtils.NO_MOVE ? NovelloUtils.NO_MOVE : (int) (a * deepAlpha + b - 2*shallowSd);
         }
 
         public int shallowBeta(int deepBeta) {
-            return deepBeta == -NovelloUtils.NO_MOVE ? -NovelloUtils.NO_MOVE : (int) (a * deepBeta + b + shallowSd);
+            return deepBeta == -NovelloUtils.NO_MOVE ? -NovelloUtils.NO_MOVE : (int) (a * deepBeta + b + 2*shallowSd);
         }
 
         @Override public String toString() {
@@ -259,7 +259,7 @@ public class Mpc {
     public static final Mpc DEFAULT;
 
     static {
-        //noinspection unchecked
+        @SuppressWarnings("unchecked")
         ArrayList<int[]>[] noData = new ArrayList[64];
         for (int i=0; i<64; i++) {
             noData[i] = new ArrayList<>();

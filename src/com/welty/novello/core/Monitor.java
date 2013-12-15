@@ -36,6 +36,7 @@ public class Monitor<T> implements Mapper<T, T>, AutoCloseable {
     public Monitor(String message, int max) {
         this.message = message;
         this.progressUpdater = new ProgressUpdater(message, max);
+        progressUpdater.setAutoNote("M items loaded");
         log.info("starting " + message);
     }
 
@@ -44,7 +45,6 @@ public class Monitor<T> implements Mapper<T, T>, AutoCloseable {
         if ((nItems & 0xFFFFF) == 0) {
             final int mItems = (int) (nItems >> 20);
             progressUpdater.setProgress(mItems);
-            progressUpdater.setNote(mItems + "M items loaded");
             final long t = System.currentTimeMillis();
             if (t >= nextTime) {
                 log.info(message + ": " + mItems + "M items");

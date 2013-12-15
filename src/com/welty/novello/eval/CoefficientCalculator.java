@@ -48,13 +48,8 @@ public class CoefficientCalculator {
      * coefficients have already been generated.
      */
     public static void main(String[] args) throws Exception {
-        StringBuilder options = new StringBuilder();
-        for (String arg : args) {
-            if (arg.startsWith("-")) {
-                options.append(arg.substring(1));
-            }
-        }
-        final boolean histogramOnly = options.toString().contains("h");
+        final String shortOptions = NovelloUtils.getShortOptions(args);
+        final boolean histogramOnly = shortOptions.contains("h");
 
         if (histogramOnly) {
             System.out.println("Not generating coefficients - histograms only");

@@ -1,5 +1,7 @@
 package com.welty.novello.core;
 
+import com.orbanova.common.misc.Require;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -11,16 +13,16 @@ import java.util.List;
  * Game history
  */
 public class MutableGame {
-    public final Position startPosition;
-    public final String blackName;
-    public final String whiteName;
-    public final String place;
+    public final @NotNull Position startPosition;
+    public final @NotNull String blackName;
+    public final @NotNull String whiteName;
+    public final @NotNull String place;
 
     private final List<Move> moves = new ArrayList<>();
     private boolean isOver = false;
     private Position lastPosition;
 
-    public MutableGame(Position startPosition, String blackName, String whiteName, String place) {
+    public MutableGame(@NotNull Position startPosition, @NotNull String blackName, @NotNull String whiteName, @NotNull String place) {
         this.startPosition = startPosition;
         lastPosition = startPosition;
         this.blackName = blackName;
@@ -90,7 +92,7 @@ public class MutableGame {
         lastPosition = lastPosition.playOrPass(move.sq);
     }
 
-    public Position getStartPosition() {
+    public @NotNull Position getStartPosition() {
         return startPosition;
     }
 
@@ -127,7 +129,15 @@ public class MutableGame {
         return lastPosition.terminalScore();
     }
 
+    /**
+     * Creates a new MutableGame from the ggf text.
+     *
+     * @param ggf text of ggf game.
+     * @return new MutableGame
+     * @throws IllegalArgumentException if game is not in GGF format, or board is not 8x8
+     */
     public static MutableGame ofGgf(String ggf) {
+        ggf = ggf.trim();
         // find and strip GGF identifiers
         if (!ggf.startsWith("(;") || !ggf.endsWith(";)")) {
             throw new IllegalArgumentException("not a GGF format game");
@@ -228,7 +238,7 @@ public class MutableGame {
 
     /**
      * Construct a game from the very old Ntest game format.
-     *
+     * <p/>
      * An example is
      * -WZebra   +00 d16      EML=4B:TJ,532+$"%*-K>F#?S6][\^UN!Z7/RYOIGW19@80AQHXP_V'&. ()
      *
@@ -237,17 +247,36 @@ public class MutableGame {
      */
     public static MutableGame ofVong(String s) {
         final String blackName = s.substring(1, 9).trim();
-        final String whiteName = s.substring(14,22).trim();
+        final String whiteName = s.substring(14, 22).trim();
         final MutableGame game = new MutableGame(Position.START_POSITION, blackName, whiteName, "Vong");
 
         final char[] moves = s.substring(23).toCharArray();
         for (char c : moves) {
-            if (game.getLastPosition().calcMoves()==0) {
+            if (game.getLastPosition().calcMoves() == 0) {
                 game.pass();
             }
-            game.play(BitBoardUtils.sqToText(c-' '));
+            game.play(BitBoardUtils.sqToText(c - ' '));
         }
         return game;
 
+    }
+
+    /**
+     * Get the position after nMoves moves.
+     * <p/>
+     * Passes count as moves.
+     *
+     * @param nMoves number of moves to go forward.
+     * @return the position.
+     */
+    public Position getPositionAfter(int nMoves) {
+        Require.geq(nMoves, 0);
+        Require.leq(nMoves, "nMove", moves.size(), "total moves in the game");
+
+        Position pos = getStartPosition();
+        for (int i = 0; i < nMoves; i++) {
+            pos = pos.playOrPass(moves.get(i).sq);
+        }
+        return pos;
     }
 }

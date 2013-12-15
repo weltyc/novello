@@ -4,8 +4,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Properties;
 
 /**
@@ -32,7 +30,7 @@ public class Props {
     }
 
     private Props() {
-        final String machinePropsFile = "/" + getHostName() + ".properties";
+        final String machinePropsFile = "/" + NovelloUtils.getHostName() + ".properties";
         final InputStream in = Props.class.getResourceAsStream(machinePropsFile);
         if (in == null) {
             throw new IllegalStateException("props file not found: " + machinePropsFile);
@@ -43,15 +41,5 @@ public class Props {
         } catch (IOException e) {
             throw new IllegalStateException("Unable to load props file " + machinePropsFile);
         }
-    }
-
-    public static String getHostName() {
-        String hostName;
-        try {
-            hostName = InetAddress.getLocalHost().getHostName();
-        } catch (UnknownHostException e) {
-            hostName = "Unknown";
-        }
-        return hostName;
     }
 }

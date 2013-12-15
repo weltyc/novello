@@ -30,10 +30,10 @@ public class BitBoardUtils {
     public static final long C_SQUARES = 0x4281000000008142L;
     public static final long X_SQUARES = 0x0042000000004200L;
 
-    public static final long B2 = 1L<<066;
-    public static final long G2 = 1L<<061;
-    public static final long B7 = 1L<<016;
-    public static final long G7 = 1L<<011;
+    public static final long B2 = 1L << 066;
+    public static final long G2 = 1L << 061;
+    public static final long B7 = 1L << 016;
+    public static final long G7 = 1L << 011;
 
     private static final long EDGES = FilesAH | Ranks18;
     private static final long CENTER_36 = ~EDGES;
@@ -354,7 +354,7 @@ public class BitBoardUtils {
      * @param col index of col
      * @return square index
      */
-    private static int square(int row, int col) {
+    public static int square(int row, int col) {
         return row * 8 + col;
     }
 
@@ -477,10 +477,20 @@ public class BitBoardUtils {
 
     private static int getCol(String name, char input, char limit) {
         final int value = limit - input;
-        if (value != (value & 7)) {
+        if (badRowNum(value)) {
             throw new IllegalArgumentException("Illegal " + name + ": '" + input + "'");
         }
         return value;
+    }
+
+    /**
+     * Determine whether a number is a legal row number.
+     *
+     * @param row row number
+     * @return true if the row is a legal row number, i.e. between 0 and 7
+     */
+    public static boolean badRowNum(int row) {
+        return row != (row & 7);
     }
 
     /**

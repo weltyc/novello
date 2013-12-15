@@ -13,22 +13,10 @@ public class Counts {
         this.nEvals = nEvals;
     }
 
-    private static char[] prefixes = " kMGTPE".toCharArray();
-
     @Override public String toString() {
         final long x = nFlips;
-        int prefixIndex = calcPrefix(x);
+        int prefixIndex = NovelloUtils.calcPrefix(x);
         return toString(prefixIndex);
-    }
-
-    private static int calcPrefix(long x) {
-        int prefix = 1;
-        int prefixIndex = 0;
-        while (x /prefix>=100000) {
-            prefix*=1000;
-            prefixIndex++;
-        }
-        return prefixIndex;
     }
 
     /**
@@ -37,18 +25,7 @@ public class Counts {
      * @return string representation of the counts
      */
     public @NotNull String toString(int prefixIndex) {
-        return format(nFlips, prefixIndex) + "n, " + format(nEvals,prefixIndex) + "evals, " + format(cost(), prefixIndex) + "$";
-    }
-
-    public static String format(long x) {
-        return format(x, calcPrefix(x));
-    }
-
-    public static String format(long nFlips, int prefixIndex) {
-        for (int i=0; i<prefixIndex; i++) {
-            nFlips /=1000;
-        }
-        return String.format("%,5d %c", nFlips, prefixes[prefixIndex]);
+        return NovelloUtils.format(nFlips, prefixIndex) + "n, " + NovelloUtils.format(nEvals, prefixIndex) + "evals, " + NovelloUtils.format(cost(), prefixIndex) + "$";
     }
 
     public Counts plus(Counts counts) {

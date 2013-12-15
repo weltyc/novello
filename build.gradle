@@ -1,0 +1,44 @@
+apply plugin: 'java'
+apply plugin: 'maven'
+
+group = 'com.welty'
+version = '0.01-SNAPSHOT'
+
+description = 'novello'
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
+
+sourceSets {
+  main {
+    java {
+      srcDir 'src'
+    }
+    resources {
+      srcDirs java.srcDirs as File[]
+    }
+  }
+  test {
+    java {
+      srcDir 'test'
+    }
+    resources {
+      srcDirs java.srcDirs as File[]
+    }
+  }
+}
+
+repositories {
+     mavenLocal()
+     maven { url "http://repository.jboss.com/maven2" }
+     maven { url "http://repo.maven.apache.org/maven2" }
+}
+
+dependencies {
+    compile 'org.jetbrains:annotations:8.1'
+    compile 'com.orbanova:common:0.07-SNAPSHOT'
+    compile 'org.apache.commons:commons-compress:1.5'
+    testCompile 'org.mockito:mockito-all:1.8.5'
+    testCompile 'junit:junit:4.4'
+}

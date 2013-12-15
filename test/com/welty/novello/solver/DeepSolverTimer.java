@@ -28,10 +28,12 @@ public class DeepSolverTimer implements Tunable {
     public static void main(String[] args) {
         warmUpHotSpot();
 
+        final int depth = args.length==0?20:Integer.parseInt(args[0]);
+
 
 //        System.out.println(Typical.timing(new DeepSolverTimer(20)));
 
-        new DeepSolverTimer(20, true).cost();
+        new DeepSolverTimer(depth, true).cost();
 //        final long t0 = System.currentTimeMillis();
 //        final DeepSolverTimer timer = new DeepSolverTimer(24, true);
 //        timer.run();

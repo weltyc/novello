@@ -1,6 +1,8 @@
 package com.welty.novello.core;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /**
  * Thread-safe wrapper for ProgressMonitor
@@ -14,8 +16,11 @@ import javax.swing.*;
  * which increments an internal counter by 1.
  */
 public class ProgressUpdater implements AutoCloseable {
-    private int nComplete;
-    private final ProgressMonitor progressMonitor;
+    private final int max;
+    private int progress;
+    private String note = "";
+    private boolean closed = false;
+    private String autoNote = null;
 
     /**
      * Constructs a thread-safe {@link ProgressMonitor}
@@ -23,17 +28,21 @@ public class ProgressUpdater implements AutoCloseable {
      * @param message name of operation being performed
      * @param max     maximum value of progress. When this is reached, the ProgressMonitor will disappear.
      */
-    public ProgressUpdater(String message, int max) {
-        progressMonitor = new ProgressMonitor(null, message, "", 0, max);
+    public ProgressUpdater(final String message, final int max) {
+        this.max = max;
+        // we need to create the Progress Monitor on the Event Dispatch Thread.
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override public void run() {
+                new ProgressThread(message, max);
+            }
+        });
     }
 
     /**
-     * Add 1 to the progress number, in a thread-safe manner. Also updates the text.
+     * Add 1 to the progress number, in a thread-safe manner.
      */
     public synchronized void update() {
-        nComplete++;
-        progressMonitor.setProgress(nComplete);
-        progressMonitor.setNote(String.format("%,d / %,d", nComplete, progressMonitor.getMaximum()));
+        progress++;
     }
 
     /**
@@ -42,12 +51,14 @@ public class ProgressUpdater implements AutoCloseable {
      * @param nComplete current value of the progress bar
      */
     public synchronized void setProgress(int nComplete) {
-        this.nComplete = nComplete;
-        progressMonitor.setProgress(nComplete);
+        this.progress = nComplete;
     }
 
+    /**
+     * Closes the ProgressMonitor.
+     */
     public synchronized void close() {
-        progressMonitor.close();
+        closed = true;
     }
 
     /**
@@ -56,6 +67,56 @@ public class ProgressUpdater implements AutoCloseable {
      * @param note note to set
      */
     public synchronized void setNote(String note) {
-        progressMonitor.setNote(note);
+        this.note = note;
+    }
+
+    /**
+     * If autoNote is set, the note on the progress bar is automatically set to something like
+     * "13,428k of 21,477k {itemName}"
+     * @param suffix item description
+     */
+    public synchronized void setAutoNote(String suffix) {
+        autoNote = suffix;
+    }
+
+    public synchronized int getProgress() {
+        return progress;
+    }
+
+
+    private synchronized String getNote() {
+        if (autoNote != null) {
+            note = NovelloUtils.format(progress) + " / " + NovelloUtils.format(max) + " " + autoNote;
+        }
+        return note;
+    }
+
+    public synchronized boolean isClosed() {
+        return closed;
+    }
+
+    /**
+     * The internal guts, containing stuff accessed on the Event Dispatch Thread
+     */
+    private class ProgressThread implements ActionListener {
+        private final ProgressMonitor progressMonitor;
+        private final Timer timer;
+
+        ProgressThread(String message, int max) {
+            progressMonitor = new ProgressMonitor(null, message, "", 0, max);
+
+            timer = new Timer(250, this);
+            timer.setDelay(250);
+            timer.start();
+        }
+
+        @Override public void actionPerformed(ActionEvent e) {
+            // This is called from the EDT.
+            progressMonitor.setProgress(getProgress());
+            progressMonitor.setNote(getNote());
+            if (isClosed()) {
+                timer.stop();
+            }
+        }
     }
 }

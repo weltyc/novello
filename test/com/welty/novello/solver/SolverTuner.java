@@ -1,7 +1,7 @@
 package com.welty.novello.solver;
 
 import com.welty.novello.core.BitBoardUtils;
-import com.welty.novello.core.Counts;
+import com.welty.novello.core.NovelloUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
@@ -115,7 +115,7 @@ public class SolverTuner {
         final double metric;
         if (tuneByNodes) {
             metric = tunable.cost();
-            System.out.println("Cost : " + Counts.format((long)metric) + "$");
+            System.out.println("Cost : " + NovelloUtils.format((long) metric) + "$");
         } else {
             final Typical typical = Typical.timing(tunable);
             System.out.println(typical);

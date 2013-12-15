@@ -1,9 +1,6 @@
 package com.welty.novello.selfplay;
 
-import com.welty.novello.core.MutableGame;
-import com.welty.novello.core.Position;
-import com.welty.novello.core.PositionValue;
-import com.welty.novello.core.Props;
+import com.welty.novello.core.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -83,7 +80,7 @@ public class SelfPlaySet {
         double sum = 0;
         double sumSq = 0;
 
-        String hostName = Props.getHostName();
+        String hostName = NovelloUtils.getHostName();
 
         while (null != (startPosition = generator.next())) {
             // only play positions where we have not seen a reflection previously
