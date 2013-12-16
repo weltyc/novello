@@ -11,6 +11,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Mpc {
     private static final Logger log = Logger.logger(Mpc.class);
@@ -96,39 +97,37 @@ public class Mpc {
             {12}, {13}, // depth 30-31
     };
 
-    private static class Slice {
-        private final Cutter[][] cutters = new Cutter[64][];
+    static class Slice {
+        final Cutter[][] cutters = new Cutter[64][];
 
-        public Slice(int nEmpty, ArrayList<int[]> ints) {
+        public Slice(int nEmpty, List<int[]> ints) {
+            final int maxDataDepth;
             if (ints.size() > 2) {
-                final int maxDataDepth = ints.get(0).length - 1;
-
-                int depth = 0;
-                for (; depth < cutDepths.length; depth++) {
-                    final int[] shallowDepths = cutDepths[depth];
-                    final int nPairs = shallowDepths.length;
-                    cutters[depth] = new Cutter[nPairs];
-                    for (int p = 0; p < nPairs; p++) {
-                        final int shallow = shallowDepths[p];
-                        final Cutter cutter;
-                        if (depth <= maxDataDepth) {
-                            cutter = new Cutter(ints, depth, shallow);
-                        } else {
-                            cutter = new Cutter(nEmpty, depth, shallow);
-                        }
-
-                        cutters[depth][p] = cutter;
-                    }
-                }
-                for (; depth < cutters.length; depth++) {
-                    cutters[depth] = new Cutter[0];
-                }
+                maxDataDepth = ints.get(0).length - 1;
             } else {
-                for (int depth = 0; depth < cutDepths.length; depth++) {
-                    cutters[depth] = new Cutter[0];
-                }
+                maxDataDepth = 0;
             }
 
+            int depth = 0;
+            for (; depth < cutDepths.length; depth++) {
+                final int[] shallowDepths = cutDepths[depth];
+                final int nPairs = shallowDepths.length;
+                cutters[depth] = new Cutter[nPairs];
+                for (int p = 0; p < nPairs; p++) {
+                    final int shallow = shallowDepths[p];
+                    final Cutter cutter;
+                    if (depth <= maxDataDepth) {
+                        cutter = new Cutter(ints, nEmpty, depth, shallow);
+                    } else {
+                        cutter = new Cutter(nEmpty, depth, shallow);
+                    }
+
+                    cutters[depth][p] = cutter;
+                }
+            }
+            for (; depth < cutters.length; depth++) {
+                cutters[depth] = new Cutter[0];
+            }
         }
 
         @Override public String toString() {
@@ -160,7 +159,7 @@ public class Mpc {
             shallowDepth = shallow;
         }
 
-        private static double approximateSd(int nEmpty, int depth, int shallow) {
+        static double approximateSd(int nEmpty, int depth, int shallow) {
             // approximate cut sd as
             // f(shallow) g(delta) h(nEmpty)
             // where delta = min(depth, nEmpty)-shallow
@@ -181,10 +180,10 @@ public class Mpc {
             }
             h *= (80 - nEmpty) / 14.;
 
-            return f * g * h;
+            return f * g * h * CoefficientCalculator.DISK_VALUE;
         }
 
-        public Cutter(ArrayList<int[]> ints, int depth, int shallowDepth) {
+        public Cutter(List<int[]> ints, int nEmpty, int depth, int shallowDepth) {
             this.shallowDepth = shallowDepth;
             double xSum = 0;
             double ySum = 0;
@@ -240,11 +239,11 @@ public class Mpc {
          * @return the shallow alpha that, if cut off, predicts at least a 2/3 chance of a deep alpha cutoff
          */
         public int shallowAlpha(int deepAlpha) {
-            return deepAlpha == NovelloUtils.NO_MOVE ? NovelloUtils.NO_MOVE : (int) (a * deepAlpha + b - 2*shallowSd);
+            return deepAlpha == NovelloUtils.NO_MOVE ? NovelloUtils.NO_MOVE : (int) (a * deepAlpha + b - 2 * shallowSd);
         }
 
         public int shallowBeta(int deepBeta) {
-            return deepBeta == -NovelloUtils.NO_MOVE ? -NovelloUtils.NO_MOVE : (int) (a * deepBeta + b + 2*shallowSd);
+            return deepBeta == -NovelloUtils.NO_MOVE ? -NovelloUtils.NO_MOVE : (int) (a * deepBeta + b + 2 * shallowSd);
         }
 
         @Override public String toString() {
@@ -261,7 +260,7 @@ public class Mpc {
     static {
         @SuppressWarnings("unchecked")
         ArrayList<int[]>[] noData = new ArrayList[64];
-        for (int i=0; i<64; i++) {
+        for (int i = 0; i < 64; i++) {
             noData[i] = new ArrayList<>();
         }
         DEFAULT = new Mpc(noData);

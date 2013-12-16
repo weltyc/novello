@@ -4,7 +4,7 @@ import com.welty.novello.eval.CoefficientEval;
 import com.welty.novello.eval.Eval;
 import com.welty.novello.eval.EvalStrategies;
 import com.welty.novello.eval.EvalStrategy;
-import com.welty.novello.ntest.NTest;
+import com.welty.novello.ntest.NBoardPlayer;
 
 /**
  * Utility class containing Othello players
@@ -44,8 +44,8 @@ public class Players {
         final int depth = Integer.parseInt(depthString);
 
         final String evalName = parts[0];
-        if (evalName.equals("ntest")) {
-            return new NTest(depth, false);
+        if (evalName.equals("ntest") || evalName.equals("edax")) {
+            return new NBoardPlayer(evalName, depth, false);
         }
         final Eval eval = eval(evalName);
         return new EvalPlayer(eval, depth, mpc);

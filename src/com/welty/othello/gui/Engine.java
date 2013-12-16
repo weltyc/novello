@@ -4,14 +4,17 @@ import com.welty.novello.core.MoveScore;
 import com.welty.novello.core.Position;
 import com.welty.novello.selfplay.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  */
 class Engine {
     private final @NotNull Player player;
+    private final @NotNull RequestQueue queue = new RequestQueue();
 
     Engine(@NotNull Player player) {
         this.player = player;
+        new Thread(queue).start();
     }
 
     /**
@@ -32,14 +35,8 @@ class Engine {
      * @param ping     parameter that must be passed to GameView.engineMove() to validate the move
      */
     public void requestMove(@NotNull GameView gameView, @NotNull Position position, long ping) {
-        // todo execute in a new thread
-        final long moves = position.calcMoves();
-        if (moves == 0) {
-            gameView.engineMove(new MoveScore(-1, 0), ping);
-        } else {
-            final MoveScore moveScore = player.calcMove(position, moves, 0);
-            gameView.engineMove(moveScore, ping);
-        }
+        final MoveRequest moveRequest = new MoveRequest(gameView, position, ping);
+        queue.add(moveRequest);
     }
 
     /**
@@ -53,4 +50,63 @@ class Engine {
     public @NotNull String getName() {
         return player.toString();
     }
+
+    private static class MoveRequest {
+        private final @NotNull GameView gameView;
+        private final @NotNull Position position;
+        private final long ping;
+
+        private MoveRequest(@NotNull GameView gameView, @NotNull Position position, long ping) {
+            this.gameView = gameView;
+            this.position = position;
+            this.ping = ping;
+        }
+
+        private void respond(Player player) {
+            final long moves = position.calcMoves();
+            if (moves == 0) {
+                gameView.engineMove(new MoveScore(-1, 0), ping);
+            } else {
+                final MoveScore moveScore = player.calcMove(position, moves, 0);
+                gameView.engineMove(moveScore, ping);
+            }
+        }
+    }
+
+    /**
+     * Only holds one request. There's no reason for the engine to spend time thinking
+     * about positions that are no longer on the board, so outdated positions are just discarded.
+     */
+    private class RequestQueue implements Runnable {
+        private @Nullable MoveRequest request = null;
+
+        private synchronized void add(MoveRequest request) {
+            this.request = request;
+            notifyAll();
+        }
+
+        private synchronized @NotNull MoveRequest take() {
+            while (true) {
+                if (request != null) {
+                    final MoveRequest take = request;
+                    request = null;
+                    return take;
+                }
+                try {
+                    wait();
+                } catch (InterruptedException e) {
+                    // ignore.
+                }
+            }
+        }
+
+
+        @Override public void run() {
+            while (true) {
+                final MoveRequest request = take();
+                request.respond(player);
+            }
+        }
+    }
+
 }

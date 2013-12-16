@@ -22,7 +22,7 @@ public class MpcErrorPredictor {
                         continue;
                     }
                     if (deep <= nEmpty) {
-                        final Mpc.Cutter cutter = new Mpc.Cutter(sliceData[nEmpty], deep, shallow);
+                        final Mpc.Cutter cutter = new Mpc.Cutter(sliceData[nEmpty], nEmpty, deep, shallow);
 
                         final double pred = (80-nEmpty)/14.;
                         final double err = cutter.getSd()/pred - 1;

@@ -93,3 +93,12 @@ With mpc cuts added at depth 10 and 11, this becomes
     12 115,228
 
 Having MPC at all depths up to search depth-1 is thus vital for ensuring good performance.
+
+Endgame performance
+-------------------
+Doing probable solves on the FFO test: 18/20 correct moves (wrong on #52, #54).
+Doing MPC searches to
+    depth  score
+     9     14/20
+    15     16/20
+    21     18/20

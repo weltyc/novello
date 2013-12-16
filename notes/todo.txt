@@ -1,10 +1,6 @@
 * Coefficient Calculator
   * Sub coefficients
-  * Rare coefficients
   * Deeper search for playouts
 
 * Midgame Search
-  * MPC
-
-* Tidying up
-  * Generate only distinct positions in .pvs file; right now 2/3 are duplicates
+  * Solve with <= 4 empties

@@ -83,9 +83,9 @@ class MoveListTableModel extends AbstractTableModel implements GameView.ChangeLi
                 return move.eval;
             } else {
                 if (move.sq >= 0) {
-                    return BitBoardUtils.sqToText(move.sq);
+                    return " " + BitBoardUtils.sqToText(move.sq);
                 } else {
-                    return "pass";
+                    return " pass";
                 }
             }
         } else {
@@ -132,7 +132,7 @@ class MoveListTableModel extends AbstractTableModel implements GameView.ChangeLi
     }
 
     private static class EvalRenderer extends DefaultTableCellRenderer {
-        private final DecimalFormat numberFormat = new DecimalFormat("#.00");
+        private final DecimalFormat numberFormat = new DecimalFormat("#.0");
 
         @Override protected void setValue(Object value) {
             if (value == null) {

@@ -1275,3 +1275,16 @@ More experiments starting from c4s, the player coming out of the rare coefficien
 Try calculating coefficients c5s using pvs valued with 4-ply playouts instead of 2-ply playouts:
     c5s:2 vs c4s:2: average result = 1.1
     c5s:4 vs c4s:4: average result = 3.4
+    c5s:4 vs c4s:4: average result = 2.2: using fixed formula cutoffs.
+
+Play c5s vs edax v4.3.2:
+    c5s:1w vs edax:1: average result = 22.1
+    c5s:2w vs edax:2: average result = 9.1
+    c5s:3w vs edax:3: average result = 2.9
+    c5s:4w vs edax:4: average result = -0.2
+    c5s:5w vs edax:5: average result = -3.7
+
+play c5s:4w vs c5s:4  (c5s using formula cutoffs rather than statistical cutoffs)
+    c5s:4 vs c5s:4w: average result = -19.9
+    c5s:4 vs c5s:4w: average result = -1.2 : using statistical cutoffs.
+    c5s:4 vs c5s:4w: average result = -1.0 : using fixed formula cutoffs.

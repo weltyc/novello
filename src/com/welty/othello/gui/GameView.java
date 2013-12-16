@@ -207,6 +207,8 @@ public class GameView {
      * <p/>
      * If the ping does not match the current state of this GameView, the move is considered outdated and thus ignored.
      *
+     * Like all GameView methods, this function can be called from any thread.
+     *
      * @param moveScore move and Engine score of the move
      * @param ping      ping from Engine.requestMove()
      */

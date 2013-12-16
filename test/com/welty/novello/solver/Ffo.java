@@ -28,6 +28,7 @@ public class Ffo {
         final Path path = Paths.get("ffo");
         final boolean useMidgame = NovelloUtils.getShortOptions(args).contains("m");
 
+        System.out.println("Starting ffo test using " + (useMidgame ? "midgame" : "endgame") + " search");
         double totalSeconds = 0;
         double totalMn = 0;
         int nCorrectMoves = 0;

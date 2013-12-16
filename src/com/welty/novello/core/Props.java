@@ -29,8 +29,10 @@ public class Props {
         return s == null ? defaultValue : s;
     }
 
+    private final String machinePropsFile;
+
     private Props() {
-        final String machinePropsFile = "/" + NovelloUtils.getHostName() + ".properties";
+        machinePropsFile = "/" + NovelloUtils.getHostName() + ".properties";
         final InputStream in = Props.class.getResourceAsStream(machinePropsFile);
         if (in == null) {
             throw new IllegalStateException("props file not found: " + machinePropsFile);
@@ -41,5 +43,9 @@ public class Props {
         } catch (IOException e) {
             throw new IllegalStateException("Unable to load props file " + machinePropsFile);
         }
+    }
+
+    public String getSourceFile() {
+        return machinePropsFile;
     }
 }
