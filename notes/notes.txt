@@ -1265,3 +1265,13 @@ b5s is calculated from b1:2 playouts.
 This did not help a whole lot.
 Try calculating coefficients c1s from b1:2 playouts.
     c1s:2 vs b5s:2: average result = 4.3
+
+This helped a fair amount.
+
+(See rare.txt for details on improvements from rare coefficient calculation)
+
+More experiments starting from c4s, the player coming out of the rare coefficients project.
+
+Try calculating coefficients c5s using pvs valued with 4-ply playouts instead of 2-ply playouts:
+    c5s:2 vs c4s:2: average result = 1.1
+    c5s:4 vs c4s:4: average result = 3.4
