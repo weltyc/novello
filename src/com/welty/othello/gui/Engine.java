@@ -6,6 +6,8 @@ import com.welty.novello.selfplay.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.swing.*;
+
 /**
  */
 class Engine {
@@ -64,12 +66,17 @@ class Engine {
 
         private void respond(Player player) {
             final long moves = position.calcMoves();
+            final MoveScore moveScore;
             if (moves == 0) {
-                gameView.engineMove(new MoveScore(-1, 0), ping);
+                moveScore = new MoveScore(-1, 0);
             } else {
-                final MoveScore moveScore = player.calcMove(position, moves, 0);
-                gameView.engineMove(moveScore, ping);
+                moveScore = player.calcMove(position, moves, 0);
             }
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override public void run() {
+                    gameView.engineMove(moveScore, ping);
+                }
+            });
         }
     }
 

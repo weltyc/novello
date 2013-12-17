@@ -9,7 +9,9 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * Interface for the game that the Viewer is looking at
+ * Interface for the game that the Viewer is looking at.
+ *
+ * All functions that modify this GameView must happen on the Event Dispatch Thread.
  */
 public class GameView {
     /**
@@ -207,7 +209,7 @@ public class GameView {
      * <p/>
      * If the ping does not match the current state of this GameView, the move is considered outdated and thus ignored.
      *
-     * Like all GameView methods, this function can be called from any thread.
+     * Like all functions that modify this GameView, this function should only be called from the Event Dispatch Thread.
      *
      * @param moveScore move and Engine score of the move
      * @param ping      ping from Engine.requestMove()

@@ -201,6 +201,9 @@ class MoveListTableModel extends AbstractTableModel implements GameView.ChangeLi
         }
 
         public void scrollToVisible(int row, int col) {
+            if (!SwingUtilities.isEventDispatchThread()) {
+                throw new RuntimeException("This must be called from the Event Dispatch Thread");
+            }
             scrollRectToVisible(new Rectangle(getCellRect(row, col, true)));
         }
     }
