@@ -1288,3 +1288,16 @@ play c5s:4w vs c5s:4  (c5s using formula cutoffs rather than statistical cutoffs
     c5s:4 vs c5s:4w: average result = -19.9
     c5s:4 vs c5s:4w: average result = -1.2 : using statistical cutoffs.
     c5s:4 vs c5s:4w: average result = -1.0 : using fixed formula cutoffs.
+
+vs Edax
+-------
+Timings for c5s vs edax at various depths. Average times to play a complete game in ms:
+    ply  c5s   edax
+      1  0.3    4.4
+      3  3.0     13
+      5   17    100
+      7   89    492
+      9  395   3.62s
+
+
+At depths >=4, edax beats c5s. Trying to match times, played c5s:7 vs edax:9

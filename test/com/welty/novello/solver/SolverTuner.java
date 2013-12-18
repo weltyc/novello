@@ -115,7 +115,7 @@ public class SolverTuner {
         final double metric;
         if (tuneByNodes) {
             metric = tunable.cost();
-            System.out.println("Cost : " + NovelloUtils.format((long) metric) + "$");
+            System.out.println("Cost : " + NovelloUtils.engineeringLong((long) metric) + "$");
         } else {
             final Typical typical = Typical.timing(tunable);
             System.out.println(typical);

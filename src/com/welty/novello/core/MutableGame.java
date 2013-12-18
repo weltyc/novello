@@ -18,6 +18,9 @@ public class MutableGame {
     public final @NotNull String whiteName;
     public final @NotNull String place;
 
+    /**
+     * A list of all moves played in the game, including passes.
+     */
     private final List<Move> moves = new ArrayList<>();
     private boolean isOver = false;
     private Position lastPosition;
@@ -30,8 +33,11 @@ public class MutableGame {
         this.place = place;
     }
 
+    /**
+     * @return a list of all moves played in the game, including passes
+     */
     public List<Move> getMoves() {
-        return Collections.unmodifiableList(moves);
+        return new ArrayList<>(moves);
     }
 
     public String toGgf() {
@@ -278,5 +284,23 @@ public class MutableGame {
             pos = pos.playOrPass(moves.get(i).sq);
         }
         return pos;
+    }
+
+    /**
+     * Calculate time taken by a player
+     *
+     * @param blackPlayer if true, return time taken by the black player; otherwise return time taken by the white player.
+     * @return total time taken by a player in all recorded moves. Does not include any time taken since the last move.
+     */
+    public double time(boolean blackPlayer) {
+        boolean counts = getStartPosition().blackToMove == blackPlayer;
+        double time = 0;
+        for (Move move : moves) {
+            if (counts) {
+                time += move.time;
+            }
+            counts = !counts;
+        }
+        return time;
     }
 }

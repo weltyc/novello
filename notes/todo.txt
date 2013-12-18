@@ -4,3 +4,4 @@
 
 * Midgame Search
   * Solve with <= 4 empties
+  * Hash table

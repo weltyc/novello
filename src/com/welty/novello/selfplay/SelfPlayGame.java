@@ -89,10 +89,6 @@ public class SelfPlayGame implements Callable<MutableGame> {
     }
 
     private long measuredTime() {
-        if ((gameFlags & FLAG_MEASURE_TIME)!=0) {
-            return System.currentTimeMillis();
-        } else {
-            return 0;
-        }
+        return System.currentTimeMillis();
     }
 }

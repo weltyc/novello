@@ -112,7 +112,7 @@ public class Tournament implements Runnable {
         @Override public Result call() throws Exception {
             final Player black = players[i];
             final Player white = players[j];
-            final double averageResult = new SelfPlaySet(black, white, 0, false, progressBar).call().averageResult;
+            final double averageResult = SelfPlaySet.run(black, white, new SelfPlaySet.ProgressBarUpdater(progressBar));
             System.out.format("%+5.1f  %s vs %s%n", averageResult, black, white);
             return new Result(i, j, averageResult);
         }

@@ -86,7 +86,7 @@ public class ProgressUpdater implements AutoCloseable {
 
     private synchronized String getNote() {
         if (autoNote != null) {
-            note = NovelloUtils.format(progress) + " / " + NovelloUtils.format(max) + " " + autoNote;
+            note = NovelloUtils.engineeringLong(progress) + " / " + NovelloUtils.engineeringLong(max) + " " + autoNote;
         }
         return note;
     }

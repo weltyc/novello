@@ -25,7 +25,7 @@ public class Counts {
      * @return string representation of the counts
      */
     public @NotNull String toString(int prefixIndex) {
-        return NovelloUtils.format(nFlips, prefixIndex) + "n, " + NovelloUtils.format(nEvals, prefixIndex) + "evals, " + NovelloUtils.format(cost(), prefixIndex) + "$";
+        return NovelloUtils.engineeringLong(nFlips, prefixIndex) + "n, " + NovelloUtils.engineeringLong(nEvals, prefixIndex) + "evals, " + NovelloUtils.engineeringLong(cost(), prefixIndex) + "$";
     }
 
     public Counts plus(Counts counts) {

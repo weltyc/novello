@@ -369,8 +369,9 @@ public class CoefficientCalculator {
         if (!Files.exists(mrsPath)) {
             final Set<Mr> mrSet = new HashSet<>();
             Files.createDirectories(mrsPath.getParent());
-            final List<PositionValue> pvs = new SelfPlaySet(playoutPlayer, playoutPlayer, 0, false).call().pvs;
-            for (PositionValue pv : pvs) {
+            final SelfPlaySet.PvCollector pvCollector = new SelfPlaySet.PvCollector();
+            SelfPlaySet.run(playoutPlayer, playoutPlayer, pvCollector);
+            for (PositionValue pv : pvCollector.pvs) {
                 mrSet.add(new Mr(pv.mover, pv.enemy));
             }
             try (DataOutputStream out = new DataOutputStream(new BufferedOutputStream(Files.newOutputStream(mrsPath)))) {
