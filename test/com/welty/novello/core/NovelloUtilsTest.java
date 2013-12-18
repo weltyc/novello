@@ -73,9 +73,9 @@ public class NovelloUtilsTest extends TestCase {
     }
 
     public void testEngineeringDouble() {
-        testEngineeringDouble("  0.00  ", 0);
-        testEngineeringDouble("  3.00  ",  3);
-        testEngineeringDouble("  12.0  ",  12);
+        testEngineeringDouble("   0.00  ", 0);
+        testEngineeringDouble("   3.00  ",  3);
+        testEngineeringDouble("  12.00  ",  12);
         testEngineeringDouble(" 123.00  ",  123);
         testEngineeringDouble("   1.23 k",  1234);
         testEngineeringDouble("  12.34 k",  12344);

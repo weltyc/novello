@@ -70,14 +70,14 @@ final class MoveSorter {
     final SorterMove[] sorterMoves = new SorterMove[64];
 
     private final @NotNull Counter counter;
-    private final @NotNull Search sortSearch;
+    private final @NotNull MidgameSearcher sortMidgameSearcher;
 
-    MoveSorter(@NotNull Counter counter) {
+    MoveSorter(@NotNull Counter counter, @NotNull MidgameSearcher midgameSearcher) {
         this.counter = counter;
         for (int i = 0; i < sorterMoves.length; i++) {
             sorterMoves[i] = new SorterMove();
         }
-        sortSearch = new Search(counter, 0);
+        sortMidgameSearcher = midgameSearcher;
     }
 
     static final int[][] searchDepths = {
@@ -214,7 +214,7 @@ final class MoveSorter {
         final int nMobs = Long.bitCount(nextMoverMoves);
 
         final int evalScore;
-        evalScore = sortSearch.calcScore(nextMover, nextEnemy, searchDepth, true);
+        evalScore = sortMidgameSearcher.calcScore(nextMover, nextEnemy, searchDepth);
 //        final long dFlips = sortSearch.nFlips();
 
         int margin = -evalScore - (beta + BETA_MARGIN) * DISK_VALUE;

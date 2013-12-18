@@ -50,7 +50,7 @@ public class MpcGenerator {
     }
 
     private static class MpcPrinter implements Runnable {
-        private static final ThreadLocal<Search> searches = new ThreadLocal<>();
+        private static final ThreadLocal<MidgameSearcher> searches = new ThreadLocal<>();
         private final BufferedWriter out;
         private final CoefficientEval eval;
         private final PositionValue pv;
@@ -66,16 +66,16 @@ public class MpcGenerator {
         }
 
         @Override public void run() {
-            Search search = searches.get();
-            if (search == null) {
-                search = new Search(new Counter(eval), 0);
-                searches.set(search);
+            MidgameSearcher midgameSearcher = searches.get();
+            if (midgameSearcher == null) {
+                midgameSearcher = new MidgameSearcher(new Counter(eval), "w");
+                searches.set(midgameSearcher);
             }
 
             final StringBuilder sb = new StringBuilder();
             sb.append(String.format("%2d ", pv.nEmpty()));
             for (int depth = 0; depth <= maxDepth; depth++) {
-                final int score = search.calcScore(pv.mover, pv.enemy, depth, false);
+                final int score = midgameSearcher.calcScore(pv.mover, pv.enemy, depth);
                 sb.append(String.format("%+5d ", score));
             }
             sb.append('\n');

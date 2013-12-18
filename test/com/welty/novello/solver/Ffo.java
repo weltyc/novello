@@ -41,7 +41,7 @@ public class Ffo {
                 final Object searcher;
 
                 if (useMidgame) {
-                    searcher = new Search(new Counter(Players.currentEval()), 0);
+                    searcher = new MidgameSearcher(new Counter(Players.currentEval()));
                 } else {
                     searcher = new Solver();
                 }
@@ -53,9 +53,9 @@ public class Ffo {
                 final int score;
 
                 if (useMidgame) {
-                    final Search search = (Search) searcher;
-                    moveScore = search.calcMove(position, position.calcMoves(), position.nEmpty(), true);
-                    counts = search.counts();
+                    final MidgameSearcher midgameSearcher = (MidgameSearcher) searcher;
+                    moveScore = midgameSearcher.calcMove(position, position.calcMoves(), position.nEmpty());
+                    counts = midgameSearcher.counts();
                     score = moveScore.score/100;
 
                 } else {

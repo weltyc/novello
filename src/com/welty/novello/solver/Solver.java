@@ -4,6 +4,7 @@ import com.welty.novello.core.BitBoardUtils;
 import com.welty.novello.core.Counts;
 import com.welty.novello.core.MoveScore;
 import com.welty.novello.core.Square;
+import com.welty.novello.eval.Eval;
 import com.welty.novello.selfplay.Players;
 import org.jetbrains.annotations.NotNull;
 
@@ -61,7 +62,8 @@ public class Solver {
      */
     private ListOfEmpties empties;
 
-    private final Counter counter = new Counter(Players.currentEval());
+    private final @NotNull Counter counter;
+    public final @NotNull MidgameSearcher midgameSearcher;
 
     /**
      * Statistics on nodes, cutoffs, etc.
@@ -81,11 +83,25 @@ public class Solver {
      * This Solver can be reused to solve multiple positions, but may only run in one thread at a time.
      */
     public Solver() {
+        this(Players.currentEval());
+    }
+
+    public Solver(@NotNull Eval eval) {
+        this(new Counter(eval));
+    }
+
+    private Solver(Counter counter) {
+        this(counter, new MidgameSearcher(counter));
+    }
+
+    private Solver(@NotNull Counter counter, @NotNull MidgameSearcher midgameSearcher) {
+        this.counter = counter;
+        this.midgameSearcher = midgameSearcher;
         treeSearchResults = new TreeSearchResult[64];
         for (int i = 0; i < treeSearchResults.length; i++) {
             treeSearchResults[i] = new TreeSearchResult();
         }
-        moveSorters = new MoveSorters(counter);
+        moveSorters = new MoveSorters(counter, midgameSearcher);
     }
 
     /**
@@ -94,7 +110,7 @@ public class Solver {
      * @return value of the game to the mover
      */
     public int solve(long mover, long enemy) {
-        this.empties = createEmptiesList(mover, enemy);
+        this.empties = ShallowSolver.createEmptiesList(mover, enemy);
 
         return solve(mover, enemy, -64, 64);
     }
@@ -112,7 +128,7 @@ public class Solver {
         if (BitBoardUtils.calcMoves(mover, enemy) == 0) {
             throw new IllegalArgumentException("mover must have a legal move");
         }
-        this.empties = createEmptiesList(mover, enemy);
+        this.empties = ShallowSolver.createEmptiesList(mover, enemy);
         final int nEmpties = bitCount(~(mover | enemy));
         final TreeSearchResult result = treeSearchResults[nEmpties];
 
@@ -122,26 +138,6 @@ public class Solver {
         final int sq = moveSorter.sq(result.iBestMove);
         return new MoveScore(sq, result.score);
     }
-
-    private static ListOfEmpties createEmptiesList(long mover, long enemy) {
-        long empties = ~(mover | enemy);
-        final ListOfEmpties emptySquares = new ListOfEmpties();
-        for (long mask : FixedMoveOrdering.masks) {
-            populateUnsorted(emptySquares, empties & mask);
-        }
-        return emptySquares;
-    }
-
-    private static void populateUnsorted(ListOfEmpties emptySquares, long empties) {
-        while (empties != 0) {
-            final int sq = Long.numberOfTrailingZeros(empties);
-            final Square square = Square.of(sq);
-            empties ^= square.placement();
-            emptySquares.add(square);
-        }
-    }
-
-    private static final int NO_MOVE = -65;
 
     /**
      * Solve the position with fail-soft alpha-beta.
@@ -167,14 +163,14 @@ public class Solver {
             return BitBoardUtils.terminalScore(mover, enemy);
         }
         if (nEmpty == 1) {
-            return solve1(mover, enemy, empties.first().square);
+            return ShallowSolver.solve1(counter, mover, enemy, empties.first().square);
         }
         if (nEmpty == 2) {
             final ListOfEmpties.Node first = empties.first();
-            return solve2(mover, enemy, alpha, beta, first.square, first.next.square);
+            return ShallowSolver.solve2(counter, mover, enemy, alpha, beta, first.square, first.next.square);
         }
         if (nEmpty < MIN_PARITY_DEPTH) {
-            return solveNoParity(mover, enemy, alpha, beta, empties, nEmpty);
+            return ShallowSolver.solveNoParity(counter, mover, enemy, alpha, beta, empties, nEmpty);
         }
         return solveDeep(mover, enemy, alpha, beta, nEmpty, calcParity(), PRED_PV, -1L);
     }
@@ -210,13 +206,13 @@ public class Solver {
     private int solveDeep(long mover, long enemy, int alpha, int beta, int nEmpties, long parity, int nodeType
             , long movesToCheck) {
         if (nEmpties < MIN_PARITY_DEPTH) {
-            return solveNoParity(mover, enemy, alpha, beta, empties, nEmpties);
+            return ShallowSolver.solveNoParity(counter, mover, enemy, alpha, beta, empties, nEmpties);
         }
         nodeCounts.update(nEmpties, nodeType);
         final int result = moverResultDeep(mover, enemy, alpha, beta, nEmpties, parity, nodeType, movesToCheck);
-        if (result == NO_MOVE) {
+        if (result == ShallowSolver.NO_MOVE) {
             final int enemyResult = moverResultDeep(enemy, mover, -beta, -alpha, nEmpties, parity, -nodeType, -1L);
-            if (enemyResult == NO_MOVE) {
+            if (enemyResult == ShallowSolver.NO_MOVE) {
                 return BitBoardUtils.terminalScore(mover, enemy);
             } else {
                 return -enemyResult;
@@ -241,7 +237,7 @@ public class Solver {
     }
 
     private int moverResultNoSort(long mover, long enemy, int alpha, int beta, int nEmpties, long parity, int nodeType, long movesToCheck) {
-        int result = NO_MOVE;
+        int result = ShallowSolver.NO_MOVE;
         int subNodeType = -nodeType;
 
         // sort by parity only
@@ -361,7 +357,7 @@ public class Solver {
      */
     private void moverResultWithSorting(TreeSearchResult treeSearchResult, long mover, long enemy, int alpha, int beta
             , int nEmpties, long parity, int nodeType, long movesToCheck) {
-        int score = NO_MOVE;
+        int score = ShallowSolver.NO_MOVE;
         int iBestMove = -1;
 
         int subNodeType = -nodeType;
@@ -411,7 +407,7 @@ public class Solver {
                         treeSearchResult.score = score;
                         treeSearchResult.iBestMove = iBestMove;
                         nodeCounts.updateCut(nEmpties, i);
-                        assert iBestMove >= 0 || score == NO_MOVE;
+                        assert iBestMove >= 0 || score == ShallowSolver.NO_MOVE;
                         return;
                     }
                     alpha = subResult;
@@ -421,7 +417,7 @@ public class Solver {
         }
         treeSearchResult.score = score;
         treeSearchResult.iBestMove = iBestMove;
-        assert iBestMove >= 0 || score == NO_MOVE;
+        assert iBestMove >= 0 || score == ShallowSolver.NO_MOVE;
     }
 
     void dumpStatistics() {
@@ -429,183 +425,6 @@ public class Solver {
         System.out.println(stableStatistics);
     }
 
-
-    private int solveNoParity(long mover, long enemy, int alpha, int beta, ListOfEmpties empties, int nEmpties) {
-        if (nEmpties == 3) {
-            return solve3(mover, enemy, alpha, beta, empties);
-        }
-        nodeCounts.update(nEmpties);
-        final int result = moverResultNoParity(empties, mover, enemy, alpha, beta, nEmpties);
-        if (result == NO_MOVE) {
-            final int enemyResult = moverResultNoParity(empties, enemy, mover, -beta, -alpha, nEmpties);
-            if (enemyResult == NO_MOVE) {
-                return BitBoardUtils.terminalScore(mover, enemy);
-            } else {
-                return -enemyResult;
-            }
-        } else {
-            return result;
-        }
-    }
-
-    /**
-     * alpha, beta, result from mover's point of view.
-     *
-     * @return solve value according to fail-soft alpha/beta, unless there are no legal moves in which case it returns NO_MOVE.
-     */
-    private int moverResultNoParity(ListOfEmpties empties, long mover, long enemy, int alpha, int beta, int nEmpties) {
-        int result = NO_MOVE;
-        for (ListOfEmpties.Node node = empties.first(); node != empties.end; node = node.next) {
-            final Square square = node.square;
-            final long flips = counter.calcFlips(square, mover, enemy);
-            if (flips != 0) {
-                final long subMover = enemy & ~flips;
-                final long subEnemy = mover | flips | square.placement();
-                node.remove();
-                final int subResult = -solveNoParity(subMover, subEnemy, -beta, -alpha, empties, nEmpties - 1);
-                node.restore();
-                if (subResult > result) {
-                    result = subResult;
-                    if (subResult > alpha) {
-                        if (subResult >= beta) {
-                            return result;
-                        }
-                        alpha = subResult;
-                    }
-                }
-            }
-        }
-        return result;
-    }
-
-    private int solve3(long mover, long enemy, int alpha, int beta, ListOfEmpties empties) {
-        nodeCounts.update(3);
-        final int result = moverResult3(empties, mover, enemy, alpha, beta);
-        if (result == NO_MOVE) {
-            final int enemyResult = moverResult3(empties, enemy, mover, -beta, -alpha);
-            if (enemyResult == NO_MOVE) {
-                return BitBoardUtils.terminalScore(mover, enemy);
-            } else {
-                return -enemyResult;
-            }
-        } else {
-            return result;
-        }
-    }
-
-    /**
-     * alpha, beta, result from mover's point of view.
-     *
-     * @return solve value according to fail-soft alpha/beta, unless there are no legal moves in which case it returns NO_MOVE.
-     */
-    private int moverResult3(ListOfEmpties empties, long mover, long enemy, int alpha, int beta) {
-        int result = NO_MOVE;
-        for (ListOfEmpties.Node node = empties.first(); node != empties.end; node = node.next) {
-            final Square square = node.square;
-            final long flips = counter.calcFlips(square, mover, enemy);
-            if (flips != 0) {
-                final long subMover = enemy & ~flips;
-                final long subEnemy = mover | flips | square.placement();
-                node.remove();
-                final int subResult = -solve2(subMover, subEnemy, -beta, -alpha, empties.first().square, empties.first().next.square);
-                node.restore();
-                if (subResult > result) {
-                    result = subResult;
-                    if (subResult > alpha) {
-                        if (subResult >= beta) {
-                            return result;
-                        }
-                        alpha = subResult;
-                    }
-                }
-            }
-        }
-        return result;
-    }
-
-    private int solve2(long mover, long enemy, int alpha, int beta, Square empty1, Square empty2) {
-        nodeCounts.update(2);
-        final int result = moverResult2(mover, enemy, beta, empty1, empty2);
-        if (result == NO_MOVE) {
-            final int enemyResult = moverResult2(enemy, mover, -alpha, empty1, empty2);
-            if (enemyResult == NO_MOVE) {
-                return BitBoardUtils.terminalScore(mover, enemy);
-            } else {
-                return -enemyResult;
-            }
-        } else {
-            return result;
-        }
-    }
-
-    /**
-     * alpha, beta, result from mover's point of view.
-     *
-     * @return solve value according to fail-soft alpha/beta, unless there are no legal moves in which case it returns NO_MOVE.
-     */
-    private int moverResult2(long mover, long enemy, int beta, Square empty1, Square empty2) {
-        int result = NO_MOVE;
-        final long flips1 = counter.calcFlips(empty1, mover, enemy);
-        if (flips1 != 0) {
-            final long subMover = enemy & ~flips1;
-            final long subEnemy = mover | flips1 | empty1.placement();
-            final int subResult = -solve1(subMover, subEnemy, empty2);
-            if (subResult > result) {
-                result = subResult;
-                if (subResult >= beta) {
-                    return result;
-                }
-            }
-        }
-
-        final long flips2 = counter.calcFlips(empty2, mover, enemy);
-        if (flips2 != 0) {
-            final long subMover = enemy & ~flips2;
-            final long subEnemy = mover | flips2 | empty2.placement();
-            final int subResult = -solve1(subMover, subEnemy, empty1);
-            if (subResult > result) {
-                result = subResult;
-            }
-        }
-
-        return result;
-    }
-
-
-    /**
-     * Solve when there is only 1 empty square.
-     *
-     * @param mover mover bitboard
-     * @param enemy enemy bitboard
-     * @param empty the empty square
-     * @return solve value, exact.
-     */
-    private int solve1(long mover, long enemy, Square empty) {
-        nodeCounts.update(1);
-
-        final long moverFlips = counter.calcFlips(empty, mover, enemy);
-        if (moverFlips != 0) {
-            mover |= moverFlips;
-            final int net = 2 * bitCount(mover) - 62; // -62 because we didn't set the placed disk
-            return net;
-        }
-        final long enemyFlips = counter.calcFlips(empty, enemy, mover);
-        if (enemyFlips != 0) {
-            enemy |= enemyFlips;
-            final int net = 62 - 2 * bitCount(enemy); // 62 because we didn't set the placed disk
-            return net;
-        }
-        int net = 2 * bitCount(mover) - 63; // 63 because 1 empty square remains
-        if (BitBoardUtils.WINNER_GETS_EMPTIES) {
-            if (net > 0) {
-                net++;
-            } else {
-                // net can't be 0 because 1 empty remains, so must be negative
-                net--;
-            }
-        }
-        return net;
-    }
 
     /**
      * Clear all historical information so we don't cheat while benchmarking.

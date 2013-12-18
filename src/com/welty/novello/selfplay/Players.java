@@ -6,6 +6,9 @@ import com.welty.novello.eval.EvalStrategies;
 import com.welty.novello.eval.EvalStrategy;
 import com.welty.novello.ntest.NBoardPlayer;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * Utility class containing Othello players
  */
@@ -38,17 +41,20 @@ public class Players {
             throw new IllegalArgumentException("require an eval and a search depth, for instance 'a1:3w'; had " + textString);
         }
 
-        final boolean fullWidth = parts[1].endsWith("w");
-        final boolean mpc = !fullWidth;
-        final String depthString = mpc ? parts[1] : parts[1].substring(0, parts[1].length() - 1);
-        final int depth = Integer.parseInt(depthString);
+        final Pattern pattern = Pattern.compile("([0-9]+)([a-z]*)");
+        final Matcher matcher = pattern.matcher(parts[1]);
+        if (!matcher.matches()) {
+            throw new IllegalArgumentException("Illegal depth and options: " + parts[1]);
+        }
+
+        final int depth = Integer.parseInt(matcher.group(1));
 
         final String evalName = parts[0];
         if (evalName.equals("ntest") || evalName.equals("edax")) {
             return new NBoardPlayer(evalName, depth, false);
         }
         final Eval eval = eval(evalName);
-        return new EvalPlayer(eval, depth, mpc);
+        return new EvalPlayer(eval, depth, matcher.group(2));
     }
 
     /**

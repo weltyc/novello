@@ -43,7 +43,7 @@ public class NTestTimer {
     }
 
     private static void timeMidgame(int depth ) {
-        final Search search = new Search(new Counter(Players.eval("c4s")), 0);
+        final MidgameSearcher midgameSearcher = new MidgameSearcher(new Counter(Players.eval("c4s")));
         final List<MutableGame> games = SampleGames.saioGames();
         final long t0 = System.currentTimeMillis();
         for (MutableGame game : games) {
@@ -51,11 +51,11 @@ public class NTestTimer {
             if (position==null) {
                 throw new IllegalStateException("ntest games file is messed up");
             }
-            log.info(search.calcMove(position, position.calcMoves(), depth, true));
+            log.info(midgameSearcher.calcMove(position, position.calcMoves(), depth));
         }
         final long dt = System.currentTimeMillis() - t0;
         final double s = dt/1000.;
-        final Counts counts = search.counts();
+        final Counts counts = midgameSearcher.counts();
         log.info(counts);
         final double mn = counts.nFlips * 1e-6;
         log.info(String.format("%3.1f Mn / %3.1f s elapsed = %3.1f Mn/s", mn, s, mn/s));

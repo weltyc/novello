@@ -1,21 +1,47 @@
 package com.welty.novello.solver;
 
 import com.welty.novello.core.*;
-import com.welty.novello.eval.CoefficientCalculator;
 import com.welty.novello.eval.Mpc;
 import org.jetbrains.annotations.NotNull;
+
+import static com.welty.novello.eval.CoefficientCalculator.DISK_VALUE;
 
 /**
  * A reusable Search object.
  * <p/>
  * This class is not thread-safe.
  */
-public class Search {
-    public static final int FLAG_PRINT_SEARCH = 1;
+public class MidgameSearcher {
+    public static final int SOLVER_START_DEPTH = 6;
 
-    public Search(@NotNull Counter counter, int flags) {
-        this.flags = flags;
+    /**
+     * Create with the given Counter and default options
+     *
+     * @param counter eval  + counter
+     */
+    public MidgameSearcher(@NotNull Counter counter) {
+        this(counter, new Options(""));
+    }
+
+    /**
+     * Create with the given counter and options
+     *
+     * @param counter eval + counter
+     * @param options search options
+     */
+    public MidgameSearcher(@NotNull Counter counter, @NotNull Options options) {
+        this.options = options;
         this.counter = counter;
+    }
+
+    /**
+     * Create with the given counter and options
+     *
+     * @param counter eval + counter
+     * @param options search options
+     */
+    public MidgameSearcher(Counter counter, String options) {
+        this(counter, new Options(options));
     }
 
     /**
@@ -37,9 +63,9 @@ public class Search {
      * @param depth      search depth
      * @return the best move from this position, and its score in centi-disks
      */
-    public MoveScore calcMove(Position position, long moverMoves, int depth, boolean mpc) {
+    public MoveScore calcMove(Position position, long moverMoves, int depth) {
         this.rootDepth = depth;
-        final BA ba = treeMove(position.mover(), position.enemy(), moverMoves, NovelloUtils.NO_MOVE, -NovelloUtils.NO_MOVE, depth, mpc);
+        final BA ba = treeMove(position.mover(), position.enemy(), moverMoves, NovelloUtils.NO_MOVE, -NovelloUtils.NO_MOVE, depth, options.mpc);
         return new MoveScore(ba.bestMove, ba.score);
     }
 
@@ -51,11 +77,10 @@ public class Search {
      *
      * @param position position to evaluate
      * @param depth    search depth. If &le; 0, returns the eval.
-     * @param mpc      if true, use MPC
      * @return score of the move.
      */
-    public int calcScore(Position position, int depth, boolean mpc) {
-        return calcScore(position.mover(), position.enemy(), depth, mpc);
+    public int calcScore(Position position, int depth) {
+        return calcScore(position.mover(), position.enemy(), depth);
     }
 
     /**
@@ -67,15 +92,14 @@ public class Search {
      * @param mover mover disks
      * @param enemy enemy disks
      * @param depth search depth. If &le; 0, returns the eval.
-     * @param mpc   if true, search uses MPC
      * @return score of the move.
      */
-    public int calcScore(long mover, long enemy, int depth, boolean mpc) {
+    public int calcScore(long mover, long enemy, int depth) {
         this.rootDepth = depth;
-        return searchScore(mover, enemy, NovelloUtils.NO_MOVE, -NovelloUtils.NO_MOVE, depth, mpc);
+        return searchScore(mover, enemy, NovelloUtils.NO_MOVE, -NovelloUtils.NO_MOVE, depth, options.mpc);
     }
 
-    private final int flags;
+    private final @NotNull Options options;
     private final @NotNull Counter counter;
 
     /**
@@ -168,18 +192,14 @@ public class Search {
         final long flips = counter.calcFlips(square, mover, enemy);
         final long subEnemy = mover | (1L << sq) | flips;
         final long subMover = enemy & ~flips;
-        if (shouldPrintSearch()) {
+        if (options.printSearch) {
             System.out.format("%s[%d] (%+5d,%+5d) scoring(%s):\n", indent(depth), depth, alpha, beta, BitBoardUtils.sqToText(sq));
         }
         final int subScore = -searchScore(subMover, subEnemy, -beta, -alpha, depth - 1, mpc);
-        if (shouldPrintSearch()) {
+        if (options.printSearch) {
             System.out.format("%s[%d] (%+5d,%+5d) score(%s)=%+5d\n", indent(depth), depth, alpha, beta, BitBoardUtils.sqToText(sq), subScore);
         }
         return subScore;
-    }
-
-    private boolean shouldPrintSearch() {
-        return 0 != (flags & FLAG_PRINT_SEARCH);
     }
 
 
@@ -203,7 +223,7 @@ public class Search {
                 final int score = treeScore(enemy, mover, enemyMoves, -beta, -alpha, depth, mpc);
                 return -score;
             } else {
-                return CoefficientCalculator.DISK_VALUE * BitBoardUtils.terminalScore(mover, enemy);
+                return DISK_VALUE * BitBoardUtils.terminalScore(mover, enemy);
             }
         }
     }
@@ -213,10 +233,35 @@ public class Search {
             return counter.eval(mover, enemy);
         }
 
+        final int nEmpty = BitBoardUtils.nEmpty(mover, enemy);
+        if (options.useSolver && nEmpty <= SOLVER_START_DEPTH) {
+            final int solverAlpha = solverAlpha(alpha);
+            final int solverBeta = solverBeta(beta);
+            return ShallowSolver.solveNoParity(counter, mover, enemy, solverAlpha, solverBeta, nEmpty) * DISK_VALUE;
+        }
+
         if (mpc && depth >= 2) {
             return mpcTreeScore(mover, enemy, moverMoves, alpha, beta, depth).score;
         }
         return treeMove(mover, enemy, moverMoves, alpha, beta, depth, mpc).score;
+    }
+
+    static int solverBeta(int beta) {
+        assert beta >= -64 * DISK_VALUE;
+
+        if (beta > 64 * DISK_VALUE) {
+            return 64;
+        }
+        return (65 * DISK_VALUE + beta - 1) / DISK_VALUE - 64;
+    }
+
+    static int solverAlpha(int alpha) {
+        assert alpha <= 64 * DISK_VALUE;
+
+        if (alpha < -64 * DISK_VALUE) {
+            return -64;
+        }
+        return (65 * DISK_VALUE + alpha) / DISK_VALUE - 65;
     }
 
     /**
@@ -276,4 +321,15 @@ public class Search {
         return sb.toString();
     }
 
+    public static class Options {
+        final boolean mpc;
+        final boolean useSolver;
+        final boolean printSearch;
+
+        public Options(String options) {
+            mpc = !options.contains("w");
+            useSolver = options.contains("s");
+            printSearch = options.contains("p");
+        }
+    }
 }

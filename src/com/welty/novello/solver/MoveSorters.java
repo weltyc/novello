@@ -11,9 +11,9 @@ import org.jetbrains.annotations.NotNull;
 class MoveSorters {
     private final MoveSorter[] sorters = new MoveSorter[64];
 
-    MoveSorters(@NotNull Counter counter) {
+    MoveSorters(@NotNull Counter counter, @NotNull MidgameSearcher midgameSearcher) {
         for (int i = 0; i < sorters.length; i++) {
-            sorters[i] = new MoveSorter(counter);
+            sorters[i] = new MoveSorter(counter, midgameSearcher);
         }
     }
 

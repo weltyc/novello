@@ -6,12 +6,10 @@ import com.welty.novello.core.Position;
 import com.welty.novello.eval.Eval;
 import junit.framework.TestCase;
 
-/**
- */
 public class EvalPlayerTest extends TestCase {
     public void test1PlySearch() throws Exception {
         final Eval eval = Players.currentEval();
-        final EvalPlayer player = new EvalPlayer(eval, 1, true);
+        final EvalPlayer player = new EvalPlayer(eval, 1, "");
 
         final Position prev = Position.of("--------\n" +
                 "--------\n" +
