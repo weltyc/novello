@@ -5,6 +5,7 @@ import com.welty.novello.core.Counts;
 import com.welty.novello.core.MoveScore;
 import com.welty.novello.core.Square;
 import com.welty.novello.eval.Eval;
+import com.welty.novello.hash.HashTables;
 import com.welty.novello.selfplay.Players;
 import org.jetbrains.annotations.NotNull;
 
@@ -14,17 +15,12 @@ import static java.lang.Long.bitCount;
  * A Solver solves positions. It can run in only one thread at a time.
  */
 public class Solver {
-    /**
-     * At this depth and above, the search will check moves into odd parity regions
-     * before moves into even parity regions
-     */
-    private static final int MIN_PARITY_DEPTH = 5;
 
     /**
      * At this depth and above, the search will check in the hash table,
      * but only if move sorting is enabled.
      */
-    static final int MIN_HASH_DEPTH = 6;
+    public static final int MIN_HASH_DEPTH = 6;
 
     /**
      * At this depth and above, the search will use NEGASCOUT,
@@ -132,7 +128,7 @@ public class Solver {
         final int nEmpties = bitCount(~(mover | enemy));
         final TreeSearchResult result = treeSearchResults[nEmpties];
 
-        final long parity = calcParity();
+        final long parity = empties.calcParity();
         moverResultWithSorting(result, mover, enemy, -64, 64, nEmpties, parity, PRED_PV, -1);
         final MoveSorter moveSorter = moveSorters.get(nEmpties);
         final int sq = moveSorter.sq(result.iBestMove);
@@ -169,18 +165,10 @@ public class Solver {
             final ListOfEmpties.Node first = empties.first();
             return ShallowSolver.solve2(counter, mover, enemy, alpha, beta, first.square, first.next.square);
         }
-        if (nEmpty < MIN_PARITY_DEPTH) {
+        if (nEmpty < ShallowSolver.MIN_PARITY_DEPTH) {
             return ShallowSolver.solveNoParity(counter, mover, enemy, alpha, beta, empties, nEmpty);
         }
-        return solveDeep(mover, enemy, alpha, beta, nEmpty, calcParity(), PRED_PV, -1L);
-    }
-
-    private long calcParity() {
-        long parity = 0;
-        for (ListOfEmpties.Node node = empties.first(); node != empties.end; node = node.next) {
-            parity ^= node.square.parityRegion;
-        }
-        return parity;
+        return solveDeep(mover, enemy, alpha, beta, nEmpty, empties.calcParity(), PRED_PV, -1L);
     }
 
     /*
@@ -205,7 +193,7 @@ public class Solver {
      */
     private int solveDeep(long mover, long enemy, int alpha, int beta, int nEmpties, long parity, int nodeType
             , long movesToCheck) {
-        if (nEmpties < MIN_PARITY_DEPTH) {
+        if (nEmpties < ShallowSolver.MIN_PARITY_DEPTH) {
             return ShallowSolver.solveNoParity(counter, mover, enemy, alpha, beta, empties, nEmpties);
         }
         nodeCounts.update(nEmpties, nodeType);
@@ -230,48 +218,10 @@ public class Solver {
     private int moverResultDeep(long mover, long enemy, int alpha, int beta, int nEmpties, long parity
             , int nodeType, long movesToCheck) {
         if (nEmpties < MIN_SORT_DEPTH) {
-            return moverResultNoSort(mover, enemy, alpha, beta, nEmpties, parity, nodeType, movesToCheck);
+            return ShallowSolver.moverResultNoSort(counter, mover, enemy, alpha, beta, empties, nEmpties, parity, movesToCheck);
         } else {
             return moverResultWithHash(mover, enemy, alpha, beta, nEmpties, parity, nodeType, movesToCheck);
         }
-    }
-
-    private int moverResultNoSort(long mover, long enemy, int alpha, int beta, int nEmpties, long parity, int nodeType, long movesToCheck) {
-        int result = ShallowSolver.NO_MOVE;
-        int subNodeType = -nodeType;
-
-        // sort by parity only
-        for (int desiredParity = 1; desiredParity >= 0; desiredParity--) {
-            for (ListOfEmpties.Node node = empties.first(); node != empties.end; node = node.next) {
-                // parity nodes first
-                final Square square = node.square;
-                if (BitBoardUtils.isBitClear(movesToCheck, square.sq)) {
-                    continue;
-                }
-                if (BitBoardUtils.getBit(parity, square.sq) == desiredParity) {
-                    final long flips = counter.calcFlips(square, mover, enemy);
-                    if (flips != 0) {
-                        final long subMover = enemy & ~flips;
-                        final long subEnemy = mover | flips | square.placement();
-                        node.remove();
-                        final int subResult = -solveDeep(subMover, subEnemy, -beta, -alpha, nEmpties - 1
-                                , parity ^ square.parityRegion, subNodeType, -1L);
-                        node.restore();
-                        if (subResult > result) {
-                            result = subResult;
-                            if (subResult > alpha) {
-                                if (subResult >= beta) {
-                                    return result;
-                                }
-                                alpha = subResult;
-                            }
-                        }
-                        subNodeType = PRED_CUT;
-                    }
-                }
-            }
-        }
-        return result;
     }
 
     private int moverResultWithHash(long mover, long enemy, int alpha, int beta, int nEmpties, long parity, int nodeType, long movesToCheck) {
@@ -286,25 +236,25 @@ public class Solver {
         if (nEmpties >= MIN_HASH_DEPTH) {
             HashTables.Entry entry = hashTables.find(mover, enemy);
             if (entry != null) {
-                if (entry.min >= beta) {
-                    hashTables.nBetaCuts++;
-                    return entry.min;
+                if (entry.getMin() >= beta) {
+                    hashTables.updateBetaCut();
+                    return entry.getMin();
                 }
-                if (entry.max <= alpha) {
-                    hashTables.nAlphaCuts++;
-                    return entry.max;
+                if (entry.getMax() <= alpha) {
+                    hashTables.updateAlphaCut();
+                    return entry.getMax();
                 }
-                if (entry.min == entry.max) {
-                    hashTables.nPvCuts++;
-                    return entry.min;
+                if (entry.getMin() == entry.getMax()) {
+                    hashTables.updatePvCut();
+                    return entry.getMin();
                 }
-                if (entry.min > searchAlpha) {
-                    searchAlpha = entry.min;
+                if (entry.getMin() > searchAlpha) {
+                    searchAlpha = entry.getMin();
                 }
-                if (entry.max < searchBeta) {
-                    searchBeta = entry.max;
+                if (entry.getMax() < searchBeta) {
+                    searchBeta = entry.getMax();
                 }
-                hashTables.nUselessFind++;
+                hashTables.updateUselessFind();
             }
         }
         if (nEmpties == 6) {

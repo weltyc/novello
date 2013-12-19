@@ -1,6 +1,7 @@
-package com.welty.novello.solver;
+package com.welty.novello.hash;
 
 import com.welty.novello.core.NovelloUtils;
+import com.welty.novello.solver.Solver;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -13,10 +14,10 @@ public class HashTables {
     private long nStores = 0;
 
     // rely on the caller to update these.
-    long nAlphaCuts = 0;
-    long nBetaCuts = 0;
-    long nPvCuts = 0;
-    long nUselessFind = 0;
+    private long nAlphaCuts = 0;
+    private long nBetaCuts = 0;
+    private long nPvCuts = 0;
+    private long nUselessFind = 0;
 
     /**
      * @return search statistics on the hash table
@@ -84,11 +85,27 @@ public class HashTables {
 
     }
 
-    static class Entry {
+    public void updateBetaCut() {
+        nBetaCuts++;
+    }
+
+    public void updateAlphaCut() {
+        nAlphaCuts++;
+    }
+
+    public void updatePvCut() {
+        nPvCuts++;
+    }
+
+    public void updateUselessFind() {
+        nUselessFind++;
+    }
+
+    public static class Entry {
         long mover;
         long enemy;
-        int min;
-        int max;
+        private int min;
+        private int max;
 
         Entry() {
             mover = enemy = -1L; // invalid position, so we won't get it by accident
@@ -152,6 +169,14 @@ public class HashTables {
          */
         public boolean cutsOff(int alpha, int beta) {
             return min >= beta || max <= alpha || min == max;
+        }
+
+        public int getMin() {
+            return min;
+        }
+
+        public int getMax() {
+            return max;
         }
     }
 

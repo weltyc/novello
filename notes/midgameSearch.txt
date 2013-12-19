@@ -1,0 +1,24 @@
+Hash Table
+----------
+
+Comparing alternatives using SearchTimer total cost at depth 10.
+
+135,663 : original
+135,311 : load & store when depth > 2  in treeMove()
+133,835 : load when depth > 2, store always  in treeMove()
+108,170 : load and store at all depths
+ 90,655 : above + beta cutoffs at all depths
+ 88,679 : above + alpha cutoffs at all depths
+
+For reference, costs at all depths up to 10 using the final result:
+    depth   k$
+     1      22
+     2      74
+     3     288
+     4     684
+     5   1,945
+     6   4,527
+     7  10,436
+     8  21,626
+     9  45,693
+    10  88,678

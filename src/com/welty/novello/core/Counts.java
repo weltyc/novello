@@ -39,4 +39,8 @@ public class Counts {
     public long cost() {
         return nFlips + 5*nEvals;
     }
+
+    public Counts minus(Counts counts) {
+        return new Counts(nFlips - counts.nFlips, nEvals - counts.nEvals);
+    }
 }

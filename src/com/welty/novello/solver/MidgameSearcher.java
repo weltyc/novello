@@ -2,6 +2,7 @@ package com.welty.novello.solver;
 
 import com.welty.novello.core.*;
 import com.welty.novello.eval.Mpc;
+import com.welty.novello.hash.MidgameHashTables;
 import org.jetbrains.annotations.NotNull;
 
 import static com.welty.novello.eval.CoefficientCalculator.DISK_VALUE;
@@ -13,6 +14,8 @@ import static com.welty.novello.eval.CoefficientCalculator.DISK_VALUE;
  */
 public class MidgameSearcher {
     public static final int SOLVER_START_DEPTH = 6;
+
+    private final MidgameHashTables midgameHashTables = new MidgameHashTables();
 
     /**
      * Create with the given Counter and default options
@@ -107,6 +110,10 @@ public class MidgameSearcher {
      */
     private int rootDepth;
 
+    public void clear() {
+        midgameHashTables.clear(63);
+    }
+
     static class BA {
         int bestMove = -1;
         int score = NovelloUtils.NO_MOVE;
@@ -133,14 +140,49 @@ public class MidgameSearcher {
         assert beta > alpha;
         assert depth > 0;
 
-        if (depth > 2) {
-            // internal iterative deepening
-            final int suggestedMove = treeMove(mover, enemy, moverMoves, alpha, beta, depth > 3 ? 2 : 1, mpc).bestMove;
-            if (suggestedMove >= 0) {
-                return treeMoveWithSuggestion(mover, enemy, moverMoves, alpha, beta, depth, mpc, suggestedMove);
+        // see if it cuts off
+        final MidgameHashTables.Entry entry = midgameHashTables.find(mover, enemy);
+        if (entry!=null && entry.getDepth()>= depth) {
+            if (entry.getMin() >= beta) {
+                final BA ba = new BA();
+                ba.bestMove = entry.getBestMove();
+                ba.score = entry.getMin();
+                return ba;
+            }
+            if (entry.getMax() <= alpha) {
+                final BA ba = new BA();
+                ba.bestMove = entry.getBestMove();
+                ba.score = entry.getMax();
+                return ba;
             }
         }
-        return treeMoveNoSuggestion(mover, enemy, moverMoves, alpha, beta, depth, mpc, new BA());
+
+        final int suggestedMove = getSuggestedMove(mover, enemy, moverMoves, alpha, beta, depth, mpc);
+        final BA ba = treeMoveWithPossibleSuggestion(mover, enemy, moverMoves, alpha, beta, depth, mpc, suggestedMove);
+        midgameHashTables.store(mover, enemy, alpha, beta, depth, ba.bestMove, ba.score);
+        return ba;
+    }
+
+    private int getSuggestedMove(long mover, long enemy, long moverMoves, int alpha, int beta, int depth, boolean mpc) {
+        final MidgameHashTables.Entry entry = midgameHashTables.find(mover, enemy);
+
+        if (entry != null && entry.getBestMove() >= 0) {
+            return entry.getBestMove();
+        } else if (depth > 2) {
+            // internal iterative deepening
+            return treeMove(mover, enemy, moverMoves, alpha, beta, depth > 3 ? 2 : 1, mpc).bestMove;
+        }
+        return -1;
+    }
+
+    private BA treeMoveWithPossibleSuggestion(long mover, long enemy, long moverMoves, int alpha, int beta, int depth, boolean mpc, int suggestedMove) {
+        final BA ba;
+        if (suggestedMove >= 0) {
+            ba = treeMoveWithSuggestion(mover, enemy, moverMoves, alpha, beta, depth, mpc, suggestedMove);
+        } else {
+            ba = treeMoveNoSuggestion(mover, enemy, moverMoves, alpha, beta, depth, mpc, new BA());
+        }
+        return ba;
     }
 
     /**
@@ -237,7 +279,7 @@ public class MidgameSearcher {
         if (options.useSolver && nEmpty <= SOLVER_START_DEPTH) {
             final int solverAlpha = solverAlpha(alpha);
             final int solverBeta = solverBeta(beta);
-            return ShallowSolver.solveNoParity(counter, mover, enemy, solverAlpha, solverBeta, nEmpty) * DISK_VALUE;
+            return ShallowSolver.solveNoParity(counter, mover, enemy, solverAlpha, solverBeta, nEmpty, moverMoves) * DISK_VALUE;
         }
 
         if (mpc && depth >= 2) {

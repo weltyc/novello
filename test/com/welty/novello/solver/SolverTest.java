@@ -171,9 +171,10 @@ public class SolverTest extends TestCase {
         System.out.println("--------- ---------");
         int ntest = 0;
         int novello = 0;
+        final Solver solver = new Solver();
         for (int j = 0; j < testCases.length; j++) {
-            final Solver solver = new Solver();
             final SolverTestCase testCase = testCases[j];
+            solver.clear(testCase.nEmpty());
             executeTestCase(solver, testCase.white, testCase.black, testCase.expectedValue());
             final int nt = nodeCounts[j];
             final long no = solver.getCounts().nFlips;

@@ -1,6 +1,7 @@
 package com.welty.novello.solver;
 
 import com.orbanova.common.misc.Logger;
+import com.welty.novello.core.DefaultThreadLocal;
 import com.welty.novello.core.PositionValue;
 import com.welty.novello.core.ProgressUpdater;
 import com.welty.novello.eval.CoefficientCalculator;
@@ -50,7 +51,7 @@ public class MpcGenerator {
     }
 
     private static class MpcPrinter implements Runnable {
-        private static final ThreadLocal<MidgameSearcher> searches = new ThreadLocal<>();
+        private static final DefaultThreadLocal<MidgameSearcher> searches = new DefaultThreadLocal<>(MidgameSearcher.class);
         private final BufferedWriter out;
         private final CoefficientEval eval;
         private final PositionValue pv;
@@ -66,11 +67,7 @@ public class MpcGenerator {
         }
 
         @Override public void run() {
-            MidgameSearcher midgameSearcher = searches.get();
-            if (midgameSearcher == null) {
-                midgameSearcher = new MidgameSearcher(new Counter(eval), "w");
-                searches.set(midgameSearcher);
-            }
+            MidgameSearcher midgameSearcher = searches.getOrCreate();
 
             final StringBuilder sb = new StringBuilder();
             sb.append(String.format("%2d ", pv.nEmpty()));

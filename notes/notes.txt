@@ -1300,7 +1300,7 @@ Timings for c5s vs edax at various depths. Average times to play a complete game
       9  395   3.62s
 
 
-At depths >=4, edax beats c5s. Trying to match times, played c5s:7 vs edax:9
+At depths >=4, edax beats c5s. Trying to match times, played c5s:10 vs edax:8
 
     [Wed Dec 18 14:04:20 CST 2013]| WARN | CoefficientEval | Creating eval with no MPC
     [Wed Dec 18 14:04:20 CST 2013]| DEBUG | NBoardPlayer | exe : /Applications/edax/4.3.2/bin/mEdax
@@ -1327,3 +1327,20 @@ At depths >=4, edax beats c5s. Trying to match times, played c5s:7 vs edax:9
     [Wed Dec 18 14:05:45 CST 2013]| INFO | StatPrinter |     38 matches: average result = 5.58 +/-2.6. T ~   2.1.  Time per game = 778.76 ms vs   1.37  s.
     [Wed Dec 18 14:05:52 CST 2013]| INFO | StatPrinter |     41 matches: average result = 4.10 +/-2.7. T ~   1.5.  Time per game = 784.29 ms vs   1.36  s.
     [Wed Dec 18 14:05:57 CST 2013]| INFO | StatPrinter |     43 matches: average result = 4.00 +/-2.6. T ~   1.6.  Time per game = 790.49 ms vs   1.38  s.
+
+vs NTest
+--------
+Timings seem similar at low depths.
+Results:
+   c3s:6s vs ntest:6   -10.3
+   c3s:4  vs ntest:4   -10.9
+   c3s:6  vs ntest:6   -12.4
+
+Times (ms/game)
+   depth  c3s    ntest     result
+      1   0.3     15.2      -14.0
+      3   2.6     20.4       -7.6
+      5    16      36       -12.3
+      7    97      64       -10.9
+      9   456     159       -11.6
+     11  2.01s    399        -9.6

@@ -33,6 +33,14 @@ class ListOfEmpties {
         return end.next;
     }
 
+    long calcParity() {
+        long parity = 0;
+        for (Node node = first(); node != end; node = node.next) {
+            parity ^= node.square.parityRegion;
+        }
+        return parity;
+    }
+
     static class Node {
         /**
          * The data. This is only null for the "fake node" at the beginning and end of lists.

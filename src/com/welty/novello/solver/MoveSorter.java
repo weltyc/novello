@@ -2,6 +2,7 @@ package com.welty.novello.solver;
 
 import com.welty.novello.core.BitBoardUtils;
 import com.welty.novello.core.Square;
+import com.welty.novello.hash.HashTables;
 import org.jetbrains.annotations.NotNull;
 
 import static com.welty.novello.core.BitBoardUtils.calcMoves;

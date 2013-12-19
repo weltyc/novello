@@ -2,6 +2,7 @@ package com.welty.novello.solver;
 
 import com.orbanova.common.misc.Logger;
 import com.welty.novello.core.Counts;
+import com.welty.novello.core.DefaultThreadLocal;
 import com.welty.novello.core.PositionValue;
 
 import java.util.ArrayList;
@@ -86,6 +87,8 @@ public class DeepSolverTimer implements Tunable {
         return (double)counts.cost();
     }
 
+    private static final DefaultThreadLocal<Solver> solvers = new DefaultThreadLocal<>(Solver.class);
+
     private class SolveTask implements Callable<Counts> {
         private final PositionValue pv;
         private final int i;
@@ -96,14 +99,16 @@ public class DeepSolverTimer implements Tunable {
         }
 
         @Override public Counts call() throws Exception {
-            final Solver solver = new Solver();
+            final Solver solver = solvers.getOrCreate();
+            final Counts c0 = solver.getCounts();
             final int score = solver.solve(pv.mover, pv.enemy);
-            final Counts counts = solver.getCounts();
+            final Counts counts = solver.getCounts().minus(c0);
             if (logResults) {
                 final String msg = String.format("position %2d:   score %+3d %s", i, score, counts.toString(2));
                 log.info(msg);
             }
             return counts;
         }
+
     }
 }

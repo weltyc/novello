@@ -7,6 +7,11 @@ import static java.lang.Long.bitCount;
 
 public class ShallowSolver {
     static final int NO_MOVE = -65;
+    /**
+     * At this depth and above, the search will check moves into odd parity regions
+     * before moves into even parity regions
+     */
+    static final int MIN_PARITY_DEPTH = 5;
 
     static ListOfEmpties createEmptiesList(long mover, long enemy) {
         long empties = ~(mover | enemy);
@@ -26,8 +31,18 @@ public class ShallowSolver {
         }
     }
 
-    static int solveNoParity(Counter counter, long mover, long enemy, int alpha, int beta, int nEmpties) {
-        return solveNoParity(counter, mover, enemy, alpha, beta, createEmptiesList(mover, enemy), nEmpties);
+    /**
+     * Solve a position.
+     *
+     * @return position value to mover, in disks
+     */
+    public static int solveNoParity(Counter counter, long mover, long enemy, int alpha, int beta, int nEmpties, long movesToCheck) {
+        final ListOfEmpties emptiesList = createEmptiesList(mover, enemy);
+        if (nEmpties < MIN_PARITY_DEPTH) {
+            return solveNoParity(counter, mover, enemy, alpha, beta, emptiesList, nEmpties);
+        } else {
+            return solveNoSort(counter, mover, enemy, alpha, beta, emptiesList, nEmpties, emptiesList.calcParity(), movesToCheck);
+        }
     }
 
     static int solveNoParity(Counter counter, long mover, long enemy, int alpha, int beta, ListOfEmpties empties, int nEmpties) {
@@ -199,5 +214,64 @@ public class ShallowSolver {
             }
         }
         return net;
+    }
+
+    /**
+     * Solve a position sorting moves only by parity and fixed-square location, not by examining the subsequent position.
+     *
+     * @param movesToCheck bitBoard containing moves to check (if the mover moves).
+     */
+    private static int solveNoSort(Counter counter, long mover, long enemy, int alpha, int beta, ListOfEmpties empties, int nEmpties, long parity,
+                                   long movesToCheck) {
+        if (nEmpties < MIN_PARITY_DEPTH) {
+            return solveNoParity(counter, mover, enemy, alpha, beta, empties, nEmpties);
+        }
+        final int result = moverResultNoSort(counter, mover, enemy, alpha, beta, empties, nEmpties, parity, movesToCheck);
+        if (result == NO_MOVE) {
+            final int enemyResult = moverResultNoSort(counter, enemy, mover, -beta, -alpha, empties, nEmpties, parity, -1L);
+            if (enemyResult == NO_MOVE) {
+                return BitBoardUtils.terminalScore(mover, enemy);
+            } else {
+                return -enemyResult;
+            }
+        } else {
+            return result;
+        }
+    }
+
+    static int moverResultNoSort(Counter counter, long mover, long enemy, int alpha, int beta, ListOfEmpties empties, int nEmpties, long parity, long movesToCheck) {
+        int result = NO_MOVE;
+
+        // sort by parity only
+        for (int desiredParity = 1; desiredParity >= 0; desiredParity--) {
+            for (ListOfEmpties.Node node = empties.first(); node != empties.end; node = node.next) {
+                // parity nodes first
+                final Square square = node.square;
+                if (BitBoardUtils.isBitClear(movesToCheck, square.sq)) {
+                    continue;
+                }
+                if (BitBoardUtils.getBit(parity, square.sq) == desiredParity) {
+                    final long flips = counter.calcFlips(square, mover, enemy);
+                    if (flips != 0) {
+                        final long subMover = enemy & ~flips;
+                        final long subEnemy = mover | flips | square.placement();
+                        node.remove();
+                        final int subResult = -solveNoSort(counter, subMover, subEnemy, -beta, -alpha, empties, nEmpties - 1
+                                , parity ^ square.parityRegion, -1L);
+                        node.restore();
+                        if (subResult > result) {
+                            result = subResult;
+                            if (subResult > alpha) {
+                                if (subResult >= beta) {
+                                    return result;
+                                }
+                                alpha = subResult;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return result;
     }
 }
