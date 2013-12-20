@@ -95,23 +95,24 @@ public class MidgameSearcherTest extends TestCase {
         final int g7 = BitBoardUtils.textToSq("G7");
 
         // true value is within the window
-        MidgameSearcher.BA ba = midgameSearcher.treeMove(mover, enemy, moverMoves, -6400, 6400, 1, false);
+        MidgameSearcher.BA ba = midgameSearcher.hashMove(mover, enemy, moverMoves, -6400, 6400, 1);
         assertEquals(200, ba.score);
         assertEquals(c3, ba.bestMove);
 
         // true value is above the window
-        ba = midgameSearcher.treeMove(mover, enemy, moverMoves, -6400, 80, 1, false);
+        ba = midgameSearcher.hashMove(mover, enemy, moverMoves, -6400, 80, 1);
         assertTrue(100 <= ba.score);
         assertTrue(ba.score <= 200);
         assertTrue(ba.bestMove == c3 || ba.bestMove == e3 || ba.bestMove == g7);
 
         // true value is at the bottom of the window
-        ba = midgameSearcher.treeMove(mover, enemy, moverMoves, 200, 6400, 1, false);
+        midgameSearcher.clear();
+        ba = midgameSearcher.hashMove(mover, enemy, moverMoves, 200, 6400, 1);
         assertEquals(200, ba.score);
         assertEquals(-1, ba.bestMove);
 
         // true value is below the window
-        ba = midgameSearcher.treeMove(mover, enemy, moverMoves, 300, 6400, 1, false);
+        ba = midgameSearcher.hashMove(mover, enemy, moverMoves, 300, 6400, 1);
         assertEquals(200, ba.score); // required by fail-soft. Fail-hard would return 300.
         assertEquals(-1, ba.bestMove);
     }
@@ -162,5 +163,4 @@ public class MidgameSearcherTest extends TestCase {
         }
         assertEquals(64, MidgameSearcher.solverBeta(100000));
     }
-    
 }

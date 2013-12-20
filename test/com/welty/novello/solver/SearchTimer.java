@@ -68,6 +68,7 @@ public class SearchTimer {
                     final long moves = pos.calcMoves();
                     if (moves != 0) {
                         midgameSearcher.calcMove(pos, moves, depth);
+                        midgameSearcher.clear();
                     }
                 }
             }

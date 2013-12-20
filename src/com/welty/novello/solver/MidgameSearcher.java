@@ -68,7 +68,7 @@ public class MidgameSearcher {
      */
     public MoveScore calcMove(Position position, long moverMoves, int depth) {
         this.rootDepth = depth;
-        final BA ba = treeMove(position.mover(), position.enemy(), moverMoves, NovelloUtils.NO_MOVE, -NovelloUtils.NO_MOVE, depth, options.mpc);
+        final BA ba = hashMove(position.mover(), position.enemy(), moverMoves, NovelloUtils.NO_MOVE, -NovelloUtils.NO_MOVE, depth);
         return new MoveScore(ba.bestMove, ba.score);
     }
 
@@ -99,7 +99,7 @@ public class MidgameSearcher {
      */
     public int calcScore(long mover, long enemy, int depth) {
         this.rootDepth = depth;
-        return searchScore(mover, enemy, NovelloUtils.NO_MOVE, -NovelloUtils.NO_MOVE, depth, options.mpc);
+        return searchScore(mover, enemy, NovelloUtils.NO_MOVE, -NovelloUtils.NO_MOVE, depth);
     }
 
     private final @NotNull Options options;
@@ -117,12 +117,16 @@ public class MidgameSearcher {
     static class BA {
         int bestMove = -1;
         int score = NovelloUtils.NO_MOVE;
+
+        boolean isValid(int alpha) {
+            return score <= alpha || bestMove >=0;
+        }
     }
 
     private static final long[] masks = {BitBoardUtils.CORNERS, ~(BitBoardUtils.CORNERS | BitBoardUtils.X_SQUARES), BitBoardUtils.X_SQUARES};
 
     /**
-     * Find the best move in a position using tree search.
+     * Find the best move in a position either from the hash table or mpc.
      * <p/>
      * Precondition: The mover is guaranteed to have a move. depth > 0.
      * <p/>
@@ -136,13 +140,13 @@ public class MidgameSearcher {
      * @param depth      remaining search depth
      * @return BA see above
      */
-    BA treeMove(long mover, long enemy, long moverMoves, int alpha, int beta, int depth, boolean mpc) {
+    BA hashMove(long mover, long enemy, long moverMoves, int alpha, int beta, int depth) {
         assert beta > alpha;
         assert depth > 0;
 
         // see if it cuts off
         final MidgameHashTables.Entry entry = midgameHashTables.find(mover, enemy);
-        if (entry!=null && entry.getDepth()>= depth) {
+        if (entry != null && entry.getDepth() >= depth) {
             if (entry.getMin() >= beta) {
                 final BA ba = new BA();
                 ba.bestMove = entry.getBestMove();
@@ -157,30 +161,32 @@ public class MidgameSearcher {
             }
         }
 
-        final int suggestedMove = getSuggestedMove(mover, enemy, moverMoves, alpha, beta, depth, mpc);
-        final BA ba = treeMoveWithPossibleSuggestion(mover, enemy, moverMoves, alpha, beta, depth, mpc, suggestedMove);
+        final int suggestedMove = getSuggestedMove(mover, enemy, moverMoves, alpha, beta, depth);
+        final BA ba = treeMoveWithPossibleSuggestion(mover, enemy, moverMoves, alpha, beta, depth, suggestedMove);
         midgameHashTables.store(mover, enemy, alpha, beta, depth, ba.bestMove, ba.score);
+
+        assert ba.isValid(alpha);
         return ba;
     }
 
-    private int getSuggestedMove(long mover, long enemy, long moverMoves, int alpha, int beta, int depth, boolean mpc) {
+    private int getSuggestedMove(long mover, long enemy, long moverMoves, int alpha, int beta, int depth) {
         final MidgameHashTables.Entry entry = midgameHashTables.find(mover, enemy);
 
         if (entry != null && entry.getBestMove() >= 0) {
             return entry.getBestMove();
         } else if (depth > 2) {
             // internal iterative deepening
-            return treeMove(mover, enemy, moverMoves, alpha, beta, depth > 3 ? 2 : 1, mpc).bestMove;
+            return hashMove(mover, enemy, moverMoves, alpha, beta, depth > 3 ? 2 : 1).bestMove;
         }
         return -1;
     }
 
-    private BA treeMoveWithPossibleSuggestion(long mover, long enemy, long moverMoves, int alpha, int beta, int depth, boolean mpc, int suggestedMove) {
+    private BA treeMoveWithPossibleSuggestion(long mover, long enemy, long moverMoves, int alpha, int beta, int depth, int suggestedMove) {
         final BA ba;
         if (suggestedMove >= 0) {
-            ba = treeMoveWithSuggestion(mover, enemy, moverMoves, alpha, beta, depth, mpc, suggestedMove);
+            ba = treeMoveWithSuggestion(mover, enemy, moverMoves, alpha, beta, depth, suggestedMove);
         } else {
-            ba = treeMoveNoSuggestion(mover, enemy, moverMoves, alpha, beta, depth, mpc, new BA());
+            ba = treeMoveNoSuggestion(mover, enemy, moverMoves, alpha, beta, depth, new BA());
         }
         return ba;
     }
@@ -188,9 +194,9 @@ public class MidgameSearcher {
     /**
      * @return best move and score.
      */
-    private BA treeMoveWithSuggestion(long mover, long enemy, long moverMoves, int alpha, int beta, int depth, boolean mpc, int suggestedMove) {
+    private BA treeMoveWithSuggestion(long mover, long enemy, long moverMoves, int alpha, int beta, int depth, int suggestedMove) {
         BA ba = new BA();
-        final int subScore = calcMoveScore(mover, enemy, alpha, beta, depth, suggestedMove, mpc);
+        final int subScore = calcMoveScore(mover, enemy, alpha, beta, depth, suggestedMove);
         if (subScore > ba.score) {
             ba.score = subScore;
             if (subScore > alpha) {
@@ -202,17 +208,17 @@ public class MidgameSearcher {
             }
         }
         moverMoves &= ~(1L << suggestedMove);
-        return treeMoveNoSuggestion(mover, enemy, moverMoves, alpha, beta, depth, mpc, ba);
+        return treeMoveNoSuggestion(mover, enemy, moverMoves, alpha, beta, depth, ba);
     }
 
-    private BA treeMoveNoSuggestion(long mover, long enemy, long moverMoves, int alpha, int beta, int depth, boolean mpc, BA ba) {
+    private BA treeMoveNoSuggestion(long mover, long enemy, long moverMoves, int alpha, int beta, int depth, BA ba) {
         for (long mask : masks) {
             long movesToCheck = moverMoves & mask;
             while (movesToCheck != 0) {
                 final int sq = Long.numberOfTrailingZeros(movesToCheck);
                 final long placement = 1L << sq;
                 movesToCheck ^= placement;
-                final int subScore = calcMoveScore(mover, enemy, alpha, beta, depth, sq, mpc);
+                final int subScore = calcMoveScore(mover, enemy, alpha, beta, depth, sq);
                 if (subScore > ba.score) {
                     ba.score = subScore;
                     if (subScore > alpha) {
@@ -229,7 +235,7 @@ public class MidgameSearcher {
         return ba;
     }
 
-    private int calcMoveScore(long mover, long enemy, int alpha, int beta, int depth, int sq, boolean mpc) {
+    private int calcMoveScore(long mover, long enemy, int alpha, int beta, int depth, int sq) {
         final Square square = Square.of(sq);
         final long flips = counter.calcFlips(square, mover, enemy);
         final long subEnemy = mover | (1L << sq) | flips;
@@ -237,7 +243,7 @@ public class MidgameSearcher {
         if (options.printSearch) {
             System.out.format("%s[%d] (%+5d,%+5d) scoring(%s):\n", indent(depth), depth, alpha, beta, BitBoardUtils.sqToText(sq));
         }
-        final int subScore = -searchScore(subMover, subEnemy, -beta, -alpha, depth - 1, mpc);
+        final int subScore = -searchScore(subMover, subEnemy, -beta, -alpha, depth - 1);
         if (options.printSearch) {
             System.out.format("%s[%d] (%+5d,%+5d) score(%s)=%+5d\n", indent(depth), depth, alpha, beta, BitBoardUtils.sqToText(sq), subScore);
         }
@@ -254,15 +260,15 @@ public class MidgameSearcher {
      * @param depth remaining search depth. If depth &le; 0 this will return the eval.
      * @return score
      */
-    private int searchScore(long mover, long enemy, int alpha, int beta, int depth, boolean mpc) {
+    private int searchScore(long mover, long enemy, int alpha, int beta, int depth) {
         final long moverMoves = BitBoardUtils.calcMoves(mover, enemy);
         if (moverMoves != 0) {
-            final int score = treeScore(mover, enemy, moverMoves, alpha, beta, depth, mpc);
+            final int score = treeScore(mover, enemy, moverMoves, alpha, beta, depth);
             return score;
         } else {
             final long enemyMoves = BitBoardUtils.calcMoves(enemy, mover);
             if (enemyMoves != 0) {
-                final int score = treeScore(enemy, mover, enemyMoves, -beta, -alpha, depth, mpc);
+                final int score = treeScore(enemy, mover, enemyMoves, -beta, -alpha, depth);
                 return -score;
             } else {
                 return DISK_VALUE * BitBoardUtils.terminalScore(mover, enemy);
@@ -270,7 +276,7 @@ public class MidgameSearcher {
         }
     }
 
-    int treeScore(long mover, long enemy, long moverMoves, int alpha, int beta, int depth, boolean mpc) {
+    int treeScore(long mover, long enemy, long moverMoves, int alpha, int beta, int depth) {
         if (depth <= 0) {
             return counter.eval(mover, enemy);
         }
@@ -282,10 +288,10 @@ public class MidgameSearcher {
             return ShallowSolver.solveNoParity(counter, mover, enemy, solverAlpha, solverBeta, nEmpty, moverMoves) * DISK_VALUE;
         }
 
-        if (mpc && depth >= 2) {
-            return mpcTreeScore(mover, enemy, moverMoves, alpha, beta, depth).score;
+        if (options.mpc && depth >= 2) {
+            return mpcMove(mover, enemy, moverMoves, alpha, beta, depth).score;
         }
-        return treeMove(mover, enemy, moverMoves, alpha, beta, depth, mpc).score;
+        return hashMove(mover, enemy, moverMoves, alpha, beta, depth).score;
     }
 
     static int solverBeta(int beta) {
@@ -307,15 +313,30 @@ public class MidgameSearcher {
     }
 
     /**
-     * Search using MPC. return score and, if available, best move
+     * Search using MPC. Return score and, if available, best move.
      * <p/>
-     * This is kind of a funny one. Due to MPC we might get a depth-0 cutoff instead of a move; in this case ba.move
-     * will not be updated.
+     * Like other routines, this will return -1 if the best move was not available due to alpha cutoff.
+     * Unlike other routines, it can also return -1 if score >= beta due to a depth-0 cutoff .
      *
      * @return best move (or -1 if no best move) and score
      */
-    private BA mpcTreeScore(long mover, long enemy, long moverMoves, int alpha, int beta, int depth) {
-        BA ba = new BA();
+    private BA mpcMove(long mover, long enemy, long moverMoves, int alpha, int beta, int depth) {
+        final BA ba = new BA();
+
+        // see if it cuts off
+        final MidgameHashTables.Entry entry = midgameHashTables.find(mover, enemy);
+        if (entry != null && entry.getDepth() >= depth) {
+            if (entry.getMin() >= beta) {
+                ba.bestMove = entry.getBestMove();
+                ba.score = entry.getMin();
+                return ba;
+            }
+            if (entry.getMax() <= alpha) {
+                ba.bestMove = entry.getBestMove();
+                ba.score = entry.getMax();
+                return ba;
+            }
+        }
 
         final int nEmpty = BitBoardUtils.nEmpty(mover, enemy);
         Mpc.Cutter[] cutters = counter.mpcs.cutters(nEmpty, depth);
@@ -325,7 +346,7 @@ public class MidgameSearcher {
             final int shallowBeta = cutter.shallowBeta(beta);
             final int shallowDepth = cutter.shallowDepth;
             if (shallowDepth <= 0) {
-                final int mpcScore = treeScore(mover, enemy, moverMoves, shallowAlpha, shallowBeta, shallowDepth, true);
+                final int mpcScore = counter.eval(mover, enemy);
                 if (mpcScore >= shallowBeta) {
                     ba.score = beta;
                     return ba;
@@ -335,7 +356,7 @@ public class MidgameSearcher {
                     return ba;
                 }
             } else {
-                BA mpcBa = mpcTreeScore(mover, enemy, moverMoves, shallowAlpha, shallowBeta, shallowDepth);
+                BA mpcBa = mpcMove(mover, enemy, moverMoves, shallowAlpha, shallowBeta, shallowDepth);
                 if (mpcBa.score >= shallowBeta) {
                     ba.score = beta;
                     ba.bestMove = mpcBa.bestMove;
@@ -348,11 +369,13 @@ public class MidgameSearcher {
                 ba.bestMove = mpcBa.bestMove;
             }
         }
-        if (ba.bestMove >= 0) {
-            return treeMoveWithSuggestion(mover, enemy, moverMoves, alpha, beta, depth, true, ba.bestMove);
-        } else {
-            return treeMove(mover, enemy, moverMoves, alpha, beta, depth, true);
-        }
+
+        final int suggestedMove = getSuggestedMove(mover, enemy, moverMoves, alpha, beta, depth);
+        final BA ba1 = treeMoveWithPossibleSuggestion(mover, enemy, moverMoves, alpha, beta, depth, suggestedMove);
+        midgameHashTables.store(mover, enemy, alpha, beta, depth, ba1.bestMove, ba1.score);
+
+        assert ba1.isValid(alpha);
+        return ba1;
     }
 
     private String indent(int depth) {
