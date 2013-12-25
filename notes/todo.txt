@@ -5,3 +5,12 @@
 * Midgame Search
   * Solve with <= 4 empties
   * Hash table
+
+* Gui
+  * Records: Fastest win, biggest win
+  * Get coins from winning
+  * Buy themes with coins
+  * Unlock harder difficulties
+  * Puzzles
+  * Fade on move
+  * Easier opponents

@@ -5,7 +5,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -13,7 +12,7 @@ import java.util.List;
  * Game history
  */
 public class MutableGame {
-    public final @NotNull Position startPosition;
+    private final @NotNull State startState;
     public final @NotNull String blackName;
     public final @NotNull String whiteName;
     public final @NotNull String place;
@@ -26,7 +25,11 @@ public class MutableGame {
     private Position lastPosition;
 
     public MutableGame(@NotNull Position startPosition, @NotNull String blackName, @NotNull String whiteName, @NotNull String place) {
-        this.startPosition = startPosition;
+        this(startPosition, blackName, whiteName, place, new GameClock(0, 0), new GameClock(0, 0));
+    }
+    public MutableGame(@NotNull Position startPosition, @NotNull String blackName, @NotNull String whiteName
+            , @NotNull String place, @NotNull GameClock blackClock, @NotNull GameClock whiteClock) {
+        this.startState = new State(startPosition, blackClock, whiteClock);
         lastPosition = startPosition;
         this.blackName = blackName;
         this.whiteName = whiteName;
@@ -47,11 +50,17 @@ public class MutableGame {
         sb.append("PB[").append(blackName).append("]");
         sb.append("PW[").append(whiteName).append("]");
         sb.append("RE[").append(isOver ? netScore() : "?").append("]");
-        sb.append("TI[0]");
+        if (startState.blackClock == startState.whiteClock) {
+            sb.append("TI[").append(startState.blackClock).append("]");
+        }
+        else {
+            sb.append("TB[").append(startState.blackClock).append("]");
+            sb.append("TW[").append(startState.whiteClock).append("]");
+        }
         sb.append("TY[8r]");
 
-        sb.append("BO[8 ").append(startPosition.positionString()).append("]");
-        Position cur = startPosition;
+        sb.append("BO[8 ").append(startState.position.positionString()).append("]");
+        Position cur = startState.position;
         for (Move move : moves) {
             sb.append(cur.blackToMove ? "B[" : "W[");
             move.appendTo(sb);
@@ -99,7 +108,7 @@ public class MutableGame {
     }
 
     public @NotNull Position getStartPosition() {
-        return startPosition;
+        return startState.position;
     }
 
     public Position getLastPosition() {
@@ -159,9 +168,19 @@ public class MutableGame {
         if (!bo.startsWith("8 ")) {
             throw new IllegalArgumentException("We can only handle 8x8 boards.");
         }
+        final GameClock blackClock;
+        final GameClock whiteClock;
+        if (tags.containsKey("TI")) {
+            blackClock = whiteClock = new GameClock(tags.get("TI"));
+        }
+        else {
+            blackClock = new GameClock(getRequiredTag(tags, "TB"));
+            whiteClock = new GameClock(getRequiredTag(tags, "TW"));
+        }
+
         final Position startPosition = Position.of(bo.substring(2));
 
-        final MutableGame game = new MutableGame(startPosition, blackName, whiteName, place);
+        final MutableGame game = new MutableGame(startPosition, blackName, whiteName, place, blackClock, whiteClock);
 
         // add moves
         int loc = 0;
@@ -206,6 +225,13 @@ public class MutableGame {
         return tags;
     }
 
+    /**
+     * Get the value of a tag, throwing an IllegalArgumentException if the tag can't be found.
+     *
+     * @param tags list of tags
+     * @param tag tag name
+     * @return tag value
+     */
     private static String getRequiredTag(HashMap<String, String> tags, String tag) {
         final String value = tags.get(tag);
         if (value == null) {
@@ -275,15 +301,8 @@ public class MutableGame {
      * @param nMoves number of moves to go forward.
      * @return the position.
      */
-    public Position getPositionAfter(int nMoves) {
-        Require.geq(nMoves, 0);
-        Require.leq(nMoves, "nMove", moves.size(), "total moves in the game");
-
-        Position pos = getStartPosition();
-        for (int i = 0; i < nMoves; i++) {
-            pos = pos.playOrPass(moves.get(i).sq);
-        }
-        return pos;
+    public @NotNull Position getPositionAfter(int nMoves) {
+        return getStateAfter(nMoves).position;
     }
 
     /**
@@ -302,5 +321,25 @@ public class MutableGame {
             counts = !counts;
         }
         return time;
+    }
+
+    /**
+     * Get the State at the beginning of the game.
+     *
+     * @return game start State
+     */
+    @NotNull public State getStartState() {
+        return startState;
+    }
+
+    public @NotNull State getStateAfter(int nMoves) {
+        Require.geq(nMoves, 0);
+        Require.leq(nMoves, "nMove", moves.size(), "total moves in the game");
+
+        State state = getStartState();
+        for (int i = 0; i < nMoves; i++) {
+            state = state.playOrPass(moves.get(i));
+        }
+        return state;
     }
 }

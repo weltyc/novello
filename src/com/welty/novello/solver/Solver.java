@@ -83,11 +83,15 @@ public class Solver {
     }
 
     public Solver(@NotNull Eval eval) {
-        this(new Counter(eval));
+        this(new Counter(eval), new MidgameSearcher.Options(""));
     }
 
-    private Solver(Counter counter) {
-        this(counter, new MidgameSearcher(counter));
+    public Solver(@NotNull Eval eval, MidgameSearcher.Options options) {
+        this(new Counter(eval), options);
+    }
+
+    private Solver(Counter counter, MidgameSearcher.Options options) {
+        this(counter, new MidgameSearcher(counter, options));
     }
 
     private Solver(@NotNull Counter counter, @NotNull MidgameSearcher midgameSearcher) {

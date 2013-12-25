@@ -60,7 +60,7 @@ public class SearchTimer {
 
         final long t0 = System.currentTimeMillis();
         for (MutableGame game : games) {
-            Position pos = game.startPosition;
+            Position pos = game.getStartPosition();
             for (Move move : game.getMoves()) {
                 pos = pos.playOrPass(move.sq);
                 final int nEmpty = pos.nEmpty();

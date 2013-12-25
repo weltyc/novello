@@ -1,5 +1,6 @@
 package com.welty.novello.core;
 
+import com.orbanova.common.date.Time;
 import junit.framework.TestCase;
 
 import java.util.List;
@@ -11,18 +12,19 @@ public class MutableGameTest extends TestCase {
 
     public void testUpdates() {
         final Position startPosition = Position.START_POSITION;
-        final MutableGame game = new MutableGame(startPosition, "Boris", "William", "VistaNova");
+        final GameClock clock = new GameClock("5:00");
+        final MutableGame game = new MutableGame(startPosition, "Boris", "William", "VistaNova", clock, clock);
         assertEquals(Position.START_POSITION, game.getStartPosition());
         assertEquals(Position.START_POSITION, game.getLastPosition());
-        assertTrue(game.toGgf().contains("BO[8 -------- -------- -------- ---O*--- ---*O--- -------- -------- -------- *]"));
-        assertTrue(game.toGgf().contains("PC[VistaNova]"));
-        assertTrue(game.toGgf().contains("TY[8r]"));
-        assertTrue(game.toGgf().contains("RE[?]"));
-        assertTrue(game.toGgf().contains("TI["));
-        assertTrue(game.toGgf().contains("PB[Boris]"));
-        assertTrue(game.toGgf().contains("PW[William]"));
-        assertTrue(game.toGgf().startsWith("(;GM[Othello]"));
-        assertTrue(game.toGgf().endsWith(";)"));
+        final String ggf = game.toGgf();
+        assertTrue(ggf.contains("BO[8 -------- -------- -------- ---O*--- ---*O--- -------- -------- -------- *]"));
+        assertTrue(ggf.contains("PC[VistaNova]"));
+        assertTrue(ggf.contains("TY[8r]"));
+        assertTrue(ggf.contains("RE[?]"));
+        assertTrue(ggf.contains("PB[Boris]"));
+        assertTrue(ggf.contains("TI[05:00]"));
+        assertTrue(ggf.startsWith("(;GM[Othello]"));
+        assertTrue(ggf.endsWith(";)"));
 
         game.play("F5");
         final Position nextPosition = new Position(0x000000081C000000L, 0x0000001000000000L, false);
@@ -60,6 +62,16 @@ public class MutableGameTest extends TestCase {
         assertEquals(pvs.get(0).enemy, startPosition.enemy());
     }
 
+    public void testParseUnequalTimes() {
+        final String unequalClockText = "TB[05:00//02:00]TW[01:00//01:00]";
+        final String unequal = ggf.replace("TI[05:00//02:00]", unequalClockText);
+        final MutableGame game = MutableGame.ofGgf(unequal);
+        assertEquals("05:00//02:00", game.getStartState().blackClock.toString());
+        assertEquals("01:00//01:00", game.getStartState().whiteClock.toString());
+        final String out = game.toGgf();
+        assertTrue(out.contains(unequalClockText));
+    }
+
     public void testMove() {
         assertEquals("time and eval", "H8/-2.01/1.03", new Move(new MoveScore(0, -201), 1.03).toString());
         assertEquals("time", "H8//1.03", new Move(new MoveScore(0, 0), 1.03).toString());
@@ -74,9 +86,11 @@ public class MutableGameTest extends TestCase {
         assertEquals("Saio1200", game.blackName);
         assertEquals("Saio3000", game.whiteName);
         assertEquals("GGS/os", game.place);
-        assertEquals("-------- -------- -------- ---O*--- ---*O--- -------- -------- -------- *", game.startPosition.positionString());
+        assertEquals("-------- -------- -------- ---O*--- ---*O--- -------- -------- -------- *", game.getStartPosition().positionString());
         assertEquals(0, game.getLastPosition().nEmpty());
         assertEquals(0, game.getLastPosition().terminalScore());
+        assertEquals(5* Time.MINUTE, game.getStartState().whiteClock.remaining);
+        assertEquals(5* Time.MINUTE, game.getStartState().blackClock.remaining);
     }
 
     public void testCalcPositionAt() {
@@ -96,4 +110,10 @@ public class MutableGameTest extends TestCase {
 
         System.out.println(game.toGgf());
     }
+
+    public void testGetStateAfter() {
+        final MutableGame game = MutableGame.ofGgf(ggf);
+        assertEquals(game.getStartState(), game.getStateAfter(0));
+    }
+
 }

@@ -197,13 +197,6 @@ public class SolverTest extends TestCase {
         }
     }
 
-//    public static void main(String[] args) {
-//        final EndgamePlayer player = new EndgamePlayer();
-//        final NTest ntest = new NTest(4, false);
-//        Position position = new Position("-----O-- --OOOOOO **O***O* -*OOOOO* ***OO*O* **O**O** ******** O*****-- O");
-//        new SelfPlayGame(position, ntest, ntest, "", true, -1).call();
-//    }
-
     /**
      * A board position, with white-to-move, together with the value of the position to white with perfect play.
      * <p/>
