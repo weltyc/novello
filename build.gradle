@@ -7,25 +7,25 @@ version = '0.01-SNAPSHOT'
 
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
-
+compileJava.options.encoding = 'UTF-8'
 
 sourceSets {
-  main {
-    java {
-      srcDir 'src'
+    main {
+        java {
+            srcDir 'src'
+        }
+        resources {
+            srcDirs java.srcDirs as File[]
+        }
     }
-    resources {
-      srcDirs java.srcDirs as File[]
+    test {
+        java {
+            srcDir 'test'
+        }
+        resources {
+            srcDirs java.srcDirs as File[]
+        }
     }
-  }
-  test {
-    java {
-      srcDir 'test'
-    }
-    resources {
-      srcDirs java.srcDirs as File[]
-    }
-  }
 }
 
 jar {
@@ -47,9 +47,9 @@ jar {
 }
 
 repositories {
-     mavenLocal()
-     maven { url "http://repository.jboss.com/maven2" }
-     maven { url "http://repo.maven.apache.org/maven2" }
+    mavenLocal()
+    maven { url "http://repository.jboss.com/maven2" }
+    maven { url "http://repo.maven.apache.org/maven2" }
 }
 
 dependencies {
@@ -69,7 +69,7 @@ buildscript {
     }
 }
 
-task myProguardTask(type: proguard.gradle.ProGuardTask) {
+task proguard(type: proguard.gradle.ProGuardTask) {
     configuration 'myconfig.pro'
 //    libraryjars "${System.getProperty('java.home')}/lib/rt.jar"
 //    injars  'build/libs/novello-0.01-SNAPSHOT.jar'
