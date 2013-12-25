@@ -10,14 +10,14 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * A Player that chooses its move using an Eval and a search.
- *
+ * <p/>
  * This implementation is NOT thread-safe.
  */
 public class EvalPlayer implements Player {
     @NotNull private final Eval eval;
     private volatile int searchDepth;
     private final String options;
-    private final MidgameSearcher  searcher;
+    private final MidgameSearcher searcher;
     private final Solver solver;
 
     public EvalPlayer(@NotNull Eval eval, int searchDepth, String options) {
@@ -30,7 +30,7 @@ public class EvalPlayer implements Player {
 
     public MoveScore calcMove(@NotNull Position board, long moverMoves, int searchFlags) {
         if (board.nEmpty() > 8) {
-            return searcher.calcMove(board, board.calcMoves(), searchDepth);
+            return searcher.getMoveScore(board, board.calcMoves(), searchDepth);
         } else {
             return solveMove(board);
         }
@@ -41,7 +41,7 @@ public class EvalPlayer implements Player {
     }
 
     @Override public String toString() {
-       return eval + ":" + searchDepth + options;
+        return eval + ":" + searchDepth + options;
     }
 
     /**
@@ -49,7 +49,7 @@ public class EvalPlayer implements Player {
      * @return the perfect-play move
      */
     MoveScore solveMove(Position board) {
-        final MoveScore moveScore = solver.solveWithMove(board.mover(), board.enemy());
+        final MoveScore moveScore = solver.getMoveScore(board.mover(), board.enemy());
         return new MoveScore(moveScore.sq, moveScore.score * CoefficientCalculator.DISK_VALUE);
     }
 

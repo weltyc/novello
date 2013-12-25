@@ -32,7 +32,7 @@ public class MidgameSearcherTest extends TestCase {
 
 
         final long moves = prev.calcMoves();
-        final MoveScore moveScore = midgameSearcher.calcMove(prev, moves, 1);
+        final MoveScore moveScore = midgameSearcher.getMoveScore(prev, moves, 1);
         assertTrue("must be a legal move", BitBoardUtils.isBitSet(moves, moveScore.sq));
         assertEquals(Long.bitCount(moves), counter.nFlips());
 
@@ -118,16 +118,16 @@ public class MidgameSearcherTest extends TestCase {
     }
 
     public void testMpc() {
-        for (int depth = 4; depth <= 6; depth+=2) {
+        for (int depth = 4; depth <= 6; depth += 2) {
             // simple test: 4 ply search should give the same result with fewer nodes
             final Eval eval = Players.currentEval();
             final MidgameSearcher mpcSearcher = new MidgameSearcher(new Counter(eval));
             final MidgameSearcher fwSearcher = new MidgameSearcher(new Counter(eval), "w");
             final Position position = Position.of("-------- -------- -------- --OOO--- --*O*--- ----OO-- -------- -------- *");
             final int fwScore = fwSearcher.calcScore(position, depth);
-            final long n = fwSearcher.counts().nFlips;
+            final long n = fwSearcher.getCounts().nFlips;
             final int mpcScore = mpcSearcher.calcScore(position, depth);
-            final long nMpc = mpcSearcher.counts().nFlips;
+            final long nMpc = mpcSearcher.getCounts().nFlips;
             assertEquals(fwScore, mpcScore);
             System.out.println("MPC used " + nMpc + ", full-width used " + n);
             assertTrue("MPC should give the same result with fewer nodes", nMpc < n);
@@ -140,26 +140,26 @@ public class MidgameSearcherTest extends TestCase {
         final int depth = 4;
 
         Position position = Position.START_POSITION;
-        midgameSearcher.calcMove(position, position.calcMoves(), depth);
-        final Counts counts = midgameSearcher.counts();
+        midgameSearcher.getMoveScore(position, position.calcMoves(), depth);
+        final Counts counts = midgameSearcher.getCounts();
         final long nFlips = counts.nFlips;
         final long nEvals = counts.nEvals;
         System.out.format("%,d flips and %,d evals", nFlips, nEvals);
         assertTrue(nFlips < nEvals * 2);
     }
-    
+
     public void testSolverAlpha() {
-        for (int i=-6400; i<=6400 ; i++) {
-            final int expected = (int)Math.floor(i/(double)CoefficientCalculator.DISK_VALUE);
-            assertEquals(""+i, expected, MidgameSearcher.solverAlpha(i));
+        for (int i = -6400; i <= 6400; i++) {
+            final int expected = (int) Math.floor(i / (double) CoefficientCalculator.DISK_VALUE);
+            assertEquals("" + i, expected, MidgameSearcher.solverAlpha(i));
         }
         assertEquals(-64, MidgameSearcher.solverAlpha(-100000));
     }
-    
+
     public void testSolverBeta() {
-        for (int i=-6400; i<=6400 ; i++) {
-            final int expected = (int)Math.ceil(i / (double) CoefficientCalculator.DISK_VALUE);
-            assertEquals(""+i, expected, MidgameSearcher.solverBeta(i));
+        for (int i = -6400; i <= 6400; i++) {
+            final int expected = (int) Math.ceil(i / (double) CoefficientCalculator.DISK_VALUE);
+            assertEquals("" + i, expected, MidgameSearcher.solverBeta(i));
         }
         assertEquals(64, MidgameSearcher.solverBeta(100000));
     }

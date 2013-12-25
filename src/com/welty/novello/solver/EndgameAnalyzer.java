@@ -31,7 +31,7 @@ public class EndgameAnalyzer {
         for (Move move : moves) {
             final int nEmpty = position.nEmpty();
             if (nEmpty <= 22 && position.calcMoves() != 0) {
-                final MoveScore best = solver.solveWithMove(position.mover(), position.enemy());
+                final MoveScore best = solver.getMoveScore(position.mover(), position.enemy());
                 Position next = position.play(move.sq);
                 final int score = -solver.solve(next.mover(), next.enemy());
 

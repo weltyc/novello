@@ -50,7 +50,7 @@ public class MidgameSearcher {
     /**
      * @return node counts (flips, evals) since the search was constructed.
      */
-    public Counts counts() {
+    @NotNull public Counts getCounts() {
         return counter.getNodeStats();
     }
 
@@ -66,7 +66,7 @@ public class MidgameSearcher {
      * @param depth      search depth
      * @return the best move from this position, and its score in centi-disks
      */
-    public MoveScore calcMove(Position position, long moverMoves, int depth) {
+    public MoveScore getMoveScore(Position position, long moverMoves, int depth) {
         this.rootDepth = depth;
         final BA ba = hashMove(position.mover(), position.enemy(), moverMoves, NovelloUtils.NO_MOVE, -NovelloUtils.NO_MOVE, depth);
         return new MoveScore(ba.bestMove, ba.score);
@@ -119,7 +119,7 @@ public class MidgameSearcher {
         int score = NovelloUtils.NO_MOVE;
 
         boolean isValid(int alpha) {
-            return score <= alpha || bestMove >=0;
+            return score <= alpha || bestMove >= 0;
         }
     }
 

@@ -1,0 +1,48 @@
+FFO test timings
+----------------
+On home computer (i7-2600):
+NTest:
+    #40  A2  38     1.0s  20 empty      0.0 Mn     0.0 Mn/s
+    #41  H4   0     1.4s  22 empty      0.0 Mn     0.0 Mn/s
+    #42  G2   6     1.3s  22 empty      0.0 Mn     0.0 Mn/s
+    #43  C7 -12     2.6s  23 empty      0.0 Mn     0.0 Mn/s
+    #44  D2 -14     1.5s  23 empty      0.0 Mn     0.0 Mn/s
+    #45  B2   6    22.3s  24 empty      0.0 Mn     0.0 Mn/s
+    #46  B3  -8     6.2s  24 empty      0.0 Mn     0.0 Mn/s
+    #47  G2   4     3.3s  25 empty      0.0 Mn     0.0 Mn/s
+    #48  F6  28    36.5s  25 empty      0.0 Mn     0.0 Mn/s
+    #49  E1  16   105.5s  26 empty      0.0 Mn     0.0 Mn/s
+    #50  D8  10   204.5s  26 empty      0.0 Mn     0.0 Mn/s
+    #51  E2   6    23.2s  27 empty      0.0 Mn     0.0 Mn/s
+    #52  A3   0    26.0s  27 empty      0.0 Mn     0.0 Mn/s
+    #53  D8  -2   384.7s  28 empty      0.0 Mn     0.0 Mn/s
+    #54  C7  -2   383.6s  28 empty      0.0 Mn     0.0 Mn/s
+    #55  B7   0  3311.1s  29 empty      0.0 Mn     0.0 Mn/s
+    #56  H5   2   282.6s  29 empty      0.0 Mn     0.0 Mn/s
+    #57  A6 -10   490.1s  30 empty      0.0 Mn     0.0 Mn/s
+    #58  G1   4   249.7s  30 empty      0.0 Mn     0.0 Mn/s
+    #59  H4  64  1451.1s  34 empty      0.0 Mn     0.0 Mn/s
+    Total:       6988.2s                0.0 Gn     0.0 Mn/s   20/20 correct moves
+
+Novello:
+    #40  A2  38     2.4s  20 empty     30.7 Mn    13.0 Mn/s
+    #41  H4   0     2.2s  22 empty     37.4 Mn    16.9 Mn/s
+    #42  G2   6     2.6s  22 empty     50.3 Mn    19.7 Mn/s
+    #43  C7 -12     7.2s  23 empty    120.6 Mn    16.7 Mn/s
+    #44  D2 -14     1.8s  23 empty     27.8 Mn    15.6 Mn/s
+    #45  B2   6    22.5s  24 empty    408.0 Mn    18.1 Mn/s
+    #46  B3  -8     6.9s  24 empty    115.0 Mn    16.6 Mn/s
+    #47  G2   4     2.3s  25 empty     38.1 Mn    16.5 Mn/s
+    #48  F6  28    28.5s  25 empty    377.1 Mn    13.2 Mn/s
+    #49  E1  16    55.4s  26 empty    979.5 Mn    17.7 Mn/s
+    #50  D8  10    89.4s  26 empty   1285.0 Mn    14.4 Mn/s
+    #51  A3   6    61.1s  27 empty    897.2 Mn    14.7 Mn/s
+    #52  A3   0    34.9s  27 empty    525.4 Mn    15.1 Mn/s
+    #53  D8  -2   463.5s  28 empty   6915.0 Mn    14.9 Mn/s
+    #54  C7  -2   445.6s  28 empty   7717.6 Mn    17.3 Mn/s
+    #55  B7   0  1427.0s  29 empty  21495.6 Mn    15.1 Mn/s
+    #56  H5   2   137.6s  29 empty   1890.4 Mn    13.7 Mn/s
+    #57  A6 -10   453.1s  30 empty   6280.4 Mn    13.9 Mn/s
+    #58  G1   4   158.5s  30 empty   2448.9 Mn    15.4 Mn/s
+    #59  G8  64     0.3s  34 empty      1.1 Mn     3.8 Mn/s
+    Total:       3402.8s               51.6 Gn    15.2 Mn/s   20/20 correct moves

@@ -238,14 +238,14 @@ public class SolverTest extends TestCase {
         Position bb = testCases[2];
         final Solver solver = new Solver();
         // switch player to move because mover has no move.
-        final MoveScore result = solver.solveWithMove(bb.enemy(), bb.mover());
+        final MoveScore result = solver.getMoveScore(bb.enemy(), bb.mover());
         assertEquals(1, result.sq);
     }
 
     public void testSolveWithMove2() {
         Position bb = new Position("********************O*****OO*O****-********O*****O.OOO**--O---**", true);
         final Solver solver = new Solver();
-        final MoveScore result = solver.solveWithMove(bb.mover(), bb.enemy());
+        final MoveScore result = solver.getMoveScore(bb.mover(), bb.enemy());
         // A8, F8, C5 all win by 64.
         //noinspection OctalInteger
         assertTrue(result.sq == 007 || result.sq == 002 || result.sq == 035);

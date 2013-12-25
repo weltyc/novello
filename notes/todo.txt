@@ -12,5 +12,4 @@
   * Buy themes with coins
   * Unlock harder difficulties
   * Puzzles
-  * Fade on move
   * Easier opponents

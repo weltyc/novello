@@ -54,7 +54,7 @@ public class SearchTimer {
 
     private static long countNodes(boolean mpc, int depth, boolean printStats, MidgameSearcher midgameSearcher) {
         midgameSearcher.clear();
-        final Counts c0 = midgameSearcher.counts();
+        final Counts c0 = midgameSearcher.getCounts();
 
         final List<MutableGame> games = SampleGames.saioGames();
 
@@ -67,7 +67,7 @@ public class SearchTimer {
                 if (nEmpty >= 10 && nEmpty <= 40) {
                     final long moves = pos.calcMoves();
                     if (moves != 0) {
-                        midgameSearcher.calcMove(pos, moves, depth);
+                        midgameSearcher.getMoveScore(pos, moves, depth);
                         midgameSearcher.clear();
                     }
                 }
@@ -75,7 +75,7 @@ public class SearchTimer {
         }
 
         final long dt = System.currentTimeMillis() - t0;
-        final Counts counts = midgameSearcher.counts().minus(c0);
+        final Counts counts = midgameSearcher.getCounts().minus(c0);
         if (printStats) {
             final long nEvals = counts.nEvals;
             System.out.format("[%d %3s] %,d ms elapsed. %s. %4.2f us/eval \n"

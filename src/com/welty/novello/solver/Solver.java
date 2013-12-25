@@ -124,7 +124,7 @@ public class Solver {
      * @param enemy enemy disks
      * @return a {@link MoveScore} containing the best move
      */
-    public MoveScore solveWithMove(long mover, long enemy) {
+    @NotNull public MoveScore getMoveScore(long mover, long enemy) {
         if (BitBoardUtils.calcMoves(mover, enemy) == 0) {
             throw new IllegalArgumentException("mover must have a legal move");
         }
