@@ -71,6 +71,7 @@ buildscript {
 
 task proguard(type: proguard.gradle.ProGuardTask) {
     configuration 'myconfig.pro'
+    forceprocessing
 //    libraryjars "${System.getProperty('java.home')}/lib/rt.jar"
 //    injars  'build/libs/novello-0.01-SNAPSHOT.jar'
 //    outjars 'build/libs/novello-0.01-SNAPSHOT-pg.jar'
