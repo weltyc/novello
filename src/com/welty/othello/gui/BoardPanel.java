@@ -1,6 +1,5 @@
 package com.welty.othello.gui;
 
-import com.orbanova.common.misc.Logger;
 import com.welty.novello.core.BitBoardUtils;
 import com.welty.novello.core.Position;
 import org.jetbrains.annotations.NotNull;
@@ -20,7 +19,6 @@ public class BoardPanel extends JPanel implements GameView.ChangeListener {
     private static final Color BOARD_COLOR = new Color(0x00, 0x60, 0x00);
     private Position position;
     private Position prevPosition;
-    private static final Logger log = Logger.logger(BoardPanel.class);
     /**
      * Fade index, from 0..MAX_FADE
      */
@@ -48,7 +46,6 @@ public class BoardPanel extends JPanel implements GameView.ChangeListener {
             @Override public void actionPerformed(ActionEvent e) {
                 if (fadeIndex < FadeImages.MAX_FADE) {
                     fadeIndex++;
-                    log.info("Fade task");
                     repaint();
                 }
             }
