@@ -10,6 +10,10 @@ import java.io.IOException;
 public class PositionValue {
     public final long mover;
     public final long enemy;
+
+    /**
+     * Position value to mover, in centidisks
+     */
     public final int value;
 
     /**
@@ -19,7 +23,7 @@ public class PositionValue {
      *
      * @param mover mover bitboard
      * @param enemy enemy bitboard
-     * @param value net score; + means mover is ahead.
+     * @param value net score, in centidisks; + means mover is ahead.
      */
     public PositionValue(long mover, long enemy, int value) {
         final long moves = BitBoardUtils.calcMoves(mover, enemy);

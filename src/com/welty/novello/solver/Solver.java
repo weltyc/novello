@@ -4,6 +4,7 @@ import com.welty.novello.core.BitBoardUtils;
 import com.welty.novello.core.Counts;
 import com.welty.novello.core.MoveScore;
 import com.welty.novello.core.Square;
+import com.welty.novello.eval.CoefficientCalculator;
 import com.welty.novello.eval.Eval;
 import com.welty.novello.hash.HashTables;
 import com.welty.novello.selfplay.Players;
@@ -132,7 +133,7 @@ public class Solver {
         moverResultWithSorting(result, mover, enemy, -64, 64, nEmpties, parity, PRED_PV, -1);
         final MoveSorter moveSorter = moveSorters.get(nEmpties);
         final int sq = moveSorter.sq(result.iBestMove);
-        return new MoveScore(sq, result.score);
+        return new MoveScore(sq, result.score* CoefficientCalculator.DISK_VALUE);
     }
 
     /**

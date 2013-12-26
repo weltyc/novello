@@ -26,6 +26,16 @@ public class Mpc {
         }
     }
 
+    /**
+     * Create an Mpc with no data at all, just the formula approximation
+     */
+    Mpc() {
+        log.debug("creating Mpc");
+        for (int nEmpty = 0; nEmpty < slices.length; nEmpty++) {
+            slices[nEmpty] = new Slice(nEmpty, new ArrayList<int[]>());
+        }
+    }
+
     private static int readInt(String line, int beginIndex, int endIndex) {
         return Integer.parseInt(line.substring(beginIndex, endIndex).trim());
     }

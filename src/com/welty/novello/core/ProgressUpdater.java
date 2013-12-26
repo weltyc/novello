@@ -73,6 +73,7 @@ public class ProgressUpdater implements AutoCloseable {
     /**
      * If autoNote is set, the note on the progress bar is automatically set to something like
      * "13,428k of 21,477k {itemName}"
+     *
      * @param suffix item description
      */
     public synchronized void setAutoNote(String suffix) {
@@ -111,11 +112,17 @@ public class ProgressUpdater implements AutoCloseable {
         }
 
         @Override public void actionPerformed(ActionEvent e) {
-            // This is called from the EDT.
-            progressMonitor.setProgress(getProgress());
-            progressMonitor.setNote(getNote());
-            if (isClosed()) {
-                timer.stop();
+            try {
+                // This is called from the EDT.
+                progressMonitor.setProgress(getProgress());
+                progressMonitor.setNote(getNote());
+                if (isClosed()) {
+                    timer.stop();
+                    progressMonitor.close();
+                }
+            } catch (NullPointerException ex) {
+                // mac running with screen saver on
+                // ignore.
             }
         }
     }

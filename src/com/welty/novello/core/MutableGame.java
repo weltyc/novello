@@ -1,6 +1,7 @@
 package com.welty.novello.core;
 
 import com.orbanova.common.misc.Require;
+import com.welty.novello.eval.CoefficientCalculator;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -125,7 +126,8 @@ public class MutableGame {
     }
 
     private static PositionValue pv(Position pos, int netScore) {
-        return new PositionValue(pos.mover(), pos.enemy(), pos.blackToMove ? netScore : -netScore);
+        final int centidisks = CoefficientCalculator.DISK_VALUE * (pos.blackToMove ? netScore : -netScore);
+        return new PositionValue(pos.mover(), pos.enemy(), centidisks);
     }
 
     /**
