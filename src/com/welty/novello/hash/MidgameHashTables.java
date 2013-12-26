@@ -37,12 +37,20 @@ public class MidgameHashTables {
      * Create a HashTables
      */
     public MidgameHashTables() {
-        System.out.println("ouch: " + count.incrementAndGet());
         tables = new HashTable[64];
         for (int nEmpty = 0; nEmpty < 64; nEmpty++) {
             int size = 1 << (nEmpty < 8 ? 10 : nEmpty < 12 ? 12 : 14);
             tables[nEmpty] = new HashTable(size);
         }
+        System.out.format("ouch: %d  (%,d entries)\n", count.incrementAndGet(), nEntries());
+    }
+
+    private long nEntries() {
+        long nEntries = 0;
+        for (HashTable table : tables) {
+            nEntries += table.entries.length;
+        }
+        return nEntries;
     }
 
     /**

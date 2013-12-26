@@ -53,6 +53,15 @@ class Engine {
         return player.toString();
     }
 
+    /**
+     * Set the maximum search depth for the Engine.
+     *
+     * @param maxDepth maximum search depth, in ply.
+     */
+    public void setMaxDepth(int maxDepth) {
+        player.setMaxDepth(maxDepth);
+    }
+
     private static class MoveRequest {
         private final @NotNull GameView gameView;
         private final @NotNull Position position;

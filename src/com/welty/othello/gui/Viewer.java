@@ -1,7 +1,6 @@
 package com.welty.othello.gui;
 
 import com.orbanova.common.jsb.Grid;
-import com.orbanova.common.jsb.JsbFrame;
 import com.welty.novello.selfplay.Players;
 
 import javax.swing.*;
@@ -20,10 +19,6 @@ import static com.orbanova.common.jsb.JSwingBuilder.*;
 /**
  */
 public class Viewer {
-
-    private final JsbFrame frame;
-    private final JMenu modeMenu;
-
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
             @Override public void run() {
@@ -33,24 +28,26 @@ public class Viewer {
     }
 
     final GameView gameView = new GameView();
-    private final JMenu[] pveMenuItems;
-    private final JMenu[] arenaMenuItems;
 
-    private final LevelMenu levelMenu = new LevelMenu(1, 2, 3, 4);
-    private final PlayAsMenu playAsMenu = new PlayAsMenu();
+    private final LevelMenu levelMenu = new LevelMenu(1, 2, 3, 4, 6, 8, 12, 16, 20);
+    private final PlayMenu playMenu = new PlayMenu();
 
+    private final Engine engine = new Engine(Players.player("c1s:" + levelMenu.getSelectedLevel()));
 
+    /**
+     * Viewer constructor. Must run on the Event Dispatch Thread.
+     */
     Viewer() {
+        if (!SwingUtilities.isEventDispatchThread()) {
+            throw new RuntimeException("This must be called from the Event Dispatch Thread");
+        }
         Images.loadImages();
 
         final Action[] moveActions = createMoveActions();
 
         final AbstractAction newGame = new MenuAction("New", KeyEvent.VK_N, InputEvent.CTRL_DOWN_MASK) {
             @Override public void actionPerformed(ActionEvent e) {
-                final Engine engine = new Engine(Players.player("c1s:" + levelMenu.getSelectedLevel()));
-                Engine blackEngine = playAsMenu.blackEngine(engine);
-                Engine whiteEngine = playAsMenu.whiteEngine(engine);
-                gameView.newGame(blackEngine, whiteEngine);
+                startNewGame();
             }
         };
         final AbstractAction paste = new MenuAction("Paste", KeyEvent.VK_V, InputEvent.CTRL_DOWN_MASK) {
@@ -79,15 +76,17 @@ public class Viewer {
         );
         final JMenu moveMenu = createMenu("Move", 'm', moveActions);
 
+        final JMenuBar menuBar = menuBar();
+        ModeMenu modeMenu = new ModeMenu(menuBar);
+        JMenu[] pveMenuItems = new JMenu[]{fileMenu, editMenu, modeMenu, moveMenu, levelMenu, playMenu};
+        JMenu[] arenaMenuItems = new JMenu[]{modeMenu};
+        modeMenu.addMenu("PvE", pveMenuItems);
+        modeMenu.addMenu("Arena", arenaMenuItems);
+        modeMenu.init();
 
-        pveMenuItems = new JMenu[]{fileMenu, editMenu, moveMenu, levelMenu, playAsMenu};
-        arenaMenuItems = new JMenu[]{};
-        this.modeMenu = createModeMenu();
-
-
-        frame = frame("Othello Viewer", JFrame.EXIT_ON_CLOSE, menuBar(modeMenu),
+        frame("Othello Viewer", JFrame.EXIT_ON_CLOSE, menuBar,
                 grid(2, -1, -1,
-                        new PlayerPanel(gameView),
+                        new PlayersPanel(gameView),
                         buttonBar(moveActions).align(Component.CENTER_ALIGNMENT, Component.CENTER_ALIGNMENT),
 
                         new BoardPanel(gameView),
@@ -95,16 +94,15 @@ public class Viewer {
                 )
         );
 
-        setMenus(pveMenuItems);
+
+        startNewGame();
     }
 
-    private JMenu createModeMenu() {
-        final AbstractAction pve = new ModeMenuItem("PvE", 'P', pveMenuItems);
-        final AbstractAction arena = new ModeMenuItem("Arena", 'A', arenaMenuItems);
-        final JMenu menu = menu("Mode", 'm');
-        menu.add(pve);
-        menu.add(arena);
-        return menu;
+    private void startNewGame() {
+        engine.setMaxDepth(levelMenu.getSelectedLevel());
+        Engine blackEngine = playMenu.blackEngine(engine);
+        Engine whiteEngine = playMenu.whiteEngine(engine);
+        gameView.newGame(blackEngine, whiteEngine);
     }
 
     private Action[] createMoveActions() {
@@ -169,32 +167,5 @@ public class Viewer {
             //noinspection MagicConstant
             putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(vk, modifiers));
         }
-    }
-
-    private class ModeMenuItem extends AbstractAction {
-        private final JMenu[] menuItems;
-
-        public ModeMenuItem(String text, char mnemonic, JMenu[] menuItems) {
-            super(text);
-            this.menuItems = menuItems;
-            putValue(MNEMONIC_KEY, (int)mnemonic);
-        }
-
-        @Override public void actionPerformed(ActionEvent e) {
-            setMenus(menuItems);
-        }
-    }
-
-    private void setMenus(JMenu[] menuItems) {
-        final JMenuBar jMenuBar = frame.getJMenuBar();
-        final int n = jMenuBar.getMenuCount();
-        for (int i=n; i-->0; ) {
-            jMenuBar.remove(i);
-        }
-        jMenuBar.add(modeMenu);
-        for (JMenu menu : menuItems) {
-            jMenuBar.add(menu);
-        }
-        jMenuBar.repaint();
     }
 }

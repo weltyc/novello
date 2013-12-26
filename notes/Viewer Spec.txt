@@ -1,0 +1,23 @@
+Viewer Spec
+===========
+
+The Viewer allows a user to review games and to play vs a bot.
+
+This spec is incomplete. Only certain features are specced.
+
+Startup
+-------
+On startup, the Viewer immediately starts a new game as per the New Game spec.
+
+New Game
+--------
+When the user chooses New Game, a new game is created.
+
+According to the selection in the "Play As" menu, the user plays Black or White.
+The opponent will be an engine. Currently the only supported engine is Novello.
+[Future: Support NBoard engines.] The engine depth is the depth chosen from the "Level" menu.
+Once the game is started, the engine/depth/colors can't be changed.
+
+The start position is the standard start position.
+
+> Tech note: In the viewer, only one Engine is created. When a new game is started its depth is set.

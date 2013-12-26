@@ -46,4 +46,11 @@ public class EvalPlayerTest extends TestCase {
         }
         return score;
     }
+
+    public void testNameChangeOnDepthChange() {
+        final EvalPlayer evalPlayer = new EvalPlayer(Players.currentEval(), 1, "");
+        assertEquals(Players.currentEval()+":1", evalPlayer.toString());
+        evalPlayer.setMaxDepth(2);
+        assertEquals(Players.currentEval()+":2", evalPlayer.toString());
+    }
 }

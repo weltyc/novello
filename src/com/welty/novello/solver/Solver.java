@@ -84,11 +84,15 @@ public class Solver {
     }
 
     public Solver(@NotNull Eval eval) {
-        this(new Counter(eval));
+        this(new Counter(eval), new MidgameSearcher.Options(""));
     }
 
-    private Solver(Counter counter) {
-        this(counter, new MidgameSearcher(counter));
+    public Solver(@NotNull Eval eval, MidgameSearcher.Options options) {
+        this(new Counter(eval), options);
+    }
+
+    private Solver(Counter counter, MidgameSearcher.Options options) {
+        this(counter, new MidgameSearcher(counter, options));
     }
 
     private Solver(@NotNull Counter counter, @NotNull MidgameSearcher midgameSearcher) {
@@ -121,7 +125,7 @@ public class Solver {
      * @param enemy enemy disks
      * @return a {@link MoveScore} containing the best move
      */
-    public MoveScore solveWithMove(long mover, long enemy) {
+    @NotNull public MoveScore getMoveScore(long mover, long enemy) {
         if (BitBoardUtils.calcMoves(mover, enemy) == 0) {
             throw new IllegalArgumentException("mover must have a legal move");
         }

@@ -1,6 +1,7 @@
 package com.welty.novello.ntest;
 
 import com.orbanova.common.misc.Logger;
+import com.orbanova.common.misc.Require;
 import com.welty.novello.core.Props;
 import com.welty.novello.core.MoveScore;
 import com.welty.novello.core.MutableGame;
@@ -126,6 +127,16 @@ public class NBoardPlayer implements Player {
             throw new RuntimeException(e);
         }
         throw new RuntimeException("NBoard connection to " + program + " failed");
+    }
+
+    @Override public void setMaxDepth(int maxDepth) {
+        Require.geq(maxDepth, "max depth", 0);
+        println("set depth " + maxDepth);
+        try {
+            pingPong();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     static MoveScore parseMoveScore(String line) {

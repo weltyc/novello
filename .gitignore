@@ -16,3 +16,9 @@ target/
 
 # OpenOffice temp files
 .~*
+
+# Gradle
+build/
+.gradle/
+*.jar
+

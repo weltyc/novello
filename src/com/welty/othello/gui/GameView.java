@@ -30,7 +30,7 @@ public class GameView {
     private @Nullable Engine whiteEngine;
 
     public GameView() {
-        game = MutableGame.ofGgf("(;GM[Othello]PC[Rose]PB[NTest:2]PW[b1:3]RE[-64]TI[0]TY[8r]BO[8 -------- -------- -----*-- ---***-- ---**O-- ----**-- -------- -------- O]W[D7/3.85]B[D6/-2.82/0.001]W[C5/4.02]B[C4/-3.87/0.001]W[C7/6.18/0.001]B[G5/-4.55]W[C3/5.03/0.001]B[C6/-2.31]W[E7/8.90/0.001]B[B5/-4.29]W[F7/8.10]B[D3/-5.66/0.001]W[B6/9.18/0.002]B[B3/-6.79]W[G6/12.71/0.001]B[D8/-9.15]W[C8/15.34/0.001]B[E8/-8.62]W[F8/22.57/0.001]B[H6/-12.65]W[A4/23.53/0.002]B[A5/-17.59/0.001]W[A6/33.79/0.001]B[A7/-23.86]W[A8/32.80/0.002]B[B8/-33.98]W[B7/45.62/0.001]B[G7/-39.87]W[B4/46.99/0.001]B[G8]W[H8/56.38]B[PASS]W[C2/64.09]B[B2/-57.44/0.001]W[D2/66.27]B[A2/-62.39]W[A3/65.64/0.001]B[C1/-59.42]W[E3/64.11/0.001]B[E2/-66.55]W[F1/68.21/0.001]B[D1/-65.51]W[A1/71.77/0.001]B[PASS]W[B1/73.14]B[PASS]W[E1/67.18]B[PASS]W[F2/68.59/0.001]B[G2]W[H1/70.47]B[PASS]W[H7/64.00]B[PASS]W[G4/64.00]B[PASS]W[H5/64.00];)");
+        game = new MutableGame(Position.START_POSITION, "", "", "");
     }
 
     /**
@@ -42,6 +42,17 @@ public class GameView {
      */
     public synchronized @NotNull Position getPosition() {
         return game.getPositionAfter(iPosition);
+    }
+
+    /**
+     * Get the currently displayed State.
+     * <p/>
+     * This is not necessarily the game's start state or the last State.
+     *
+     * @return the disks on the board and whether it is white or black's move
+     */
+    public synchronized @NotNull State getState() {
+        return game.getStateAfter(iPosition);
     }
 
     /**
@@ -153,12 +164,21 @@ public class GameView {
     private long ping;
 
     /**
+     * Time the last move request was made.
+     *
+     * This is used for both human and computer players.
+     */
+    private long moveRequestTime;
+
+    /**
      * Start a game.
      * <p/>
      * Set the board position to the start position. Request moves from engines as appropriate.
      *
-     * @param blackEngine Engine playing Black
-     * @param whiteEngine Engine playing White
+     * Shuts down previous engine.
+     *
+     * @param blackEngine Engine playing Black or null if a human player
+     * @param whiteEngine Engine playing White or null if a human player
      */
     public synchronized void newGame(@Nullable Engine blackEngine, @Nullable Engine whiteEngine) {
         newGame(blackEngine, whiteEngine, Position.START_POSITION);
@@ -189,6 +209,8 @@ public class GameView {
     private void requestMove() {
         if (!isOver()) {
             final Engine engine = currentEngine();
+            // set moveRequestTime regardless of whether mover is a Human or an Engine
+            moveRequestTime = System.currentTimeMillis();
             if (engine != null) {
                 engine.requestMove(this, getPosition(), ++ping);
             }
@@ -216,7 +238,8 @@ public class GameView {
      */
     public synchronized void engineMove(@NotNull MoveScore moveScore, long ping) {
         if (ping == this.ping) {
-            game.play(moveScore, 0);
+            final long dt = System.currentTimeMillis() - moveRequestTime;
+            game.play(moveScore, dt*0.001);
             iPosition = nMoves();
             requestMove();
             fireChange();
@@ -240,7 +263,8 @@ public class GameView {
             if (legalMoves == 0) {
                 game.pass();
             } else if (BitBoardUtils.isBitSet(legalMoves, sq)) {
-                game.play(new MoveScore(sq, 0), 0);
+                final long dt = System.currentTimeMillis() - moveRequestTime;
+                game.play(new MoveScore(sq, 0), dt * 0.001);
             } else {
                 // Human to move, but clicked on a square that is not a legal move. Ignore.
                 return;

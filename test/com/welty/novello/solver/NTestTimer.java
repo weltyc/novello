@@ -29,35 +29,35 @@ public class NTestTimer {
         final long t0 = System.currentTimeMillis();
         for (MutableGame game : games) {
             final Position position = game.calcPositionAt(nEmpty);
-            if (position==null) {
+            if (position == null) {
                 throw new IllegalStateException("ntest games file is messed up");
             }
-            log.info(solver.solveWithMove(position.mover(), position.enemy()));
+            log.info(solver.getMoveScore(position.mover(), position.enemy()));
         }
         final long dt = System.currentTimeMillis() - t0;
-        final double s = dt/1000.;
+        final double s = dt / 1000.;
         final Counts counts = solver.getCounts();
         log.info(counts);
         final double mn = counts.nFlips * 1e-6;
-        log.info(String.format("%3.1f Mn / %3.1f s elapsed = %3.1f Mn/s", mn, s, mn/s));
+        log.info(String.format("%3.1f Mn / %3.1f s elapsed = %3.1f Mn/s", mn, s, mn / s));
     }
 
-    private static void timeMidgame(int depth ) {
+    private static void timeMidgame(int depth) {
         final MidgameSearcher midgameSearcher = new MidgameSearcher(new Counter(Players.eval("c4s")));
         final List<MutableGame> games = SampleGames.saioGames();
         final long t0 = System.currentTimeMillis();
         for (MutableGame game : games) {
             final Position position = game.calcPositionAt(35);
-            if (position==null) {
+            if (position == null) {
                 throw new IllegalStateException("ntest games file is messed up");
             }
-            log.info(midgameSearcher.calcMove(position, position.calcMoves(), depth));
+            log.info(midgameSearcher.getMoveScore(position, position.calcMoves(), depth));
         }
         final long dt = System.currentTimeMillis() - t0;
-        final double s = dt/1000.;
-        final Counts counts = midgameSearcher.counts();
+        final double s = dt / 1000.;
+        final Counts counts = midgameSearcher.getCounts();
         log.info(counts);
         final double mn = counts.nFlips * 1e-6;
-        log.info(String.format("%3.1f Mn / %3.1f s elapsed = %3.1f Mn/s", mn, s, mn/s));
+        log.info(String.format("%3.1f Mn / %3.1f s elapsed = %3.1f Mn/s", mn, s, mn / s));
     }
 }
