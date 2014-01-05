@@ -7,10 +7,14 @@ import org.jetbrains.annotations.NotNull;
  */
 public class DefaultThreadLocal<T> {
     private final ThreadLocal<T> threadLocal = new ThreadLocal<>();
-    private final Class<T> clazz;
+    private final @NotNull Factory<T> factory;
 
     public DefaultThreadLocal(Class<T> clazz) {
-        this.clazz = clazz;
+        this(new DefaultFactory<>(clazz));
+    }
+
+    public DefaultThreadLocal(@NotNull Factory<T> factory) {
+        this.factory = factory;
     }
 
     /**
@@ -21,13 +25,25 @@ public class DefaultThreadLocal<T> {
     public @NotNull T getOrCreate() {
         T t = threadLocal.get();
         if (t == null) {
+            t = factory.construct();
+            threadLocal.set(t);
+        }
+        return t;
+    }
+
+    private static class DefaultFactory<T> implements Factory<T> {
+        private final Class<T> clazz;
+
+        private DefaultFactory(Class<T> clazz) {
+            this.clazz = clazz;
+        }
+
+        @NotNull @Override public T construct() {
             try {
-                t = clazz.newInstance();
-                threadLocal.set(t);
+                return clazz.newInstance();
             } catch (InstantiationException | IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
         }
-        return t;
     }
 }

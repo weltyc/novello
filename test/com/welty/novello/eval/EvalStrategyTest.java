@@ -51,7 +51,7 @@ public class EvalStrategyTest extends ArrayTestCase {
         final EvalStrategy strategy = EvalStrategies.diagonal;
         final int nFeatures = strategy.nFeatures();
 
-        final double[] coeffs = Vec.increasingDouble(0., 1. / CoefficientCalculator.DISK_VALUE, strategy.nCoefficientIndices());
+        final double[] coeffs = Vec.increasingDouble(0., 1., strategy.nCoefficientIndices());
         final RamFileSystem fs = new RamFileSystem();
         final Path coefficientDirectory = fs.getPath("coefficients");
         final int nEmpty = 12;

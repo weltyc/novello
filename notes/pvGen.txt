@@ -1,0 +1,13 @@
+Improved PV generation
+=======================
+
+Improve in 3 ways:
+1. Multithreaded to improve speed
+2. Use a deeper search instead of a playout
+3. Spend more time to get even deeper playouts.
+
+Since there are no unit tests for the PV generation, we'll have to run it and make sure the resulting
+coefficients perform.
+
+To test change #1, run the same coefficients single-threaded and multi-threaded.
+

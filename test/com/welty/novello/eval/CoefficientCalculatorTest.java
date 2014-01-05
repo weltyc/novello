@@ -172,14 +172,14 @@ public class CoefficientCalculatorTest extends ArrayTestCase {
         final PositionValue pv = new PositionValue(me.mover, me.enemy, 13);
 
         // check with 1 position in pv
-        final Set<Mr> subs = CoefficientCalculator.generateRareSubpositions(EvalStrategies.eval1, Arrays.asList(pv));
+        final Set<Mr> subs = PvsGenerator.generateRareSubpositions(EvalStrategies.eval1, Arrays.asList(pv));
         final int nMoves = Long.bitCount(me.calcMoves());
         assertEquals(nMoves, subs.size());
 
         // check with 2 positions in pv, one of which will also be a subposition
         final Mr me2 = subs.iterator().next();
         final PositionValue pv2 = new PositionValue(me2.mover, me2.enemy, -13);
-        final Set<Mr> subs2 = CoefficientCalculator.generateRareSubpositions(EvalStrategies.eval1, Arrays.asList(pv, pv2));
+        final Set<Mr> subs2 = PvsGenerator.generateRareSubpositions(EvalStrategies.eval1, Arrays.asList(pv, pv2));
         final int nMoves2 = Long.bitCount(me2.calcMoves());
         assertEquals(nMoves + nMoves2 - 1, subs2.size());
     }

@@ -1,6 +1,5 @@
 package com.welty.novello.eval;
 
-import com.orbanova.common.misc.Logger;
 import com.welty.novello.core.BitBoardUtils;
 import com.welty.novello.core.Position;
 import org.jetbrains.annotations.Nullable;
@@ -20,7 +19,6 @@ public class CoefficientEval extends Eval {
     private final EvalStrategy evalStrategy;
 
     private static final boolean debug = false;
-    private static final Logger log = Logger.logger(CoefficientEval.class);
 
 
     /**
@@ -45,8 +43,7 @@ public class CoefficientEval extends Eval {
         try {
             return new Mpc(getMpcSliceData());
         } catch (IOException e) {
-            log.warn("Creating eval with no MPC");
-            return null;
+            return new Mpc();
         }
     }
 

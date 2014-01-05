@@ -1,6 +1,7 @@
 package com.welty.novello.core;
 
 import com.orbanova.common.date.Time;
+import com.welty.novello.eval.CoefficientCalculator;
 import junit.framework.TestCase;
 
 import java.util.List;
@@ -56,7 +57,7 @@ public class MutableGameTest extends TestCase {
             assertEquals(60 - i, pv.nEmpty());
             final boolean blackToMove = blackToMoves[i];
             final int netScore = blackToMove ? -expected : expected;
-            assertEquals(netScore, pv.value);
+            assertEquals(netScore* CoefficientCalculator.DISK_VALUE, pv.value);
         }
         assertEquals(pvs.get(0).mover, startPosition.mover());
         assertEquals(pvs.get(0).enemy, startPosition.enemy());

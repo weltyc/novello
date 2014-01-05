@@ -81,6 +81,10 @@ public class Position implements Comparable<Position> {
         this.blackToMove = blackToMove;
     }
 
+    public Position(Mr mr) {
+        this(mr.mover, mr.enemy, true);
+    }
+
     public static Position of(String positionString) {
         final String squished = positionString.replaceAll("\\s+", "");
         Require.eq(squished.length(), "position string length", 65);

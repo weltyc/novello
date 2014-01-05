@@ -1,0 +1,20 @@
+Coefficient Calculation
+=======================
+Created pvs and pvsx from 10-ply evals using c4s:10 instead of using playouts; targets for
+coefficient calculation were capped at +/-64 disks. Also switched pvs
+and pvsx generation to be multithreaded and only calculate distinct MRs once.
+
+Pvs generation took about 12 hours.
+
+However the number of distinct positions seems a lot lower; wondering if there's a problem.
+
+Comparing with frequency.txt, the number of positions used to estimate coefficients
+
+    # empty  frequency.txt  c6s log
+    4         2,328,853     739,106
+    20        6,652,806   1,733,345
+    36        8,123,805   1,892,370
+
+c5s:4s vs c6s:4s: average result = -0.7
+
+This is not a very big improvement.

@@ -206,7 +206,7 @@ public class EvalStrategy {
         int nNonZero = 0;
         try (final DataOutputStream out = new DataOutputStream(Files.newOutputStream(path))) {
             for (double c : coefficients) {
-                final int intCoeff = (int) Math.round(c * CoefficientCalculator.DISK_VALUE);
+                final int intCoeff = (int) Math.round(c);
                 if (intCoeff != 0) {
                     nNonZero++;
                 }
