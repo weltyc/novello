@@ -441,12 +441,12 @@ class Edge2XTerm extends Term {
     }
 
     static int extractLeft(long mover) {
-        final int leftRow = BitBoardUtils.bitBoardColToRow(mover, 7);
+        final int leftRow = BitBoardUtils.extractCol(mover, 7);
         return (int)(2*leftRow | ((mover&B2)>>066) | ((mover&B7)>>5));
     }
 
     static int extractRight(long mover) {
-        final int rightRow = BitBoardUtils.bitBoardColToRow(mover, 0);
+        final int rightRow = BitBoardUtils.extractCol(mover, 0);
         return (int)(2*rightRow | ((mover&G2)>>061) | (mover&G7));
     }
 

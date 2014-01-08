@@ -1344,3 +1344,16 @@ Times (ms/game)
       7    97      64       -10.9
       9   456     159       -11.6
      11  2.01s    399        -9.6
+
+Improved eval
+-------------
+d1s:4s vs c6s:4s: average result = 4.9
+
+Playing d1s:?s vs edax:? at various depths. Positive score means d1 wins. Times in ms. SelfPlaySet was run until
+std error < 0.5 disks, ~1800 games.
+
+ply  result d1_time  edax_time
+4     +4.25   7.54     54.7
+6     -1.45   37.9     261
+8     -6.46   152ms    1.36s
+10/8  +4.56   517ms    1.36s

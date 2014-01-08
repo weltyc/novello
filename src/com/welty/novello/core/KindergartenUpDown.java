@@ -13,7 +13,7 @@ class KindergartenUpDown {
     private static int indexFromBitBoard(int sq, long mover, long enemy) {
         final int col = col(sq);
         final int row = row(sq);
-        return index(row, bitBoardColToRow(mover, col), bitBoardColToRow(enemy, col));
+        return index(row, extractCol(mover, col), extractCol(enemy, col));
     }
 
     private static final long[] flipTable = createFlipTable();

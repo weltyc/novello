@@ -497,22 +497,41 @@ public class BitBoardUtils {
      * From a bitBoard, calculate the base-2 representation of the column disks
      *
      * @param bitBoard board containing mover/enemy disks
-     * @param col      column of disk being placed
+     * @param col      column to extract
      * @return moverRow/ enemyRow
      */
-    public static int bitBoardColToRow(long bitBoard, int col) {
+    public static int extractCol(long bitBoard, int col) {
         final long masked = (bitBoard >>> col) & HFile;
         final int index = (int) ((masked * multiplier) >>> 56);
         return index;
+    }
+
+    /**
+     * From a bitBoard, calculate the base-2 representation of the row disks
+     *
+     * @param bitBoard board containing mover/enemy disks
+     * @param row      row to extract
+     * @return moverRow/ enemyRow
+     */
+    public static int extractRow(long bitBoard, int row) {
+        return (int)(bitBoard>>>8*row)&0xFF;
     }
 
     public static int rowInstance(long mover, long enemy, int shift) {
         return Base3.base2ToBase3(0xFF & (int) (mover >>> shift), 0xFF & (int) (enemy >>> shift));
     }
 
+    /**
+     * Get the base-3 representation of a column
+     *
+     * @param mover mover disks
+     * @param enemy enemy disks
+     * @param col column index, 0..7
+     * @return  base 3 representation of the given column
+     */
     public static int colInstance(long mover, long enemy, int col) {
-        final int moverCol = bitBoardColToRow(mover, col);
-        final int enemyCol = bitBoardColToRow(enemy, col);
+        final int moverCol = extractCol(mover, col);
+        final int enemyCol = extractCol(enemy, col);
         return Base3.base2ToBase3(moverCol, enemyCol);
     }
 

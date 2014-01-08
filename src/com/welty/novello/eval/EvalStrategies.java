@@ -94,6 +94,7 @@ public class EvalStrategies {
         );
         new EvalStrategyB();
         new EvalStrategyC();
+        new EvalStrategyD();
     }
 
     public static class StrategyStore {
