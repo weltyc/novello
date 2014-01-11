@@ -209,10 +209,10 @@ class EvalStrategyD extends EvalStrategy {
             sb.append(String.format("final short[] %s = slice[%d];\n", coeffName, iFeature));
             if (feature.getClass() == Corner2x5Feature.class) {
                 for (int i : new int[]{0, 1, 6, 7}) {
-                    sb.append("final int moverRow" + i + " = BitBoardUtils.extractRow(mover, " + i + ");\n");
-                    sb.append("final int enemyRow" + i + " = BitBoardUtils.extractRow(enemy, " + i + ");\n");
-                    sb.append("final int moverCol" + i + " = BitBoardUtils.extractCol(mover, " + i + ");\n");
-                    sb.append("final int enemyCol" + i + " = BitBoardUtils.extractCol(enemy, " + i + ");\n");
+                    sb.append("final int moverRow").append(i).append(" = BitBoardUtils.extractRow(mover, ").append(i).append(");\n");
+                    sb.append("final int enemyRow").append(i).append(" = BitBoardUtils.extractRow(enemy, ").append(i).append(");\n");
+                    sb.append("final int moverCol").append(i).append(" = BitBoardUtils.extractCol(mover, ").append(i).append(");\n");
+                    sb.append("final int enemyCol").append(i).append(" = BitBoardUtils.extractCol(enemy, ").append(i).append(");\n");
                 }
             }
             sb.append("eval += ");
