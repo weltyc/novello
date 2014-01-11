@@ -11,10 +11,8 @@ import java.util.Arrays;
 /**
  * Evaluation with all rows, columns, and corner blocks
  */
-@SuppressWarnings("OctalInteger") class EvalStrategyD extends EvalStrategy {
-
-    public static final Corner2x5Term[] CORNER_2_X_5_TERMS = new Corner2x5Term[]{new Corner2x5Term(0), new Corner2x5Term(1), new Corner2x5Term(2), new Corner2x5Term(3),
-            new Corner2x5Term(4), new Corner2x5Term(5), new Corner2x5Term(6), new Corner2x5Term(7)};
+@SuppressWarnings("OctalInteger")
+class EvalStrategyD extends EvalStrategy {
 
     public EvalStrategyD() {
         this(new CornerTerm2[]{new CornerTerm2(000), new CornerTerm2(007), new CornerTerm2(070), new CornerTerm2(077)},
@@ -23,8 +21,8 @@ import java.util.Arrays;
                 new ColTerm[]{new ColTerm(1), new ColTerm(2), new ColTerm(3), new ColTerm(4), new ColTerm(5), new ColTerm(6)},
                 new UldrTerm[]{new UldrTerm(0), new UldrTerm(1), new UldrTerm(-1), new UldrTerm(2), new UldrTerm(-2), new UldrTerm(3), new UldrTerm(-3), new UldrTerm(4), new UldrTerm(-4)},
                 new UrdlTerm[]{new UrdlTerm(0), new UrdlTerm(1), new UrdlTerm(-1), new UrdlTerm(2), new UrdlTerm(-2), new UrdlTerm(3), new UrdlTerm(-3), new UrdlTerm(4), new UrdlTerm(-4)},
-                new CornerBlockTerm[]{new CornerBlockTerm(false, false), new CornerBlockTerm(false, true), new CornerBlockTerm(true, false), new CornerBlockTerm(true, true)},
-                CORNER_2_X_5_TERMS
+                CornerBlockTerm.terms,
+                Corner2x5Term.terms
         );
     }
 
@@ -46,21 +44,21 @@ import java.util.Arrays;
     }
 
     @Override int eval(long mover, long enemy, long moverMoves, long enemyMoves, CoefficientSet coefficientSet) {
-        assert moverMoves !=0;
+        assert moverMoves != 0;
         final short[][] slice = coefficientSet.slice(BitBoardUtils.nEmpty(mover, enemy));
         int eval = 0;
 
         final short[] corner2Coeffs = slice[0];
         eval += corner2Coeffs[CornerTerm2.orid(mover, enemy, moverMoves, enemyMoves, 0)]
-                +  corner2Coeffs[CornerTerm2.orid(mover, enemy, moverMoves, enemyMoves, 7)]
-                +  corner2Coeffs[CornerTerm2.orid(mover, enemy, moverMoves, enemyMoves, 56)]
-                +  corner2Coeffs[CornerTerm2.orid(mover, enemy, moverMoves, enemyMoves, 63)];
+                + corner2Coeffs[CornerTerm2.orid(mover, enemy, moverMoves, enemyMoves, 7)]
+                + corner2Coeffs[CornerTerm2.orid(mover, enemy, moverMoves, enemyMoves, 56)]
+                + corner2Coeffs[CornerTerm2.orid(mover, enemy, moverMoves, enemyMoves, 63)];
         eval += slice[1][Long.bitCount(mover)];
         eval += slice[2][Long.bitCount(enemy)];
         eval += slice[3][Long.bitCount(moverMoves)];
         eval += slice[4][Long.bitCount(enemyMoves)];
 
-        final long empty = ~(mover|enemy);
+        final long empty = ~(mover | enemy);
         eval += slice[5][Long.bitCount(BitBoardUtils.potMobs(mover, empty))];
         eval += slice[6][Long.bitCount(BitBoardUtils.potMobs(enemy, empty))];
         eval += slice[7][Long.bitCount(BitBoardUtils.potMobs2(mover, empty))];
@@ -68,61 +66,61 @@ import java.util.Arrays;
 
         final short[] edge2XCoeffs = slice[9];
         eval += edge2XCoeffs[OridTable.orid10(Edge2XTerm.instance0(mover, enemy))]
-                +  edge2XCoeffs[OridTable.orid10(Edge2XTerm.instance1(mover, enemy))]
-                +  edge2XCoeffs[OridTable.orid10(Edge2XTerm.instance2(mover, enemy))]
-                +  edge2XCoeffs[OridTable.orid10(Edge2XTerm.instance3(mover, enemy))];
+                + edge2XCoeffs[OridTable.orid10(Edge2XTerm.instance1(mover, enemy))]
+                + edge2XCoeffs[OridTable.orid10(Edge2XTerm.instance2(mover, enemy))]
+                + edge2XCoeffs[OridTable.orid10(Edge2XTerm.instance3(mover, enemy))];
 
         final short[] row1Coeffs = slice[10];
         eval += row1Coeffs[RowTerm.rowOrid(mover, enemy, 1)]
-                +  row1Coeffs[RowTerm.rowOrid(mover, enemy, 6)]
-                +  row1Coeffs[ColTerm.colOrid(mover, enemy, 1)]
-                +  row1Coeffs[ColTerm.colOrid(mover, enemy, 6)];
+                + row1Coeffs[RowTerm.rowOrid(mover, enemy, 6)]
+                + row1Coeffs[ColTerm.colOrid(mover, enemy, 1)]
+                + row1Coeffs[ColTerm.colOrid(mover, enemy, 6)];
 
         final short[] row2Coeffs = slice[11];
         eval += row2Coeffs[RowTerm.rowOrid(mover, enemy, 2)]
-                +  row2Coeffs[RowTerm.rowOrid(mover, enemy, 5)]
-                +  row2Coeffs[ColTerm.colOrid(mover, enemy, 2)]
-                +  row2Coeffs[ColTerm.colOrid(mover, enemy, 5)];
+                + row2Coeffs[RowTerm.rowOrid(mover, enemy, 5)]
+                + row2Coeffs[ColTerm.colOrid(mover, enemy, 2)]
+                + row2Coeffs[ColTerm.colOrid(mover, enemy, 5)];
 
         final short[] row3Coeffs = slice[12];
         eval += row3Coeffs[RowTerm.rowOrid(mover, enemy, 3)]
-                +  row3Coeffs[RowTerm.rowOrid(mover, enemy, 4)]
-                +  row3Coeffs[ColTerm.colOrid(mover, enemy, 3)]
-                +  row3Coeffs[ColTerm.colOrid(mover, enemy, 4)];
+                + row3Coeffs[RowTerm.rowOrid(mover, enemy, 4)]
+                + row3Coeffs[ColTerm.colOrid(mover, enemy, 3)]
+                + row3Coeffs[ColTerm.colOrid(mover, enemy, 4)];
 
         final short[] diagonal8Coeffs = slice[13];
         eval += diagonal8Coeffs[OridTable.orid8(DiagonalTerm.diagonalInstance(mover, enemy, 0x8040201008040201L, 56))]
-                +  diagonal8Coeffs[OridTable.orid8(DiagonalTerm.diagonalInstance(mover, enemy, 0x0102040810204080L, 56))];
+                + diagonal8Coeffs[OridTable.orid8(DiagonalTerm.diagonalInstance(mover, enemy, 0x0102040810204080L, 56))];
 
         final short[] diagonal7Coeffs = slice[14];
         eval += diagonal7Coeffs[OridTable.orid7(DiagonalTerm.diagonalInstance(mover, enemy, 0x4020100804020100L, 56))]
-                +  diagonal7Coeffs[OridTable.orid7(DiagonalTerm.diagonalInstance(mover, enemy, 0x0080402010080402L, 57))]
-                +  diagonal7Coeffs[OridTable.orid7(DiagonalTerm.diagonalInstance(mover, enemy, 0x0001020408102040L, 56))]
-                +  diagonal7Coeffs[OridTable.orid7(DiagonalTerm.diagonalInstance(mover, enemy, 0x0204081020408000L, 57))];
+                + diagonal7Coeffs[OridTable.orid7(DiagonalTerm.diagonalInstance(mover, enemy, 0x0080402010080402L, 57))]
+                + diagonal7Coeffs[OridTable.orid7(DiagonalTerm.diagonalInstance(mover, enemy, 0x0001020408102040L, 56))]
+                + diagonal7Coeffs[OridTable.orid7(DiagonalTerm.diagonalInstance(mover, enemy, 0x0204081020408000L, 57))];
 
         final short[] diagonal6Coeffs = slice[15];
         eval += diagonal6Coeffs[OridTable.orid6(DiagonalTerm.diagonalInstance(mover, enemy, 0x2010080402010000L, 56))]
-                +  diagonal6Coeffs[OridTable.orid6(DiagonalTerm.diagonalInstance(mover, enemy, 0x0000804020100804L, 58))]
-                +  diagonal6Coeffs[OridTable.orid6(DiagonalTerm.diagonalInstance(mover, enemy, 0x0000010204081020L, 56))]
-                +  diagonal6Coeffs[OridTable.orid6(DiagonalTerm.diagonalInstance(mover, enemy, 0x0408102040800000L, 58))];
+                + diagonal6Coeffs[OridTable.orid6(DiagonalTerm.diagonalInstance(mover, enemy, 0x0000804020100804L, 58))]
+                + diagonal6Coeffs[OridTable.orid6(DiagonalTerm.diagonalInstance(mover, enemy, 0x0000010204081020L, 56))]
+                + diagonal6Coeffs[OridTable.orid6(DiagonalTerm.diagonalInstance(mover, enemy, 0x0408102040800000L, 58))];
 
         final short[] diagonal5Coeffs = slice[16];
         eval += diagonal5Coeffs[OridTable.orid5(DiagonalTerm.diagonalInstance(mover, enemy, 0x1008040201000000L, 56))]
-                +  diagonal5Coeffs[OridTable.orid5(DiagonalTerm.diagonalInstance(mover, enemy, 0x0000008040201008L, 59))]
-                +  diagonal5Coeffs[OridTable.orid5(DiagonalTerm.diagonalInstance(mover, enemy, 0x0000000102040810L, 56))]
-                +  diagonal5Coeffs[OridTable.orid5(DiagonalTerm.diagonalInstance(mover, enemy, 0x0810204080000000L, 59))];
+                + diagonal5Coeffs[OridTable.orid5(DiagonalTerm.diagonalInstance(mover, enemy, 0x0000008040201008L, 59))]
+                + diagonal5Coeffs[OridTable.orid5(DiagonalTerm.diagonalInstance(mover, enemy, 0x0000000102040810L, 56))]
+                + diagonal5Coeffs[OridTable.orid5(DiagonalTerm.diagonalInstance(mover, enemy, 0x0810204080000000L, 59))];
 
         final short[] diagonal4Coeffs = slice[17];
         eval += diagonal4Coeffs[OridTable.orid4(DiagonalTerm.diagonalInstance(mover, enemy, 0x0804020100000000L, 56))]
-                +  diagonal4Coeffs[OridTable.orid4(DiagonalTerm.diagonalInstance(mover, enemy, 0x0000000080402010L, 60))]
-                +  diagonal4Coeffs[OridTable.orid4(DiagonalTerm.diagonalInstance(mover, enemy, 0x0000000001020408L, 56))]
-                +  diagonal4Coeffs[OridTable.orid4(DiagonalTerm.diagonalInstance(mover, enemy, 0x1020408000000000L, 60))];
+                + diagonal4Coeffs[OridTable.orid4(DiagonalTerm.diagonalInstance(mover, enemy, 0x0000000080402010L, 60))]
+                + diagonal4Coeffs[OridTable.orid4(DiagonalTerm.diagonalInstance(mover, enemy, 0x0000000001020408L, 56))]
+                + diagonal4Coeffs[OridTable.orid4(DiagonalTerm.diagonalInstance(mover, enemy, 0x1020408000000000L, 60))];
 
         final short[] CornerBlockCoeffs = slice[18];
         eval += CornerBlockCoeffs[CornerBlockTerm.orid(mover, enemy, false, false)]
-                +  CornerBlockCoeffs[CornerBlockTerm.orid(mover, enemy, true, false)]
-                +  CornerBlockCoeffs[CornerBlockTerm.orid(mover, enemy, false, true)]
-                +  CornerBlockCoeffs[CornerBlockTerm.orid(mover, enemy, true, true)];
+                + CornerBlockCoeffs[CornerBlockTerm.orid(mover, enemy, true, false)]
+                + CornerBlockCoeffs[CornerBlockTerm.orid(mover, enemy, false, true)]
+                + CornerBlockCoeffs[CornerBlockTerm.orid(mover, enemy, true, true)];
 
         final short[] Corner2x5Coeffs = slice[19];
         final int moverRow0 = BitBoardUtils.extractRow(mover, 0);
@@ -142,13 +140,13 @@ import java.util.Arrays;
         final int moverCol7 = BitBoardUtils.extractCol(mover, 7);
         final int enemyCol7 = BitBoardUtils.extractCol(enemy, 7);
         eval += Corner2x5Coeffs[Corner2x5Term.leftInstance(moverRow0, enemyRow0, moverRow1, enemyRow1)]
-                +  Corner2x5Coeffs[Corner2x5Term.rightInstance(moverRow0, enemyRow0, moverRow1, enemyRow1)]
-                +  Corner2x5Coeffs[Corner2x5Term.leftInstance(moverRow7, enemyRow7, moverRow6, enemyRow6)]
-                +  Corner2x5Coeffs[Corner2x5Term.rightInstance(moverRow7, enemyRow7, moverRow6, enemyRow6)]
-                +  Corner2x5Coeffs[Corner2x5Term.leftInstance(moverCol0, enemyCol0, moverCol1, enemyCol1)]
-                +  Corner2x5Coeffs[Corner2x5Term.rightInstance(moverCol0, enemyCol0, moverCol1, enemyCol1)]
-                +  Corner2x5Coeffs[Corner2x5Term.leftInstance(moverCol7, enemyCol7, moverCol6, enemyCol6)]
-                +  Corner2x5Coeffs[Corner2x5Term.rightInstance(moverCol7, enemyCol7, moverCol6, enemyCol6)];
+                + Corner2x5Coeffs[Corner2x5Term.rightInstance(moverRow0, enemyRow0, moverRow1, enemyRow1)]
+                + Corner2x5Coeffs[Corner2x5Term.leftInstance(moverRow7, enemyRow7, moverRow6, enemyRow6)]
+                + Corner2x5Coeffs[Corner2x5Term.rightInstance(moverRow7, enemyRow7, moverRow6, enemyRow6)]
+                + Corner2x5Coeffs[Corner2x5Term.leftInstance(moverCol0, enemyCol0, moverCol1, enemyCol1)]
+                + Corner2x5Coeffs[Corner2x5Term.rightInstance(moverCol0, enemyCol0, moverCol1, enemyCol1)]
+                + Corner2x5Coeffs[Corner2x5Term.leftInstance(moverCol7, enemyCol7, moverCol6, enemyCol6)]
+                + Corner2x5Coeffs[Corner2x5Term.rightInstance(moverCol7, enemyCol7, moverCol6, enemyCol6)];
         return eval;
     }
 

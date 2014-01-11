@@ -2,7 +2,9 @@ package com.welty.novello.eval;
 
 /**
  */
-class CornerBlockTerm  extends Term {
+class CornerBlockTerm extends Term {
+    public static CornerBlockTerm[] terms = new CornerBlockTerm[]{new CornerBlockTerm(false, false), new CornerBlockTerm(false, true), new CornerBlockTerm(true, false), new CornerBlockTerm(true, true)};
+
     private final boolean top;
     private final boolean left;
 
@@ -35,11 +37,10 @@ class CornerBlockTerm  extends Term {
             mover = Long.reverseBytes(mover);
         }
         final long row = (mover & 0x7) | ((mover & 0x700) >>> 5) | ((mover & 0x70000) >> 10);
-        return (int)row;
+        return (int) row;
     }
 
-    @Override
-    String oridGen() {
-        return "CornerBlockTerm.orid(mover, enemy, " + left + ", " + top +")";
+    @Override String oridGen() {
+        return "CornerBlockTerm.orid(mover, enemy, " + left + ", " + top + ")";
     }
 }
