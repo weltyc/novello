@@ -234,6 +234,10 @@ class RowTerm extends Term {
             LinePatternFeatureFactory.of("row3", 8)
     };
 
+    public static final RowTerm[] internalTerms = {
+            new RowTerm(1), new RowTerm(2), new RowTerm(3), new RowTerm(4), new RowTerm(5), new RowTerm(6)
+    };
+
     static Feature getRowFeature(int row) {
         return features[row < 4 ? row : 7 - row];
     }
@@ -262,6 +266,9 @@ class RowTerm extends Term {
 }
 
 class ColTerm extends Term {
+    public static final ColTerm[] internalTerms = {
+            new ColTerm(1), new ColTerm(2), new ColTerm(3), new ColTerm(4), new ColTerm(5), new ColTerm(6)
+    };
 
     private final int col;
 
@@ -348,6 +355,10 @@ abstract class DiagonalTerm extends Term {
 }
 
 class UrdlTerm extends DiagonalTerm {
+    public static UrdlTerm[] terms = new UrdlTerm[]{
+            new UrdlTerm(0), new UrdlTerm(1), new UrdlTerm(-1), new UrdlTerm(2), new UrdlTerm(-2), new UrdlTerm(3), new UrdlTerm(-3), new UrdlTerm(4), new UrdlTerm(-4)
+    };
+
     UrdlTerm(int diagonal) {
         super(diagonal, urdlMask(diagonal), diagonal >= 0 ? 56 : 56 - diagonal);
     }
@@ -370,6 +381,10 @@ class UrdlTerm extends DiagonalTerm {
 }
 
 class UldrTerm extends DiagonalTerm {
+    public static UldrTerm[] terms = new UldrTerm[]{
+            new UldrTerm(0), new UldrTerm(1), new UldrTerm(-1), new UldrTerm(2), new UldrTerm(-2), new UldrTerm(3), new UldrTerm(-3), new UldrTerm(4), new UldrTerm(-4)
+    };
+
     UldrTerm(int diagonal) {
         super(diagonal, uldrMask(diagonal), shift(diagonal));
     }
