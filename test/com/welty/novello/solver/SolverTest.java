@@ -172,12 +172,14 @@ public class SolverTest extends TestCase {
         int ntest = 0;
         int novello = 0;
         final Solver solver = new Solver();
+        long oldNFlips = 0;
         for (int j = 0; j < testCases.length; j++) {
             final SolverTestCase testCase = testCases[j];
             solver.clear(testCase.nEmpty());
             executeTestCase(solver, testCase.white, testCase.black, testCase.expectedValue());
             final int nt = nodeCounts[j];
-            final long no = solver.getCounts().nFlips;
+            final long no = solver.getCounts().nFlips - oldNFlips;
+            oldNFlips = solver.getCounts().nFlips;
             System.out.format("%,9d %,9d %s%n", nt, no, nt > 6 * no ? "<-----" : "");
             ntest += nt;
             novello += no;
