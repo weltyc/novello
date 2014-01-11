@@ -79,6 +79,11 @@ class CornerTerm extends Term {
 class CornerTerm2 extends Term {
     private final int sq;
 
+    @SuppressWarnings("OctalInteger")
+    public static final CornerTerm2[] terms = {
+            new CornerTerm2(000), new CornerTerm2(007), new CornerTerm2(070), new CornerTerm2(077)
+    };
+
     public CornerTerm2(int sq) {
         super(Features.corner2Feature);
         this.sq = sq;
@@ -388,6 +393,7 @@ class UldrTerm extends DiagonalTerm {
     }
 }
 
+@SuppressWarnings("OctalInteger")
 class Edge2XTerm extends Term {
     private static final Feature feature = LinePatternFeatureFactory.of("edge2X", 10);
     static final Edge2XTerm[] terms = {new Edge2XTerm(0), new Edge2XTerm(1), new Edge2XTerm(2), new Edge2XTerm(3)};
@@ -401,19 +407,15 @@ class Edge2XTerm extends Term {
 
     @Override
     public int instance(long mover, long enemy, long moverMoves, long enemyMoves) {
-        if (direction==0) {
+        if (direction == 0) {
             return instance0(mover, enemy);
-        }
-        else if (direction==1) {
+        } else if (direction == 1) {
             return instance1(mover, enemy);
-        }
-        else if (direction==2) {
+        } else if (direction == 2) {
             return instance2(mover, enemy);
-        }
-        else if (direction==3) {
+        } else if (direction == 3) {
             return instance3(mover, enemy);
-        }
-        else throw new IllegalStateException("not implemented");
+        } else throw new IllegalStateException("not implemented");
     }
 
     static int instance0(long mover, long enemy) {
@@ -433,25 +435,25 @@ class Edge2XTerm extends Term {
     }
 
     static int extractBottom(long mover) {
-        return (int)(((mover&Rank1)<<1)|((mover&G7)>>011)|((mover&B7)>>5));
+        return (int) (((mover & Rank1) << 1) | ((mover & G7) >> 011) | ((mover & B7) >> 5));
     }
 
     static int extractTop(long mover) {
-        return (int)(((mover&Rank8)>>>067)|((mover&G2)>>061)|((mover&B2)>>055));
+        return (int) (((mover & Rank8) >>> 067) | ((mover & G2) >> 061) | ((mover & B2) >> 055));
     }
 
     static int extractLeft(long mover) {
         final int leftRow = BitBoardUtils.extractCol(mover, 7);
-        return (int)(2*leftRow | ((mover&B2)>>066) | ((mover&B7)>>5));
+        return (int) (2 * leftRow | ((mover & B2) >> 066) | ((mover & B7) >> 5));
     }
 
     static int extractRight(long mover) {
         final int rightRow = BitBoardUtils.extractCol(mover, 0);
-        return (int)(2*rightRow | ((mover&G2)>>061) | (mover&G7));
+        return (int) (2 * rightRow | ((mover & G2) >> 061) | (mover & G7));
     }
 
     @Override String oridGen() {
-        return "OridTable.orid10(Edge2XTerm.instance"+direction+"(mover, enemy))";
+        return "OridTable.orid10(Edge2XTerm.instance" + direction + "(mover, enemy))";
     }
 }
 
