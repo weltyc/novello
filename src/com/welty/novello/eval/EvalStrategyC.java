@@ -15,12 +15,12 @@ import java.util.Arrays;
 class EvalStrategyC extends EvalStrategy {
 
     public EvalStrategyC() {
-        this(new CornerTerm2[]{new CornerTerm2(000), new CornerTerm2(007), new CornerTerm2(070), new CornerTerm2(077)},
+        this(CornerTerm2.terms,
                 Edge2XTerm.terms,
-                new RowTerm[]{new RowTerm(1), new RowTerm(2), new RowTerm(3), new RowTerm(4), new RowTerm(5), new RowTerm(6)},
-                new ColTerm[]{new ColTerm(1), new ColTerm(2), new ColTerm(3), new ColTerm(4), new ColTerm(5), new ColTerm(6)},
-                new UldrTerm[]{new UldrTerm(0), new UldrTerm(1), new UldrTerm(-1), new UldrTerm(2), new UldrTerm(-2), new UldrTerm(3), new UldrTerm(-3), new UldrTerm(4), new UldrTerm(-4)},
-                new UrdlTerm[]{new UrdlTerm(0), new UrdlTerm(1), new UrdlTerm(-1), new UrdlTerm(2), new UrdlTerm(-2), new UrdlTerm(3), new UrdlTerm(-3), new UrdlTerm(4), new UrdlTerm(-4)},
+                RowTerm.internalTerms,
+                ColTerm.internalTerms,
+                UldrTerm.terms,
+                UrdlTerm.terms,
                 CornerBlockTerm.terms
         );
     }
