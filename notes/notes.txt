@@ -1358,3 +1358,17 @@ ply  result d1_time  edax_time
 8     -6.46   152ms    1.36s
 10/8  +4.56   517ms    1.36s
 12/8  +12.1   1.61s    1.33s
+
+Eval with Triangle corners
+---------------------------
+Eval e has 4x4 triangle corners instead of the 3x3 corners of eval d.
+This was done to make the eval closer to ntest's.
+
+This eval is slightly weaker than 3x3 corners:
+    e1s:6s vs d1s:6s: average result = -0.133 +/-0.099
+    Time per game =  35.61 ms vs  34.72 ms.
+
+Also, this eval takes slightly longer to reach 6 ply; although the eval speed could be improved by combining
+the length-4 diagonals.
+
+

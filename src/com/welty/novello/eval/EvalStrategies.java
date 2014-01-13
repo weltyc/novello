@@ -95,13 +95,17 @@ public class EvalStrategies {
         new EvalStrategyB();
         new EvalStrategyC();
         new EvalStrategyD();
+        new EvalStrategyE();
     }
 
     public static class StrategyStore {
         private final HashMap<String, EvalStrategy> strategyFromName = new HashMap<>();
 
         private synchronized void putStrategy(String name, EvalStrategy evalStrategy) {
-            strategyFromName.put(name, evalStrategy);
+            final EvalStrategy previous = strategyFromName.put(name, evalStrategy);
+            if (previous != null) {
+                throw new IllegalArgumentException("can only have one strategy of each name");
+            }
         }
 
         private synchronized EvalStrategy getStrategy(String name) {
