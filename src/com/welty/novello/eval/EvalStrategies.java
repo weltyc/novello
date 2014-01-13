@@ -1,6 +1,8 @@
 package com.welty.novello.eval;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 
 /**
  * Utility class containing EvalStrategy instances
@@ -44,55 +46,6 @@ public class EvalStrategies {
 
 
     static {
-        new EvalStrategy("a",
-                new CornerTerm2(000),
-                new CornerTerm2(007),
-                new CornerTerm2(070),
-                new CornerTerm2(077),
-                Terms.moverDisks,
-                Terms.enemyDisks,
-                Terms.moverMobilities,
-                Terms.enemyMobilities,
-                Terms.moverPotMobs,
-                Terms.enemyPotMobs,
-                Terms.moverPotMobs2,
-                Terms.enemyPotMobs2,
-                new RowTerm(0),
-                new RowTerm(1),
-                new RowTerm(2),
-                new RowTerm(3),
-                new RowTerm(4),
-                new RowTerm(5),
-                new RowTerm(6),
-                new RowTerm(7),
-                new ColTerm(0),
-                new ColTerm(1),
-                new ColTerm(2),
-                new ColTerm(3),
-                new ColTerm(4),
-                new ColTerm(5),
-                new ColTerm(6),
-                new ColTerm(7),
-                new UldrTerm(-4),
-                new UldrTerm(-3),
-                new UldrTerm(-2),
-                new UldrTerm(-1),
-                new UldrTerm(-0),
-                new UldrTerm(1),
-                new UldrTerm(2),
-                new UldrTerm(3),
-                new UldrTerm(4),
-                new UrdlTerm(-4),
-                new UrdlTerm(-3),
-                new UrdlTerm(-2),
-                new UrdlTerm(-1),
-                new UrdlTerm(-0),
-                new UrdlTerm(1),
-                new UrdlTerm(2),
-                new UrdlTerm(3),
-                new UrdlTerm(4)
-        );
-        new EvalStrategyB();
         new EvalStrategyC();
         new EvalStrategyD();
         new EvalStrategyE();

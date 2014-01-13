@@ -1,6 +1,8 @@
 package com.welty.novello.core;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Random;
 
 /**
  * Random test positions, 'early' with about 16 disks and 'late' with about 48 disks
@@ -28,8 +30,8 @@ public class Me {
     /**
      * Generate a test position with about 16 disks & 48 empties
      *
-     * @return the test position
      * @param random random number generator
+     * @return the test position
      */
     public static Me early(Random random) {
         return new Me(random, random.nextLong() | random.nextLong());
@@ -38,8 +40,8 @@ public class Me {
     /**
      * Generate a test position with about 48 disks & 16 empties
      *
-     * @return the test position
      * @param random random number generator
+     * @return the test position
      */
     public static Me late(Random random) {
         return new Me(random, random.nextLong() & random.nextLong());
@@ -74,8 +76,8 @@ public class Me {
         long moves = calcMoves();
         while (moves != 0) {
             final int sq = Long.numberOfTrailingZeros(moves);
-            final long placement = 1L<<sq;
-            moves &=~placement;
+            final long placement = 1L << sq;
+            moves &= ~placement;
 
             final Position subPosition = pos.play(sq);
             subPositions.add(new Me(subPosition.mover(), subPosition.enemy()));
@@ -88,6 +90,12 @@ public class Me {
         return BitBoardUtils.calcMoves(mover, enemy);
     }
 
+
+    public long enemyMoves() {
+        return BitBoardUtils.calcMoves(enemy, mover);
+    }
+
+
     /**
      * Choose one of the 8 reflections of this position
      *
@@ -95,10 +103,10 @@ public class Me {
      */
     public Me minimalReflection() {
         Me minimal = this;
-        for (int r=1; r<8; r++) {
+        for (int r = 1; r < 8; r++) {
             final long rMover = BitBoardUtils.reflection(mover, r);
             final long rEnemy = BitBoardUtils.reflection(enemy, r);
-            if (rMover < minimal.mover || (rMover==minimal.mover && rEnemy < minimal.enemy)) {
+            if (rMover < minimal.mover || (rMover == minimal.mover && rEnemy < minimal.enemy)) {
                 minimal = new Me(rMover, rEnemy);
             }
         }
@@ -122,7 +130,7 @@ public class Me {
 
     @Override
     public int hashCode() {
-        return (int)NovelloUtils.hash(mover, enemy);
+        return (int) NovelloUtils.hash(mover, enemy);
     }
 
     public int nEmpty() {
@@ -130,6 +138,6 @@ public class Me {
     }
 
     private long empty() {
-        return ~(mover|enemy);
+        return ~(mover | enemy);
     }
 }

@@ -388,13 +388,15 @@ public class MidgameSearcher {
 
     public static class Options {
         final boolean mpc;
-        final boolean useSolver;
+        public final boolean useSolver;
         final boolean printSearch;
+        public final boolean useNtestSearchDepths;
 
         public Options(String options) {
             mpc = !options.contains("w");
             useSolver = options.contains("s");
             printSearch = options.contains("p");
+            useNtestSearchDepths = options.contains("n");
         }
     }
 }

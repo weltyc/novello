@@ -15,6 +15,17 @@ class CoefficientSet {
         this(readSlices(strategy, name), name);
     }
 
+    /**
+     * Generate a CoefficientSet that has the same coefficients at each empty
+     */
+    CoefficientSet(short[][] coefficients, String name) {
+        this.name = name;
+        slices = new short[64][][];
+        for (int i = 0; i < 64; i++) {
+            slices[i] = coefficients;
+        }
+    }
+
     private CoefficientSet(short[][][] slices, String name) {
         this.slices = slices;
         this.name = name;

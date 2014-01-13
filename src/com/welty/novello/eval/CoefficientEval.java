@@ -33,6 +33,13 @@ public class CoefficientEval extends Eval {
         this(evalStrategy, new CoefficientSet(evalStrategy, coeffSetName));
     }
 
+    /**
+     * Create an eval using a strategy and coefficients that don't vary by nEmpty
+     */
+    CoefficientEval(EvalStrategy evalStrategy, short[][] coefficients) {
+        this(evalStrategy, new CoefficientSet(coefficients, evalStrategy + "FixedCoeffs"));
+    }
+
     private CoefficientEval(EvalStrategy evalStrategy, CoefficientSet coeffSet) {
         this.evalStrategy = evalStrategy;
         coefficientSet = coeffSet;
@@ -72,7 +79,6 @@ public class CoefficientEval extends Eval {
             moveScore = -eval(enemy, mover, enemyMoves, moverMoves);
         } else {
             moveScore = CoefficientCalculator.DISK_VALUE * BitBoardUtils.terminalScore(mover, enemy);
-
         }
         return moveScore;
     }

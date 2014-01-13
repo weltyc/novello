@@ -5,6 +5,7 @@ import com.welty.novello.eval.Eval;
 import com.welty.novello.eval.EvalStrategies;
 import com.welty.novello.eval.EvalStrategy;
 import com.welty.novello.ntest.NBoardPlayer;
+import com.welty.ntestj.CEvaluatorJ;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -53,7 +54,12 @@ public class Players {
         if (evalName.equals("ntest") || evalName.equals("edax")) {
             return new NBoardPlayer(evalName, depth, false);
         }
-        final Eval eval = eval(evalName);
+        final Eval eval;
+        if (evalName.equals("ntestJ")) {
+            eval = CEvaluatorJ.getInstance();
+        } else {
+            eval = eval(evalName);
+        }
         return new EvalPlayer(eval, depth, matcher.group(2));
     }
 

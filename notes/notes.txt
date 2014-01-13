@@ -1371,4 +1371,45 @@ This eval is slightly weaker than 3x3 corners:
 Also, this eval takes slightly longer to reach 6 ply; although the eval speed could be improved by combining
 the length-4 diagonals.
 
+NTest Eval
+----------
+tested ntestJ eval vs c3s at various depths
 
+depth  result   ntestJ  c3s
+4      +9.8     6.04ms  5.97ms
+6      +9.3       41ms    34ms
+
+Next question, how does ntestJ eval do vs ntest? Obvious differences are MPC cuts and solver start height -
+even 1-ply ntest is doing probable solves at 12 empty.
+ntestJ vs ntest at various depths:
+depth  result  ntestJ ntest
+4       -0.5
+4s/4    +0.5     6ms   27ms
+6       -2.2    38ms   51ms
+6s/6     0.0    42ms   51ms
+8       -1.4   183ms   96ms
+8s/8    +1.3   196ms   97ms
+
+Mimic Ntest
+-----------
+Try to get ntestJ closer to ntest by mimicking ntest's probable solve mechanism.
+In this section, SelfPlaySet plays ntestJ:6ns vs ntest:6.
+
+First try:
+ntestJ does a probable solve at ntest's 50% WLD depth, and does a full solve at ntest's 100% WLD depth.
+    average result = 6.3  59ms vs 50ms.
+
+Second try:
+ntestJ does a probable solve at ntest's 60% WLD depth (=50% full width), and does a full solve at ntest's full-width depth (=100% WLD - 4).
+At height = 6, that means full solve at <= 12, probable solve at <= 16
+    average result = 5.57 +/-0.077. T ~  72.1.  Time per game =  54.53 ms vs  51.37 ms.
+
+A nice table displaying dScore/d ln(time) for the various improvements:
+
+    Project          Score_Diff	Time_ratio	ln(ratio)	score/time
+    8 to 10 ply       11          3.40         1.22          9
+    8 to 8s          2.7          1.07         0.07       	39
+    6 to 6s          2.2          1.11         0.10       	22
+    6s to first try  6.3          1.40         0.34       	19
+    6s to second try 5.6          1.29         0.25       	22
+    2nd to 1st try   0.9          1.07         0.07	        13

@@ -3,10 +3,10 @@ package com.welty.novello.eval;
 import com.orbanova.common.misc.ArrayTestCase;
 import com.orbanova.common.misc.Vec;
 import com.orbanova.common.ramfs.RamFileSystem;
-import com.welty.novello.core.Me;
-import com.welty.novello.selfplay.Players;
-import com.welty.novello.core.Position;
 import com.welty.novello.core.BitBoardUtils;
+import com.welty.novello.core.Me;
+import com.welty.novello.core.Position;
+import com.welty.novello.selfplay.Players;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -65,7 +65,7 @@ public class EvalStrategyTest extends ArrayTestCase {
         for (int iFeature = 0; iFeature < nFeatures; iFeature++) {
             final Feature feature = strategy.getFeature(iFeature);
             final int nOrids = feature.nOrids();
-            short start = (short)value;
+            short start = (short) value;
             short[] increasing = new short[nOrids];
             for (short i = 0; i < nOrids; i++) {
                 increasing[i] = start;
@@ -110,13 +110,30 @@ public class EvalStrategyTest extends ArrayTestCase {
         }
     }
 
+    public void testGeneratedEvalMatchesEvalByTerms() {
+        for (EvalStrategy strategy : EvalStrategies.knownStrategies()) {
+            final short[][] randomCoefficients = strategy.generateRandomCoefficients();
+            final CoefficientEval eval = new CoefficientEval(strategy, randomCoefficients);
+
+            for (Me me : new Me[]{Me.early, Me.late}) {
+                checkGeneratedEval(strategy, randomCoefficients, eval, me);
+            }
+        }
+    }
+
+    private static void checkGeneratedEval(EvalStrategy strategy, short[][] randomCoefficients, CoefficientEval eval, Me me) {
+        final int evalByTerms = strategy.evalByTerms(me.mover, me.enemy, me.calcMoves(), me.enemyMoves(), randomCoefficients);
+        final int generatedEval = eval.eval(me.mover, me.enemy);
+        assertEquals(evalByTerms, generatedEval);
+    }
+
     private void testAllReflectionsHaveTheSameOrids(EvalStrategy strategy, Me position) {
         final long mover = position.mover;
         final long enemy = position.enemy;
 
         PositionElement expected = strategy.coefficientIndices(mover, enemy, 0);
         expected.sortIndices();
-        for (int r=1; r<8; r++) {
+        for (int r = 1; r < 8; r++) {
             final long rMover = BitBoardUtils.reflection(mover, r);
             final long rEnemy = BitBoardUtils.reflection(enemy, r);
             final PositionElement actual = strategy.coefficientIndices(rMover, rEnemy, 0);

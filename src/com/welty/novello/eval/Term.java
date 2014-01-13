@@ -79,6 +79,11 @@ class CornerTerm extends Term {
 class CornerTerm2 extends Term {
     private final int sq;
 
+    @SuppressWarnings("OctalInteger")
+    public static final CornerTerm2[] terms = {
+            new CornerTerm2(000), new CornerTerm2(007), new CornerTerm2(070), new CornerTerm2(077)
+    };
+
     public CornerTerm2(int sq) {
         super(Features.corner2Feature);
         this.sq = sq;
@@ -229,6 +234,10 @@ class RowTerm extends Term {
             LinePatternFeatureFactory.of("row3", 8)
     };
 
+    public static final RowTerm[] internalTerms = {
+            new RowTerm(1), new RowTerm(2), new RowTerm(3), new RowTerm(4), new RowTerm(5), new RowTerm(6)
+    };
+
     static Feature getRowFeature(int row) {
         return features[row < 4 ? row : 7 - row];
     }
@@ -240,7 +249,7 @@ class RowTerm extends Term {
         shift = row * 8;
     }
 
-    static int rowOrid(long mover, long enemy, int row) {
+    public static int rowOrid(long mover, long enemy, int row) {
         return OridTable.orid8(BitBoardUtils.rowInstance(mover, enemy, row * 8));
     }
 
@@ -257,6 +266,9 @@ class RowTerm extends Term {
 }
 
 class ColTerm extends Term {
+    public static final ColTerm[] internalTerms = {
+            new ColTerm(1), new ColTerm(2), new ColTerm(3), new ColTerm(4), new ColTerm(5), new ColTerm(6)
+    };
 
     private final int col;
 
@@ -280,69 +292,11 @@ class ColTerm extends Term {
     }
 }
 
-abstract class DiagonalTerm extends Term {
-    static final Feature[] features = {
-            LinePatternFeatureFactory.of("diagonal8", 8),
-            LinePatternFeatureFactory.of("diagonal7", 7),
-            LinePatternFeatureFactory.of("diagonal6", 6),
-            LinePatternFeatureFactory.of("diagonal5", 5),
-            LinePatternFeatureFactory.of("diagonal4", 4)
-    };
-    protected final int shift;
-    protected final long mask;
-    private final int diagonalLength;
-
-
-    DiagonalTerm(int diagonal, long mask, int shift) {
-        super(features[Math.abs(diagonal)]);
-        this.mask = mask;
-        this.shift = shift;
-        diagonalLength = 8 - Math.abs(diagonal);
-    }
-
-    protected static long diagonalMask(int sq, int length, int dSq) {
-        long mask = 0;
-        for (int i = 0; i < length; i++) {
-            mask |= 1L << sq;
-            sq += dSq;
-        }
-        return mask;
-    }
-
-    /**
-     * Quick orid calculation suitable for generated code
-     *
-     * @return text of quick orid calculation
-     */
-    String oridGen() {
-        return String.format("OridTable.orid%d(DiagonalTerm.diagonalInstance(mover, enemy, 0x%016xL, %d))", diagonalLength, mask, shift);
-    }
-
-    @Override
-    public int instance(long mover, long enemy, long moverMoves, long enemyMoves) {
-        final long mask = this.mask;
-        final int shift = this.shift;
-        return diagonalInstance(mover, enemy, mask, shift);
-    }
-
-    public static int diagonalInstance(long mover, long enemy, long mask, int shift) {
-        final int moverDiagonal = extractDiagonal(mover, mask, shift);
-        final int enemyDiagonal = extractDiagonal(enemy, mask, shift);
-        return Base3.base2ToBase3(moverDiagonal, enemyDiagonal);
-    }
-
-    int extractDiagonal(long mover) {
-        final long mask = this.mask;
-        final int shift = this.shift;
-        return extractDiagonal(mover, mask, shift);
-    }
-
-    private static int extractDiagonal(long mover, long mask, int shift) {
-        return (int) ((mover & mask) * BitBoardUtils.HFile >>> shift);
-    }
-}
-
 class UrdlTerm extends DiagonalTerm {
+    public static UrdlTerm[] terms = new UrdlTerm[]{
+            new UrdlTerm(0), new UrdlTerm(1), new UrdlTerm(-1), new UrdlTerm(2), new UrdlTerm(-2), new UrdlTerm(3), new UrdlTerm(-3), new UrdlTerm(4), new UrdlTerm(-4)
+    };
+
     UrdlTerm(int diagonal) {
         super(diagonal, urdlMask(diagonal), diagonal >= 0 ? 56 : 56 - diagonal);
     }
@@ -365,6 +319,10 @@ class UrdlTerm extends DiagonalTerm {
 }
 
 class UldrTerm extends DiagonalTerm {
+    public static UldrTerm[] terms = new UldrTerm[]{
+            new UldrTerm(0), new UldrTerm(1), new UldrTerm(-1), new UldrTerm(2), new UldrTerm(-2), new UldrTerm(3), new UldrTerm(-3), new UldrTerm(4), new UldrTerm(-4)
+    };
+
     UldrTerm(int diagonal) {
         super(diagonal, uldrMask(diagonal), shift(diagonal));
     }
@@ -388,6 +346,7 @@ class UldrTerm extends DiagonalTerm {
     }
 }
 
+@SuppressWarnings("OctalInteger")
 class Edge2XTerm extends Term {
     private static final Feature feature = LinePatternFeatureFactory.of("edge2X", 10);
     static final Edge2XTerm[] terms = {new Edge2XTerm(0), new Edge2XTerm(1), new Edge2XTerm(2), new Edge2XTerm(3)};
@@ -401,19 +360,15 @@ class Edge2XTerm extends Term {
 
     @Override
     public int instance(long mover, long enemy, long moverMoves, long enemyMoves) {
-        if (direction==0) {
+        if (direction == 0) {
             return instance0(mover, enemy);
-        }
-        else if (direction==1) {
+        } else if (direction == 1) {
             return instance1(mover, enemy);
-        }
-        else if (direction==2) {
+        } else if (direction == 2) {
             return instance2(mover, enemy);
-        }
-        else if (direction==3) {
+        } else if (direction == 3) {
             return instance3(mover, enemy);
-        }
-        else throw new IllegalStateException("not implemented");
+        } else throw new IllegalStateException("not implemented");
     }
 
     static int instance0(long mover, long enemy) {
@@ -433,25 +388,25 @@ class Edge2XTerm extends Term {
     }
 
     static int extractBottom(long mover) {
-        return (int)(((mover&Rank1)<<1)|((mover&G7)>>011)|((mover&B7)>>5));
+        return (int) (((mover & Rank1) << 1) | ((mover & G7) >> 011) | ((mover & B7) >> 5));
     }
 
     static int extractTop(long mover) {
-        return (int)(((mover&Rank8)>>>067)|((mover&G2)>>061)|((mover&B2)>>055));
+        return (int) (((mover & Rank8) >>> 067) | ((mover & G2) >> 061) | ((mover & B2) >> 055));
     }
 
     static int extractLeft(long mover) {
         final int leftRow = BitBoardUtils.extractCol(mover, 7);
-        return (int)(2*leftRow | ((mover&B2)>>066) | ((mover&B7)>>5));
+        return (int) (2 * leftRow | ((mover & B2) >> 066) | ((mover & B7) >> 5));
     }
 
     static int extractRight(long mover) {
         final int rightRow = BitBoardUtils.extractCol(mover, 0);
-        return (int)(2*rightRow | ((mover&G2)>>061) | (mover&G7));
+        return (int) (2 * rightRow | ((mover & G2) >> 061) | (mover & G7));
     }
 
     @Override String oridGen() {
-        return "OridTable.orid10(Edge2XTerm.instance"+direction+"(mover, enemy))";
+        return "OridTable.orid10(Edge2XTerm.instance" + direction + "(mover, enemy))";
     }
 }
 

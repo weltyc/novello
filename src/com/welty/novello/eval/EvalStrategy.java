@@ -14,6 +14,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Random;
 
 /**
  */
@@ -144,6 +145,31 @@ public class EvalStrategy {
     }
 
     /**
+     * Generate a random set of coefficients for testing
+     *
+     * @return random coefficient slice
+     */
+    short[][] generateRandomCoefficients() {
+        final int nFeatures = nFeatures();
+        final short[][] slice = new short[nFeatures][];
+
+        for (int iFeature = 0; iFeature < nFeatures; iFeature++) {
+            final Feature feature = getFeature(iFeature);
+            slice[iFeature] = randomShorts(new Random(1337), feature.nOrids());
+        }
+        return slice;
+    }
+
+    private short[] randomShorts(Random random, int nShorts) {
+        final short[] shorts = new short[nShorts];
+        for (int i = 0; i < shorts.length; i++) {
+            shorts[i] = (short) random.nextInt();
+        }
+        return shorts;
+    }
+
+
+    /**
      * @param coeffSetName name of the coefficient set. This is used as a directory name. So that it works on all
      *                     systems it is required to be alphanumeric.
      * @return location where this coeffSet is stored
@@ -213,7 +239,7 @@ public class EvalStrategy {
                 if (intCoeff > Short.MAX_VALUE || intCoeff < Short.MIN_VALUE) {
                     throw new IllegalArgumentException("Coefficient too big : " + intCoeff);
                 }
-                out.writeShort((short)intCoeff);
+                out.writeShort((short) intCoeff);
             }
         }
         System.out.println(nNonZero + " non-zero coefficients written");
@@ -318,6 +344,15 @@ public class EvalStrategy {
 
         final short[][] slice = coefficientSet.slice(BitBoardUtils.nEmpty(mover, enemy));
 
+        return evalByTerms(mover, enemy, moverMoves, enemyMoves, slice);
+    }
+
+    /**
+     * Evaluate the position by using term.orid()
+     *
+     * @return position evaluation
+     */
+    int evalByTerms(long mover, long enemy, long moverMoves, long enemyMoves, short[][] slice) {
         int eval = 0;
 
         for (int iTerm = 0; iTerm < terms.length; iTerm++) {
