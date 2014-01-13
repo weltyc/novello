@@ -6,6 +6,7 @@ import com.welty.novello.eval.CoefficientCalculator;
 import com.welty.novello.eval.Eval;
 import com.welty.novello.solver.MidgameSearcher;
 import com.welty.novello.solver.Solver;
+import com.welty.ntestj.Heights;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -15,6 +16,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public class EvalPlayer implements Player {
     @NotNull private final Eval eval;
+    private final MidgameSearcher.Options midgameOptions;
     private volatile int searchDepth;
     private final String options;
     private final MidgameSearcher searcher;
@@ -24,15 +26,37 @@ public class EvalPlayer implements Player {
         this.eval = eval;
         this.searchDepth = searchDepth;
         this.options = options;
-        this.solver = new Solver(eval, new MidgameSearcher.Options(options));
+        midgameOptions = new MidgameSearcher.Options(options);
+        this.solver = new Solver(eval, midgameOptions);
         this.searcher = solver.midgameSearcher;
+        if (midgameOptions.useNtestSearchDepths) {
+            System.out.println(new Heights(searchDepth));
+        }
     }
 
     public MoveScore calcMove(@NotNull Position board, long moverMoves, int searchFlags) {
-        if (board.nEmpty() > 8) {
-            return searcher.getMoveScore(board, board.calcMoves(), searchDepth);
+        final int sd = searchDepth;
+        if (midgameOptions.useNtestSearchDepths) {
+            final Heights heights = new Heights(sd);
+            if (board.nEmpty() <= heights.getFullWidthHeight()) {
+                // full-width solve
+                return solveMove(board);
+            } else {
+                if (board.nEmpty() <= heights.getProbableSolveHeight()) {
+                    // probable solve
+                    final int solverStart = midgameOptions.useSolver ? MidgameSearcher.SOLVER_START_DEPTH - 1 : 0;
+                    final int depth = board.nEmpty() - solverStart;
+                    return searcher.getMoveScore(board, board.calcMoves(), depth);
+                } else {
+                    return searcher.getMoveScore(board, board.calcMoves(), sd);
+                }
+            }
         } else {
-            return solveMove(board);
+            if (board.nEmpty() > 8) {
+                return searcher.getMoveScore(board, board.calcMoves(), sd);
+            } else {
+                return solveMove(board);
+            }
         }
     }
 
