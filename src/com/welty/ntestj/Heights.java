@@ -12,7 +12,7 @@ public class Heights {
     /**
      * Percent solved for each hWLD; 100% = exact solution
      */
-    private static final int[] nSolvePct = {50, 60, 70, 91, 99, 100};
+    private static final int[] nSolvePct = {100, 99, 91, 70, 60, 50};
     private final int hMidgame;
 
     public Heights(int hMidgame) {
@@ -64,13 +64,13 @@ public class Heights {
      * @return greatest nEmpty at which the search should do a full-width 100% search
      */
     public int getFullWidthHeight() {
-        return hWLD[5] - 4;
+        return hWLD[0] - 4;
     }
 
     /**
      * @return greatest nEmpty at which the search should do a probable WLD search
      */
     public int getProbableSolveHeight() {
-        return hWLD[1];
+        return hWLD[4];
     }
 }
