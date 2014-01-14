@@ -1437,8 +1437,12 @@ can't be switched off.
 
 Timing: ntestJ:20 takes 32s/game.
 
-Playing strength: Using the new defaults, playing ntestJ:? vs ntest:?, novello is both faster and stronger in rand games:
+Playing strength: Using the new defaults, playing ntestJ:? vs ntest:?:
+     2 ply: 14,716 matches: average result = 12.5 +/-0.24. T ~  51.5.  Time per game =   1.84 ms vs  18.01 ms.
+     4 ply:  8,546 matches: average result = 5.03 +/-0.24. T ~  20.9.  Time per game =   6.12 ms vs  26.96 ms.
      6 ply:  7,198 matches: average result = 2.78 +/-0.20. T ~  13.6.  Time per game =  26.93 ms vs  50.39 ms.
      8 ply:  3,147 matches: average result = 1.91 +/-0.24. T ~   7.8.  Time per game =  87.23 ms vs  98.04 ms.
     10 ply:  2,579 matches: average result = 0.772 +/-0.23. T ~   3.4.  Time per game = 277.71 ms vs 230.19 ms
     12 ply:  1,744 matches: average result = 0.370 +/-0.23. T ~   1.6.  Time per game = 794.13 ms vs 636.51 ms
+
+From the 2-ply timings, I estimate the overhead in communicating with an external process is ~16ms.
