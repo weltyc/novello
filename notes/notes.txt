@@ -1413,3 +1413,10 @@ A nice table displaying dScore/d ln(time) for the various improvements:
     6s to first try  6.3          1.40         0.34       	19
     6s to second try 5.6          1.29         0.25       	22
     2nd to 1st try   0.9          1.07         0.07	        13
+
+Alternative MPC
+---------------
+Tried MPC cutoffs - instead of using (alpha, beta) window used two searches with (beta-1, beta) window and (alpha, alpha+1) window.
+At 8 ply, this hurt the timing terribly: new vs old    0.212 +/-0.57. T ~   0.4.  Time per game = 308.49 ms vs 212.02 ms.
+Similar results when using just one search with a (beta-1, beta) window:  -0.0162 +/-0.47. T ~  -0.0.  Time per game = 307.79 ms vs 212.82 ms.
+
