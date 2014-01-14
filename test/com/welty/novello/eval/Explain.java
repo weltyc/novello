@@ -9,7 +9,7 @@ import com.welty.novello.core.Position;
 public class Explain {
     public static void main(String[] args) {
         final String evalName = "7B";
-        final CoefficientEval eval = Players.eval(evalName);
+        final CoefficientEval eval = (CoefficientEval)Players.eval(evalName);
         final EvalPlayer player = new EvalPlayer(eval, 1, "");
 
         final Position prev = Position.of("--------\n" +
@@ -22,7 +22,7 @@ public class Explain {
                 "--------\n" +
                 "O");
         System.out.println(prev);
-        player.calcMove(prev, prev.calcMoves(), -1);
+        player.calcMove(prev);
 
         final String moves = "E3,G3";
         for (String move : moves.split(",")) {

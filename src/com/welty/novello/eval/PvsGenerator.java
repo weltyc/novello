@@ -274,7 +274,7 @@ public class PvsGenerator {
                     return pvs;
                 }
             }
-            final MoveScore moveScore = player.calcMove(position, position.calcMoves(), 0);
+            final MoveScore moveScore = player.calcMove(position);
             pvs.add(new PositionValue(position.mover(), position.enemy(), moveScore.score));
             position.play(moveScore.sq);
             int subScore = -moveScore.score;
@@ -291,7 +291,7 @@ public class PvsGenerator {
             return pvs;
         } else {
             // generate using playout
-            final MutableGame game = new SelfPlayGame(position, player, player, "", 0, 0).call();
+            final MutableGame game = new SelfPlayGame(position, player, player, "", 0).call();
             final List<PositionValue> gamePvs = game.calcPositionValues();
             return gamePvs.subList(0, Math.min(2, gamePvs.size()));
         }

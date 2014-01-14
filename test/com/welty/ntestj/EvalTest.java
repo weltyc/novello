@@ -61,7 +61,16 @@ public class EvalTest extends TestCase {
      * Total Value= 81
      * 81
      */
+    /**
+     * Check that ntest's eval matches ntestJ's eval.
+     *
+     * If ntest is not available on this computer, ignore.
+     */
     public void test1Ply() {
+        if (NBoardPlayer.getExe("ntest")==null) {
+            System.out.println("ntest not available on this machine, skipping test");
+            return;
+        }
         final NBoardPlayer ntest = new NBoardPlayer("ntest", 1, true);
         final CEvaluatorJ eval = CEvaluatorJ.getInstance();
 
@@ -73,7 +82,7 @@ public class EvalTest extends TestCase {
     }
 
     private static void test1Ply(NBoardPlayer ntest, CEvaluatorJ eval, Position pos) {
-        final MoveScore moveScore = ntest.calcMove(pos, pos.calcMoves(), 0);
+        final MoveScore moveScore = ntest.calcMove(pos);
         final Position next = pos.play(moveScore.sq);
         final int value = eval.ValueJMobs(next.mover(), next.enemy(), next.calcMoves(), next.enemyMoves());
         assertEquals(-moveScore.score, value);

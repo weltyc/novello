@@ -15,10 +15,8 @@ public class SelfPlayGame implements Callable<MutableGame> {
     private final @NotNull Player black;
     private final @NotNull Player white;
     private final int gameFlags;
-    private final int searchFlags;
 
     public static final int FLAG_PRINT_GAME = 1;
-    public static final int FLAG_MEASURE_TIME = 2;
     /**
      *
      * @param board start position
@@ -26,15 +24,12 @@ public class SelfPlayGame implements Callable<MutableGame> {
      * @param white white player
      * @param place location of the match (often, Props.getHostName())
      * @param gameFlags  Sum of binary flags defined in SelfPlayGame (FLAG_PRINT_GAME, FLAG_MEASURE_TIME)
-     * @param searchFlags  as defined in the Search interface
      */
-    public SelfPlayGame(@NotNull Position board, @NotNull Player black, @NotNull Player white, String place, int gameFlags
-            , int searchFlags) {
+    public SelfPlayGame(@NotNull Position board, @NotNull Player black, @NotNull Player white, String place, int gameFlags) {
         this.game = new MutableGame(board, black.toString(), white.toString(), place);
         this.black = black;
         this.white = white;
         this.gameFlags = gameFlags;
-        this.searchFlags = searchFlags;
     }
 
     @Override public MutableGame call() {
@@ -79,7 +74,7 @@ public class SelfPlayGame implements Callable<MutableGame> {
             System.out.println(player(board.blackToMove) + " to move");
         }
         final long t0 = measuredTime();
-        final MoveScore moveScore = player(board.blackToMove).calcMove(board, moves, searchFlags);
+        final MoveScore moveScore = player(board.blackToMove).calcMove(board);
         final long dt = measuredTime()-t0;
         game.play(moveScore, dt*.001);
         if (printGame()) {

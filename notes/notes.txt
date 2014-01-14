@@ -1358,6 +1358,7 @@ ply  result d1_time  edax_time
 8     -6.46   152ms    1.36s
 10/8  +4.56   517ms    1.36s
 12/8  +12.1   1.61s    1.33s
+9ns/8 -2.09   165ms    1.36s
 
 Eval with Triangle corners
 ---------------------------

@@ -81,10 +81,10 @@ public class SelfPlaySet {
         double sum = 0;
         for (Position startPosition : startPositions) {
             final int netResult;
-            final MutableGame result = new SelfPlayGame(startPosition, player1, player2, hostName, 0, 0).call();
+            final MutableGame result = new SelfPlayGame(startPosition, player1, player2, hostName, 0).call();
             final MutableGame result2;
             if (player2 != player1) {
-                result2 = new SelfPlayGame(startPosition, player2, player1, hostName, 0, 0).call();
+                result2 = new SelfPlayGame(startPosition, player2, player1, hostName, 0).call();
                 netResult = (result.netScore() - result2.netScore());
             } else {
                 // if the same player plays both sides we don't need to play the return games

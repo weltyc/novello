@@ -30,7 +30,7 @@ public class MpcGenerator {
         final int maxDepth = Integer.parseInt(args[1]);
         final int limit = Integer.parseInt(args[2]);
 
-        final CoefficientEval eval = Players.eval(evalName);
+        final CoefficientEval eval = (CoefficientEval)Players.eval(evalName);
         final Path outputPath = eval.getCoeffDir().resolve("mpc.txt");
 
         final List<PositionValue> pvs = getPvs(limit);

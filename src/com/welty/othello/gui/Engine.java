@@ -79,7 +79,7 @@ class Engine {
             if (moves == 0) {
                 moveScore = new MoveScore(-1, 0);
             } else {
-                moveScore = player.calcMove(position, moves, 0);
+                moveScore = player.calcMove(position);
             }
             SwingUtilities.invokeLater(new Runnable() {
                 @Override public void run() {

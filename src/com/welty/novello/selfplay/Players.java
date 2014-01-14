@@ -14,9 +14,13 @@ import java.util.regex.Pattern;
  * Utility class containing Othello players
  */
 public class Players {
-    public static CoefficientEval eval(String name) {
-        EvalStrategy strategy = EvalStrategies.strategy(name.substring(0, 1));
-        return new CoefficientEval(strategy, name.substring(1));
+    public static Eval eval(String name) {
+        if (name.equals("ntestJ")) {
+            return CEvaluatorJ.getInstance();
+        } else {
+            EvalStrategy strategy = EvalStrategies.strategy(name.substring(0, 1));
+            return new CoefficientEval(strategy, name.substring(1));
+        }
     }
 
     /**
@@ -55,11 +59,7 @@ public class Players {
             return new NBoardPlayer(evalName, depth, false);
         }
         final Eval eval;
-        if (evalName.equals("ntestJ")) {
-            eval = CEvaluatorJ.getInstance();
-        } else {
-            eval = eval(evalName);
-        }
+        eval = eval(evalName);
         return new EvalPlayer(eval, depth, matcher.group(2));
     }
 
@@ -85,7 +85,7 @@ public class Players {
 
     public static synchronized Eval currentEval() {
         if (currentEval == null) {
-            currentEval = eval("c1s");
+            currentEval = eval("ntestJ");
         }
         return currentEval;
     }

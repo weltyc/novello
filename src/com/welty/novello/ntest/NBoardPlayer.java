@@ -30,11 +30,11 @@ public class NBoardPlayer implements Player {
         try {
             this.depth = depth;
             this.debug = debug;
-            final String exe = Props.getInstance().get(program);
+            final String exe = getExe(program);
             if (exe==null) {
                 throw new RuntimeException("Program '" + program + "' is not listed in properties file " + Props.getInstance().getSourceFile());
             }
-            final String args = Props.getInstance().get(program+".args");
+            final String args = getExe(program + ".args");
             if (args==null) {
                 throw new RuntimeException("Program '" + program + ".args' is not listed in properties file " + Props.getInstance().getSourceFile());
             }
@@ -55,6 +55,15 @@ public class NBoardPlayer implements Player {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * Get location of .exe file
+     * @param program program name
+     * @return program full path, or null if program is not listed in properties file
+     */
+    public static String getExe(String program) {
+        return Props.getInstance().get(program);
     }
 
     private String[] makeArgs(String exe, String args) {
@@ -112,7 +121,7 @@ public class NBoardPlayer implements Player {
         }
     }
 
-    @Override public MoveScore calcMove(@NotNull Position board, long moverMoves, int searchFlags) {
+    @Override public MoveScore calcMove(@NotNull Position board) {
         try {
             pingPong();
             println("set game " + new MutableGame(board, "me", "you", "here").toGgf());

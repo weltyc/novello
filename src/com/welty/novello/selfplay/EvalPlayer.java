@@ -2,7 +2,6 @@ package com.welty.novello.selfplay;
 
 import com.welty.novello.core.MoveScore;
 import com.welty.novello.core.Position;
-import com.welty.novello.eval.CoefficientCalculator;
 import com.welty.novello.eval.Eval;
 import com.welty.novello.solver.MidgameSearcher;
 import com.welty.novello.solver.Solver;
@@ -34,7 +33,7 @@ public class EvalPlayer implements Player {
         }
     }
 
-    public MoveScore calcMove(@NotNull Position board, long moverMoves, int searchFlags) {
+    public MoveScore calcMove(@NotNull Position board) {
         final int sd = searchDepth;
         if (midgameOptions.useNtestSearchDepths) {
             final Heights heights = new Heights(sd);
@@ -73,9 +72,7 @@ public class EvalPlayer implements Player {
      * @return the perfect-play move
      */
     MoveScore solveMove(Position board) {
-        final MoveScore moveScore = solver.getMoveScore(board.mover(), board.enemy());
-        return new MoveScore(moveScore.sq, moveScore.score * CoefficientCalculator.DISK_VALUE);
+        return solver.getMoveScore(board.mover(), board.enemy());
     }
-
 }
 

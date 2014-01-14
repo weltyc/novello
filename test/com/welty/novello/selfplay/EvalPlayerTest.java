@@ -22,7 +22,7 @@ public class EvalPlayerTest extends TestCase {
                 "O");
 
         final long moves = prev.calcMoves();
-        final MoveScore moveScore = player.calcMove(prev, moves, 0);
+        final MoveScore moveScore = player.calcMove(prev);
         assertTrue("must be a legal move", BitBoardUtils.isBitSet(moves, moveScore.sq));
 
         final Position terminal = prev.play(moveScore.sq);
@@ -52,5 +52,17 @@ public class EvalPlayerTest extends TestCase {
         assertEquals(Players.currentEval()+":1", evalPlayer.toString());
         evalPlayer.setMaxDepth(2);
         assertEquals(Players.currentEval()+":2", evalPlayer.toString());
+    }
+
+    /**
+     * Solve value was 100x too high in Viewer, printing out "+400 disks" instead of "+4 disks".
+     */
+    public void testSolveValue() {
+        final Eval eval = Players.currentEval();
+        final EvalPlayer player = new EvalPlayer(eval, 1, "");
+
+        final Position prev = Position.of("OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO*. O");
+
+        assertEquals(6400, player.calcMove(prev).score);
     }
 }

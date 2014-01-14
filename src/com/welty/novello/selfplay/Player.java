@@ -16,11 +16,9 @@ public interface Player {
      * Precondition: the board has a legal move
      *
      * @param board       board to move on
-     * @param moverMoves  legal moves for the player to move
-     * @param searchFlags a sum of binary flags, as defined in the Search interface.
-     * @return square of the player's chosen move
+     * @return square and value of the player's chosen move
      */
-    MoveScore calcMove(@NotNull Position board, long moverMoves, int searchFlags);
+    MoveScore calcMove(@NotNull Position board);
 
     /**
      * Set the maximum search depth for the player.
