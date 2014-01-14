@@ -1450,9 +1450,24 @@ From the 2-ply timings, I estimate the overhead in communicating with an externa
 
 Search Improvements
 -------------------
-Tried iterative deepening from the root node. This made the program 25% slower at 12 ply, and the strength difference
+1. Tried iterative deepening from the root node. This made the program 25% slower at 12 ply, and the strength difference
 was small (not statistically significant when I stopped running it).
 
-at depths >=5, MidgameSearcher.treeSearchNoSuggestion() sorts moves by 1-ply eval rather than fixed move ordering.
-This works; 12-ply search down to 355ms from 390s.  (changing the cutoff to depth>=6 keeps the time unchanged, depth>=7 is 1.5% slower).
+2. at depths >=5, MidgameSearcher.treeSearchNoSuggestion() sorts moves by 1-ply eval rather than fixed move ordering.
+This works; d1s:12 games down to 355ms from 390s.  (changing the cutoff to depth>=6 keeps the time unchanged, depth>=7 is 1.5% slower).
 
+3. at depths >=5, MidgameSearcher.treeSearchNoSuggestion() sorts moves by 1-ply eval with fastest first, with
+moves sorted by -searchScore - ff. This results in an 0.6% speedup. Not big enough to keep.
+Using ff*2 results in a 0% speedup. Also not big enough.
+
+4. Have the internal iterative deepening sort put all its moves in an array so all moves can be searched in order.
+This results in a 0% speedup.
+
+Ideas:
+* Sort moves to greater depths in PV nodes, so second choice is also reasonable.
+
+Evaluation
+----------
+play d1s:10 vs ntestJ:10
+
+    4,736 matches: average result = -7.63 +/-0.21. T ~ -37.0.  Time per game = 152.16 ms vs 251.49 ms.
