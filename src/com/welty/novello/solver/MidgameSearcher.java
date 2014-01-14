@@ -216,20 +216,21 @@ public class MidgameSearcher {
     }
 
     private BA treeMoveNoSuggestion(long mover, long enemy, long moverMoves, int alpha, int beta, int depth, BA ba) {
-        if (options.experimental && depth >= 5) {
-            // moves[i] = (-value*256 + sq)
-            final int[] moves = new int[Long.bitCount(moverMoves)];
+
+        if (depth >= 5) {
+            // sortIndices[i] = (-value*256 + sq)
+            final int[] sortIndices = new int[Long.bitCount(moverMoves)];
             while (moverMoves !=0) {
                 final int sq = Long.numberOfTrailingZeros(moverMoves);
                 final long placement = 1L << sq;
                 moverMoves ^= placement;
                 final int value =  calcMoveScore(mover, enemy, -LIMIT, LIMIT, 1, sq);
                 final int sortIndex = -value*256 + sq;
-                moves[Long.bitCount(moverMoves)] = sortIndex;
+                sortIndices[Long.bitCount(moverMoves)] = sortIndex;
             }
-            Arrays.sort(moves);
+            Arrays.sort(sortIndices);
 
-            for (int sortIndex : moves) {
+            for (int sortIndex : sortIndices) {
                 final int sq = sortIndex & 0xFF;
                 final int subScore = calcMoveScore(mover, enemy, alpha, beta, depth, sq);
                 if (subScore > ba.score) {
