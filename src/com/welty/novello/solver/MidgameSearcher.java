@@ -1,9 +1,12 @@
 package com.welty.novello.solver;
 
 import com.welty.novello.core.*;
+import com.welty.novello.eval.CoefficientCalculator;
 import com.welty.novello.eval.Mpc;
 import com.welty.novello.hash.MidgameHashTables;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Arrays;
 
 import static com.welty.novello.eval.CoefficientCalculator.DISK_VALUE;
 
@@ -14,6 +17,7 @@ import static com.welty.novello.eval.CoefficientCalculator.DISK_VALUE;
  */
 public class MidgameSearcher {
     public static final int SOLVER_START_DEPTH = 6;
+    public static final int LIMIT = 64* CoefficientCalculator.DISK_VALUE;
 
     private final MidgameHashTables midgameHashTables = new MidgameHashTables();
 
@@ -212,12 +216,21 @@ public class MidgameSearcher {
     }
 
     private BA treeMoveNoSuggestion(long mover, long enemy, long moverMoves, int alpha, int beta, int depth, BA ba) {
-        for (long mask : masks) {
-            long movesToCheck = moverMoves & mask;
-            while (movesToCheck != 0) {
-                final int sq = Long.numberOfTrailingZeros(movesToCheck);
+        if (options.experimental && depth >= 5) {
+            // moves[i] = (-value*256 + sq)
+            final int[] moves = new int[Long.bitCount(moverMoves)];
+            while (moverMoves !=0) {
+                final int sq = Long.numberOfTrailingZeros(moverMoves);
                 final long placement = 1L << sq;
-                movesToCheck ^= placement;
+                moverMoves ^= placement;
+                final int value =  calcMoveScore(mover, enemy, -LIMIT, LIMIT, 1, sq);
+                final int sortIndex = -value*256 + sq;
+                moves[Long.bitCount(moverMoves)] = sortIndex;
+            }
+            Arrays.sort(moves);
+
+            for (int sortIndex : moves) {
+                final int sq = sortIndex & 0xFF;
                 final int subScore = calcMoveScore(mover, enemy, alpha, beta, depth, sq);
                 if (subScore > ba.score) {
                     ba.score = subScore;
@@ -230,11 +243,38 @@ public class MidgameSearcher {
                     }
                 }
             }
+        } else {
+            for (long mask : masks) {
+                long movesToCheck = moverMoves & mask;
+                while (movesToCheck != 0) {
+                    final int sq = Long.numberOfTrailingZeros(movesToCheck);
+                    final long placement = 1L << sq;
+                    movesToCheck ^= placement;
+                    final int subScore = calcMoveScore(mover, enemy, alpha, beta, depth, sq);
+                    if (subScore > ba.score) {
+                        ba.score = subScore;
+                        if (subScore > alpha) {
+                            ba.bestMove = sq;
+                            alpha = subScore;
+                            if (subScore >= beta) {
+                                return ba;
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         return ba;
     }
 
+    /**
+     * Make a move on the board and return its value
+     *
+     * @param depth depth of search, starting at current position
+     * @param sq square of move to make from current position.
+     * @return  value of the successor position, from current mover's POV.
+     */
     private int calcMoveScore(long mover, long enemy, int alpha, int beta, int depth, int sq) {
         final Square square = Square.of(sq);
         final long flips = counter.calcFlips(square, mover, enemy);
@@ -278,6 +318,7 @@ public class MidgameSearcher {
 
     int treeScore(long mover, long enemy, long moverMoves, int alpha, int beta, int depth) {
         if (depth <= 0) {
+            // todo pass moverMoves into counter.eval to save calculation
             return counter.eval(mover, enemy);
         }
 
@@ -295,18 +336,18 @@ public class MidgameSearcher {
     }
 
     static int solverBeta(int beta) {
-        assert beta >= -64 * DISK_VALUE;
+        assert beta >= -LIMIT;
 
-        if (beta > 64 * DISK_VALUE) {
+        if (beta > LIMIT) {
             return 64;
         }
         return (65 * DISK_VALUE + beta - 1) / DISK_VALUE - 64;
     }
 
     static int solverAlpha(int alpha) {
-        assert alpha <= 64 * DISK_VALUE;
+        assert alpha <= LIMIT;
 
-        if (alpha < -64 * DISK_VALUE) {
+        if (alpha < -LIMIT) {
             return -64;
         }
         return (65 * DISK_VALUE + alpha) / DISK_VALUE - 65;

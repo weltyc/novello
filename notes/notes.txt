@@ -1447,3 +1447,12 @@ Playing strength: Using the new defaults, playing ntestJ:? vs ntest:?:
     12 ply:  1,744 matches: average result = 0.370 +/-0.23. T ~   1.6.  Time per game = 794.13 ms vs 636.51 ms
 
 From the 2-ply timings, I estimate the overhead in communicating with an external process is ~16ms.
+
+Search Improvements
+-------------------
+Tried iterative deepening from the root node. This made the program 25% slower at 12 ply, and the strength difference
+was small (not statistically significant when I stopped running it).
+
+at depths >=5, MidgameSearcher.treeSearchNoSuggestion() sorts moves by 1-ply eval rather than fixed move ordering.
+This works; 12-ply search down to 355ms from 390s.
+
