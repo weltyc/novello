@@ -29,10 +29,10 @@ public class Viewer {
 
     final GameView gameView = new GameView();
 
-    private final LevelMenu levelMenu = new LevelMenu(1, 2, 3, 4, 6, 8, 12, 16, 20, 22);
+    private final LevelMenu levelMenu = new LevelMenu(1, 2, 3, 4, 6, 8, 12, 16, 20, 24);
     private final PlayMenu playMenu = new PlayMenu();
 
-    private final Engine engine = new Engine(Players.player("c1s:" + levelMenu.getSelectedLevel()));
+    private final Engine engine = new Engine(Players.player("d1s:" + levelMenu.getSelectedLevel()));
 
     /**
      * Viewer constructor. Must run on the Event Dispatch Thread.
