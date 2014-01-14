@@ -12,7 +12,7 @@ public class MpcTest extends TestCase {
         ints.add(new int[]{2, 5});
         ints.add(new int[]{0, 1});
 
-        final Mpc.Cutter cutter = new Mpc.Cutter(ints, 10, 1, 0);
+        final Mpc.Cutter cutter = new Mpc.Cutter(ints, 1, 0);
         assertEquals(2, cutter.shallowScore(5));
         assertEquals(0, cutter.shallowScore(1));
     }
@@ -20,7 +20,7 @@ public class MpcTest extends TestCase {
     public void testSliceConstructor() {
         // if we have no data we should still get MPC stats.
         final Mpc.Slice slice = new Mpc.Slice(15, Arrays.<int[]>asList());
-        assertEquals (1, slice.cutters[3].length);
+        assertEquals(1, slice.cutters[3].length);
     }
 
     public void testApproximateSd() {

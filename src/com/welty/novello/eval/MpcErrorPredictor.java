@@ -12,7 +12,7 @@ public class MpcErrorPredictor {
 
         System.out.println("shallow,delta,me,mse");
         for (int shallow = 0; shallow < 8; shallow++) {
-            for (int deep = shallow + 2; deep <= 11; deep+=2) {
+            for (int deep = shallow + 2; deep <= 11; deep += 2) {
                 double cutSse = 0;
                 double cutSe = 0;
                 double cuts = 0;
@@ -22,17 +22,17 @@ public class MpcErrorPredictor {
                         continue;
                     }
                     if (deep <= nEmpty) {
-                        final Mpc.Cutter cutter = new Mpc.Cutter(sliceData[nEmpty], nEmpty, deep, shallow);
+                        final Mpc.Cutter cutter = new Mpc.Cutter(sliceData[nEmpty], deep, shallow);
 
-                        final double pred = (80-nEmpty)/14.;
-                        final double err = cutter.getSd()/pred - 1;
+                        final double pred = (80 - nEmpty) / 14.;
+                        final double err = cutter.getSd() / pred - 1;
                         cuts++;
                         cutSe += err;
                         cutSse += err * err;
 //                        System.out.println(nEmpty + "," + shallow + "," + (deep - shallow) + "," + cutter.getSd());
                     }
                 }
-                System.out.format("%2d,%2d,%5.2f,%5.2f\n", shallow, deep - shallow, cutSe/cuts, cutSse/cuts);
+                System.out.format("%2d,%2d,%5.2f,%5.2f\n", shallow, deep - shallow, cutSe / cuts, cutSse / cuts);
             }
         }
     }

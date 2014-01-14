@@ -1420,3 +1420,22 @@ Tried MPC cutoffs - instead of using (alpha, beta) window used two searches with
 At 8 ply, this hurt the timing terribly: new vs old    0.212 +/-0.57. T ~   0.4.  Time per game = 308.49 ms vs 212.02 ms.
 Similar results when using just one search with a (beta-1, beta) window:  -0.0162 +/-0.47. T ~  -0.0.  Time per game = 307.79 ms vs 212.82 ms.
 
+MPC Width - was cutting off if > 2*sd. Alternative mode 'a' cuts off at only 1*sd. Played 8as vs 8s:
+    average result = -2.72 +/-0.15. T ~ -18.0.  Time per game =  80.75 ms vs 201.57 ms
+
+Calculating dScore/d ln(time) as in the previous section,
+
+    Project                  Score_Diff  Time_ratio   ln(ratio)  score/time
+    1*sd to 2*sd at 8 ply         2.72     2.51         .92       2.95
+
+Increasing the depth (9 score/time) performs better than increasing the MPC width (2.95 score/time), so I'll stick the MPC depth
+at 1*sd.
+
+Additionally, I'm changing the defaults to ntest-style endgame depths (mode 'n') and use solver (mode 's').
+Thus, 'ans' is the new default; if 'n' and 's' are not desired they can now be switched off using 'N' and 'S' mode. 'a'
+can't be switched off.
+
+Timing: ntestJ:20 takes 32s/game.
+
+Playing strength: Using the new defaults, playing ntestJ:8 vs ntest:8, novello is both faster and stronger in rand games:
+       3,147 matches: average result = 1.91 +/-0.24. T ~   7.8.  Time per game =  87.23 ms vs  98.04 ms.

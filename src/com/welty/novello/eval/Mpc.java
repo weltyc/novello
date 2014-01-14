@@ -127,7 +127,7 @@ public class Mpc {
                     final int shallow = shallowDepths[p];
                     final Cutter cutter;
                     if (depth <= maxDataDepth) {
-                        cutter = new Cutter(ints, nEmpty, depth, shallow);
+                        cutter = new Cutter(ints, depth, shallow);
                     } else {
                         cutter = new Cutter(nEmpty, depth, shallow);
                     }
@@ -193,7 +193,7 @@ public class Mpc {
             return f * g * h * CoefficientCalculator.DISK_VALUE;
         }
 
-        public Cutter(List<int[]> ints, int nEmpty, int depth, int shallowDepth) {
+        public Cutter(List<int[]> ints, int depth, int shallowDepth) {
             this.shallowDepth = shallowDepth;
             double xSum = 0;
             double ySum = 0;
@@ -249,11 +249,11 @@ public class Mpc {
          * @return the shallow alpha that, if cut off, predicts at least a 2/3 chance of a deep alpha cutoff
          */
         public int shallowAlpha(int deepAlpha) {
-            return deepAlpha == NovelloUtils.NO_MOVE ? NovelloUtils.NO_MOVE : (int) (a * deepAlpha + b - 2 * shallowSd);
+            return deepAlpha == NovelloUtils.NO_MOVE ? NovelloUtils.NO_MOVE : (int) (a * deepAlpha + b - shallowSd);
         }
 
         public int shallowBeta(int deepBeta) {
-            return deepBeta == -NovelloUtils.NO_MOVE ? -NovelloUtils.NO_MOVE : (int) (a * deepBeta + b + 2 * shallowSd);
+            return deepBeta == -NovelloUtils.NO_MOVE ? -NovelloUtils.NO_MOVE : (int) (a * deepBeta + b + shallowSd);
         }
 
         @Override public String toString() {
@@ -275,5 +275,4 @@ public class Mpc {
         }
         DEFAULT = new Mpc(noData);
     }
-
 }

@@ -391,12 +391,14 @@ public class MidgameSearcher {
         public final boolean useSolver;
         final boolean printSearch;
         public final boolean useNtestSearchDepths;
+        final boolean experimental;
 
         public Options(String options) {
             mpc = !options.contains("w");
-            useSolver = options.contains("s");
+            useSolver = !options.contains("S");
             printSearch = options.contains("p");
-            useNtestSearchDepths = options.contains("n");
+            useNtestSearchDepths = !options.contains("N");
+            experimental = options.contains("x");
         }
     }
 }
