@@ -9,7 +9,7 @@ import java.util.List;
 
 /**
  */
-interface Feature {
+public interface Feature {
     /**
      * @return Number of orids (distinct instances) for this feature
      */
@@ -65,11 +65,17 @@ class Features {
     static final SoloFeature moverDisks = new GridFeature("Mover Disks");
     static final SoloFeature enemyDisks = new GridFeature("Enemy Disks");
     static final SoloFeature moverMobilities = new GridFeature("Mover Mobilities");
+    static final SoloFeature moverMobilities64 = new GridFeature("Mover Mobilities",64);
     static final SoloFeature enemyMobilities = new GridFeature("Enemy Mobilities");
+    static final SoloFeature enemyMobilities64 = new GridFeature("Enemy Mobilities",64);
     static final SoloFeature moverPotMobs = new GridFeature("Mover PotMobs");
     static final SoloFeature enemyPotMobs = new GridFeature("Enemy PotMobs");
+    static final SoloFeature moverLinearPotMobs = new GridFeature("Mover PotMobs",64);
+    static final SoloFeature enemyLinearPotMobs = new GridFeature("Enemy PotMobs",64);
     static final SoloFeature moverPotMobs2 = new GridFeature("Mover PotMobs2");
     static final SoloFeature enemyPotMobs2 = new GridFeature("Enemy PotMobs2");
+    static final SoloFeature parity = new SoloFeature("Parity", "Even", "Odd");
+
 
     /**
      * Print a human-readable description of the coefficients to System.out
@@ -174,12 +180,16 @@ class SoloFeature implements Feature {
 
 class GridFeature extends SoloFeature {
     public GridFeature(String name) {
-        super(name, grid(name));
+        this(name, 65);
     }
 
-    private static String[] grid(String name) {
-        final String[] result = new String[65];
-        for (int i = 0; i <= 64; i++) {
+    public GridFeature(String name, int nIds) {
+        super(name, grid(name, nIds));
+    }
+
+    private static String[] grid(String name, int nIds) {
+        final String[] result = new String[nIds];
+        for (int i = 0; i < nIds; i++) {
             result[i] = String.format("%2d %s", i, name);
         }
         return result;

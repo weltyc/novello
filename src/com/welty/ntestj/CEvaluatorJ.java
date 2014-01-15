@@ -4,7 +4,7 @@ import com.orbanova.common.misc.Require;
 import com.welty.c.CBinaryReader;
 import com.welty.novello.core.BitBoardUtils;
 import com.welty.novello.core.Position;
-import com.welty.novello.eval.Eval;
+import com.welty.novello.eval.*;
 import com.welty.ntestj.table.*;
 import gnu.trove.list.array.TShortArrayList;
 
@@ -47,11 +47,110 @@ public class CEvaluatorJ extends Eval {
             offsetJPMO = offsetJPMP + sizeJPMP, sizeJPMO = 64,
             offsetJPAR = offsetJPMO + sizeJPMO, sizeJPAR = 2;
 
+    /**
+     * @return Coefficients in the array format used by Novello
+     *
+     * For each slice, the feature indices are in the order given by mapsJ.
+     */
+    public short[][][] getNovelloCoeffs() {
+        final short[][][] novelloCoeffs = new short[60][][];
+        for (int nEmpty = 0; nEmpty < 60; nEmpty++) {
+            novelloCoeffs[nEmpty] = getSliceCoeffs(nEmpty);
+        }
+        return novelloCoeffs;
+    }
+
+
+    /**
+     * @return slice coefficients as used by novello
+     */
+    private short[][] getSliceCoeffs(int nEmpty) {
+        final EvalStrategy strategyJ = EvalStrategies.strategy("j");
+        final int[] ntestCoeffs = pcoeffs[nEmpty][1];
+        final short[][] sliceCoeffs = new short[mapsJ.length][];
+
+        int offset = 0;
+        for (int iMap = 0; iMap < mapsJ.length; iMap++) {
+            final CMap map = mapsJ[iMap];
+            final short[] mapOridCoeffs = new short[map.NIDs()];
+            final char nNtestConfigs = map.NConfigs();
+            final Feature novelloFeature = strategyJ.getFeature(iMap);
+            if (novelloFeature.nOrids() != map.NIDs()) {
+                throw new IllegalStateException("Different id counts for " + iMap + " : "
+                        + novelloFeature + "(" + novelloFeature.nOrids() +
+                        ") vs " + map + " (" + (int) map.NIDs() + ")");
+            }
+
+            for (char ntestConfig = 0; ntestConfig < nNtestConfigs; ntestConfig++) {
+                final int novelloInstance = novelloInstanceFromNtestConfig(ntestConfig, iMap);
+                final int novelloOrid = novelloFeature.orid(novelloInstance);
+
+
+                int ntestCoeff = ntestCoeffs[offset + ntestConfig];
+                // if iMap < M1J, the value is in the high 16 bits and the low 16 bits contain packed potential mobility
+                // information. Strip the potential mobility information and store all values as shorts.
+                final short novelloCoeff = (short) (iMap <= C4J ? (ntestCoeff >> 16) : ntestCoeff);
+                mapOridCoeffs[novelloOrid] = novelloCoeff;
+                if (iMap == C2x5J && nEmpty == 49 && ntestConfig==29443) {
+                    System.out.format("%5d <- %5d [%4d]\n", novelloOrid, (int) ntestConfig, novelloCoeff);
+                }
+            }
+            sliceCoeffs[iMap] = mapOridCoeffs;
+            offset += map.NConfigs();
+        }
+        return sliceCoeffs;
+    }
+
+    /**
+     * Conversion from ntest triangle trit ordering to novello triangle trit ordering
+     *
+     * Ntest ordering:
+     * 0 4 3 2
+     * 7 1 5
+     * 8 6
+     * 9
+     *
+     * Novello ordering:
+     * 0 1 2 3
+     * 4 5 6
+     * 7 8
+     * 9
+     */
+    static final int[] triangleReorder = {0,4,3,2,7,1,5,8,6,9};
+    static final int[] c2x5Reorder = {5,6,7,8,9,0,1,2,3,4};
+
+    public static int novelloInstanceFromNtestConfig(char ntestConfig, int iMap) {
+        if (iMap < M1J) {
+            // pattern-based map
+            final CMap map = mapsJ[iMap];
+
+            final int[] trits = new int[map.size];
+            PatternUtils.ConfigToTrits(ntestConfig, map.size, trits);
+            for (int i = 0; i < trits.length; i++) {
+                trits[i] = (trits[i] + 2) % 3;
+            }
+
+            if (iMap == C4J || iMap==C2x5J) {
+                final int[] reorder = iMap==C4J ? triangleReorder : c2x5Reorder;
+                // novello and ntest have the trits in a different order.
+                final int[] novelloTrits = new int[trits.length];
+                for (int i = 0; i < trits.length; i++) {
+                    novelloTrits[i] = trits[reorder[i]];
+                }
+                System.arraycopy(novelloTrits, 0, trits, 0, trits.length);
+            }
+            final int novelloInstance = PatternUtils.TritsToConfig(trits, map.size);
+            return novelloInstance;
+        } else {
+            return ntestConfig;
+        }
+    }
+
     // iDebugEval prints out debugging information in the static evaluation routine.
     //	0 - none
     //	1 - final value
     //	2 - board, final value and all components
-    private static final int iDebugEval = 0;
+    private static final int iDebugEval = 2;
 
     static final int R1J = 0;
     static final int R2J = 1;
@@ -95,8 +194,6 @@ public class CEvaluatorJ extends Eval {
             PARJ
     };    // tells which patterns are valued the same.
 
-    public static final int nPatternsJ = patternToMapJ.length;
-
     // pattern J descriptions
     public static final CMap[] mapsJ = {
             new CMap(CMap.TIdType.kORID, 8), new CMap(CMap.TIdType.kORID, 8), new CMap(CMap.TIdType.kORID, 8), new CMap(CMap.TIdType.kORID, 8), // rows & cols
@@ -109,7 +206,10 @@ public class CEvaluatorJ extends Eval {
 
     public static final int nMapsJ = mapsJ.length;
 
-    private int[][][] pcoeffs = new int[60][2][];
+    /**
+     * pcoeffs[nEmpty][black?1:0] is the coefficient array for the particular nEmpty and color
+     */
+    public int[][][] pcoeffs = new int[60][2][];
 
     // pattern J info
     static int[] coeffStartsJ = new int[nMapsJ];
@@ -338,11 +438,10 @@ public class CEvaluatorJ extends Eval {
     int ValueJMobs(long mover, long enemy, long moverMoves, long enemyMoves) {
         final int nEmpty_ = BitBoardUtils.nEmpty(mover, enemy);
         final int[][] sliceCoeffs = pcoeffs[nEmpty_];
-        final boolean fBlackMove_ = true;
 
 
         int value;
-        int[] pcmove = sliceCoeffs[fBlackMove_ ? 1 : 0];
+        int[] pcmove = sliceCoeffs[1];  // ntestJ always has black to move
 
         value = 0;
 
@@ -475,8 +574,8 @@ public class CEvaluatorJ extends Eval {
         final int configs2x5 = RowTo2x5Table.getConfigs(config1, config2);
         final int configXX = RowToXXTable.getConfig(config1, config2);
         int value = 0;
-        value += ConfigValue(pcmove, configs2x5 & 0xFFFF, C2x5J, offsetJC5);
-        value += ConfigValue(pcmove, configs2x5 >>> 16, C2x5J, offsetJC5);
+        value += ConfigDisplayValue(pcmove, configs2x5 & 0xFFFF, C2x5J, offsetJC5);
+        value += ConfigDisplayValue(pcmove, configs2x5 >>> 16, C2x5J, offsetJC5);
         value += ConfigValue(pcmove, configXX, CR1XXJ, offsetJEX);
 
         // in J-configs, the values are multiplied by 65536
@@ -503,6 +602,16 @@ public class CEvaluatorJ extends Eval {
         int value = pcmove[config + offset];
         if (iDebugEval > 1)
             System.out.format("Config: %5d, Id: %5d, Value: %4d\n", (int) (char) config, (int) mapsJ[map].ConfigToID((char) config), value);
+        return value;
+    }
+
+    static int ConfigDisplayValue(final int[] pcmove, int config, int map, int offset) {
+        int value = pcmove[config + offset];
+        if (iDebugEval > 1) {
+            final String patternString = PatternUtils.PrintBase3((char) config, (char) 10);
+            final int id = mapsJ[map].ConfigToID((char) config);
+            System.out.format("Config: %5d, (%s), Id: %5d, Value: %4d\n", config, patternString, id, value);
+        }
         return value;
     }
 

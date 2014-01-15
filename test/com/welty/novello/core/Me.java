@@ -12,7 +12,7 @@ public class Me {
     public final long enemy;
 
     /**
-     * A test position with about 16 disks & 48 empties
+     * A test position with 15 disks & 49 empties
      */
     public static final Me early;
     /**
@@ -139,5 +139,10 @@ public class Me {
 
     private long empty() {
         return ~(mover | enemy);
+    }
+
+    public static void main(String[] args) {
+        System.out.println(early.nEmpty());
+        System.out.println(late.nEmpty());
     }
 }

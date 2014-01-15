@@ -158,6 +158,7 @@ class Terms {
             return "Long.bitCount(enemy)";
         }
     };
+
     static final Term moverMobilities = new Term(Features.moverMobilities) {
         @Override
         public int instance(long mover, long enemy, long moverMoves, long enemyMoves) {
@@ -168,7 +169,30 @@ class Terms {
             return "Long.bitCount(moverMoves)";
         }
     };
+
+    static final Term moverMobilities64 = new Term(Features.moverMobilities64) {
+        @Override
+        public int instance(long mover, long enemy, long moverMoves, long enemyMoves) {
+            return Long.bitCount(moverMoves);
+        }
+
+        @Override String oridGen() {
+            return "Long.bitCount(moverMoves)";
+        }
+    };
+
     static final Term enemyMobilities = new Term(Features.enemyMobilities) {
+        @Override
+        public int instance(long mover, long enemy, long moverMoves, long enemyMoves) {
+            return Long.bitCount(enemyMoves);
+        }
+
+        @Override String oridGen() {
+            return "Long.bitCount(enemyMoves)";
+        }
+    };
+
+   static final Term enemyMobilities64 = new Term(Features.enemyMobilities64) {
         @Override
         public int instance(long mover, long enemy, long moverMoves, long enemyMoves) {
             return Long.bitCount(enemyMoves);
@@ -191,6 +215,28 @@ class Terms {
         }
     };
     static final Term enemyPotMobs = new Term(Features.enemyPotMobs) {
+        @Override
+        public int instance(long mover, long enemy, long moverMoves, long enemyMoves) {
+            final long empty = ~(mover | enemy);
+            return Long.bitCount(BitBoardUtils.potMobs(enemy, empty));
+        }
+
+        @Override String oridGen() {
+            return "Long.bitCount(BitBoardUtils.potMobs(enemy, empty))";
+        }
+    };
+    static final Term moverLinearPotMobs = new Term(Features.moverLinearPotMobs) {
+        @Override
+        public int instance(long mover, long enemy, long moverMoves, long enemyMoves) {
+            final long empty = ~(mover | enemy);
+            return Long.bitCount(BitBoardUtils.potMobs(mover, empty));
+        }
+
+        @Override String oridGen() {
+            return "Long.bitCount(BitBoardUtils.potMobs(mover, empty))";
+        }
+    };
+    static final Term enemyLinearPotMobs = new Term(Features.enemyLinearPotMobs) {
         @Override
         public int instance(long mover, long enemy, long moverMoves, long enemyMoves) {
             final long empty = ~(mover | enemy);
@@ -224,6 +270,17 @@ class Terms {
         }
 
     };
+    static final Term parity = new Term(Features.parity) {
+        @Override
+        public int instance(long mover, long enemy, long moverMoves, long enemyMoves) {
+            return Long.bitCount(mover|enemy)&1;
+        }
+
+        @Override String oridGen() {
+            return "Long.bitCount(BitBoardUtils.potMobs2(enemy, empty))";
+        }
+
+    };
 }
 
 class RowTerm extends Term {
@@ -238,6 +295,10 @@ class RowTerm extends Term {
             new RowTerm(1), new RowTerm(2), new RowTerm(3), new RowTerm(4), new RowTerm(5), new RowTerm(6)
     };
 
+    public static final RowTerm[] terms = {
+            new RowTerm(0), new RowTerm(1), new RowTerm(2), new RowTerm(3), new RowTerm(4), new RowTerm(5), new RowTerm(6), new RowTerm(7)
+    };
+
     static Feature getRowFeature(int row) {
         return features[row < 4 ? row : 7 - row];
     }
@@ -250,7 +311,8 @@ class RowTerm extends Term {
     }
 
     public static int rowOrid(long mover, long enemy, int row) {
-        return OridTable.orid8(BitBoardUtils.rowInstance(mover, enemy, row * 8));
+        final int instance = BitBoardUtils.rowInstance(mover, enemy, row * 8);
+        return OridTable.orid8(instance);
     }
 
     @Override
@@ -270,6 +332,10 @@ class ColTerm extends Term {
             new ColTerm(1), new ColTerm(2), new ColTerm(3), new ColTerm(4), new ColTerm(5), new ColTerm(6)
     };
 
+    public static final ColTerm[] terms = {
+            new ColTerm(0), new ColTerm(1), new ColTerm(2), new ColTerm(3), new ColTerm(4), new ColTerm(5), new ColTerm(6), new ColTerm(7)
+    };
+
     private final int col;
 
     ColTerm(int col) {
@@ -278,7 +344,8 @@ class ColTerm extends Term {
     }
 
     static int colOrid(long mover, long enemy, int col) {
-        return OridTable.orid8(BitBoardUtils.colInstance(mover, enemy, col));
+        final int instance = BitBoardUtils.colInstance(mover, enemy, col);
+        return OridTable.orid8(instance);
     }
 
     @Override

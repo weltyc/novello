@@ -3,11 +3,16 @@ package com.welty.ntestj.table;
 import com.welty.ntestj.PatternUtils;
 
 /**
- * Created by IntelliJ IDEA.
- * User: HP_Administrator
- * Date: May 9, 2009
- * Time: 7:53:46 AM
- * To change this template use File | Settings | File Templates.
+ * Corner triangle pattern.
+ *
+ * Trits are in this location:
+ *
+ * 0 4 3 2
+ * 7 1 5
+ * 8 6
+ * 9
+ *
+ * Yes, really.
  */
 public class RowToTriangleTable {
     private static final int[] row1ToTriangle = new int[6561];

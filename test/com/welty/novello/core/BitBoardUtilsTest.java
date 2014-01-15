@@ -122,4 +122,12 @@ public class BitBoardUtilsTest extends BitBoardTestCase {
         assertBitBoardEquals("no empty above", 0, potMobs2(0x100, 0));
         assertBitBoardEquals("empty above but disk on bottom edge", 0, potMobs2(0x1, 0x100));
     }
+
+    public void testLinearPotMob() {
+        System.out.println(Me.early);
+        assertEquals(8, linearStraightPotMob(Me.early.mover, Me.early.enemy));
+        assertEquals(26, linearStraightPotMob(Me.early.enemy, Me.early.mover));
+        assertEquals(9, linearPotMob(Me.early.mover, Me.early.enemy));
+        assertEquals(50, linearPotMob(Me.early.enemy, Me.early.mover));
+    }
 }

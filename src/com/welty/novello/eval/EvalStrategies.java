@@ -49,6 +49,7 @@ public class EvalStrategies {
         new EvalStrategyC();
         new EvalStrategyD();
         new EvalStrategyE();
+        new EvalStrategyJ();
     }
 
     public static class StrategyStore {

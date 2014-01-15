@@ -26,7 +26,7 @@ class CoefficientSet {
         }
     }
 
-    private CoefficientSet(short[][][] slices, String name) {
+    CoefficientSet(short[][][] slices, String name) {
         this.slices = slices;
         this.name = name;
     }

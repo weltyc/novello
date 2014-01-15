@@ -40,7 +40,15 @@ public class CoefficientEval extends Eval {
         this(evalStrategy, new CoefficientSet(coefficients, evalStrategy + "FixedCoeffs"));
     }
 
-    private CoefficientEval(EvalStrategy evalStrategy, CoefficientSet coeffSet) {
+    /**
+     * Create an eval using a strategy and coefficients that do vary by nEmpty
+     */
+    CoefficientEval(EvalStrategy evalStrategy, short[][][] coefficients) {
+        this(evalStrategy, new CoefficientSet(coefficients, evalStrategy + "GivenCoeffs"));
+    }
+
+
+    CoefficientEval(EvalStrategy evalStrategy, CoefficientSet coeffSet) {
         this.evalStrategy = evalStrategy;
         coefficientSet = coeffSet;
         mpc = createMpc();

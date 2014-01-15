@@ -3,6 +3,8 @@ package com.welty.novello.core;
 import com.orbanova.common.misc.Require;
 import com.welty.novello.eval.Base3;
 
+import static java.lang.Long.bitCount;
+
 /**
  */
 @SuppressWarnings("OctalInteger")
@@ -427,7 +429,7 @@ public class BitBoardUtils {
      * @return number of empty disks
      */
     public static int nEmpty(long mover, long enemy) {
-        return Long.bitCount(~(mover | enemy));
+        return bitCount(~(mover | enemy));
     }
 
     /**
@@ -514,7 +516,7 @@ public class BitBoardUtils {
      * @return moverRow/ enemyRow
      */
     public static int extractRow(long bitBoard, int row) {
-        return (int)(bitBoard>>>8*row)&0xFF;
+        return (int) (bitBoard >>> 8 * row) & 0xFF;
     }
 
     public static int rowInstance(long mover, long enemy, int shift) {
@@ -526,8 +528,8 @@ public class BitBoardUtils {
      *
      * @param mover mover disks
      * @param enemy enemy disks
-     * @param col column index, 0..7
-     * @return  base 3 representation of the given column
+     * @param col   column index, 0..7
+     * @return base 3 representation of the given column
      */
     public static int colInstance(long mover, long enemy, int col) {
         final int moverCol = extractCol(mover, col);
@@ -536,9 +538,9 @@ public class BitBoardUtils {
     }
 
     public static int terminalScore(long mover, long enemy) {
-        int netDisks = Long.bitCount(mover) - Long.bitCount(enemy);
+        int netDisks = bitCount(mover) - bitCount(enemy);
         if (BitBoardUtils.WINNER_GETS_EMPTIES) {
-            final int nEmpty = Long.bitCount(~(mover | enemy));
+            final int nEmpty = bitCount(~(mover | enemy));
             if (netDisks > 0) {
                 netDisks += nEmpty;
             } else if (netDisks < 0) {
@@ -546,5 +548,37 @@ public class BitBoardUtils {
             }
         }
         return netDisks;
+    }
+
+    /**
+     * Ntest linear potential mobility approximation
+     * <p/>
+     * This is the number of ways mover can be flipped.
+     *
+     * @param mover mover disks
+     * @param enemy enemy disks
+     * @return pot mob approximation
+     */
+    public static int linearPotMob(long mover, long enemy) {
+        return linearStraightPotMob(mover, enemy) + linearDiagonalPotMob(mover, enemy);
+    }
+
+    public static int linearDiagonalPotMob(long mover, long enemy) {
+        final long empty = ~(mover | enemy);
+        final long center = CENTER_36 & mover;
+        final long ul = center&~(B7|G2);
+        final long ur = center&~(B2|G7);
+
+        return bitCount(empty & (ul << 9)) + bitCount(empty & (ur << 7))
+                + bitCount(empty & (ul >>> 9)) + bitCount(empty & (ur >>> 7));
+    }
+
+    public static int linearStraightPotMob(long mover, long enemy) {
+        final long empty = ~(mover | enemy);
+        final long centerRows = mover & ~Ranks18;
+        final long centerCols = mover & ~FilesAH;
+
+        return bitCount(empty & (centerRows << 8)) + bitCount(empty & (centerCols << 1))
+                + bitCount(empty & (centerRows >>> 8)) + bitCount(empty & (centerCols >>> 1));
     }
 }
