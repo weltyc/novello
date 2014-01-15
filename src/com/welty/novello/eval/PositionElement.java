@@ -134,4 +134,9 @@ class PositionElement {
     public void sortIndices() {
         Arrays.sort(indices);
     }
+
+    @Override public String toString() {
+        sortIndices();
+        return Arrays.toString(indices);
+    }
 }

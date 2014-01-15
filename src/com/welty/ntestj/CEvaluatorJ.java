@@ -150,7 +150,7 @@ public class CEvaluatorJ extends Eval {
     //	0 - none
     //	1 - final value
     //	2 - board, final value and all components
-    private static final int iDebugEval = 2;
+    private static final int iDebugEval = 0;
 
     static final int R1J = 0;
     static final int R2J = 1;

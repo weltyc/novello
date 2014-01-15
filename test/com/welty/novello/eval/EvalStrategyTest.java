@@ -139,9 +139,23 @@ public class EvalStrategyTest extends ArrayTestCase {
             final PositionElement actual = strategy.coefficientIndices(rMover, rEnemy, 0);
             actual.sortIndices();
             if (!expected.equals(actual)) {
-                assertEquals(expected.toString(), actual.toString());
+                assertEquals(strategy.toString() + r, expected.toString(), actual.toString());
             }
-            assertEquals(strategy.toString(), expected, actual);
+            assertEquals(strategy.toString(), expected, actual);  // in case toString() matches
         }
+    }
+
+    public void testEvalJ() {
+        EvalStrategy j = EvalStrategies.strategy("j");
+        final long mover = Me.early.mover;
+        final long enemy = Me.early.enemy;
+        PositionElement expected = j.coefficientIndices(mover, enemy, 0);
+        final long rMover = BitBoardUtils.reflection(mover, 1);
+        final long rEnemy = BitBoardUtils.reflection(enemy, 1);
+        PositionElement actual = j.coefficientIndices(rMover, rEnemy, 0);
+        expected.sortIndices();
+        actual.sortIndices();
+        assertEquals(expected.toString().replace(",", "\n"),  actual.toString().replace(",", "\n"));
+
     }
 }

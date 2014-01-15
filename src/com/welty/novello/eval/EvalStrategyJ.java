@@ -39,7 +39,7 @@ import java.util.Arrays;
         super("j", flatten(allTerms));
     }
 
-    private static final int iDebugEval = 2;
+    private static final int iDebugEval = 0;
 
     @Override int eval(long mover, long enemy, long moverMoves, long enemyMoves, CoefficientSet coefficientSet) {
         assert moverMoves != 0;

@@ -9,7 +9,7 @@ public class Corner2x4Term extends Term {
     final int row;
 
     private static final Feature myFeature = new Corner2x4Feature();
-    private static final int[] base3FromBase2Rev4 = new int[32];
+    private static final int[] base3FromBase2Rev4 = new int[16];
     static final Corner2x4Term[] terms = {
             new Corner2x4Term(0),
             new Corner2x4Term(1),
@@ -92,6 +92,6 @@ public class Corner2x4Term extends Term {
     }
 
     private static int leftBase3(int disks) {
-        return base3FromBase2Rev4[ (disks >>> 3) & 0xF];
+        return base3FromBase2Rev4[ (disks >>> 4) & 0xF];
     }
 }
