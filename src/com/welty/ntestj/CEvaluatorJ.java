@@ -187,7 +187,7 @@ public class CEvaluatorJ extends Eval {
                 // put the coefficients in the proper place
                 for (map = 0; map < nMapsJ; map++) {
 
-                    // inital calculations
+                    // initial calculations
                     nIDs = mapsJ[map].NIDs();
                     nConfigs = mapsJ[map].NConfigs();
                     mapsize = mapsJ[map].size;
