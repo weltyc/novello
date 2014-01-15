@@ -57,7 +57,7 @@ public class EvalStrategyTest extends ArrayTestCase {
         final int nEmpty = 12;
         strategy.writeSlice(nEmpty, coeffs, coefficientDirectory);
 
-        final short[][] slice = strategy.readSlice(nEmpty, coefficientDirectory, true);
+        final short[][] slice = strategy.readSlice(nEmpty, coefficientDirectory);
         assertEquals(nFeatures, slice.length);
 
         // test expected result for each feature

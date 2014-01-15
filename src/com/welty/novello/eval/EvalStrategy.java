@@ -75,7 +75,7 @@ public class EvalStrategy {
      * @return slice
      */
     short[][] readSlice(int nEmpty, String coeffSetName) {
-        return readSlice(nEmpty, coeffDir(coeffSetName), coeffSetName.endsWith("s"));
+        return readSlice(nEmpty, coeffDir(coeffSetName));
     }
 
     /**
@@ -89,7 +89,7 @@ public class EvalStrategy {
      * @param nEmpty               # of empties of file to read
      * @param coefficientDirectory location to read from
      */
-    short[][] readSlice(int nEmpty, Path coefficientDirectory, boolean isShort) {
+    short[][] readSlice(int nEmpty, Path coefficientDirectory) {
         final Path path = coefficientDirectory.resolve(filename(nEmpty));
         try (DataInputStream in = new DataInputStream(new BufferedInputStream(Files.newInputStream(path)))) {
             final int nFeatures = nFeatures();
@@ -97,24 +97,12 @@ public class EvalStrategy {
 
             for (int iFeature = 0; iFeature < nFeatures; iFeature++) {
                 final Feature feature = getFeature(iFeature);
-                if (isShort) {
-                    slice[iFeature] = readShorts(in, feature.nOrids());
-                } else {
-                    slice[iFeature] = readIntsAsShorts(in, feature.nOrids());
-                }
+                slice[iFeature] = readShorts(in, feature.nOrids());
             }
             return slice;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private static short[] readIntsAsShorts(DataInputStream in, int nOrids) throws IOException {
-        final short[] coeffsByOrid = new short[nOrids];
-        for (int i = 0; i < nOrids; i++) {
-            coeffsByOrid[i] = (short) in.readInt();
-        }
-        return coeffsByOrid;
     }
 
     private static short[] readShorts(DataInputStream in, int nOrids) throws IOException {
