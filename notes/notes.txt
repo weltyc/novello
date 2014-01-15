@@ -1471,3 +1471,6 @@ Evaluation
 play d1s:10 vs ntestJ:10
 
     4,736 matches: average result = -7.63 +/-0.21. T ~ -37.0.  Time per game = 152.16 ms vs 251.49 ms.
+
+play ntestJ:20 vs ntest:20
+     60 matches: average result = 0.167 +/-0.78. T ~   0.2.  Time per game =  23.22  s vs  22.75  s.

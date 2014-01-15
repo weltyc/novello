@@ -55,7 +55,7 @@ public class Players {
         final int depth = Integer.parseInt(matcher.group(1));
 
         final String evalName = parts[0];
-        if (evalName.equals("ntest") || evalName.equals("edax")) {
+        if (evalName.equals("ntest") || evalName.equals("edax") || evalName.equals("ntest-new")) {
             return new NBoardPlayer(evalName, depth, false);
         }
         final Eval eval;
