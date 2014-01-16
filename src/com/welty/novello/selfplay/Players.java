@@ -66,14 +66,13 @@ public class Players {
     /**
      * Generates a list of Players from a text string.
      * <p/>
-     * The text string is a list of players separated by commas, for example "4A,5B,5C".
+     * Each element of names[] is the name of a player, for instance "d1s:3".
      * the first character of each player is the EvaluationStrategy; the second is the coefficient set.
      *
      * @param s players list
      * @return Players
      */
-    static Player[] players(String s) {
-        final String[] names = s.trim().split("\\s*,\\s*");
+    static Player[] players(String[] names) {
         final Player[] players = new Player[names.length];
         for (int i = 0; i < names.length; i++) {
             players[i] = player(names[i]);

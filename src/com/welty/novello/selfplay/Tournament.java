@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.concurrent.*;
 
 /**
+ * Run a tournament.
  */
 public class Tournament implements Runnable {
     public static void main(String[] args) throws Exception {
@@ -21,27 +22,34 @@ public class Tournament implements Runnable {
             System.err.println("usage: player1,player2,...");
             System.exit(-1);
         }
-        final Player[] players = Players.players(args[0]);
-        new Tournament(players).run();
+        new Tournament(args).run();
     }
 
 
-    private final Player[] players;
+    private final String[] playerNames;
 
-    private Tournament(Player[] players) {
-        this.players = players;
+    /**
+     * Construct a tournament.
+     *
+     * Since Player is not thread-safe, a new player must be constructed for each Set he's playing in.
+     * The playerName is used to construct a new Player for each set.
+     *
+     * @param playerNames names of players, for instance "d1s:2".
+     */
+    private Tournament(String[] playerNames) {
+        this.playerNames = playerNames;
     }
 
     public void run() {
         System.out.println("Starting tournament...");
         final long t0 = System.currentTimeMillis();
-        double[] scores = new double[players.length];
+        double[] scores = new double[playerNames.length];
 
         final ExecutorService executorService = Executors.newFixedThreadPool(4);
         final List<Future<Result>> futures = new ArrayList<>();
         final List<Control> controls = new ArrayList<>();
 
-        for (int i = 1; i < players.length; i++) {
+        for (int i = 1; i < playerNames.length; i++) {
             for (int j = 0; j < i; j++) {
                 final SelfPlayTask task = new SelfPlayTask(i, j);
                 controls.add(task.control());
@@ -69,15 +77,15 @@ public class Tournament implements Runnable {
          * divide by number of players, rather than number of games, so that
          * expected result = score difference
          */
-        Vec.timesEquals(scores, 1. / players.length);
+        Vec.timesEquals(scores, 1. / playerNames.length);
 
         System.out.println();
         System.out.println("Tournament results:");
         final View sorter = View.getSortedView(scores).reverse();
-        sorter.reorder(players);
+        sorter.reorder(playerNames);
         scores = sorter.reorderOf(scores);
-        for (int i = 0; i < players.length; i++) {
-            System.out.format("%+5.1f  %s%n", scores[i], players[i]);
+        for (int i = 0; i < playerNames.length; i++) {
+            System.out.format("%+5.1f  %s%n", scores[i], playerNames[i]);
         }
         System.out.println();
         final long dt = System.currentTimeMillis() - t0;
@@ -110,15 +118,15 @@ public class Tournament implements Runnable {
         }
 
         @Override public Result call() throws Exception {
-            final Player black = players[i];
-            final Player white = players[j];
+            final Player black = Players.player(playerNames[i]);
+            final Player white = Players.player(playerNames[j]);
             final double averageResult = SelfPlaySet.run(black, white, new SelfPlaySet.ProgressBarUpdater(progressBar));
             System.out.format("%+5.1f  %s vs %s%n", averageResult, black, white);
             return new Result(i, j, averageResult);
         }
 
         public Control control() {
-            return JSwingBuilder.control(players[i] + " vs " + players[j], progressBar);
+            return JSwingBuilder.control(playerNames[i] + " vs " + playerNames[j], progressBar);
         }
     }
 
