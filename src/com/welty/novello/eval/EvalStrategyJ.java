@@ -134,7 +134,7 @@ import java.util.Arrays;
             System.out.format("Potential mobility done. Value so far: %d.\n", eval);
         }
 
-        final short[] Corner2x5Coeffs = slice[10];
+        final short[] Corner2x4Coeffs = slice[9];
         final int moverRow0 = BitBoardUtils.extractRow(mover, 0);
         final int enemyRow0 = BitBoardUtils.extractRow(enemy, 0);
         final int moverCol0 = BitBoardUtils.extractCol(mover, 0);
@@ -151,6 +151,16 @@ import java.util.Arrays;
         final int enemyRow7 = BitBoardUtils.extractRow(enemy, 7);
         final int moverCol7 = BitBoardUtils.extractCol(mover, 7);
         final int enemyCol7 = BitBoardUtils.extractCol(enemy, 7);
+        eval += c2x4(Corner2x4Coeffs, Corner2x4Term.leftInstance(moverRow0, enemyRow0, moverRow1, enemyRow1))
+                + c2x4(Corner2x4Coeffs, Corner2x4Term.rightInstance(moverRow0, enemyRow0, moverRow1, enemyRow1))
+                + c2x4(Corner2x4Coeffs, Corner2x4Term.leftInstance(moverRow7, enemyRow7, moverRow6, enemyRow6))
+                + c2x4(Corner2x4Coeffs, Corner2x4Term.rightInstance(moverRow7, enemyRow7, moverRow6, enemyRow6))
+                + c2x4(Corner2x4Coeffs, Corner2x4Term.leftInstance(moverCol0, enemyCol0, moverCol1, enemyCol1))
+                + c2x4(Corner2x4Coeffs, Corner2x4Term.rightInstance(moverCol0, enemyCol0, moverCol1, enemyCol1))
+                + c2x4(Corner2x4Coeffs, Corner2x4Term.leftInstance(moverCol7, enemyCol7, moverCol6, enemyCol6))
+                + c2x4(Corner2x4Coeffs, Corner2x4Term.rightInstance(moverCol7, enemyCol7, moverCol6, enemyCol6));
+
+        final short[] Corner2x5Coeffs = slice[10];
         eval += c2x5(Corner2x5Coeffs, Corner2x5Term.leftInstance(moverRow0, enemyRow0, moverRow1, enemyRow1))
                 + c2x5(Corner2x5Coeffs, Corner2x5Term.rightInstance(moverRow0, enemyRow0, moverRow1, enemyRow1))
                 + c2x5(Corner2x5Coeffs, Corner2x5Term.leftInstance(moverRow7, enemyRow7, moverRow6, enemyRow6))
@@ -188,6 +198,13 @@ import java.util.Arrays;
     private short c2x5(short[] coeffs, int instance) {
         if (iDebugEval > 1) {
             System.out.format("Config: %5d (%s) Value: %4d\n", instance, Base3.description(instance, 10), coeffs[instance]);
+        }
+        return coeffs[instance];
+    }
+
+    private short c2x4(short[] coeffs, int instance) {
+        if (iDebugEval > 1) {
+            System.out.format("Config: %5d (%s) Value: %4d\n", instance, Base3.description(instance, 8), coeffs[instance]);
         }
         return coeffs[instance];
     }

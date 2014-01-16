@@ -110,21 +110,32 @@ public class EvalStrategyTest extends ArrayTestCase {
         }
     }
 
+    public void testTemp() {
+        testGeneratedEval(EvalStrategies.strategy("j"));
+    }
+
     public void testGeneratedEvalMatchesEvalByTerms() {
         for (EvalStrategy strategy : EvalStrategies.knownStrategies()) {
-            final short[][] randomCoefficients = strategy.generateRandomCoefficients();
-            final CoefficientEval eval = new CoefficientEval(strategy, randomCoefficients);
+            testGeneratedEval(strategy);
+        }
+    }
 
-            for (Me me : new Me[]{Me.early, Me.late}) {
-                checkGeneratedEval(strategy, randomCoefficients, eval, me);
-            }
+    private void testGeneratedEval(EvalStrategy strategy) {
+        final short[][] randomCoefficients = strategy.generateRandomCoefficients();
+        final CoefficientEval eval = new CoefficientEval(strategy, randomCoefficients);
+
+        for (Me me : new Me[]{Me.early, Me.late}) {
+            checkGeneratedEval(strategy, randomCoefficients, eval, me);
         }
     }
 
     private static void checkGeneratedEval(EvalStrategy strategy, short[][] randomCoefficients, CoefficientEval eval, Me me) {
-        final int evalByTerms = strategy.evalByTerms(me.mover, me.enemy, me.calcMoves(), me.enemyMoves(), randomCoefficients);
+        final int evalByTerms = strategy.evalByTerms(me.mover, me.enemy, me.calcMoves(), me.enemyMoves(), randomCoefficients, false);
         final int generatedEval = eval.eval(me.mover, me.enemy);
-        assertEquals(evalByTerms, generatedEval);
+        if (evalByTerms!=generatedEval) {
+            strategy.evalByTerms(me.mover, me.enemy, me.calcMoves(), me.enemyMoves(), randomCoefficients, true);
+            assertEquals(evalByTerms, generatedEval);
+        }
     }
 
     private void testAllReflectionsHaveTheSameOrids(EvalStrategy strategy, Me position) {

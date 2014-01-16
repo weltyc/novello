@@ -332,7 +332,7 @@ public class EvalStrategy {
 
         final short[][] slice = coefficientSet.slice(BitBoardUtils.nEmpty(mover, enemy));
 
-        return evalByTerms(mover, enemy, moverMoves, enemyMoves, slice);
+        return evalByTerms(mover, enemy, moverMoves, enemyMoves, slice, false);
     }
 
     /**
@@ -340,7 +340,7 @@ public class EvalStrategy {
      *
      * @return position evaluation
      */
-    int evalByTerms(long mover, long enemy, long moverMoves, long enemyMoves, short[][] slice) {
+    int evalByTerms(long mover, long enemy, long moverMoves, long enemyMoves, short[][] slice, boolean printStats) {
         int eval = 0;
 
         for (int iTerm = 0; iTerm < terms.length; iTerm++) {
@@ -351,6 +351,10 @@ public class EvalStrategy {
 
             final int coeff = slice[iFeature][orid];
             eval += coeff;
+
+            if (printStats) {
+                System.out.format("%7d (%7d total): orid=%5d from feature %2d ; %s\n", coeff, eval, orid, iFeature, term);
+            }
         }
         return eval;
     }

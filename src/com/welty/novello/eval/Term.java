@@ -228,23 +228,29 @@ class Terms {
     static final Term moverLinearPotMobs = new Term(Features.moverLinearPotMobs) {
         @Override
         public int instance(long mover, long enemy, long moverMoves, long enemyMoves) {
-            final long empty = ~(mover | enemy);
-            return Long.bitCount(BitBoardUtils.potMobs(mover, empty));
+            return BitBoardUtils.linearPotMob(mover, enemy)>>1;
         }
 
         @Override String oridGen() {
-            return "Long.bitCount(BitBoardUtils.potMobs(mover, empty))";
+            return "BitBoardUtils.linearPotMob(mover, empty)>>1";
+        }
+
+        @Override public String toString() {
+            return "mover linear pot mobs";
         }
     };
     static final Term enemyLinearPotMobs = new Term(Features.enemyLinearPotMobs) {
         @Override
         public int instance(long mover, long enemy, long moverMoves, long enemyMoves) {
-            final long empty = ~(mover | enemy);
-            return Long.bitCount(BitBoardUtils.potMobs(enemy, empty));
+            return BitBoardUtils.linearPotMob(enemy, mover)>>1;
         }
 
         @Override String oridGen() {
-            return "Long.bitCount(BitBoardUtils.potMobs(enemy, empty))";
+            return "BitBoardUtils.linearPotMob(enemy, empty)>>1";
+        }
+
+        @Override public String toString() {
+            return "enemy linear pot mobs";
         }
     };
     static final Term moverPotMobs2 = new Term(Features.moverPotMobs2) {
