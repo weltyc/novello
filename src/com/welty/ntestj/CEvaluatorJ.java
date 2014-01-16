@@ -4,7 +4,10 @@ import com.orbanova.common.misc.Require;
 import com.welty.c.CBinaryReader;
 import com.welty.novello.core.BitBoardUtils;
 import com.welty.novello.core.Position;
-import com.welty.novello.eval.*;
+import com.welty.novello.eval.Eval;
+import com.welty.novello.eval.EvalStrategies;
+import com.welty.novello.eval.EvalStrategy;
+import com.welty.novello.eval.Feature;
 import com.welty.ntestj.table.*;
 import gnu.trove.list.array.TShortArrayList;
 
@@ -49,8 +52,8 @@ public class CEvaluatorJ extends Eval {
 
     /**
      * @return Coefficients in the array format used by Novello
-     *
-     * For each slice, the feature indices are in the order given by mapsJ.
+     *         <p/>
+     *         For each slice, the feature indices are in the order given by mapsJ.
      */
     public short[][][] getNovelloCoeffs() {
         final short[][][] novelloCoeffs = new short[60][][];
@@ -91,9 +94,6 @@ public class CEvaluatorJ extends Eval {
                 // information. Strip the potential mobility information and store all values as shorts.
                 final short novelloCoeff = (short) (iMap <= C4J ? (ntestCoeff >> 16) : ntestCoeff);
                 mapOridCoeffs[novelloOrid] = novelloCoeff;
-                if (iMap == C2x5J && nEmpty == 49 && ntestConfig==29443) {
-                    System.out.format("%5d <- %5d [%4d]\n", novelloOrid, (int) ntestConfig, novelloCoeff);
-                }
             }
             sliceCoeffs[iMap] = mapOridCoeffs;
             offset += map.NConfigs();
@@ -103,21 +103,21 @@ public class CEvaluatorJ extends Eval {
 
     /**
      * Conversion from ntest triangle trit ordering to novello triangle trit ordering
-     *
+     * <p/>
      * Ntest ordering:
      * 0 4 3 2
      * 7 1 5
      * 8 6
      * 9
-     *
+     * <p/>
      * Novello ordering:
      * 0 1 2 3
      * 4 5 6
      * 7 8
      * 9
      */
-    static final int[] triangleReorder = {0,4,3,2,7,1,5,8,6,9};
-    static final int[] c2x5Reorder = {5,6,7,8,9,0,1,2,3,4};
+    static final int[] triangleReorder = {0, 4, 3, 2, 7, 1, 5, 8, 6, 9};
+    static final int[] c2x5Reorder = {5, 6, 7, 8, 9, 0, 1, 2, 3, 4};
 
     public static int novelloInstanceFromNtestConfig(char ntestConfig, int iMap) {
         if (iMap < M1J) {
@@ -130,8 +130,8 @@ public class CEvaluatorJ extends Eval {
                 trits[i] = (trits[i] + 2) % 3;
             }
 
-            if (iMap == C4J || iMap==C2x5J) {
-                final int[] reorder = iMap==C4J ? triangleReorder : c2x5Reorder;
+            if (iMap == C4J || iMap == C2x5J) {
+                final int[] reorder = iMap == C4J ? triangleReorder : c2x5Reorder;
                 // novello and ntest have the trits in a different order.
                 final int[] novelloTrits = new int[trits.length];
                 for (int i = 0; i < trits.length; i++) {
