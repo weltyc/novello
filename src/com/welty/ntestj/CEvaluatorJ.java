@@ -91,9 +91,6 @@ public class CEvaluatorJ extends Eval {
                 // information. Strip the potential mobility information and store all values as shorts.
                 final short novelloCoeff = (short) (iMap <= C4J ? (ntestCoeff >> 16) : ntestCoeff);
                 mapOridCoeffs[novelloOrid] = novelloCoeff;
-                if (iMap == C2x5J && nEmpty == 49 && ntestConfig==29443) {
-                    System.out.format("%5d <- %5d [%4d]\n", novelloOrid, (int) ntestConfig, novelloCoeff);
-                }
             }
             sliceCoeffs[iMap] = mapOridCoeffs;
             offset += map.NConfigs();
