@@ -4,6 +4,7 @@ import com.orbanova.common.feed.Feeds;
 import com.orbanova.common.feed.Mapper;
 import com.welty.novello.core.BitBoardUtils;
 import com.welty.novello.core.Position;
+import com.welty.ntestj.CEvaluatorJ;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -12,7 +13,8 @@ import java.util.Arrays;
 /**
  * Evaluation designed to match Ntest's CEvaluatorJ
  */
-@SuppressWarnings("OctalInteger") public class EvalStrategyJ extends EvalStrategy {
+@SuppressWarnings("OctalInteger")
+public class EvalStrategyJ extends EvalStrategy {
     private static final Object[] allTerms = {
             RowTerm.terms,
             ColTerm.terms,
@@ -40,6 +42,16 @@ import java.util.Arrays;
     }
 
     private static final int iDebugEval = 0;
+
+    private static Eval ntestEval;
+
+    public static synchronized Eval getNtestEval() {
+        if (ntestEval == null) {
+            final EvalStrategy strategy = EvalStrategies.strategy("j");
+            ntestEval = new CoefficientEval(strategy, CEvaluatorJ.getInstance().getNovelloCoeffs());
+        }
+        return ntestEval;
+    }
 
     @Override int eval(long mover, long enemy, long moverMoves, long enemyMoves, CoefficientSet coefficientSet) {
         assert moverMoves != 0;
@@ -130,7 +142,7 @@ import java.util.Arrays;
         eval += slice[14][nPMP];
         eval += slice[15][nPMO];
 
-        if (iDebugEval > 1)    {
+        if (iDebugEval > 1) {
             System.out.format("Potential mobility done. Value so far: %d.\n", eval);
         }
 
@@ -172,11 +184,11 @@ import java.util.Arrays;
 
         final short[] edge2XCoeffs = slice[11];
         eval += edge2XCoeffs[OridTable.orid10(Edge2XTerm.instance0(mover, enemy))]
-                +  edge2XCoeffs[OridTable.orid10(Edge2XTerm.instance1(mover, enemy))]
-                +  edge2XCoeffs[OridTable.orid10(Edge2XTerm.instance2(mover, enemy))]
-                +  edge2XCoeffs[OridTable.orid10(Edge2XTerm.instance3(mover, enemy))];
+                + edge2XCoeffs[OridTable.orid10(Edge2XTerm.instance1(mover, enemy))]
+                + edge2XCoeffs[OridTable.orid10(Edge2XTerm.instance2(mover, enemy))]
+                + edge2XCoeffs[OridTable.orid10(Edge2XTerm.instance3(mover, enemy))];
 
-        if (iDebugEval > 1)    {
+        if (iDebugEval > 1) {
             System.out.format("Corners done. Value so far: %d.\n", eval);
         }
 
@@ -186,11 +198,11 @@ import java.util.Arrays;
         final short[] enemyMobilityCoeffs = slice[13];
         eval += enemyMobilityCoeffs[Long.bitCount(enemyMoves)];
 
-        if (iDebugEval > 1)    {
+        if (iDebugEval > 1) {
             System.out.format("Mobility done. Value so far: %d.\n", eval);
         }
 
-        eval += slice[16][nEmpty&1];
+        eval += slice[16][nEmpty & 1];
 
         return eval;
     }

@@ -1,9 +1,6 @@
 package com.welty.novello.selfplay;
 
-import com.welty.novello.eval.CoefficientEval;
-import com.welty.novello.eval.Eval;
-import com.welty.novello.eval.EvalStrategies;
-import com.welty.novello.eval.EvalStrategy;
+import com.welty.novello.eval.*;
 import com.welty.novello.ntest.NBoardPlayer;
 import com.welty.ntestj.CEvaluatorJ;
 
@@ -15,11 +12,14 @@ import java.util.regex.Pattern;
  */
 public class Players {
     public static Eval eval(String name) {
-        if (name.equals("ntestJ")) {
-            return CEvaluatorJ.getInstance();
-        } else {
-            EvalStrategy strategy = EvalStrategies.strategy(name.substring(0, 1));
-            return new CoefficientEval(strategy, name.substring(1));
+        switch (name) {
+            case "ntestJ":
+                return CEvaluatorJ.getInstance();
+            case "ntestK":
+                return EvalStrategyJ.getNtestEval();
+            default:
+                EvalStrategy strategy = EvalStrategies.strategy(name.substring(0, 1));
+                return new CoefficientEval(strategy, name.substring(1));
         }
     }
 
