@@ -1474,3 +1474,39 @@ play d1s:10 vs ntestJ:10
 
 play ntestJ:20 vs ntest:20
      60 matches: average result = 0.167 +/-0.78. T ~   0.2.  Time per game =  23.22  s vs  22.75  s.
+
+Trisection
+----------
+Ntest is better than EvalStrategyE. Is this because of its search (e.g. higher depth in endgame), or its eval?
+If it's the eval, is this because of better pattern selection or better coefficients?
+
+Results between ntestJ, d1s, and j1:
+    -0.6  d1s:2 vs ntestJ:2
+    -3.2  j1:2 vs ntestJ:2
+    +2.9  d1s:2 vs j1:2
+
+    +1.8  d1s:6 vs j1:6
+    -5.9  d1s:6 vs ntestJ:6
+    -8.1  j1:6 vs ntestJ:6
+
+    Tournament results:
+     +4.7  ntestJ:6
+     -1.4  d1s:6
+     -3.3  j1:6
+
+It's probably more important to look at the 6-ply results since we'll usually be doing deeper searches.
+ntest's coefficient calculation is 8 disks better than novello's (j1 vs ntest), while ntest's patterns are
+2 disks worse than novello's (d1s vs j1).
+
+Coefficient Calculation
+-----------------------
+Ntest calculates both a 2x4 and a 2x5 term; it also calculates both an edge term and an edge+2X term. In each
+of these pairs, the smaller term is completely included in the larger term.
+The smaller terms are effectively used as backstops for when there is limited data available for their
+larger siblings. Does this make a difference?
+
+EvalStrategyF: exactly the same as EvalStrategyJ but without the 2x4
+  f1:2 vs j1:2: average result = 0.2
+I'm a little concerned that the order of players could matter because of cache effects.
+  j1:2 vs f1:2: average result = -0.3
+The order makes a difference, but not a huge difference. As does the 2x4 and edge term calculation.

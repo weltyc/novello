@@ -49,6 +49,7 @@ public class EvalStrategies {
         new EvalStrategyC();
         new EvalStrategyD();
         new EvalStrategyE();
+        new EvalStrategyF();
         new EvalStrategyJ();
     }
 
