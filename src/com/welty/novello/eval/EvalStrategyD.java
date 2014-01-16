@@ -13,6 +13,7 @@ import java.util.Arrays;
  */
 @SuppressWarnings("OctalInteger")
 class EvalStrategyD extends EvalStrategy {
+    private static final int iDebugEval = 0;
 
     public EvalStrategyD() {
         super("d",
@@ -30,6 +31,7 @@ class EvalStrategyD extends EvalStrategy {
         );
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Override int eval(long mover, long enemy, long moverMoves, long enemyMoves, CoefficientSet coefficientSet) {
         assert moverMoves != 0;
         final short[][] slice = coefficientSet.slice(BitBoardUtils.nEmpty(mover, enemy));
@@ -40,6 +42,9 @@ class EvalStrategyD extends EvalStrategy {
                 + corner2Coeffs[CornerTerm2.orid(mover, enemy, moverMoves, enemyMoves, 7)]
                 + corner2Coeffs[CornerTerm2.orid(mover, enemy, moverMoves, enemyMoves, 56)]
                 + corner2Coeffs[CornerTerm2.orid(mover, enemy, moverMoves, enemyMoves, 63)];
+        if (iDebugEval > 1) {
+            System.out.println("Corners done (features <= 0). eval = " + eval);
+        }
         eval += slice[1][Long.bitCount(mover)];
         eval += slice[2][Long.bitCount(enemy)];
         eval += slice[3][Long.bitCount(moverMoves)];
@@ -51,6 +56,9 @@ class EvalStrategyD extends EvalStrategy {
         eval += slice[7][Long.bitCount(BitBoardUtils.potMobs2(mover, empty))];
         eval += slice[8][Long.bitCount(BitBoardUtils.potMobs2(enemy, empty))];
 
+        if (iDebugEval > 1) {
+            System.out.println("Corners, disks, and mobility done (features <= 8). eval = " + eval);
+        }
         final short[] edge2XCoeffs = slice[9];
         eval += edge2XCoeffs[OridTable.orid10(Edge2XTerm.instance0(mover, enemy))]
                 + edge2XCoeffs[OridTable.orid10(Edge2XTerm.instance1(mover, enemy))]

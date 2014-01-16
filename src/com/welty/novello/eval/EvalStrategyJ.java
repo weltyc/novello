@@ -29,8 +29,8 @@ import java.util.Arrays;
             Edge2XTerm.terms,
             Terms.moverMobilities64,
             Terms.enemyMobilities64,
-            Terms.moverLinearPotMobs,
             Terms.enemyLinearPotMobs,
+            Terms.moverLinearPotMobs,
             Terms.parity
 
     };

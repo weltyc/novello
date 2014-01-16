@@ -110,10 +110,6 @@ public class EvalStrategyTest extends ArrayTestCase {
         }
     }
 
-    public void testTemp() {
-        testGeneratedEval(EvalStrategies.strategy("j"));
-    }
-
     public void testGeneratedEvalMatchesEvalByTerms() {
         for (EvalStrategy strategy : EvalStrategies.knownStrategies()) {
             testGeneratedEval(strategy);
@@ -124,17 +120,42 @@ public class EvalStrategyTest extends ArrayTestCase {
         final short[][] randomCoefficients = strategy.generateRandomCoefficients();
         final CoefficientEval eval = new CoefficientEval(strategy, randomCoefficients);
 
-        for (Me me : new Me[]{Me.early, Me.late}) {
+        for (Me me : new Me[]{Me.early, Me.mid, Me.late}) {
             checkGeneratedEval(strategy, randomCoefficients, eval, me);
+        }
+
+        Random rand = new Random(1234);
+        for (int i = 0; i < 100; i++) {
+            checkGeneratedEval(strategy, randomCoefficients, eval, Me.early(rand));
+            checkGeneratedEval(strategy, randomCoefficients, eval, Me.mid(rand));
+            checkGeneratedEval(strategy, randomCoefficients, eval, Me.late(rand));
         }
     }
 
+    public void testTemp() {
+        final EvalStrategy d = EvalStrategies.strategy("j");
+        final short[][] coeffs = d.generateRandomCoefficients();
+        final CoefficientEval eval = new CoefficientEval(d, coeffs);
+        final Me me = new Me(1224979102939791360L, 21224972731027584L);
+        checkGeneratedEval(d, coeffs, eval, me);
+    }
+
     private static void checkGeneratedEval(EvalStrategy strategy, short[][] randomCoefficients, CoefficientEval eval, Me me) {
-        final int evalByTerms = strategy.evalByTerms(me.mover, me.enemy, me.calcMoves(), me.enemyMoves(), randomCoefficients, false);
+        final long moverMoves = me.calcMoves();
+        final long enemyMoves = me.enemyMoves();
+        final int evalByTerms;
+        if (moverMoves == 0) {
+            evalByTerms = -strategy.evalByTerms(me.enemy, me.mover, enemyMoves, moverMoves, randomCoefficients, false);
+        } else {
+            evalByTerms = strategy.evalByTerms(me.mover, me.enemy, moverMoves, enemyMoves, randomCoefficients, false);
+        }
         final int generatedEval = eval.eval(me.mover, me.enemy);
-        if (evalByTerms!=generatedEval) {
-            strategy.evalByTerms(me.mover, me.enemy, me.calcMoves(), me.enemyMoves(), randomCoefficients, true);
-            assertEquals(evalByTerms, generatedEval);
+        if (evalByTerms != generatedEval) {
+            strategy.evalByTerms(me.mover, me.enemy, moverMoves, enemyMoves, randomCoefficients, true);
+            // generate information needed to recreate the failure in a test case
+            System.out.println();
+            System.out.println("new Me(" + me.mover + "L, " + me.enemy + "L)");
+            assertEquals(strategy.toString(), evalByTerms, generatedEval);
         }
     }
 
@@ -166,7 +187,7 @@ public class EvalStrategyTest extends ArrayTestCase {
         PositionElement actual = j.coefficientIndices(rMover, rEnemy, 0);
         expected.sortIndices();
         actual.sortIndices();
-        assertEquals(expected.toString().replace(",", "\n"),  actual.toString().replace(",", "\n"));
+        assertEquals(expected.toString().replace(",", "\n"), actual.toString().replace(",", "\n"));
 
     }
 }
