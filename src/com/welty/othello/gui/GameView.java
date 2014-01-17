@@ -10,7 +10,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Interface for the game that the Viewer is looking at.
- *
+ * <p/>
  * All functions that modify this GameView must happen on the Event Dispatch Thread.
  */
 public class GameView {
@@ -133,6 +133,7 @@ public class GameView {
     public synchronized void setGameGgf(String ggf) {
         game = MutableGame.ofGgf(ggf);
         iPosition = 0;
+        ++ping;
         fireChange();
     }
 
@@ -165,7 +166,7 @@ public class GameView {
 
     /**
      * Time the last move request was made.
-     *
+     * <p/>
      * This is used for both human and computer players.
      */
     private long moveRequestTime;
@@ -174,7 +175,7 @@ public class GameView {
      * Start a game.
      * <p/>
      * Set the board position to the start position. Request moves from engines as appropriate.
-     *
+     * <p/>
      * Shuts down previous engine.
      *
      * @param blackEngine Engine playing Black or null if a human player
@@ -199,6 +200,7 @@ public class GameView {
         this.whiteEngine = whiteEngine;
         game = new MutableGame(startPosition, calcName(blackEngine), calcName(whiteEngine), NovelloUtils.getHostName());
         iPosition = 0;
+        ++ping;
         requestMove();
         fireChange();
     }
@@ -212,7 +214,7 @@ public class GameView {
             // set moveRequestTime regardless of whether mover is a Human or an Engine
             moveRequestTime = System.currentTimeMillis();
             if (engine != null) {
-                engine.requestMove(this, getPosition(), ++ping);
+                engine.requestMove(this, getPosition(), ping);
             }
         }
     }
@@ -230,7 +232,7 @@ public class GameView {
      * Update the game.
      * <p/>
      * If the ping does not match the current state of this GameView, the move is considered outdated and thus ignored.
-     *
+     * <p/>
      * Like all functions that modify this GameView, this function should only be called from the Event Dispatch Thread.
      *
      * @param moveScore move and Engine score of the move
@@ -239,7 +241,8 @@ public class GameView {
     public synchronized void engineMove(@NotNull MoveScore moveScore, long ping) {
         if (ping == this.ping) {
             final long dt = System.currentTimeMillis() - moveRequestTime;
-            game.play(moveScore, dt*0.001);
+            game.play(moveScore, dt * 0.001);
+            ++ping;
             iPosition = nMoves();
             requestMove();
             fireChange();
@@ -261,9 +264,11 @@ public class GameView {
         } else if (isHumansMove()) {
             final long legalMoves = getPosition().calcMoves();
             if (legalMoves == 0) {
+                ++ping;
                 game.pass();
             } else if (BitBoardUtils.isBitSet(legalMoves, sq)) {
                 final long dt = System.currentTimeMillis() - moveRequestTime;
+                ++ping;
                 game.play(new MoveScore(sq, 0), dt * 0.001);
             } else {
                 // Human to move, but clicked on a square that is not a legal move. Ignore.
