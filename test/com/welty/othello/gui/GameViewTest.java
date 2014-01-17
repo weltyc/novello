@@ -170,8 +170,8 @@ public class GameViewTest extends TestCase {
         verifyNoRequest(mock);
 
         gameView.boardClick(f5);
-        final Position position =  Position.START_POSITION.play(f5);
-        Mockito.verify(mock).requestMove(gameView, position, 1);
+        final Position position = Position.START_POSITION.play(f5);
+        Mockito.verify(mock).requestMove(gameView, position, 2);
     }
 
     private Engine getMockEngine() {

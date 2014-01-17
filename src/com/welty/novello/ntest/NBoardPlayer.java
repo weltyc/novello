@@ -2,12 +2,8 @@ package com.welty.novello.ntest;
 
 import com.orbanova.common.misc.Logger;
 import com.orbanova.common.misc.Require;
-import com.welty.novello.core.Props;
-import com.welty.novello.core.MoveScore;
-import com.welty.novello.core.MutableGame;
+import com.welty.novello.core.*;
 import com.welty.novello.selfplay.Player;
-import com.welty.novello.core.Position;
-import com.welty.novello.core.BitBoardUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
@@ -31,26 +27,24 @@ public class NBoardPlayer implements Player {
             this.depth = depth;
             this.debug = debug;
             final String exe = getExe(program);
-            if (exe==null) {
+            if (exe == null) {
                 throw new RuntimeException("Program '" + program + "' is not listed in properties file " + Props.getInstance().getSourceFile());
             }
             final String args = getExe(program + ".args");
-            if (args==null) {
+            if (args == null) {
                 throw new RuntimeException("Program '" + program + ".args' is not listed in properties file " + Props.getInstance().getSourceFile());
             }
             final File ntestDir = new File(exe).getParentFile();
             log.debug("exe : " + exe);
             log.debug("wd  : " + ntestDir);
-            log.debug("args: '" + args +"'");
+            log.debug("args: '" + args + "'");
             final String[] processArgs = makeArgs(exe, args);
             final Process process = new ProcessBuilder(processArgs).directory(ntestDir).redirectErrorStream(true).start();
             out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(process.getOutputStream())), true);
             in = new BufferedReader(new InputStreamReader(process.getInputStream()));
 
-            pingPong();
             println("set depth " + depth);
-            println("new");
-            println("go");
+            System.out.println(in.readLine());
             pingPong();
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -59,6 +53,7 @@ public class NBoardPlayer implements Player {
 
     /**
      * Get location of .exe file
+     *
      * @param program program name
      * @return program full path, or null if program is not listed in properties file
      */

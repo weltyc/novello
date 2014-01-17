@@ -1,7 +1,9 @@
 package com.welty.novello.core;
 
+import java.text.DecimalFormat;
+
 /**
-*/
+ */
 public class Move {
     /**
      * Square of the move, or -1 if the move was a pass
@@ -57,7 +59,7 @@ public class Move {
             }
             if (time != 0) {
                 sb.append('/');
-                sb.append(time);
+                sb.append(new DecimalFormat("#.###").format(time));
             }
         }
     }
