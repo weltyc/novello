@@ -141,9 +141,10 @@ public class EvalStrategy {
         final int nFeatures = nFeatures();
         final short[][] slice = new short[nFeatures][];
 
+        final Random random = new Random(1337);
         for (int iFeature = 0; iFeature < nFeatures; iFeature++) {
             final Feature feature = getFeature(iFeature);
-            slice[iFeature] = randomShorts(new Random(1337), feature.nOrids());
+            slice[iFeature] = randomShorts(random, feature.nOrids());
         }
         return slice;
     }
@@ -353,7 +354,11 @@ public class EvalStrategy {
             eval += coeff;
 
             if (printStats) {
-                System.out.format("%7d (%7d total): orid=%5d from feature %2d ; %s\n", coeff, eval, orid, iFeature, term);
+                System.out.format("%7d : orid=%5d from feature %2d ; %s\n", coeff, orid, iFeature, term);
+                if (iTerm==terms.length-1 || iFeature!=iFeatures[iTerm+1]) {
+                    System.out.format("Total %7d for features <= %2d\n", eval, iFeature);
+                    System.out.println();
+                }
             }
         }
         return eval;

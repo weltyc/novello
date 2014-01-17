@@ -20,11 +20,16 @@ public class Me {
      */
     public static final Me late;
 
+    /**
+     * A test position with about 32 disks & 32 empties
+     */
+    public static final Me mid;
 
     static {
         final Random r = new Random(1337);
         late = late(r);
         early = early(r);
+        mid = mid(r);
     }
 
     /**
@@ -35,6 +40,16 @@ public class Me {
      */
     public static Me early(Random random) {
         return new Me(random, random.nextLong() | random.nextLong());
+    }
+
+    /**
+     * Generate a test position with about 32 disks & 32 empties
+     *
+     * @param random random number generator
+     * @return the test position
+     */
+    public static Me mid(Random random) {
+        return new Me(random, random.nextLong());
     }
 
     /**

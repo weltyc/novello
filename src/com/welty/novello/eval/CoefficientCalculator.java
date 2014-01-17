@@ -21,7 +21,7 @@ public class CoefficientCalculator {
      * 1 disk is worth how many evaluation points?
      */
     public static final int DISK_VALUE = 100;
-    private static final String target = "e1";
+    private static final String target = "f1";
     private static final String COEFF_SET_NAME = target.substring(1);
     private static final double PENALTY = .01;
 
@@ -76,8 +76,8 @@ public class CoefficientCalculator {
                 final long t0 = System.currentTimeMillis();
                 final double[] x = estimateCoefficients(elements, strategy.nCoefficientIndices(), strategy.nDenseWeights, PENALTY);
                 final double[] coefficients = strategy.unpack(x);
-                final long dt = System.currentTimeMillis() - t0;
-                System.out.format("%,d ms elapsed\n", dt);
+                final long dt = (System.currentTimeMillis() - t0)/1000;
+                System.out.format("%d:%2d elapsed\n", dt/60, dt%60);
                 System.out.format("sum of coefficients squared = %.3g\n", Vec.sumSq(coefficients));
                 System.out.println();
 

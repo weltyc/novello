@@ -14,6 +14,11 @@ public class EvalStrategyJTest extends TestCase {
         final CEvaluatorJ ntestJ = CEvaluatorJ.getInstance();
         final EvalStrategy strategyJ = EvalStrategies.strategy("j");
         final CoefficientEval novelloJ = new CoefficientEval(strategyJ, CEvaluatorJ.getInstance().getNovelloCoeffs());
+        testEval(ntestJ, novelloJ, Me.early);
+        testEval(ntestJ, novelloJ, Me.late);
+    }
+
+    private static void testEval(CEvaluatorJ ntestJ, CoefficientEval novelloJ, Me me) {
         final int ntestScore = ntestJ.eval(me.mover, me.enemy);
         final int novelloScore = novelloJ.eval(me.mover, me.enemy);
         assertEquals(ntestScore, novelloScore);

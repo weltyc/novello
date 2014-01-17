@@ -39,6 +39,10 @@ abstract class Term {
     String oridGen() {
         throw new IllegalStateException("not implemented for " + getClass().getSimpleName());
     }
+
+    @Override public String toString() {
+        return getFeature().toString();
+    }
 }
 
 class CornerTerm extends Term {
