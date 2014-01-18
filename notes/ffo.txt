@@ -46,3 +46,31 @@ Novello:
     #58  G1   4   158.5s  30 empty   2448.9 Mn    15.4 Mn/s
     #59  G8  64     0.3s  34 empty      1.1 Mn     3.8 Mn/s
     Total:       3402.8s               51.6 Gn    15.2 Mn/s   20/20 correct moves
+
+Novello 8b799e7 (2014-01-18):
+    #40  A2 +38.00     1.4s  20 empty     25.2 Mn    17.5 Mn/s
+    #41  H4  +0.00     1.9s  22 empty     32.5 Mn    16.8 Mn/s
+    #42  G2  +6.00     2.6s  22 empty     51.5 Mn    20.1 Mn/s
+    #43  C7 -12.00     5.9s  23 empty    100.0 Mn    17.0 Mn/s
+    #44  B8 -14.00     0.9s  23 empty     14.3 Mn    15.1 Mn/s
+    #45  B2  +6.00    28.1s  24 empty    532.4 Mn    19.0 Mn/s
+    #46  B3  -8.00     4.8s  24 empty     78.1 Mn    16.3 Mn/s
+    #47  G2  +4.00     1.5s  25 empty     22.2 Mn    14.9 Mn/s
+    #48  F6 +28.00    25.3s  25 empty    325.3 Mn    12.9 Mn/s
+    #49  E1 +16.00    21.4s  26 empty    385.8 Mn    18.0 Mn/s
+    #50  D8 +10.00    89.5s  26 empty   1299.7 Mn    14.5 Mn/s
+    #51  E2  +6.00    28.0s  27 empty    376.7 Mn    13.5 Mn/s
+    #52  A3  +0.00    27.4s  27 empty    427.6 Mn    15.6 Mn/s
+    #53  D8  -2.00   348.2s  28 empty   5196.8 Mn    14.9 Mn/s
+    #54  C7  -2.00   299.0s  28 empty   5035.1 Mn    16.8 Mn/s
+    #55  B7  +0.00   888.5s  29 empty  12604.2 Mn    14.2 Mn/s
+    #56  H5  +2.00   109.7s  29 empty   1520.3 Mn    13.9 Mn/s
+    #57  A6 -10.00   185.7s  30 empty   2712.5 Mn    14.6 Mn/s
+    #58  G1  +4.00   126.5s  30 empty   1967.6 Mn    15.6 Mn/s
+    #59  G8 +64.00     0.1s  34 empty      0.3 Mn     4.2 Mn/s
+    Total:       2196.5s               32.7 Gn    14.9 Mn/s   20/20 correct moves
+
+Running Novello using c3s as the eval,
+    Total:       3384.1s               51.2 Gn    15.1 Mn/s
+
+So the performance increase is virtually all due to better eval.

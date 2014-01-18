@@ -75,8 +75,8 @@ public class Ffo {
                 if (hasCorrectMove) {
                     nCorrectMoves++;
                 }
-                System.out.format("%s  %s %3d  %6.1fs  %d empty  %7.1f Mn    %4.1f Mn/s  %s\n", strings.get(2).substring(18),
-                        BitBoardUtils.sqToText(moveScore.sq), score, seconds, position.nEmpty(), mn, mn / seconds
+                System.out.format("%s  %s %+6.2f  %6.1fs  %d empty  %7.1f Mn    %4.1f Mn/s  %s\n", strings.get(2).substring(18),
+                        BitBoardUtils.sqToText(moveScore.sq), score * 0.01, seconds, position.nEmpty(), mn, mn / seconds
                         , !hasCorrectMove ? "WRONG MOVE" : "");
             }
         }
