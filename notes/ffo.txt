@@ -74,3 +74,26 @@ Running Novello using c3s as the eval,
     Total:       3384.1s               51.2 Gn    15.1 Mn/s
 
 So the performance increase is virtually all due to better eval.
+
+After tuning using SolverTuner:
+    #40  A2 +38.00     1.4s  20 empty     22.9 Mn    16.5 Mn/s
+    #41  H4  +0.00     1.3s  22 empty     21.8 Mn    16.5 Mn/s
+    #42  G2  +6.00     2.3s  22 empty     44.2 Mn    19.6 Mn/s
+    #43  C7 -12.00     2.1s  23 empty     33.8 Mn    16.0 Mn/s
+    #44  D2 -14.00     1.2s  23 empty     19.2 Mn    15.6 Mn/s
+    #45  B2  +6.00    22.9s  24 empty    414.0 Mn    18.1 Mn/s
+    #46  B3  -8.00     5.1s  24 empty     81.3 Mn    16.0 Mn/s
+    #47  G2  +4.00     1.0s  25 empty     13.0 Mn    13.0 Mn/s
+    #48  F6 +28.00    25.9s  25 empty    327.3 Mn    12.6 Mn/s
+    #49  E1 +16.00    20.0s  26 empty    354.6 Mn    17.7 Mn/s
+    #50  D8 +10.00    88.9s  26 empty   1291.9 Mn    14.5 Mn/s
+    #51  E2  +6.00    20.2s  27 empty    268.2 Mn    13.3 Mn/s
+    #52  A3  +0.00    25.7s  27 empty    396.1 Mn    15.4 Mn/s
+    #53  D8  -2.00   282.6s  28 empty   4097.3 Mn    14.5 Mn/s
+    #54  C7  -2.00   315.4s  28 empty   5297.5 Mn    16.8 Mn/s
+    #55  B7  +0.00   992.8s  29 empty  13664.2 Mn    13.8 Mn/s
+    #56  H5  +2.00   107.7s  29 empty   1454.6 Mn    13.5 Mn/s
+    #57  A6 -10.00   112.4s  30 empty   1588.1 Mn    14.1 Mn/s
+    #58  G1  +4.00   114.0s  30 empty   1644.5 Mn    14.4 Mn/s
+    #59  G8 +64.00     0.4s  34 empty      1.6 Mn     4.2 Mn/s
+    Total:       2143.4s               31.0 Gn    14.5 Mn/s   20/20 correct moves
