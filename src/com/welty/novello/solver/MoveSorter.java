@@ -82,33 +82,33 @@ final class MoveSorter {
     }
 
     static final int[][] searchDepths = {
-            {-1, 0, 0, 0, -1, 2}, // 12-13
-            {-1, 0, 0, 0, 0, 1},  // 14-15
+            {-1, -1, 0, 0, -1, 2}, // 12-13
+            {-1, 0, 0, 0, 0, 2},  // 14-15
             {-1, 0, 2, 1, 0, 4},  //16-17
-            {0, 2, 2, 2, 0, 3}, // 18-19
-            {0, 2, 3, 4, 2, 4}, // 20-21
-            {2, 2, 4, 4, 2, 5}, // 22-23
-            {2, 2, 2, 2, 2, 6}, // 24-25
-            {2, 2, 2, 2, 2, 7}, // 26-27
-            {2, 2, 2, 2, 2, 8}, // 28-29
-            {2, 2, 2, 2, 2, 9}, // 30-31
-            {2, 2, 2, 2, 2, 10}, // 32-33
-            {2, 2, 2, 2, 2, 11}, // 34-35
+            {0, 0, 2, 2, 0, 3}, // 18-19
+            {0, 2, 4, 3, 2, 4}, // 20-21
+            {2, 2, 4, 4, 3, 8}, // 22-23
+            {2, 2, 2, 2, 2, 9}, // 24-25
+            {2, 2, 2, 2, 2, 10}, // 26-27
+            {2, 2, 2, 2, 2, 11}, // 28-29
+            {2, 2, 2, 2, 2, 12}, // 30-31
+            {2, 2, 2, 2, 2, 13}, // 32-33
+            {2, 2, 2, 2, 2, 14}, // 34-35
     };
 
     static final int[][] fastestFirsts = {
-            {4,3,3,3,4,3},
-            {4,3,3,3,3,3},
-            {5,3,2,3,3,2},
-            {4,1,2,3,3,2},
-            {2,1,1,3,3,3},
-            {0,3,2,2,2,2},
-            {2,2,2,2,2,2},
-            {2,2,2,2,2,2},
-            {2,2,2,2,2,2},
-            {2,2,2,2,2,2},
-            {2,2,2,2,2,2},
-            {2,2,2,2,2,2},
+            {4, 4, 2, 3, 4, 4},
+            {4, 2, 2, 2, 3, 3},
+            {5, 2, 2, 2, 2, 0},
+            {2, 0, 2, 2, 2, 3},
+            {0, 0, 2, 2, 3, 0},
+            {0, 1, 2, 2, 2, 1},
+            {2, 2, 2, 2, 2, 2},
+            {2, 2, 2, 2, 2, 2},
+            {2, 2, 2, 2, 2, 2},
+            {2, 2, 2, 2, 2, 2},
+            {2, 2, 2, 2, 2, 2},
+            {2, 2, 2, 2, 2, 2},
     };
 
     /**
@@ -123,7 +123,7 @@ final class MoveSorter {
                 searchDepth = -1;
                 fastestFirstWeight = 0; // currently ignored when searchDepth = -1.
             } else {
-                final int emptyBucket = (nEmpties - MIN_EVAL_SORT_DEPTH)/2;
+                final int emptyBucket = (nEmpties - MIN_EVAL_SORT_DEPTH) / 2;
                 final int evalBucket = calcEvalBucket(mover, enemy, alpha, beta, predictedNodeType);
                 searchDepth = searchDepths[emptyBucket][evalBucket];
                 fastestFirstWeight = fastestFirsts[emptyBucket][evalBucket];
@@ -151,20 +151,15 @@ final class MoveSorter {
         final int evalBucket;
         if (predictedNodeType == Solver.PRED_PV) {
             evalBucket = 5;
-        }
-        else if (localScore > beta + 20* DISK_VALUE) {
+        } else if (localScore > beta + 20 * DISK_VALUE) {
             evalBucket = 4;
-        }
-        else if (localScore > beta + 7*DISK_VALUE) {
+        } else if (localScore > beta + 7 * DISK_VALUE) {
             evalBucket = 3;
-        }
-        else if (localScore >= alpha - 7*DISK_VALUE) {
+        } else if (localScore >= alpha - 7 * DISK_VALUE) {
             evalBucket = 2;
-        }
-        else if (localScore >= alpha - 20*DISK_VALUE) {
+        } else if (localScore >= alpha - 20 * DISK_VALUE) {
             evalBucket = 1;
-        }
-        else {
+        } else {
             evalBucket = 0;
         }
         return evalBucket;
