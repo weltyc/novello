@@ -407,6 +407,20 @@ public class BitBoardUtils {
     }
 
     /**
+     * Convert square index to text, with the column in lower case.
+     * <p/>
+     * This uses Novello conventions; the row and col increase as the text chars decrease.
+     *
+     * @param sq index of square. a1 = 63, h1 = 56.
+     * @return text, for instance "d5"
+     */
+    public static String sqToLowerText(int sq) {
+        final int col = col(sq);
+        final int row = row(sq);
+        return rowColToLowerText(col, row);
+    }
+
+    /**
      * Convert row and col indices to text
      * <p/>
      * This uses Novello conventions; the row and col increase as the text chars decrease.
@@ -417,6 +431,21 @@ public class BitBoardUtils {
      */
     private static String rowColToText(int col, int row) {
         final char colChar = (char) ('H' - col);
+        final char rowChar = (char) ('8' - row);
+        return "" + colChar + rowChar;
+    }
+
+    /**
+     * Convert row and col indices to text, with the column in lower case
+     * <p/>
+     * This uses Novello conventions; the row and col increase as the text chars decrease.
+     *
+     * @param col index of column. "h"=0, "a"=7.
+     * @param row index of row. "8" = 0, "1" = 7
+     * @return text, for instance "d5"
+     */
+    private static String rowColToLowerText(int col, int row) {
+        final char colChar = (char) ('h' - col);
         final char rowChar = (char) ('8' - row);
         return "" + colChar + rowChar;
     }

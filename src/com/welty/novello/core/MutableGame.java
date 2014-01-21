@@ -2,6 +2,8 @@ package com.welty.novello.core;
 
 import com.orbanova.common.misc.Require;
 import com.welty.novello.eval.CoefficientCalculator;
+import com.welty.ggf.GgfGame;
+import com.welty.ggf.Move;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -66,7 +68,7 @@ public class MutableGame {
             sb.append(cur.blackToMove ? "B[" : "W[");
             move.appendTo(sb);
             sb.append(']');
-            cur = cur.playOrPass(move.sq);
+            cur = cur.playOrPass(move.getSq());
         }
 
         sb.append(";)");
@@ -105,7 +107,7 @@ public class MutableGame {
 
     private void play(Move move) {
         moves.add(move);
-        lastPosition = lastPosition.playOrPass(move.sq);
+        lastPosition = lastPosition.playOrPass(move.getSq());
     }
 
     public @NotNull Position getStartPosition() {
@@ -128,7 +130,7 @@ public class MutableGame {
                 pos = pos.pass();
             } else {
                 pvs.add(pv(pos, netScore));
-                pos = pos.play(move.sq);
+                pos = pos.play(move.getSq());
             }
         }
         return pvs;
@@ -163,10 +165,10 @@ public class MutableGame {
         final HashMap<String, String> tags = getGgfTags(ggf);
 
 
-        final String place = getRequiredTag(tags, "PC");
-        final String blackName = getRequiredTag(tags, "PB");
-        final String whiteName = getRequiredTag(tags, "PW");
-        final String bo = getRequiredTag(tags, "BO");
+        final String place = GgfGame.getRequiredTag(tags, "PC");
+        final String blackName = GgfGame.getRequiredTag(tags, "PB");
+        final String whiteName = GgfGame.getRequiredTag(tags, "PW");
+        final String bo = GgfGame.getRequiredTag(tags, "BO");
         if (!bo.startsWith("8 ")) {
             throw new IllegalArgumentException("We can only handle 8x8 boards.");
         }
@@ -176,8 +178,8 @@ public class MutableGame {
             blackClock = whiteClock = new GameClock(tags.get("TI"));
         }
         else {
-            blackClock = new GameClock(getRequiredTag(tags, "TB"));
-            whiteClock = new GameClock(getRequiredTag(tags, "TW"));
+            blackClock = new GameClock(GgfGame.getRequiredTag(tags, "TB"));
+            whiteClock = new GameClock(GgfGame.getRequiredTag(tags, "TW"));
         }
 
         final Position startPosition = Position.of(bo.substring(2));
@@ -228,21 +230,6 @@ public class MutableGame {
     }
 
     /**
-     * Get the value of a tag, throwing an IllegalArgumentException if the tag can't be found.
-     *
-     * @param tags list of tags
-     * @param tag tag name
-     * @return tag value
-     */
-    private static String getRequiredTag(HashMap<String, String> tags, String tag) {
-        final String value = tags.get(tag);
-        if (value == null) {
-            throw new IllegalArgumentException("GGF missing tag: " + tag);
-        }
-        return value;
-    }
-
-    /**
      * Calculate the position with the given number of empties.
      * <p/>
      * If there is a pass at that number of empties, the position with the player-to-move having a legal move is returned.
@@ -260,7 +247,7 @@ public class MutableGame {
                 if (pos.nEmpty() == nEmpty) {
                     return pos;
                 }
-                pos = pos.play(move.sq);
+                pos = pos.play(move.getSq());
             }
         }
         if (pos.nEmpty() == nEmpty) {

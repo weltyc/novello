@@ -1,5 +1,6 @@
 package com.welty.novello.core;
 
+import com.welty.ggf.Move;
 import junit.framework.TestCase;
 
 /**

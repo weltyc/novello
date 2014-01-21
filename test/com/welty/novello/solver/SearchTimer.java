@@ -1,7 +1,7 @@
 package com.welty.novello.solver;
 
 import com.welty.novello.core.Counts;
-import com.welty.novello.core.Move;
+import com.welty.ggf.Move;
 import com.welty.novello.core.MutableGame;
 import com.welty.novello.core.Position;
 import com.welty.novello.selfplay.Players;
@@ -62,7 +62,7 @@ public class SearchTimer {
         for (MutableGame game : games) {
             Position pos = game.getStartPosition();
             for (Move move : game.getMoves()) {
-                pos = pos.playOrPass(move.sq);
+                pos = pos.playOrPass(move.getSq());
                 final int nEmpty = pos.nEmpty();
                 if (nEmpty >= 10 && nEmpty <= 40) {
                     final long moves = pos.calcMoves();

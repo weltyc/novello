@@ -2,6 +2,7 @@ package com.welty.novello.core;
 
 import com.orbanova.common.date.Time;
 import com.welty.novello.eval.CoefficientCalculator;
+import com.welty.ggf.Move;
 import junit.framework.TestCase;
 
 import java.util.List;

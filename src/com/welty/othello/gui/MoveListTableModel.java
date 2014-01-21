@@ -2,7 +2,7 @@ package com.welty.othello.gui;
 
 import com.orbanova.common.misc.Utils;
 import com.welty.novello.core.BitBoardUtils;
-import com.welty.novello.core.Move;
+import com.welty.ggf.Move;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
@@ -82,8 +82,8 @@ class MoveListTableModel extends AbstractTableModel implements GameView.ChangeLi
             if (Utils.isOdd(columnIndex)) {
                 return move.eval;
             } else {
-                if (move.sq >= 0) {
-                    return " " + BitBoardUtils.sqToText(move.sq);
+                if (move.getSq() >= 0) {
+                    return " " + BitBoardUtils.sqToText(move.getSq());
                 } else {
                     return " pass";
                 }

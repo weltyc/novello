@@ -1,5 +1,6 @@
 package com.welty.novello.core;
 
+import com.welty.ggf.Move;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -19,7 +20,7 @@ public class State {
     }
 
     public State playOrPass(Move move) {
-        final Position nextPosition = position.playOrPass(move.sq);
+        final Position nextPosition = position.playOrPass(move.getSq());
         if (position.blackToMove) {
             return new State(nextPosition, blackClock.update(move.time), whiteClock);
         }

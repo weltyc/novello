@@ -1,6 +1,7 @@
 package com.welty.othello.gui;
 
 import com.welty.novello.core.*;
+import com.welty.ggf.Move;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

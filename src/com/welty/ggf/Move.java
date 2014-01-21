@@ -1,4 +1,7 @@
-package com.welty.novello.core;
+package com.welty.ggf;
+
+import com.welty.novello.core.BitBoardUtils;
+import com.welty.novello.core.MoveScore;
 
 import java.text.DecimalFormat;
 
@@ -6,9 +9,12 @@ import java.text.DecimalFormat;
  */
 public class Move {
     /**
-     * Square of the move, or -1 if the move was a pass
+     * Square of the move.
+     *
+     * This may be longer than 2 characters; however only the first two characters are used to determine
+     * the play location.
      */
-    public final int sq;
+    private final String square;
 
     /**
      * Time taken, in seconds
@@ -26,20 +32,20 @@ public class Move {
      * This is a pass move with no eval and no time elapsed.
      * To create a pass move with an eval or time elapsed, use the constructor.
      */
-    static final Move PASS = new Move("PASS");
+    public static final Move PASS = new Move("PASS");
 
-    Move(String text) {
+    public Move(String text) {
         final String[] split = text.split("/");
         if (split.length > 3) {
             throw new IllegalArgumentException("Moves may have at most 3 components");
         }
-        sq = split[0].toUpperCase().startsWith("PA") ? -1 : BitBoardUtils.textToSq(split[0]);
+        square = split[0];
         eval = (split.length > 1 && !split[1].isEmpty()) ? Double.parseDouble(split[1]) : 0;
         time = (split.length > 2 && !split[2].isEmpty()) ? Double.parseDouble(split[2]) : 0;
     }
 
     public Move(MoveScore moveScore, double time) {
-        this.sq = moveScore.sq;
+        square = BitBoardUtils.sqToText(moveScore.sq);
         this.eval = moveScore.score * .01;
         this.time = time;
     }
@@ -50,8 +56,8 @@ public class Move {
         return sb.toString();
     }
 
-    void appendTo(StringBuilder sb) {
-        sb.append(isPass() ? "PASS" : BitBoardUtils.sqToText(sq));
+    public void appendTo(StringBuilder sb) {
+        sb.append(square);
         if (time != 0 || eval != 0) {
             sb.append('/');
             if (eval != 0) {
@@ -59,12 +65,24 @@ public class Move {
             }
             if (time != 0) {
                 sb.append('/');
-                sb.append(new DecimalFormat("#.###").format(time));
+                sb.append(new DecimalFormat("#0.00#").format(time));
             }
         }
     }
 
+    /**
+     * Square of the move, or -1 if the move was a pass
+     *
+     * This only returns a sensible value on an 8x8 board.
+     */
+    public int getSq() {
+        return isPass() ? -1 : BitBoardUtils.textToSq(square.substring(0,2));
+    }
+
+    /**
+     * @return true if the move is a pass move
+     */
     public boolean isPass() {
-        return sq < 0;
+        return square.toUpperCase().startsWith("PA");
     }
 }

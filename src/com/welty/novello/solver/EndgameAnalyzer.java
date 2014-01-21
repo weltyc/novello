@@ -1,6 +1,7 @@
 package com.welty.novello.solver;
 
 import com.welty.novello.core.*;
+import com.welty.ggf.Move;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -32,21 +33,21 @@ public class EndgameAnalyzer {
             final int nEmpty = position.nEmpty();
             if (nEmpty <= 22 && position.calcMoves() != 0) {
                 final MoveScore best = solver.getMoveScore(position.mover(), position.enemy());
-                Position next = position.play(move.sq);
+                Position next = position.play(move.getSq());
                 final int score = -solver.solve(next.mover(), next.enemy());
 
                 if (best.score != score) {
                     final int drop = best.score - score;
                     if (drop != 0) {
                         final String playerName = position.blackToMove ? "Black" : "White";
-                        final String played = BitBoardUtils.sqToText(move.sq) + "/" + score;
+                        final String played = BitBoardUtils.sqToText(move.getSq()) + "/" + score;
                         System.out.format("%2d: %s dropped %2d, played %s should have played %s\n", nEmpty
                                 , playerName, drop, played, best);
                         dropped[position.blackToMove ? 0 : 1] += drop;
                     }
                 }
             }
-            position = position.playOrPass(move.sq);
+            position = position.playOrPass(move.getSq());
         }
 
         System.out.println();

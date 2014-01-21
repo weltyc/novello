@@ -24,10 +24,12 @@ public class MvGenerator {
         final MrSource rareSource= new RarePositionMrSource(evalStrategy, pvs);
         final List<MeValue> pvsx = new CachingMvSource(PLAYOUT_PLAYER_NAME, rareSource, "x.pvs").getMvs();
         final List<MeValue> pvsN = new CachingMvSource(PLAYOUT_PLAYER_NAME, NtestPvLoader.mrSource, "n.pvs").getMvs();
-        log.info(String.format("%,d pvs from .pvs file, %,d from x.pvs file, %,d from n.pvs file"
-                , pvs.size(), pvsx.size(), pvsN.size()));
+        final List<MeValue> ggs = new RandGameMvSource().getMvs();
+        log.info(String.format("%,d pvs from .pvs file, %,d from x.pvs file, %,d from n.pvs file, %,d from ggs games"
+                , pvs.size(), pvsx.size(), pvsN.size(), ggs.size()));
         pvs.addAll(pvsx);
         pvs.addAll(pvsN);
+        pvs.addAll(ggs);
 
         log.info("Selecting distinct pvs");
         final Set<Mr> alreadySeen = new HashSet<>();
