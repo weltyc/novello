@@ -1,15 +1,15 @@
 package com.welty.novello.eval;
 
-import com.welty.novello.core.PositionValue;
+import com.welty.novello.core.MeValue;
 
 import java.io.IOException;
 import java.util.List;
 
 public class PvsViewer {
     public static void main(String[] args) throws IOException {
-        final List<PositionValue> pvs = PvsGenerator.loadOrCreatePvs("c5s-10");
+        final List<MeValue> pvs = new MvGenerator(EvalStrategies.strategy("e")).getMvs();
         int nPrinted = 0;
-        for (PositionValue pv : pvs) {
+        for (MeValue pv : pvs) {
             if (Math.abs(pv.value) > 90*CoefficientCalculator.DISK_VALUE) {
                 nPrinted++;
                 if (nPrinted > 100) {

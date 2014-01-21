@@ -3,7 +3,7 @@ package com.welty.novello.solver;
 import com.orbanova.common.misc.Logger;
 import com.welty.novello.core.Counts;
 import com.welty.novello.core.DefaultThreadLocal;
-import com.welty.novello.core.PositionValue;
+import com.welty.novello.core.MeValue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +12,7 @@ import java.util.concurrent.*;
 /**
  */
 public class DeepSolverTimer implements Tunable {
-    private final List<PositionValue> pvs;
+    private final List<MeValue> pvs;
     private final boolean logResults;
     private static final Logger log = Logger.logger(DeepSolverTimer.class);
 
@@ -90,10 +90,10 @@ public class DeepSolverTimer implements Tunable {
     private static final DefaultThreadLocal<Solver> solvers = new DefaultThreadLocal<>(Solver.class);
 
     private class SolveTask implements Callable<Counts> {
-        private final PositionValue pv;
+        private final MeValue pv;
         private final int i;
 
-        public SolveTask(PositionValue pv, int i) {
+        public SolveTask(MeValue pv, int i) {
             this.pv = pv;
             this.i = i;
         }

@@ -537,6 +537,15 @@ public class BitBoardUtils {
         return Base3.base2ToBase3(moverCol, enemyCol);
     }
 
+    /**
+     * Calculate net number of disks when there are no more moves.
+     *
+     * The winner gets empties if BitBoardUtils.WINNER_GETS_EMPTIES is true.
+     *
+     * @param mover mover disks
+     * @param enemy enemy disks
+     * @return net score, in disks.
+     */
     public static int terminalScore(long mover, long enemy) {
         int netDisks = bitCount(mover) - bitCount(enemy);
         if (BitBoardUtils.WINNER_GETS_EMPTIES) {

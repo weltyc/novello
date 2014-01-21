@@ -213,7 +213,7 @@ public class SelfPlaySet {
     }
 
     public static class PvCollector implements MatchResultListener {
-        public final List<PositionValue> pvs = new ArrayList<>();
+        public final List<MeValue> pvs = new ArrayList<>();
 
         @Override public void handle(int nComplete, double netResult, @NotNull MutableGame game1, @Nullable MutableGame game2) {
             pvs.addAll(game1.calcPositionValues());

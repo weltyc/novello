@@ -48,12 +48,12 @@ public class MutableGameTest extends TestCase {
         assertTrue(game.toGgf().contains("B[PASS]W[F4]B[PASS]W[F6]"));
         assertFalse("no final pass", game.toGgf().contains("B[PASS]W[F4]B[PASS]W[F6]B["));
 
-        final List<PositionValue> pvs = game.calcPositionValues();
+        final List<MeValue> pvs = game.calcPositionValues();
         assertEquals(4, pvs.size());
         final boolean[] blackToMoves = {true, false, false, false};
         final int expected = BitBoardUtils.WINNER_GETS_EMPTIES ? 64 : 8;
         for (int i = 0; i < 4; i++) {
-            final PositionValue pv = pvs.get(i);
+            final MeValue pv = pvs.get(i);
             assertEquals(60 - i, pv.nEmpty());
             final boolean blackToMove = blackToMoves[i];
             final int netScore = blackToMove ? -expected : expected;

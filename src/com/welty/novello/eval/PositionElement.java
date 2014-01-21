@@ -7,7 +7,7 @@ import java.util.Arrays;
 /**
  * Data about a single position and value
  */
-class PositionElement {
+public class PositionElement {
     final @NotNull int[] indices;
     private final int target;
     private final @NotNull float[] denseWeights;
@@ -41,7 +41,7 @@ class PositionElement {
         }
     }
 
-    void updateHistogram(int[] counts) {
+    public void updateHistogram(int[] counts) {
         for (int index : indices) {
             counts[index]++;
         }
@@ -55,7 +55,7 @@ class PositionElement {
      * @param counts  histogram of index occurrences
      * @param maximum maximum number of times an index can occur and still be considered rare
      */
-    boolean isRare(int[] counts, int maximum) {
+    public boolean isRare(int[] counts, int maximum) {
         for (int index : indices) {
             if (counts[index] <= maximum) {
                 return true;

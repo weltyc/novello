@@ -371,4 +371,22 @@ public class Position implements Comparable<Position> {
             return new Position(enemy, mover, blackToMove);
         }
     }
+
+    /**
+     *
+     * @return 0 if mover has a move, else 1 if enemy has a move, else 2
+     */
+    public int calcPass() {
+        if (calcMoves()!=0) {
+            return 0;
+        }
+        if (enemyMoves()!=0) {
+            return 1;
+        }
+        return 2;
+    }
+
+    public Mr toMr() {
+        return new Mr(mover(), enemy());
+    }
 }

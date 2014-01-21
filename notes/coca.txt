@@ -18,3 +18,78 @@ Comparing with frequency.txt, the number of positions used to estimate coefficie
 c5s:4s vs c6s:4s: average result = -0.7
 
 This is not a very big improvement.
+
+How bad is it? (j1)
+-------------------
+This coefficient calculator is 8 disks worse than ntest's coefficient calculator, using the same patterns.
+See [notes.txt] for more detail.
+
+Sub-patterns (f1)
+-----------------
+Ntest calculates both a 2x4 and a 2x5 term; it also calculates both an edge term and an edge+2X term. In each
+of these pairs, the smaller term is completely included in the larger term.
+The smaller terms are effectively used as backstops for when there is limited data available for their
+larger siblings. Does this make a difference?
+
+EvalStrategyF: exactly the same as EvalStrategyJ but without the 2x4
+  f1:2 vs j1:2: average result = 0.2
+I'm a little concerned that the order of players could matter because of cache effects.
+  j1:2 vs f1:2: average result = -0.3
+The order makes a difference, but not a huge difference. As does the 2x4 and edge term calculation.
+
+So we won't use sub-coefficients for the time being.
+
+Use capture.pv (f2)
+-------------------
+Added positions from ntest's capture.pv file to the coefficient calculator. This roughly doubled the number
+of positions available. This was used to generate eval f2, and using these positions is the only difference
+between f2 and f1.
+
+Played f1 vs f2:
+    average result = -1.40 +/-0.087. T ~ -16.0.  Time per game =  20.03 ms vs  22.39 ms.
+
+So f2 performs better but takes more time. Perhaps the extra time is a result of the nonlinearity
+in ntest's pv estimation (this makes early-game coefficients closer to 0, which leads to fewer MPC cutoffs).
+Going to retry this using the same positions but evals from novello, which are linear.
+
+A big bug (f4)
+--------------
+The code that calculates MeValues from Mes should use both the root position and its successor position. Due
+to a bug, it was only using the value from the root position. This affects all coefficient generation for quite some
+time (since at least c5s, see "wondering if there's a problem", above.
+It is a problem for all cached values, so I'll blow those away and regenerate.
+To determine how big an affect this bug has, I will regenerate using the exact same c5 evaluator that was used previously.
+Future work should use a stronger evaluator such as d1.
+
+The complete coefficient generation log is in [f4 log.txt].
+
+The new .pvs and x.pvs files are smaller than before, so this is not an exact like-for-like comparison. But f4 is better
+even with the handicap of having smaller coefficient files.
+
+f4:6 vs f2:6 average result = 1.44 +/-0.079. T ~  18.2.  Time per game =  20.64 ms vs  23.72 ms.
+
+Note that f4 takes less time than f2 - this supports the hypothesis that the reason f2 takes longer is due to
+the nonlinear evaluation function.
+
+At low & high empties the coefficients are being generated with very few empties:
+    #empty   #positions
+      3      1,806,469
+      4      2,051,608
+     11      5,236,236
+     12      5,451,291
+     19      4,301,621
+     20      4,252,548
+     27      2,916,016
+     28      2,751,657
+     35      1,737,559
+     36      1,586,826
+     43        672,652
+     44        597,516
+     51        286,471
+     52        221,971
+     59         85,926
+     60         39,709
+
+It would probably be a good idea to get some more positions at low/high empties.
+
+f4:6 vs f1:6, f4 wins by 2.21 +/-0.27, 20.68 ms vs  21.13 ms. So the improvement is definite but small.

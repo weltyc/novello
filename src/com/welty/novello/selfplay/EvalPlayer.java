@@ -28,9 +28,6 @@ public class EvalPlayer implements Player {
         midgameOptions = new MidgameSearcher.Options(options);
         this.solver = new Solver(eval, midgameOptions);
         this.searcher = solver.midgameSearcher;
-        if (midgameOptions.useNtestSearchDepths) {
-            System.out.println(new Heights(searchDepth));
-        }
     }
 
     public MoveScore calcMove(@NotNull Position board) {

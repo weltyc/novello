@@ -7,7 +7,7 @@ import java.io.IOException;
 /**
  * Position tagged with a value, for use in coefficient calcs
  */
-public class PositionValue {
+public class MeValue {
     public final long mover;
     public final long enemy;
 
@@ -25,10 +25,13 @@ public class PositionValue {
      * @param enemy enemy bitboard
      * @param value net score, in centidisks; + means mover is ahead.
      */
-    public PositionValue(long mover, long enemy, int value) {
+    public MeValue(long mover, long enemy, int value) {
         final long moves = BitBoardUtils.calcMoves(mover, enemy);
         if (moves==0) {
             throw new IllegalArgumentException("must have a legal move");
+        }
+        if ((mover&enemy)!=0) {
+            throw new IllegalArgumentException("mover and enemy overlap");
         }
         this.mover = mover;
         this.enemy = enemy;
@@ -45,13 +48,13 @@ public class PositionValue {
         out.writeInt(value);
     }
 
-    public static final ObjectFeed.Deserializer<PositionValue> deserializer = new ObjectFeed.Deserializer<PositionValue>() {
-        @Override public PositionValue read(DataInputStream in) throws IOException {
+    public static final ObjectFeed.Deserializer<MeValue> deserializer = new ObjectFeed.Deserializer<MeValue>() {
+        @Override public MeValue read(DataInputStream in) throws IOException {
             final long mover = in.readLong();
             final long enemy = in.readLong();
             final int value = in.readInt();
 
-            return new PositionValue(mover, enemy, value);
+            return new MeValue(mover, enemy, value);
         }
     };
 
@@ -60,7 +63,7 @@ public class PositionValue {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        PositionValue that = (PositionValue) o;
+        MeValue that = (MeValue) o;
 
         return enemy == that.enemy && mover == that.mover && value == that.value;
 
@@ -73,5 +76,12 @@ public class PositionValue {
 
     @Override public String toString() {
         return new Position(mover, enemy, true) + "\n" + value;
+    }
+
+    /**
+     * @return Minimal reflection of the position
+     */
+    public Mr toMr() {
+        return new Mr(mover, enemy);
     }
 }

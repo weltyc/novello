@@ -2,10 +2,11 @@ package com.welty.novello.solver;
 
 import com.orbanova.common.misc.Logger;
 import com.welty.novello.core.DefaultThreadLocal;
-import com.welty.novello.core.PositionValue;
+import com.welty.novello.core.MeValue;
 import com.welty.novello.core.ProgressUpdater;
 import com.welty.novello.eval.CoefficientEval;
-import com.welty.novello.eval.PvsGenerator;
+import com.welty.novello.eval.EvalStrategies;
+import com.welty.novello.eval.MvGenerator;
 import com.welty.novello.selfplay.Players;
 
 import java.io.BufferedWriter;
@@ -33,13 +34,13 @@ public class MpcGenerator {
         final CoefficientEval eval = (CoefficientEval)Players.eval(evalName);
         final Path outputPath = eval.getCoeffDir().resolve("mpc.txt");
 
-        final List<PositionValue> pvs = getPvs(limit);
+        final List<MeValue> pvs = getPvs(limit);
         final ExecutorService executorService = Executors.newFixedThreadPool(4);
 
         try (ProgressUpdater pu = new ProgressUpdater("Generating MPC", pvs.size())) {
             try (BufferedWriter out = Files.newBufferedWriter(outputPath, Charset.defaultCharset())) {
-                for (PositionValue pv : pvs) {
-                    executorService.submit(new MpcPrinter(out, eval, pv, maxDepth, pu));
+                for (MeValue pv : pvs) {
+                    executorService.submit(new MpcPrinter(out, pv, maxDepth, pu));
                 }
                 executorService.shutdown();
                 executorService.awaitTermination(Integer.MAX_VALUE, TimeUnit.DAYS);
@@ -53,14 +54,12 @@ public class MpcGenerator {
     private static class MpcPrinter implements Runnable {
         private static final DefaultThreadLocal<MidgameSearcher> searches = new DefaultThreadLocal<>(MidgameSearcher.class);
         private final BufferedWriter out;
-        private final CoefficientEval eval;
-        private final PositionValue pv;
+        private final MeValue pv;
         private final int maxDepth;
         private final ProgressUpdater progressUpdater;
 
-        MpcPrinter(BufferedWriter out, CoefficientEval eval, PositionValue pv, int maxDepth, ProgressUpdater progressUpdater) {
+        MpcPrinter(BufferedWriter out, MeValue pv, int maxDepth, ProgressUpdater progressUpdater) {
             this.out = out;
-            this.eval = eval;
             this.pv = pv;
             this.maxDepth = maxDepth;
             this.progressUpdater = progressUpdater;
@@ -96,13 +95,13 @@ public class MpcGenerator {
      * @return positionValues, with 1/100 selected, up to a maximum of limit per empty
      * @throws IOException
      */
-    private static List<PositionValue> getPvs(int limit) throws IOException {
-        final List<PositionValue> pvs = PvsGenerator.loadOrCreatePvs("b1-2");
-        final ArrayList<PositionValue> result = new ArrayList<>();
+    private static List<MeValue> getPvs(int limit) throws IOException {
+        final List<MeValue> pvs = new MvGenerator(EvalStrategies.strategy("e")).getMvs();
+        final ArrayList<MeValue> result = new ArrayList<>();
         final int[] counts = new int[64];
         for (int i = 0; i < pvs.size(); i++) {
             if (i % 100 == 0) {
-                final PositionValue pv = pvs.get(i);
+                final MeValue pv = pvs.get(i);
                 final int nEmpty = pv.nEmpty();
                 if (counts[nEmpty] < limit) {
                     result.add(pv);

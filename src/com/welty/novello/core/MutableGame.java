@@ -119,9 +119,9 @@ public class MutableGame {
     /**
      * @return a list of PositionValues, but only those where the mover has a legal move.
      */
-    public List<PositionValue> calcPositionValues() {
+    public List<MeValue> calcPositionValues() {
         final int netScore = getLastPosition().terminalScore();
-        final List<PositionValue> pvs = new ArrayList<>();
+        final List<MeValue> pvs = new ArrayList<>();
         Position pos = getStartPosition();
         for (Move move : moves) {
             if (move.isPass()) {
@@ -134,9 +134,9 @@ public class MutableGame {
         return pvs;
     }
 
-    private static PositionValue pv(Position pos, int netScore) {
+    private static MeValue pv(Position pos, int netScore) {
         final int centidisks = CoefficientCalculator.DISK_VALUE * (pos.blackToMove ? netScore : -netScore);
-        return new PositionValue(pos.mover(), pos.enemy(), centidisks);
+        return new MeValue(pos.mover(), pos.enemy(), centidisks);
     }
 
     /**
@@ -343,5 +343,9 @@ public class MutableGame {
             state = state.playOrPass(moves.get(i));
         }
         return state;
+    }
+
+    @Override public String toString() {
+        return toGgf();
     }
 }

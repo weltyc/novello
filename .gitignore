@@ -1,6 +1,8 @@
 # Project
 /coefficients/
 log.txt
+/Othello.*.bz2
+captured.pv
 
 # Intellij
 .idea

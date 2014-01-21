@@ -1,0 +1,803 @@
+/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/bin/java -Xmx12G -Didea.launcher.port=7536 "-Didea.launcher.bin.path=/Applications/IntelliJ IDEA 12.app/bin" -Dfile.encoding=UTF-8 -classpath "/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/lib/ant-javafx.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/lib/dt.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/lib/javafx-doclet.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/lib/javafx-mx.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/lib/jconsole.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/lib/sa-jdi.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/lib/tools.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/jre/lib/charsets.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/jre/lib/deploy.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/jre/lib/htmlconverter.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/jre/lib/javaws.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/jre/lib/jce.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/jre/lib/jfr.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/jre/lib/jfxrt.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/jre/lib/JObjC.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/jre/lib/jsse.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/jre/lib/management-agent.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/jre/lib/plugin.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/jre/lib/resources.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/jre/lib/rt.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/jre/lib/ext/dnsns.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/jre/lib/ext/localedata.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/jre/lib/ext/sunec.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/jre/lib/ext/sunjce_provider.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/jre/lib/ext/sunpkcs11.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/jre/lib/ext/zipfs.jar:/Users/chris/dev/novello/target/classes:/Users/chris/.m2/repository/org/jetbrains/annotations/8.1/annotations-8.1.jar:/Users/chris/.m2/repository/com/orbanova/common/0.07-SNAPSHOT/common-0.07-SNAPSHOT.jar:/Users/chris/.m2/repository/com/intellij/annotations/9.0.4/annotations-9.0.4.jar:/Users/chris/.m2/repository/net/sf/trove4j/trove4j/3.0.3/trove4j-3.0.3.jar:/Users/chris/.m2/repository/org/codehaus/janino/janino/2.5.16/janino-2.5.16.jar:/Users/chris/.m2/repository/org/apache/commons/commons-compress/1.5/commons-compress-1.5.jar:/Users/chris/.m2/repository/org/tukaani/xz/1.2/xz-1.2.jar:/Users/chris/.m2/repository/org/mockito/mockito-all/1.8.5/mockito-all-1.8.5.jar:/Applications/IntelliJ IDEA 12.app/lib/idea_rt.jar" com.intellij.rt.execution.application.AppMain com.welty.novello.eval.CoefficientCalculator
+[Mon Jan 20 14:36:47 CST 2014]| INFO | CachingMvSource | Creating Pvs in /Users/chris/Library/Caches/com.welty.novello/c5s-10.pvs ...
+ouch: 1  (876,544 entries)
+---- Heights ----
+midgame : 8
+100 % WLD: 17
+ 99 % WLD: 17
+ 91 % WLD: 17
+ 70 % WLD: 17
+ 60 % WLD: 17
+ 50 % WLD: 17
+novello depths: full solve at <= 13, probable solve at <= 17
+
+
+[Mon Jan 20 14:36:49 CST 2014]| INFO | CachingMvSource | Generating pvs for 1076323 mrs, each of which will generate 2 pvs (unless there is only one remaining move in the game)
+[Mon Jan 20 14:36:49 CST 2014]| INFO | CachingMvSource | Starting Pvs executor service with 4 threads
+[Mon Jan 20 14:36:49 CST 2014]| INFO | CachingMvSource | Generating and writing pvs...
+ouch: 2  (876,544 entries)
+ouch: 3  (876,544 entries)
+ouch: 4  (876,544 entries)
+ouch: 5  (876,544 entries)
+---- Heights ----
+midgame : 10
+100 % WLD: 18
+ 99 % WLD: 18
+ 91 % WLD: 18
+ 70 % WLD: 19
+ 60 % WLD: 19
+ 50 % WLD: 20
+novello depths: full solve at <= 14, probable solve at <= 19
+
+
+---- Heights ----
+midgame : 10
+100 % WLD: 18
+ 99 % WLD: 18
+ 91 % WLD: 18
+ 70 % WLD: 19
+ 60 % WLD: 19
+ 50 % WLD: 20
+novello depths: full solve at <= 14, probable solve at <= 19
+
+
+---- Heights ----
+midgame : 10
+100 % WLD: 18
+ 99 % WLD: 18
+ 91 % WLD: 18
+ 70 % WLD: 19
+ 60 % WLD: 19
+ 50 % WLD: 20
+novello depths: full solve at <= 14, probable solve at <= 19
+
+
+---- Heights ----
+midgame : 10
+100 % WLD: 18
+ 99 % WLD: 18
+ 91 % WLD: 18
+ 70 % WLD: 19
+ 60 % WLD: 19
+ 50 % WLD: 20
+novello depths: full solve at <= 14, probable solve at <= 19
+
+
+[Mon Jan 20 14:37:20 CST 2014]| INFO | CachingMvSource | 50,000 positions written
+[Mon Jan 20 14:37:51 CST 2014]| INFO | CachingMvSource | 100,000 positions written
+[Mon Jan 20 14:38:19 CST 2014]| INFO | CachingMvSource | 150,000 positions written
+[Mon Jan 20 14:38:48 CST 2014]| INFO | CachingMvSource | 200,001 positions written
+[Mon Jan 20 14:39:16 CST 2014]| INFO | CachingMvSource | 250,001 positions written
+[Mon Jan 20 14:39:45 CST 2014]| INFO | CachingMvSource | 300,001 positions written
+[Mon Jan 20 14:40:14 CST 2014]| INFO | CachingMvSource | 350,000 positions written
+[Mon Jan 20 14:40:45 CST 2014]| INFO | CachingMvSource | 400,000 positions written
+[Mon Jan 20 14:41:16 CST 2014]| INFO | CachingMvSource | 450,001 positions written
+[Mon Jan 20 14:41:45 CST 2014]| INFO | CachingMvSource | 500,001 positions written
+[Mon Jan 20 14:42:14 CST 2014]| INFO | CachingMvSource | 550,001 positions written
+[Mon Jan 20 14:42:42 CST 2014]| INFO | CachingMvSource | 600,001 positions written
+[Mon Jan 20 14:43:10 CST 2014]| INFO | CachingMvSource | 650,001 positions written
+[Mon Jan 20 14:43:38 CST 2014]| INFO | CachingMvSource | 700,001 positions written
+[Mon Jan 20 14:44:08 CST 2014]| INFO | CachingMvSource | 750,000 positions written
+[Mon Jan 20 14:44:37 CST 2014]| INFO | CachingMvSource | 800,001 positions written
+[Mon Jan 20 14:45:07 CST 2014]| INFO | CachingMvSource | 850,001 positions written
+[Mon Jan 20 14:45:36 CST 2014]| INFO | CachingMvSource | 900,001 positions written
+[Mon Jan 20 14:46:05 CST 2014]| INFO | CachingMvSource | 950,000 positions written
+[Mon Jan 20 14:46:34 CST 2014]| INFO | CachingMvSource | 1,000,001 positions written
+[Mon Jan 20 14:47:02 CST 2014]| INFO | CachingMvSource | 1,050,000 positions written
+[Mon Jan 20 14:47:30 CST 2014]| INFO | CachingMvSource | 1,100,000 positions written
+[Mon Jan 20 14:47:58 CST 2014]| INFO | CachingMvSource | 1,150,001 positions written
+[Mon Jan 20 14:48:26 CST 2014]| INFO | CachingMvSource | 1,200,001 positions written
+[Mon Jan 20 14:48:54 CST 2014]| INFO | CachingMvSource | 1,250,000 positions written
+[Mon Jan 20 14:49:22 CST 2014]| INFO | CachingMvSource | 1,300,000 positions written
+[Mon Jan 20 14:49:50 CST 2014]| INFO | CachingMvSource | 1,350,001 positions written
+[Mon Jan 20 14:50:18 CST 2014]| INFO | CachingMvSource | 1,400,000 positions written
+[Mon Jan 20 14:50:46 CST 2014]| INFO | CachingMvSource | 1,450,000 positions written
+[Mon Jan 20 14:51:14 CST 2014]| INFO | CachingMvSource | 1,500,000 positions written
+[Mon Jan 20 14:51:42 CST 2014]| INFO | CachingMvSource | 1,550,001 positions written
+[Mon Jan 20 14:52:10 CST 2014]| INFO | CachingMvSource | 1,600,001 positions written
+[Mon Jan 20 14:52:41 CST 2014]| INFO | CachingMvSource | 1,650,001 positions written
+[Mon Jan 20 14:53:11 CST 2014]| INFO | CachingMvSource | 1,700,000 positions written
+[Mon Jan 20 14:53:43 CST 2014]| INFO | CachingMvSource | 1,750,000 positions written
+[Mon Jan 20 14:54:13 CST 2014]| INFO | CachingMvSource | 1,800,000 positions written
+[Mon Jan 20 14:54:40 CST 2014]| INFO | CachingMvSource | 1,850,000 positions written
+[Mon Jan 20 14:55:11 CST 2014]| INFO | CachingMvSource | 1,900,001 positions written
+[Mon Jan 20 14:55:40 CST 2014]| INFO | CachingMvSource | 1,950,000 positions written
+[Mon Jan 20 14:56:08 CST 2014]| INFO | CachingMvSource | 2,000,001 positions written
+[Mon Jan 20 14:56:36 CST 2014]| INFO | CachingMvSource | 2,050,001 positions written
+[Mon Jan 20 14:57:04 CST 2014]| INFO | CachingMvSource | 2,100,000 positions written
+[Mon Jan 20 14:57:21 CST 2014]| INFO | CachingMvSource | Done writing pvs
+[Mon Jan 20 14:57:21 CST 2014]| INFO | Monitor | starting Loading pvs from file
+[Mon Jan 20 14:57:21 CST 2014]| INFO | Monitor | Loading pvs from file: 1M items
+...  loaded 2,131,295 pvs in 0.409 s
+[Mon Jan 20 14:57:22 CST 2014]| INFO | Monitor | Loading pvs from file ended with 2,131,295 items
+[Mon Jan 20 14:57:22 CST 2014]| INFO | CachingMvSource | Creating Pvs in /Users/chris/Library/Caches/com.welty.novello/c5s-10x.pvs ...
+[Mon Jan 20 14:57:22 CST 2014]| INFO | RarePositionMrSource | Starting generateRareSubpositions()
+[Mon Jan 20 14:57:22 CST 2014]| INFO | RarePositionMrSource | collected source positions. 1,473,263 distinct positions from 2,131,295 pvs
+[Mon Jan 20 14:57:22 CST 2014]| INFO | RarePositionMrSource | 0k pvs processed; 0k rare positions generated
+[Mon Jan 20 14:57:29 CST 2014]| INFO | RarePositionMrSource | 256k pvs processed; 783k rare positions generated
+[Mon Jan 20 14:57:35 CST 2014]| INFO | RarePositionMrSource | 512k pvs processed; 1167k rare positions generated
+[Mon Jan 20 14:57:41 CST 2014]| INFO | RarePositionMrSource | 768k pvs processed; 1437k rare positions generated
+[Mon Jan 20 14:57:47 CST 2014]| INFO | RarePositionMrSource | 1024k pvs processed; 1648k rare positions generated
+[Mon Jan 20 14:57:53 CST 2014]| INFO | RarePositionMrSource | 1280k pvs processed; 1813k rare positions generated
+[Mon Jan 20 14:57:58 CST 2014]| INFO | RarePositionMrSource | 1536k pvs processed; 1948k rare positions generated
+[Mon Jan 20 14:58:04 CST 2014]| INFO | RarePositionMrSource | 1792k pvs processed; 2057k rare positions generated
+[Mon Jan 20 14:58:10 CST 2014]| INFO | RarePositionMrSource | 2048k pvs processed; 2143k rare positions generated
+[Mon Jan 20 14:58:10 CST 2014]| INFO | RarePositionMrSource | A total of 2153k rare positions were created.
+[Mon Jan 20 14:58:11 CST 2014]| INFO | CachingMvSource | Generating pvs for 2205283 mrs, each of which will generate 2 pvs (unless there is only one remaining move in the game)
+[Mon Jan 20 14:58:11 CST 2014]| INFO | CachingMvSource | Starting Pvs executor service with 4 threads
+[Mon Jan 20 14:58:11 CST 2014]| INFO | CachingMvSource | Generating and writing pvs...
+ouch: 6  (876,544 entries)
+ouch: 7  (876,544 entries)
+ouch: 8  (876,544 entries)
+ouch: 9  (876,544 entries)
+---- Heights ----
+midgame : 10
+100 % WLD: 18
+ 99 % WLD: 18
+ 91 % WLD: 18
+ 70 % WLD: 19
+ 60 % WLD: 19
+ 50 % WLD: 20
+novello depths: full solve at <= 14, probable solve at <= 19
+
+
+---- Heights ----
+midgame : 10
+100 % WLD: 18
+ 99 % WLD: 18
+ 91 % WLD: 18
+ 70 % WLD: 19
+ 60 % WLD: 19
+ 50 % WLD: 20
+novello depths: full solve at <= 14, probable solve at <= 19
+
+
+---- Heights ----
+midgame : 10
+100 % WLD: 18
+ 99 % WLD: 18
+ 91 % WLD: 18
+ 70 % WLD: 19
+ 60 % WLD: 19
+ 50 % WLD: 20
+novello depths: full solve at <= 14, probable solve at <= 19
+
+
+---- Heights ----
+midgame : 10
+100 % WLD: 18
+ 99 % WLD: 18
+ 91 % WLD: 18
+ 70 % WLD: 19
+ 60 % WLD: 19
+ 50 % WLD: 20
+novello depths: full solve at <= 14, probable solve at <= 19
+
+
+[Mon Jan 20 14:58:46 CST 2014]| INFO | CachingMvSource | 50,001 positions written
+[Mon Jan 20 14:59:19 CST 2014]| INFO | CachingMvSource | 100,000 positions written
+[Mon Jan 20 14:59:49 CST 2014]| INFO | CachingMvSource | 150,001 positions written
+[Mon Jan 20 15:00:19 CST 2014]| INFO | CachingMvSource | 200,001 positions written
+[Mon Jan 20 15:00:47 CST 2014]| INFO | CachingMvSource | 250,001 positions written
+[Mon Jan 20 15:01:15 CST 2014]| INFO | CachingMvSource | 300,001 positions written
+[Mon Jan 20 15:01:42 CST 2014]| INFO | CachingMvSource | 350,001 positions written
+[Mon Jan 20 15:02:10 CST 2014]| INFO | CachingMvSource | 400,001 positions written
+[Mon Jan 20 15:02:38 CST 2014]| INFO | CachingMvSource | 450,001 positions written
+[Mon Jan 20 15:03:07 CST 2014]| INFO | CachingMvSource | 500,001 positions written
+[Mon Jan 20 15:03:36 CST 2014]| INFO | CachingMvSource | 550,000 positions written
+[Mon Jan 20 15:04:05 CST 2014]| INFO | CachingMvSource | 600,001 positions written
+[Mon Jan 20 15:04:34 CST 2014]| INFO | CachingMvSource | 650,001 positions written
+[Mon Jan 20 15:05:02 CST 2014]| INFO | CachingMvSource | 700,000 positions written
+[Mon Jan 20 15:05:31 CST 2014]| INFO | CachingMvSource | 750,000 positions written
+[Mon Jan 20 15:06:00 CST 2014]| INFO | CachingMvSource | 800,001 positions written
+[Mon Jan 20 15:06:28 CST 2014]| INFO | CachingMvSource | 850,000 positions written
+[Mon Jan 20 15:06:57 CST 2014]| INFO | CachingMvSource | 900,001 positions written
+[Mon Jan 20 15:07:25 CST 2014]| INFO | CachingMvSource | 950,001 positions written
+[Mon Jan 20 15:07:54 CST 2014]| INFO | CachingMvSource | 1,000,001 positions written
+[Mon Jan 20 15:08:22 CST 2014]| INFO | CachingMvSource | 1,050,000 positions written
+[Mon Jan 20 15:08:50 CST 2014]| INFO | CachingMvSource | 1,100,000 positions written
+[Mon Jan 20 15:09:18 CST 2014]| INFO | CachingMvSource | 1,150,000 positions written
+[Mon Jan 20 15:09:46 CST 2014]| INFO | CachingMvSource | 1,200,000 positions written
+[Mon Jan 20 15:10:14 CST 2014]| INFO | CachingMvSource | 1,250,001 positions written
+[Mon Jan 20 15:10:43 CST 2014]| INFO | CachingMvSource | 1,300,001 positions written
+[Mon Jan 20 15:11:12 CST 2014]| INFO | CachingMvSource | 1,350,000 positions written
+[Mon Jan 20 15:11:40 CST 2014]| INFO | CachingMvSource | 1,400,001 positions written
+[Mon Jan 20 15:12:12 CST 2014]| INFO | CachingMvSource | 1,450,000 positions written
+[Mon Jan 20 15:12:43 CST 2014]| INFO | CachingMvSource | 1,500,000 positions written
+[Mon Jan 20 15:13:13 CST 2014]| INFO | CachingMvSource | 1,550,000 positions written
+[Mon Jan 20 15:13:42 CST 2014]| INFO | CachingMvSource | 1,600,001 positions written
+[Mon Jan 20 15:14:11 CST 2014]| INFO | CachingMvSource | 1,650,001 positions written
+[Mon Jan 20 15:14:43 CST 2014]| INFO | CachingMvSource | 1,700,001 positions written
+[Mon Jan 20 15:15:13 CST 2014]| INFO | CachingMvSource | 1,750,000 positions written
+[Mon Jan 20 15:15:42 CST 2014]| INFO | CachingMvSource | 1,800,000 positions written
+[Mon Jan 20 15:16:12 CST 2014]| INFO | CachingMvSource | 1,850,000 positions written
+[Mon Jan 20 15:16:41 CST 2014]| INFO | CachingMvSource | 1,900,001 positions written
+[Mon Jan 20 15:17:11 CST 2014]| INFO | CachingMvSource | 1,950,001 positions written
+[Mon Jan 20 15:17:41 CST 2014]| INFO | CachingMvSource | 2,000,001 positions written
+[Mon Jan 20 15:18:10 CST 2014]| INFO | CachingMvSource | 2,050,001 positions written
+[Mon Jan 20 15:18:39 CST 2014]| INFO | CachingMvSource | 2,100,001 positions written
+[Mon Jan 20 15:19:09 CST 2014]| INFO | CachingMvSource | 2,150,001 positions written
+[Mon Jan 20 15:19:38 CST 2014]| INFO | CachingMvSource | 2,200,001 positions written
+[Mon Jan 20 15:20:09 CST 2014]| INFO | CachingMvSource | 2,250,000 positions written
+[Mon Jan 20 15:20:38 CST 2014]| INFO | CachingMvSource | 2,300,000 positions written
+[Mon Jan 20 15:21:08 CST 2014]| INFO | CachingMvSource | 2,350,000 positions written
+[Mon Jan 20 15:21:37 CST 2014]| INFO | CachingMvSource | 2,400,001 positions written
+[Mon Jan 20 15:22:07 CST 2014]| INFO | CachingMvSource | 2,450,000 positions written
+[Mon Jan 20 15:22:36 CST 2014]| INFO | CachingMvSource | 2,500,001 positions written
+[Mon Jan 20 15:23:07 CST 2014]| INFO | CachingMvSource | 2,550,001 positions written
+[Mon Jan 20 15:23:34 CST 2014]| INFO | CachingMvSource | 2,600,000 positions written
+[Mon Jan 20 15:24:02 CST 2014]| INFO | CachingMvSource | 2,650,001 positions written
+[Mon Jan 20 15:24:30 CST 2014]| INFO | CachingMvSource | 2,700,001 positions written
+[Mon Jan 20 15:24:58 CST 2014]| INFO | CachingMvSource | 2,750,001 positions written
+[Mon Jan 20 15:25:26 CST 2014]| INFO | CachingMvSource | 2,800,000 positions written
+[Mon Jan 20 15:25:56 CST 2014]| INFO | CachingMvSource | 2,850,000 positions written
+[Mon Jan 20 15:26:26 CST 2014]| INFO | CachingMvSource | 2,900,000 positions written
+[Mon Jan 20 15:26:54 CST 2014]| INFO | CachingMvSource | 2,950,001 positions written
+[Mon Jan 20 15:27:23 CST 2014]| INFO | CachingMvSource | 3,000,000 positions written
+[Mon Jan 20 15:27:52 CST 2014]| INFO | CachingMvSource | 3,050,000 positions written
+[Mon Jan 20 15:28:21 CST 2014]| INFO | CachingMvSource | 3,100,001 positions written
+[Mon Jan 20 15:28:48 CST 2014]| INFO | CachingMvSource | 3,150,000 positions written
+[Mon Jan 20 15:29:17 CST 2014]| INFO | CachingMvSource | 3,200,000 positions written
+[Mon Jan 20 15:29:47 CST 2014]| INFO | CachingMvSource | 3,250,001 positions written
+[Mon Jan 20 15:30:16 CST 2014]| INFO | CachingMvSource | 3,300,001 positions written
+[Mon Jan 20 15:30:45 CST 2014]| INFO | CachingMvSource | 3,350,001 positions written
+[Mon Jan 20 15:31:14 CST 2014]| INFO | CachingMvSource | 3,400,000 positions written
+[Mon Jan 20 15:31:43 CST 2014]| INFO | CachingMvSource | 3,450,001 positions written
+[Mon Jan 20 15:32:13 CST 2014]| INFO | CachingMvSource | 3,500,000 positions written
+[Mon Jan 20 15:32:44 CST 2014]| INFO | CachingMvSource | 3,550,001 positions written
+[Mon Jan 20 15:33:14 CST 2014]| INFO | CachingMvSource | 3,600,000 positions written
+[Mon Jan 20 15:33:43 CST 2014]| INFO | CachingMvSource | 3,650,001 positions written
+[Mon Jan 20 15:34:13 CST 2014]| INFO | CachingMvSource | 3,700,000 positions written
+[Mon Jan 20 15:34:42 CST 2014]| INFO | CachingMvSource | 3,750,001 positions written
+[Mon Jan 20 15:35:12 CST 2014]| INFO | CachingMvSource | 3,800,001 positions written
+[Mon Jan 20 15:35:42 CST 2014]| INFO | CachingMvSource | 3,850,000 positions written
+[Mon Jan 20 15:36:11 CST 2014]| INFO | CachingMvSource | 3,900,001 positions written
+[Mon Jan 20 15:36:41 CST 2014]| INFO | CachingMvSource | 3,950,000 positions written
+[Mon Jan 20 15:37:12 CST 2014]| INFO | CachingMvSource | 4,000,001 positions written
+[Mon Jan 20 15:37:41 CST 2014]| INFO | CachingMvSource | 4,050,000 positions written
+[Mon Jan 20 15:38:11 CST 2014]| INFO | CachingMvSource | 4,100,000 positions written
+[Mon Jan 20 15:38:41 CST 2014]| INFO | CachingMvSource | 4,150,001 positions written
+[Mon Jan 20 15:39:09 CST 2014]| INFO | CachingMvSource | 4,200,000 positions written
+[Mon Jan 20 15:39:38 CST 2014]| INFO | CachingMvSource | 4,250,000 positions written
+[Mon Jan 20 15:40:07 CST 2014]| INFO | CachingMvSource | 4,300,001 positions written
+[Mon Jan 20 15:40:36 CST 2014]| INFO | CachingMvSource | 4,350,001 positions written
+[Mon Jan 20 15:40:53 CST 2014]| INFO | CachingMvSource | Done writing pvs
+[Mon Jan 20 15:40:53 CST 2014]| INFO | Monitor | starting Loading pvs from file
+[Mon Jan 20 15:40:53 CST 2014]| INFO | Monitor | Loading pvs from file: 1M items
+...  loaded 4,378,395 pvs in 0.568 s
+[Mon Jan 20 15:40:53 CST 2014]| INFO | Monitor | Loading pvs from file ended with 4,378,395 items
+[Mon Jan 20 15:40:53 CST 2014]| INFO | CachingMvSource | Creating Pvs in /Users/chris/Library/Caches/com.welty.novello/c5s-10n.pvs ...
+6,991,368 positions available
+
+[Mon Jan 20 15:41:02 CST 2014]| INFO | CachingMvSource | Generating pvs for 6990842 mrs, each of which will generate 2 pvs (unless there is only one remaining move in the game)
+[Mon Jan 20 15:41:02 CST 2014]| INFO | CachingMvSource | Starting Pvs executor service with 4 threads
+[Mon Jan 20 15:41:02 CST 2014]| INFO | CachingMvSource | Generating and writing pvs...
+ouch: 11  (876,544 entries)
+ouch: 10  (876,544 entries)
+ouch: 12  (876,544 entries)
+ouch: 13  (876,544 entries)
+---- Heights ----
+midgame : 10
+100 % WLD: 18
+ 99 % WLD: 18
+ 91 % WLD: 18
+ 70 % WLD: 19
+ 60 % WLD: 19
+ 50 % WLD: 20
+novello depths: full solve at <= 14, probable solve at <= 19
+
+
+---- Heights ----
+midgame : 10
+100 % WLD: 18
+ 99 % WLD: 18
+ 91 % WLD: 18
+ 70 % WLD: 19
+ 60 % WLD: 19
+ 50 % WLD: 20
+novello depths: full solve at <= 14, probable solve at <= 19
+
+
+---- Heights ----
+midgame : 10
+100 % WLD: 18
+ 99 % WLD: 18
+ 91 % WLD: 18
+ 70 % WLD: 19
+ 60 % WLD: 19
+ 50 % WLD: 20
+novello depths: full solve at <= 14, probable solve at <= 19
+
+
+---- Heights ----
+midgame : 10
+100 % WLD: 18
+ 99 % WLD: 18
+ 91 % WLD: 18
+ 70 % WLD: 19
+ 60 % WLD: 19
+ 50 % WLD: 20
+novello depths: full solve at <= 14, probable solve at <= 19
+
+
+[Mon Jan 20 15:41:41 CST 2014]| INFO | CachingMvSource | 50,000 positions written
+[Mon Jan 20 15:42:11 CST 2014]| INFO | CachingMvSource | 100,000 positions written
+[Mon Jan 20 15:42:40 CST 2014]| INFO | CachingMvSource | 150,000 positions written
+[Mon Jan 20 15:43:09 CST 2014]| INFO | CachingMvSource | 200,000 positions written
+[Mon Jan 20 15:43:38 CST 2014]| INFO | CachingMvSource | 250,000 positions written
+[Mon Jan 20 15:44:05 CST 2014]| INFO | CachingMvSource | 300,000 positions written
+[Mon Jan 20 15:44:33 CST 2014]| INFO | CachingMvSource | 350,000 positions written
+[Mon Jan 20 15:45:01 CST 2014]| INFO | CachingMvSource | 400,000 positions written
+[Mon Jan 20 15:45:29 CST 2014]| INFO | CachingMvSource | 450,000 positions written
+[Mon Jan 20 15:45:57 CST 2014]| INFO | CachingMvSource | 500,000 positions written
+[Mon Jan 20 15:46:25 CST 2014]| INFO | CachingMvSource | 550,000 positions written
+[Mon Jan 20 15:46:54 CST 2014]| INFO | CachingMvSource | 600,000 positions written
+[Mon Jan 20 15:47:22 CST 2014]| INFO | CachingMvSource | 650,000 positions written
+[Mon Jan 20 15:47:50 CST 2014]| INFO | CachingMvSource | 700,000 positions written
+[Mon Jan 20 15:48:18 CST 2014]| INFO | CachingMvSource | 750,000 positions written
+[Mon Jan 20 15:48:45 CST 2014]| INFO | CachingMvSource | 800,000 positions written
+[Mon Jan 20 15:49:13 CST 2014]| INFO | CachingMvSource | 850,000 positions written
+[Mon Jan 20 15:49:40 CST 2014]| INFO | CachingMvSource | 900,000 positions written
+[Mon Jan 20 15:50:09 CST 2014]| INFO | CachingMvSource | 950,000 positions written
+[Mon Jan 20 15:50:37 CST 2014]| INFO | CachingMvSource | 1,000,000 positions written
+[Mon Jan 20 15:51:06 CST 2014]| INFO | CachingMvSource | 1,050,000 positions written
+[Mon Jan 20 15:51:33 CST 2014]| INFO | CachingMvSource | 1,100,000 positions written
+[Mon Jan 20 15:52:01 CST 2014]| INFO | CachingMvSource | 1,150,000 positions written
+[Mon Jan 20 15:52:30 CST 2014]| INFO | CachingMvSource | 1,200,000 positions written
+[Mon Jan 20 15:52:58 CST 2014]| INFO | CachingMvSource | 1,250,000 positions written
+[Mon Jan 20 15:53:26 CST 2014]| INFO | CachingMvSource | 1,300,000 positions written
+[Mon Jan 20 15:53:54 CST 2014]| INFO | CachingMvSource | 1,350,000 positions written
+[Mon Jan 20 15:54:22 CST 2014]| INFO | CachingMvSource | 1,400,000 positions written
+[Mon Jan 20 15:54:50 CST 2014]| INFO | CachingMvSource | 1,450,000 positions written
+[Mon Jan 20 15:55:18 CST 2014]| INFO | CachingMvSource | 1,500,000 positions written
+[Mon Jan 20 15:55:46 CST 2014]| INFO | CachingMvSource | 1,550,000 positions written
+[Mon Jan 20 15:56:14 CST 2014]| INFO | CachingMvSource | 1,600,000 positions written
+[Mon Jan 20 15:56:41 CST 2014]| INFO | CachingMvSource | 1,650,000 positions written
+[Mon Jan 20 15:57:09 CST 2014]| INFO | CachingMvSource | 1,700,000 positions written
+[Mon Jan 20 15:57:36 CST 2014]| INFO | CachingMvSource | 1,750,000 positions written
+[Mon Jan 20 15:58:03 CST 2014]| INFO | CachingMvSource | 1,800,000 positions written
+[Mon Jan 20 15:58:31 CST 2014]| INFO | CachingMvSource | 1,850,000 positions written
+[Mon Jan 20 15:59:02 CST 2014]| INFO | CachingMvSource | 1,900,000 positions written
+[Mon Jan 20 15:59:29 CST 2014]| INFO | CachingMvSource | 1,950,000 positions written
+[Mon Jan 20 15:59:57 CST 2014]| INFO | CachingMvSource | 2,000,000 positions written
+[Mon Jan 20 16:00:24 CST 2014]| INFO | CachingMvSource | 2,050,000 positions written
+[Mon Jan 20 16:00:51 CST 2014]| INFO | CachingMvSource | 2,100,000 positions written
+[Mon Jan 20 16:01:19 CST 2014]| INFO | CachingMvSource | 2,150,000 positions written
+[Mon Jan 20 16:01:47 CST 2014]| INFO | CachingMvSource | 2,200,000 positions written
+[Mon Jan 20 16:02:16 CST 2014]| INFO | CachingMvSource | 2,250,000 positions written
+[Mon Jan 20 16:02:45 CST 2014]| INFO | CachingMvSource | 2,300,000 positions written
+[Mon Jan 20 16:03:12 CST 2014]| INFO | CachingMvSource | 2,350,000 positions written
+[Mon Jan 20 16:03:40 CST 2014]| INFO | CachingMvSource | 2,400,000 positions written
+[Mon Jan 20 16:04:08 CST 2014]| INFO | CachingMvSource | 2,450,000 positions written
+[Mon Jan 20 16:04:37 CST 2014]| INFO | CachingMvSource | 2,500,000 positions written
+[Mon Jan 20 16:05:06 CST 2014]| INFO | CachingMvSource | 2,550,000 positions written
+[Mon Jan 20 16:05:34 CST 2014]| INFO | CachingMvSource | 2,600,000 positions written
+[Mon Jan 20 16:06:02 CST 2014]| INFO | CachingMvSource | 2,650,000 positions written
+[Mon Jan 20 16:06:30 CST 2014]| INFO | CachingMvSource | 2,700,000 positions written
+[Mon Jan 20 16:06:57 CST 2014]| INFO | CachingMvSource | 2,750,000 positions written
+[Mon Jan 20 16:07:27 CST 2014]| INFO | CachingMvSource | 2,800,000 positions written
+[Mon Jan 20 16:07:57 CST 2014]| INFO | CachingMvSource | 2,850,000 positions written
+[Mon Jan 20 16:08:27 CST 2014]| INFO | CachingMvSource | 2,900,000 positions written
+[Mon Jan 20 16:08:56 CST 2014]| INFO | CachingMvSource | 2,950,000 positions written
+[Mon Jan 20 16:09:25 CST 2014]| INFO | CachingMvSource | 3,000,000 positions written
+[Mon Jan 20 16:09:54 CST 2014]| INFO | CachingMvSource | 3,050,000 positions written
+[Mon Jan 20 16:10:23 CST 2014]| INFO | CachingMvSource | 3,100,000 positions written
+[Mon Jan 20 16:10:52 CST 2014]| INFO | CachingMvSource | 3,150,000 positions written
+[Mon Jan 20 16:11:23 CST 2014]| INFO | CachingMvSource | 3,200,000 positions written
+[Mon Jan 20 16:11:53 CST 2014]| INFO | CachingMvSource | 3,250,000 positions written
+[Mon Jan 20 16:12:22 CST 2014]| INFO | CachingMvSource | 3,300,000 positions written
+[Mon Jan 20 16:12:53 CST 2014]| INFO | CachingMvSource | 3,350,000 positions written
+[Mon Jan 20 16:13:24 CST 2014]| INFO | CachingMvSource | 3,400,000 positions written
+[Mon Jan 20 16:13:55 CST 2014]| INFO | CachingMvSource | 3,450,000 positions written
+[Mon Jan 20 16:14:25 CST 2014]| INFO | CachingMvSource | 3,500,000 positions written
+[Mon Jan 20 16:14:55 CST 2014]| INFO | CachingMvSource | 3,550,000 positions written
+[Mon Jan 20 16:15:25 CST 2014]| INFO | CachingMvSource | 3,600,000 positions written
+[Mon Jan 20 16:15:54 CST 2014]| INFO | CachingMvSource | 3,650,000 positions written
+[Mon Jan 20 16:16:24 CST 2014]| INFO | CachingMvSource | 3,700,000 positions written
+[Mon Jan 20 16:16:52 CST 2014]| INFO | CachingMvSource | 3,750,000 positions written
+[Mon Jan 20 16:17:22 CST 2014]| INFO | CachingMvSource | 3,800,000 positions written
+[Mon Jan 20 16:17:50 CST 2014]| INFO | CachingMvSource | 3,850,000 positions written
+[Mon Jan 20 16:18:20 CST 2014]| INFO | CachingMvSource | 3,900,000 positions written
+[Mon Jan 20 16:18:51 CST 2014]| INFO | CachingMvSource | 3,950,000 positions written
+[Mon Jan 20 16:19:20 CST 2014]| INFO | CachingMvSource | 4,000,000 positions written
+[Mon Jan 20 16:19:51 CST 2014]| INFO | CachingMvSource | 4,050,000 positions written
+[Mon Jan 20 16:20:23 CST 2014]| INFO | CachingMvSource | 4,100,000 positions written
+[Mon Jan 20 16:20:53 CST 2014]| INFO | CachingMvSource | 4,150,000 positions written
+[Mon Jan 20 16:21:24 CST 2014]| INFO | CachingMvSource | 4,200,000 positions written
+[Mon Jan 20 16:21:52 CST 2014]| INFO | CachingMvSource | 4,250,000 positions written
+[Mon Jan 20 16:22:20 CST 2014]| INFO | CachingMvSource | 4,300,000 positions written
+[Mon Jan 20 16:22:49 CST 2014]| INFO | CachingMvSource | 4,350,000 positions written
+[Mon Jan 20 16:23:18 CST 2014]| INFO | CachingMvSource | 4,400,000 positions written
+[Mon Jan 20 16:23:46 CST 2014]| INFO | CachingMvSource | 4,450,000 positions written
+[Mon Jan 20 16:24:15 CST 2014]| INFO | CachingMvSource | 4,500,000 positions written
+[Mon Jan 20 16:24:43 CST 2014]| INFO | CachingMvSource | 4,550,000 positions written
+[Mon Jan 20 16:25:12 CST 2014]| INFO | CachingMvSource | 4,600,000 positions written
+[Mon Jan 20 16:25:40 CST 2014]| INFO | CachingMvSource | 4,650,000 positions written
+[Mon Jan 20 16:26:08 CST 2014]| INFO | CachingMvSource | 4,700,000 positions written
+[Mon Jan 20 16:26:36 CST 2014]| INFO | CachingMvSource | 4,750,000 positions written
+[Mon Jan 20 16:27:03 CST 2014]| INFO | CachingMvSource | 4,800,000 positions written
+[Mon Jan 20 16:27:31 CST 2014]| INFO | CachingMvSource | 4,850,000 positions written
+[Mon Jan 20 16:27:59 CST 2014]| INFO | CachingMvSource | 4,900,000 positions written
+[Mon Jan 20 16:28:27 CST 2014]| INFO | CachingMvSource | 4,950,000 positions written
+[Mon Jan 20 16:28:54 CST 2014]| INFO | CachingMvSource | 5,000,000 positions written
+[Mon Jan 20 16:29:21 CST 2014]| INFO | CachingMvSource | 5,050,000 positions written
+[Mon Jan 20 16:29:49 CST 2014]| INFO | CachingMvSource | 5,100,000 positions written
+[Mon Jan 20 16:30:18 CST 2014]| INFO | CachingMvSource | 5,150,000 positions written
+[Mon Jan 20 16:30:46 CST 2014]| INFO | CachingMvSource | 5,200,000 positions written
+[Mon Jan 20 16:31:15 CST 2014]| INFO | CachingMvSource | 5,250,000 positions written
+[Mon Jan 20 16:31:43 CST 2014]| INFO | CachingMvSource | 5,300,000 positions written
+[Mon Jan 20 16:32:12 CST 2014]| INFO | CachingMvSource | 5,350,000 positions written
+[Mon Jan 20 16:32:41 CST 2014]| INFO | CachingMvSource | 5,400,000 positions written
+[Mon Jan 20 16:33:09 CST 2014]| INFO | CachingMvSource | 5,450,000 positions written
+[Mon Jan 20 16:33:38 CST 2014]| INFO | CachingMvSource | 5,500,000 positions written
+[Mon Jan 20 16:34:06 CST 2014]| INFO | CachingMvSource | 5,550,000 positions written
+[Mon Jan 20 16:34:35 CST 2014]| INFO | CachingMvSource | 5,600,000 positions written
+[Mon Jan 20 16:35:03 CST 2014]| INFO | CachingMvSource | 5,650,000 positions written
+[Mon Jan 20 16:35:31 CST 2014]| INFO | CachingMvSource | 5,700,000 positions written
+[Mon Jan 20 16:36:00 CST 2014]| INFO | CachingMvSource | 5,750,000 positions written
+[Mon Jan 20 16:36:26 CST 2014]| INFO | CachingMvSource | 5,800,000 positions written
+[Mon Jan 20 16:36:55 CST 2014]| INFO | CachingMvSource | 5,850,000 positions written
+[Mon Jan 20 16:37:23 CST 2014]| INFO | CachingMvSource | 5,900,000 positions written
+[Mon Jan 20 16:37:51 CST 2014]| INFO | CachingMvSource | 5,950,000 positions written
+[Mon Jan 20 16:38:19 CST 2014]| INFO | CachingMvSource | 6,000,000 positions written
+[Mon Jan 20 16:38:49 CST 2014]| INFO | CachingMvSource | 6,050,000 positions written
+[Mon Jan 20 16:39:19 CST 2014]| INFO | CachingMvSource | 6,100,000 positions written
+[Mon Jan 20 16:39:49 CST 2014]| INFO | CachingMvSource | 6,150,000 positions written
+[Mon Jan 20 16:40:18 CST 2014]| INFO | CachingMvSource | 6,200,000 positions written
+[Mon Jan 20 16:40:46 CST 2014]| INFO | CachingMvSource | 6,250,000 positions written
+[Mon Jan 20 16:41:15 CST 2014]| INFO | CachingMvSource | 6,300,000 positions written
+[Mon Jan 20 16:41:45 CST 2014]| INFO | CachingMvSource | 6,350,000 positions written
+[Mon Jan 20 16:42:14 CST 2014]| INFO | CachingMvSource | 6,400,000 positions written
+[Mon Jan 20 16:42:43 CST 2014]| INFO | CachingMvSource | 6,450,000 positions written
+[Mon Jan 20 16:43:12 CST 2014]| INFO | CachingMvSource | 6,500,000 positions written
+[Mon Jan 20 16:43:41 CST 2014]| INFO | CachingMvSource | 6,550,000 positions written
+[Mon Jan 20 16:44:09 CST 2014]| INFO | CachingMvSource | 6,600,000 positions written
+[Mon Jan 20 16:44:37 CST 2014]| INFO | CachingMvSource | 6,650,000 positions written
+[Mon Jan 20 16:45:05 CST 2014]| INFO | CachingMvSource | 6,700,000 positions written
+[Mon Jan 20 16:45:34 CST 2014]| INFO | CachingMvSource | 6,750,000 positions written
+[Mon Jan 20 16:46:03 CST 2014]| INFO | CachingMvSource | 6,800,000 positions written
+[Mon Jan 20 16:46:32 CST 2014]| INFO | CachingMvSource | 6,850,000 positions written
+[Mon Jan 20 16:47:00 CST 2014]| INFO | CachingMvSource | 6,900,000 positions written
+[Mon Jan 20 16:47:28 CST 2014]| INFO | CachingMvSource | 6,950,000 positions written
+[Mon Jan 20 16:47:56 CST 2014]| INFO | CachingMvSource | 7,000,000 positions written
+[Mon Jan 20 16:48:25 CST 2014]| INFO | CachingMvSource | 7,050,000 positions written
+[Mon Jan 20 16:48:55 CST 2014]| INFO | CachingMvSource | 7,100,000 positions written
+[Mon Jan 20 16:49:24 CST 2014]| INFO | CachingMvSource | 7,150,000 positions written
+[Mon Jan 20 16:49:52 CST 2014]| INFO | CachingMvSource | 7,200,000 positions written
+[Mon Jan 20 16:50:21 CST 2014]| INFO | CachingMvSource | 7,250,000 positions written
+[Mon Jan 20 16:50:51 CST 2014]| INFO | CachingMvSource | 7,300,000 positions written
+[Mon Jan 20 16:51:22 CST 2014]| INFO | CachingMvSource | 7,350,000 positions written
+[Mon Jan 20 16:51:52 CST 2014]| INFO | CachingMvSource | 7,400,000 positions written
+[Mon Jan 20 16:52:23 CST 2014]| INFO | CachingMvSource | 7,450,000 positions written
+[Mon Jan 20 16:52:53 CST 2014]| INFO | CachingMvSource | 7,500,000 positions written
+[Mon Jan 20 16:53:23 CST 2014]| INFO | CachingMvSource | 7,550,000 positions written
+[Mon Jan 20 16:53:54 CST 2014]| INFO | CachingMvSource | 7,600,000 positions written
+[Mon Jan 20 16:54:25 CST 2014]| INFO | CachingMvSource | 7,650,000 positions written
+[Mon Jan 20 16:54:55 CST 2014]| INFO | CachingMvSource | 7,700,000 positions written
+[Mon Jan 20 16:55:24 CST 2014]| INFO | CachingMvSource | 7,750,000 positions written
+[Mon Jan 20 16:55:54 CST 2014]| INFO | CachingMvSource | 7,800,000 positions written
+[Mon Jan 20 16:56:26 CST 2014]| INFO | CachingMvSource | 7,850,000 positions written
+[Mon Jan 20 16:56:56 CST 2014]| INFO | CachingMvSource | 7,900,000 positions written
+[Mon Jan 20 16:57:26 CST 2014]| INFO | CachingMvSource | 7,950,000 positions written
+[Mon Jan 20 16:57:55 CST 2014]| INFO | CachingMvSource | 8,000,000 positions written
+[Mon Jan 20 16:58:24 CST 2014]| INFO | CachingMvSource | 8,050,000 positions written
+[Mon Jan 20 16:58:55 CST 2014]| INFO | CachingMvSource | 8,100,000 positions written
+[Mon Jan 20 16:59:26 CST 2014]| INFO | CachingMvSource | 8,150,000 positions written
+[Mon Jan 20 16:59:54 CST 2014]| INFO | CachingMvSource | 8,200,000 positions written
+[Mon Jan 20 17:00:24 CST 2014]| INFO | CachingMvSource | 8,250,000 positions written
+[Mon Jan 20 17:00:54 CST 2014]| INFO | CachingMvSource | 8,300,000 positions written
+[Mon Jan 20 17:01:24 CST 2014]| INFO | CachingMvSource | 8,350,000 positions written
+[Mon Jan 20 17:01:55 CST 2014]| INFO | CachingMvSource | 8,400,000 positions written
+[Mon Jan 20 17:02:28 CST 2014]| INFO | CachingMvSource | 8,450,000 positions written
+[Mon Jan 20 17:02:57 CST 2014]| INFO | CachingMvSource | 8,500,000 positions written
+[Mon Jan 20 17:03:26 CST 2014]| INFO | CachingMvSource | 8,550,000 positions written
+[Mon Jan 20 17:03:56 CST 2014]| INFO | CachingMvSource | 8,600,000 positions written
+[Mon Jan 20 17:04:26 CST 2014]| INFO | CachingMvSource | 8,650,000 positions written
+[Mon Jan 20 17:04:54 CST 2014]| INFO | CachingMvSource | 8,700,000 positions written
+[Mon Jan 20 17:05:23 CST 2014]| INFO | CachingMvSource | 8,750,000 positions written
+[Mon Jan 20 17:05:53 CST 2014]| INFO | CachingMvSource | 8,800,000 positions written
+[Mon Jan 20 17:06:26 CST 2014]| INFO | CachingMvSource | 8,850,000 positions written
+[Mon Jan 20 17:06:55 CST 2014]| INFO | CachingMvSource | 8,900,000 positions written
+[Mon Jan 20 17:07:23 CST 2014]| INFO | CachingMvSource | 8,950,000 positions written
+[Mon Jan 20 17:07:51 CST 2014]| INFO | CachingMvSource | 9,000,000 positions written
+[Mon Jan 20 17:08:20 CST 2014]| INFO | CachingMvSource | 9,050,000 positions written
+[Mon Jan 20 17:08:48 CST 2014]| INFO | CachingMvSource | 9,100,000 positions written
+[Mon Jan 20 17:09:17 CST 2014]| INFO | CachingMvSource | 9,150,000 positions written
+[Mon Jan 20 17:09:46 CST 2014]| INFO | CachingMvSource | 9,200,000 positions written
+[Mon Jan 20 17:10:15 CST 2014]| INFO | CachingMvSource | 9,250,000 positions written
+[Mon Jan 20 17:10:44 CST 2014]| INFO | CachingMvSource | 9,300,000 positions written
+[Mon Jan 20 17:11:14 CST 2014]| INFO | CachingMvSource | 9,350,000 positions written
+[Mon Jan 20 17:11:43 CST 2014]| INFO | CachingMvSource | 9,400,000 positions written
+[Mon Jan 20 17:12:11 CST 2014]| INFO | CachingMvSource | 9,450,000 positions written
+[Mon Jan 20 17:12:40 CST 2014]| INFO | CachingMvSource | 9,500,000 positions written
+[Mon Jan 20 17:13:08 CST 2014]| INFO | CachingMvSource | 9,550,000 positions written
+[Mon Jan 20 17:13:36 CST 2014]| INFO | CachingMvSource | 9,600,000 positions written
+[Mon Jan 20 17:14:04 CST 2014]| INFO | CachingMvSource | 9,650,000 positions written
+[Mon Jan 20 17:14:32 CST 2014]| INFO | CachingMvSource | 9,700,000 positions written
+[Mon Jan 20 17:14:59 CST 2014]| INFO | CachingMvSource | 9,750,000 positions written
+[Mon Jan 20 17:15:27 CST 2014]| INFO | CachingMvSource | 9,800,000 positions written
+[Mon Jan 20 17:15:54 CST 2014]| INFO | CachingMvSource | 9,850,000 positions written
+[Mon Jan 20 17:16:21 CST 2014]| INFO | CachingMvSource | 9,900,000 positions written
+[Mon Jan 20 17:16:48 CST 2014]| INFO | CachingMvSource | 9,950,000 positions written
+[Mon Jan 20 17:17:16 CST 2014]| INFO | CachingMvSource | 10,000,000 positions written
+[Mon Jan 20 17:17:43 CST 2014]| INFO | CachingMvSource | 10,050,000 positions written
+[Mon Jan 20 17:18:10 CST 2014]| INFO | CachingMvSource | 10,100,000 positions written
+[Mon Jan 20 17:18:38 CST 2014]| INFO | CachingMvSource | 10,150,000 positions written
+[Mon Jan 20 17:19:05 CST 2014]| INFO | CachingMvSource | 10,200,000 positions written
+[Mon Jan 20 17:19:32 CST 2014]| INFO | CachingMvSource | 10,250,000 positions written
+[Mon Jan 20 17:19:59 CST 2014]| INFO | CachingMvSource | 10,300,000 positions written
+[Mon Jan 20 17:20:26 CST 2014]| INFO | CachingMvSource | 10,350,000 positions written
+[Mon Jan 20 17:20:53 CST 2014]| INFO | CachingMvSource | 10,400,000 positions written
+[Mon Jan 20 17:21:20 CST 2014]| INFO | CachingMvSource | 10,450,000 positions written
+[Mon Jan 20 17:21:47 CST 2014]| INFO | CachingMvSource | 10,500,000 positions written
+[Mon Jan 20 17:22:13 CST 2014]| INFO | CachingMvSource | 10,550,000 positions written
+[Mon Jan 20 17:22:41 CST 2014]| INFO | CachingMvSource | 10,600,000 positions written
+[Mon Jan 20 17:23:08 CST 2014]| INFO | CachingMvSource | 10,650,000 positions written
+[Mon Jan 20 17:23:35 CST 2014]| INFO | CachingMvSource | 10,700,000 positions written
+[Mon Jan 20 17:24:02 CST 2014]| INFO | CachingMvSource | 10,750,000 positions written
+[Mon Jan 20 17:24:29 CST 2014]| INFO | CachingMvSource | 10,800,000 positions written
+[Mon Jan 20 17:24:57 CST 2014]| INFO | CachingMvSource | 10,850,000 positions written
+[Mon Jan 20 17:25:24 CST 2014]| INFO | CachingMvSource | 10,900,000 positions written
+[Mon Jan 20 17:25:51 CST 2014]| INFO | CachingMvSource | 10,950,000 positions written
+[Mon Jan 20 17:26:18 CST 2014]| INFO | CachingMvSource | 11,000,000 positions written
+[Mon Jan 20 17:26:45 CST 2014]| INFO | CachingMvSource | 11,050,000 positions written
+[Mon Jan 20 17:27:12 CST 2014]| INFO | CachingMvSource | 11,100,000 positions written
+[Mon Jan 20 17:27:39 CST 2014]| INFO | CachingMvSource | 11,150,000 positions written
+[Mon Jan 20 17:28:06 CST 2014]| INFO | CachingMvSource | 11,200,000 positions written
+[Mon Jan 20 17:28:33 CST 2014]| INFO | CachingMvSource | 11,250,000 positions written
+[Mon Jan 20 17:29:01 CST 2014]| INFO | CachingMvSource | 11,300,000 positions written
+[Mon Jan 20 17:29:28 CST 2014]| INFO | CachingMvSource | 11,350,000 positions written
+[Mon Jan 20 17:29:55 CST 2014]| INFO | CachingMvSource | 11,400,000 positions written
+[Mon Jan 20 17:30:22 CST 2014]| INFO | CachingMvSource | 11,450,000 positions written
+[Mon Jan 20 17:30:50 CST 2014]| INFO | CachingMvSource | 11,500,000 positions written
+[Mon Jan 20 17:31:17 CST 2014]| INFO | CachingMvSource | 11,550,000 positions written
+[Mon Jan 20 17:31:45 CST 2014]| INFO | CachingMvSource | 11,600,000 positions written
+[Mon Jan 20 17:32:12 CST 2014]| INFO | CachingMvSource | 11,650,000 positions written
+[Mon Jan 20 17:32:39 CST 2014]| INFO | CachingMvSource | 11,700,000 positions written
+[Mon Jan 20 17:33:06 CST 2014]| INFO | CachingMvSource | 11,750,000 positions written
+[Mon Jan 20 17:33:33 CST 2014]| INFO | CachingMvSource | 11,800,000 positions written
+[Mon Jan 20 17:34:01 CST 2014]| INFO | CachingMvSource | 11,850,000 positions written
+[Mon Jan 20 17:34:28 CST 2014]| INFO | CachingMvSource | 11,900,000 positions written
+[Mon Jan 20 17:34:56 CST 2014]| INFO | CachingMvSource | 11,950,000 positions written
+[Mon Jan 20 17:35:23 CST 2014]| INFO | CachingMvSource | 12,000,000 positions written
+[Mon Jan 20 17:35:50 CST 2014]| INFO | CachingMvSource | 12,050,000 positions written
+[Mon Jan 20 17:36:18 CST 2014]| INFO | CachingMvSource | 12,100,000 positions written
+[Mon Jan 20 17:36:45 CST 2014]| INFO | CachingMvSource | 12,150,000 positions written
+[Mon Jan 20 17:37:12 CST 2014]| INFO | CachingMvSource | 12,200,000 positions written
+[Mon Jan 20 17:37:39 CST 2014]| INFO | CachingMvSource | 12,250,000 positions written
+[Mon Jan 20 17:38:06 CST 2014]| INFO | CachingMvSource | 12,300,000 positions written
+[Mon Jan 20 17:38:33 CST 2014]| INFO | CachingMvSource | 12,350,000 positions written
+[Mon Jan 20 17:39:01 CST 2014]| INFO | CachingMvSource | 12,400,000 positions written
+[Mon Jan 20 17:39:29 CST 2014]| INFO | CachingMvSource | 12,450,000 positions written
+[Mon Jan 20 17:39:56 CST 2014]| INFO | CachingMvSource | 12,500,000 positions written
+[Mon Jan 20 17:40:23 CST 2014]| INFO | CachingMvSource | 12,550,000 positions written
+[Mon Jan 20 17:40:50 CST 2014]| INFO | CachingMvSource | 12,600,000 positions written
+[Mon Jan 20 17:41:18 CST 2014]| INFO | CachingMvSource | 12,650,000 positions written
+[Mon Jan 20 17:41:45 CST 2014]| INFO | CachingMvSource | 12,700,000 positions written
+[Mon Jan 20 17:42:12 CST 2014]| INFO | CachingMvSource | 12,750,000 positions written
+[Mon Jan 20 17:42:40 CST 2014]| INFO | CachingMvSource | 12,800,000 positions written
+[Mon Jan 20 17:43:07 CST 2014]| INFO | CachingMvSource | 12,850,000 positions written
+[Mon Jan 20 17:43:34 CST 2014]| INFO | CachingMvSource | 12,900,000 positions written
+[Mon Jan 20 17:44:01 CST 2014]| INFO | CachingMvSource | 12,950,000 positions written
+[Mon Jan 20 17:44:29 CST 2014]| INFO | CachingMvSource | 13,000,000 positions written
+[Mon Jan 20 17:44:56 CST 2014]| INFO | CachingMvSource | 13,050,000 positions written
+[Mon Jan 20 17:45:23 CST 2014]| INFO | CachingMvSource | 13,100,000 positions written
+[Mon Jan 20 17:45:51 CST 2014]| INFO | CachingMvSource | 13,150,000 positions written
+[Mon Jan 20 17:46:18 CST 2014]| INFO | CachingMvSource | 13,200,000 positions written
+[Mon Jan 20 17:46:45 CST 2014]| INFO | CachingMvSource | 13,250,000 positions written
+[Mon Jan 20 17:47:12 CST 2014]| INFO | CachingMvSource | 13,300,000 positions written
+[Mon Jan 20 17:47:40 CST 2014]| INFO | CachingMvSource | 13,350,000 positions written
+[Mon Jan 20 17:48:07 CST 2014]| INFO | CachingMvSource | 13,400,000 positions written
+[Mon Jan 20 17:48:34 CST 2014]| INFO | CachingMvSource | 13,450,000 positions written
+[Mon Jan 20 17:49:01 CST 2014]| INFO | CachingMvSource | 13,500,000 positions written
+[Mon Jan 20 17:49:28 CST 2014]| INFO | CachingMvSource | 13,550,000 positions written
+[Mon Jan 20 17:49:55 CST 2014]| INFO | CachingMvSource | 13,600,000 positions written
+[Mon Jan 20 17:50:22 CST 2014]| INFO | CachingMvSource | 13,650,000 positions written
+[Mon Jan 20 17:50:49 CST 2014]| INFO | CachingMvSource | 13,700,000 positions written
+[Mon Jan 20 17:51:16 CST 2014]| INFO | CachingMvSource | 13,750,000 positions written
+[Mon Jan 20 17:51:43 CST 2014]| INFO | CachingMvSource | 13,800,000 positions written
+[Mon Jan 20 17:52:10 CST 2014]| INFO | CachingMvSource | 13,850,000 positions written
+[Mon Jan 20 17:52:37 CST 2014]| INFO | CachingMvSource | 13,900,000 positions written
+[Mon Jan 20 17:53:05 CST 2014]| INFO | CachingMvSource | 13,950,000 positions written
+[Mon Jan 20 17:53:21 CST 2014]| INFO | CachingMvSource | Done writing pvs
+[Mon Jan 20 17:53:21 CST 2014]| INFO | Monitor | starting Loading pvs from file
+[Mon Jan 20 17:53:22 CST 2014]| INFO | Monitor | Loading pvs from file: 1M items
+...  loaded 13,981,684 pvs in 3.856 s
+[Mon Jan 20 17:53:25 CST 2014]| INFO | Monitor | Loading pvs from file ended with 13,981,684 items
+[Mon Jan 20 17:53:25 CST 2014]| INFO | MvGenerator | 2,131,295 pvs from .pvs file, 4,378,395 from x.pvs file, 13,981,684 from n.pvs file
+[Mon Jan 20 17:53:25 CST 2014]| INFO | MvGenerator | Selecting distinct pvs
+[Mon Jan 20 17:53:36 CST 2014]| INFO | MvGenerator | selected 19,801,806 distinct pvs from 20,491,374 total pvs
+a total of 19,801,806 pvs are available.
+
+--- 3 ---
+  56,231 coefficients occurred 0 times
+  24,253 coefficients occurred 1-9 times
+  30,421 coefficients occurred 10-99 times
+  16,387 coefficients occurred 100-999 times
+   6,481 coefficients occurred 1000+ times
+
+estimating coefficients using 1,806,469 positions
+3:11 elapsed
+sum of coefficients squared = 2.24e+09
+
+77236 non-zero coefficients written
+--- 4 ---
+  55,435 coefficients occurred 0 times
+  23,255 coefficients occurred 1-9 times
+  30,464 coefficients occurred 10-99 times
+  17,504 coefficients occurred 100-999 times
+   7,115 coefficients occurred 1000+ times
+
+estimating coefficients using 2,051,608 positions
+3:40 elapsed
+sum of coefficients squared = 2.19e+09
+
+77987 non-zero coefficients written
+--- 11 ---
+  50,695 coefficients occurred 0 times
+  17,798 coefficients occurred 1-9 times
+  28,137 coefficients occurred 10-99 times
+  23,956 coefficients occurred 100-999 times
+  13,187 coefficients occurred 1000+ times
+
+estimating coefficients using 5,236,236 positions
+9:30 elapsed
+sum of coefficients squared = 2.43e+09
+
+82501 non-zero coefficients written
+--- 12 ---
+  50,685 coefficients occurred 0 times
+  17,640 coefficients occurred 1-9 times
+  27,820 coefficients occurred 10-99 times
+  24,053 coefficients occurred 100-999 times
+  13,575 coefficients occurred 1000+ times
+
+estimating coefficients using 5,451,291 positions
+10:00 elapsed
+sum of coefficients squared = 2.54e+09
+
+82581 non-zero coefficients written
+--- 19 ---
+  55,398 coefficients occurred 0 times
+  21,803 coefficients occurred 1-9 times
+  25,846 coefficients occurred 10-99 times
+  19,635 coefficients occurred 100-999 times
+  11,091 coefficients occurred 1000+ times
+
+estimating coefficients using 4,301,621 positions
+7:32 elapsed
+sum of coefficients squared = 2.90e+09
+
+77928 non-zero coefficients written
+--- 20 ---
+  56,680 coefficients occurred 0 times
+  21,735 coefficients occurred 1-9 times
+  25,515 coefficients occurred 10-99 times
+  18,997 coefficients occurred 100-999 times
+  10,846 coefficients occurred 1000+ times
+
+estimating coefficients using 4,252,548 positions
+7:30 elapsed
+sum of coefficients squared = 2.89e+09
+
+76665 non-zero coefficients written
+--- 27 ---
+  70,957 coefficients occurred 0 times
+  22,956 coefficients occurred 1-9 times
+  19,973 coefficients occurred 10-99 times
+  12,831 coefficients occurred 100-999 times
+   7,056 coefficients occurred 1000+ times
+
+estimating coefficients using 2,916,016 positions
+4:51 elapsed
+sum of coefficients squared = 2.28e+09
+
+62448 non-zero coefficients written
+--- 28 ---
+  73,946 coefficients occurred 0 times
+  22,368 coefficients occurred 1-9 times
+  18,932 coefficients occurred 10-99 times
+  11,892 coefficients occurred 100-999 times
+   6,635 coefficients occurred 1000+ times
+
+estimating coefficients using 2,751,657 positions
+5:29 elapsed
+sum of coefficients squared = 2.15e+09
+
+59465 non-zero coefficients written
+--- 35 ---
+  88,734 coefficients occurred 0 times
+  19,761 coefficients occurred 1-9 times
+  13,536 coefficients occurred 10-99 times
+   7,443 coefficients occurred 100-999 times
+   4,299 coefficients occurred 1000+ times
+
+estimating coefficients using 1,737,559 positions
+3:03 elapsed
+sum of coefficients squared = 1.49e+09
+
+44779 non-zero coefficients written
+--- 36 ---
+  90,914 coefficients occurred 0 times
+  19,165 coefficients occurred 1-9 times
+  12,765 coefficients occurred 10-99 times
+   6,908 coefficients occurred 100-999 times
+   4,021 coefficients occurred 1000+ times
+
+estimating coefficients using 1,586,826 positions
+2:47 elapsed
+sum of coefficients squared = 1.41e+09
+
+42567 non-zero coefficients written
+--- 43 ---
+ 108,194 coefficients occurred 0 times
+  13,255 coefficients occurred 1-9 times
+   6,960 coefficients occurred 10-99 times
+   3,462 coefficients occurred 100-999 times
+   1,902 coefficients occurred 1000+ times
+
+estimating coefficients using 672,652 positions
+0:54 elapsed
+sum of coefficients squared = 7.61e+08
+
+25429 non-zero coefficients written
+--- 44 ---
+ 110,746 coefficients occurred 0 times
+  12,022 coefficients occurred 1-9 times
+   6,209 coefficients occurred 10-99 times
+   3,112 coefficients occurred 100-999 times
+   1,684 coefficients occurred 1000+ times
+
+estimating coefficients using 597,516 positions
+0:44 elapsed
+sum of coefficients squared = 6.47e+08
+
+22902 non-zero coefficients written
+--- 51 ---
+ 125,219 coefficients occurred 0 times
+   4,415 coefficients occurred 1-9 times
+   2,352 coefficients occurred 10-99 times
+   1,201 coefficients occurred 100-999 times
+     586 coefficients occurred 1000+ times
+
+estimating coefficients using 286,471 positions
+0:09 elapsed
+sum of coefficients squared = 1.63e+08
+
+8439 non-zero coefficients written
+--- 52 ---
+ 126,620 coefficients occurred 0 times
+   3,631 coefficients occurred 1-9 times
+   2,003 coefficients occurred 10-99 times
+   1,025 coefficients occurred 100-999 times
+     494 coefficients occurred 1000+ times
+
+estimating coefficients using 221,971 positions
+0:05 elapsed
+sum of coefficients squared = 7.76e+07
+
+7032 non-zero coefficients written
+--- 59 ---
+ 133,091 coefficients occurred 0 times
+     161 coefficients occurred 1-9 times
+     230 coefficients occurred 10-99 times
+     107 coefficients occurred 100-999 times
+     184 coefficients occurred 1000+ times
+
+estimating coefficients using 85,926 positions
+0:00 elapsed
+sum of coefficients squared = 3.22e+07
+
+663 non-zero coefficients written
+--- 60 ---
+ 133,446 coefficients occurred 0 times
+      42 coefficients occurred 1-9 times
+      71 coefficients occurred 10-99 times
+      56 coefficients occurred 100-999 times
+     158 coefficients occurred 1000+ times
+
+estimating coefficients using 39,709 positions
+0:00 elapsed
+sum of coefficients squared = 3.65e+07
+
+325 non-zero coefficients written

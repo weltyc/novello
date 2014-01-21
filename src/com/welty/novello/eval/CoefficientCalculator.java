@@ -21,7 +21,7 @@ public class CoefficientCalculator {
      * 1 disk is worth how many evaluation points?
      */
     public static final int DISK_VALUE = 100;
-    private static final String target = "f1";
+    private static final String target = "f4";
     private static final String COEFF_SET_NAME = target.substring(1);
     private static final double PENALTY = .01;
 
@@ -59,8 +59,8 @@ public class CoefficientCalculator {
             }
         }
 
-        final PvsGenerator pvsGenerator = new PvsGenerator(strategy);
-        final List<PositionValue> pvs = pvsGenerator.loadOrCreatePvsx();
+        final MvGenerator mvGenerator = new MvGenerator(strategy);
+        final List<MeValue> pvs = mvGenerator.getMvs();
 
         System.out.format("a total of %,d pvs are available.%n", pvs.size());
         System.out.println();
@@ -77,7 +77,7 @@ public class CoefficientCalculator {
                 final double[] x = estimateCoefficients(elements, strategy.nCoefficientIndices(), strategy.nDenseWeights, PENALTY);
                 final double[] coefficients = strategy.unpack(x);
                 final long dt = (System.currentTimeMillis() - t0)/1000;
-                System.out.format("%d:%2d elapsed\n", dt/60, dt%60);
+                System.out.format("%d:%02d elapsed\n", dt/60, dt%60);
                 System.out.format("sum of coefficients squared = %.3g\n", Vec.sumSq(coefficients));
                 System.out.println();
 
@@ -220,9 +220,9 @@ public class CoefficientCalculator {
      * @param nEmpty number of empties to generate coefficients for
      * @return list of selected Elements
      */
-    private static PositionElement[] elementsFromPvs(EvalStrategy evalStrategy, List<PositionValue> pvs, int nEmpty) {
+    private static PositionElement[] elementsFromPvs(EvalStrategy evalStrategy, List<MeValue> pvs, int nEmpty) {
         final List<PositionElement> res = new ArrayList<>();
-        for (final PositionValue pv : pvs) {
+        for (final MeValue pv : pvs) {
             final int diff = nEmpty - pv.nEmpty();
             if (!Utils.isOdd(diff) && diff >= -6 && diff <= 6) {
                 final int target = clamp(pv.value, -64*DISK_VALUE, 64*DISK_VALUE);
