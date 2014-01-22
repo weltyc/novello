@@ -113,9 +113,12 @@ Future directions:
 * nonlinear value estimation
 * Better patterns (after we sort out coca)
 
-Better eval strategy for MeValues
----------------------------------
-Currently using c5s:10. To determine the best eval strategy, played a tournament with c5s, d1s, f4.
+Better eval strategy for MeValues (f6)
+--------------------------------------
+Perhaps using a better eval for generating MeValues will result in better coefficients.
+
+Currently the coefficient calculator uses c5s:10. To determine the best eval strategy,
+played a tournament with c5s, d1s, f4.
 So that I don't die of old age before it completes, all players have search depth 4.
 
     Tournament results:
@@ -127,6 +130,17 @@ EvalStrategy d has the best patterns but f5 has the best coefficients. Thus f5 i
 c5s was used to generate the values so far.
 
 Plan: I'll generate new coefficients (d2) using the current MeValues, then use d2 to generate new MeValues overnight.
+
+To see if that worked I'll play a new tournament:
+    Tournament results:
+     +1.6  d2:4
+     -0.1  f5:4
+     -1.5  d1s:4
+
+Combining the results of the two tournaments, d2 is almost 9 disks stronger than c5s.
+Now I'll generate new coefficients f6 using evals from d2.
+
+
 
 
 Deeper search (f?)

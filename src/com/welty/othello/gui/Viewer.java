@@ -76,13 +76,7 @@ public class Viewer {
         );
         final JMenu moveMenu = createMenu("Move", 'm', moveActions);
 
-        final JMenuBar menuBar = menuBar();
-        ModeMenu modeMenu = new ModeMenu(menuBar);
-        JMenu[] pveMenuItems = new JMenu[]{fileMenu, editMenu, modeMenu, moveMenu, levelMenu, playMenu};
-        JMenu[] arenaMenuItems = new JMenu[]{modeMenu};
-        modeMenu.addMenu("PvE", pveMenuItems);
-        modeMenu.addMenu("Arena", arenaMenuItems);
-        modeMenu.init();
+        final JMenuBar menuBar = menuBar(fileMenu, editMenu, moveMenu, levelMenu, playMenu);
 
         frame("Othello Viewer", JFrame.EXIT_ON_CLOSE, menuBar,
                 grid(2, -1, -1,

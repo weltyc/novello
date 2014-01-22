@@ -13,7 +13,7 @@ import java.util.*;
 public class MvGenerator {
     private static final Logger log = Logger.logger(MvGenerator.class);
     private final EvalStrategy evalStrategy;
-    private static final String PLAYOUT_PLAYER_NAME = "c5s:10";
+    private static final String PLAYOUT_PLAYER_NAME = "d2:10";
 
     public MvGenerator(EvalStrategy evalStrategy) {
         this.evalStrategy = evalStrategy;
