@@ -27,4 +27,12 @@ public class PositionTest extends BitBoardTestCase {
             assertTrue(minimal.compareTo(reflection)<0 || minimal.equals(reflection));
         }
     }
+
+    public void testPlayLine() {
+        final Position s = Position.START_POSITION;
+        assertEquals("base case", s, s.playLine(""));
+        assertEquals("ignore spaces", s, s.playLine("   "));
+        assertEquals(s.play("F5"), s.playLine(" F5 "));
+        assertEquals(s.play("F5").play("D6"), s.playLine(" F5 d6"));
+    }
 }

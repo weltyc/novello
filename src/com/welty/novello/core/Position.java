@@ -11,6 +11,7 @@ import static java.lang.Long.bitCount;
 public class Position implements Comparable<Position> {
     private static final String header = "  A B C D E F G H  \n";
     public static final Position START_POSITION = new Position(0x0000000810000000L, 0x0000001008000000L, true);
+    public static final Position ALTERNATE_START_POSITION = new Position(0x0000001800000000L, 0x0000000018000000L, true);
     public final long black;
     public final long white;
     public final boolean blackToMove;
@@ -388,5 +389,24 @@ public class Position implements Comparable<Position> {
 
     public Mr toMr() {
         return new Mr(mover(), enemy());
+    }
+
+    /**
+     * Play a move list from the current position.
+     *
+     * A move list is a sequence of squares to play, for example "F5 D6"
+     *
+     * This currently handles upper and lower case, and arbitrary spacing (or no spaces at all) between moves.
+     * It does not handle passes.
+     * @param moveList String containing moves
+     * @return The position resulting from playing those moves.
+     */
+    public Position playLine(String moveList) {
+        final String ml = moveList.replaceAll("[ \t\r\n]+", "");
+        Position p = this;
+        for (int i=0; i<ml.length(); i+=2) {
+            p = p.play(ml.substring(i, i+2));
+        }
+        return p;
     }
 }

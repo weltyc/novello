@@ -182,7 +182,7 @@ public class GameView {
      * @param blackEngine Engine playing Black or null if a human player
      * @param whiteEngine Engine playing White or null if a human player
      */
-    public synchronized void newGame(@Nullable Engine blackEngine, @Nullable Engine whiteEngine) {
+    public void newGame(@Nullable Engine blackEngine, @Nullable Engine whiteEngine) {
         newGame(blackEngine, whiteEngine, Position.START_POSITION);
     }
 
@@ -196,7 +196,7 @@ public class GameView {
      * @param whiteEngine   Engine playing White
      * @param startPosition start position for the game
      */
-    public void newGame(@Nullable Engine blackEngine, @Nullable Engine whiteEngine, Position startPosition) {
+    public synchronized void newGame(@Nullable Engine blackEngine, @Nullable Engine whiteEngine, Position startPosition) {
         this.blackEngine = blackEngine;
         this.whiteEngine = whiteEngine;
         game = new MutableGame(startPosition, calcName(blackEngine), calcName(whiteEngine), NovelloUtils.getHostName());

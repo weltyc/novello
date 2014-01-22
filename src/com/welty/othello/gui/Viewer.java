@@ -1,6 +1,7 @@
 package com.welty.othello.gui;
 
 import com.orbanova.common.jsb.Grid;
+import com.welty.novello.core.Position;
 import com.welty.novello.selfplay.Players;
 
 import javax.swing.*;
@@ -96,7 +97,9 @@ public class Viewer {
         engine.setMaxDepth(levelMenu.getSelectedLevel());
         Engine blackEngine = playMenu.blackEngine(engine);
         Engine whiteEngine = playMenu.whiteEngine(engine);
-        gameView.newGame(blackEngine, whiteEngine);
+        final String startPositionType = playMenu.getStartPositionType();
+        final Position startPosition = StartPositionChooser.next(startPositionType);
+        gameView.newGame(blackEngine, whiteEngine, startPosition);
     }
 
     private Action[] createMoveActions() {
