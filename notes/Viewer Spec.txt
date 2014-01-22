@@ -1,7 +1,9 @@
 Viewer Spec
 ===========
 
-The Viewer allows a user to review games and to play vs a bot.
+The Viewer allows a user to review and analyze games and to play vs a bot.
+
+It does NOT allow bot-vs-bot matches. That is in a separate program.
 
 This spec is incomplete. Only certain features are specced.
 
@@ -16,8 +18,39 @@ When the user chooses New Game, a new game is created.
 According to the selection in the "Play As" menu, the user plays Black or White.
 The opponent will be an engine. Currently the only supported engine is Novello.
 [Future: Support NBoard engines.] The engine depth is the depth chosen from the "Level" menu.
-Once the game is started, the engine/depth/colors can't be changed.
+
+Once the user has played his first move, the engine/depth/colors/start position can't be changed.
+Until then, they can.
+
+Start positions are chosen from the
+* Standard
+* Alternate
+* XOT
 
 The start position is the standard start position.
 
 > Tech note: In the viewer, only one Engine is created. When a new game is started its depth is set.
+
+Choose opponent
+---------------
+You choose the opponent (engine and depth) from the opponent menu. New engines may be added via the add...
+menu item.
+
+* Beginner
+  * Abigail  (1-ply disk maximizer)
+  * Andrew   (2-ply disk maximizer)
+  * Charlie  (1-ply disks + corners)
+  * Cynthia  (2-ply disks + corners)
+  * Edwina   (1-ply disks + corners + x-squares)
+  * Ethelred (2-ply)
+* Intermediate
+  * George   (Edwina + mobility)
+  * Grace    (2-ply)
+  * Iago     (George + pot mob)
+  * Ivana    (2-ply)
+  * Kasimir  (Iago + edges)
+  * Kathy    (2-ply)
+* Vegtbl
+  * 1,2,4,6,8,12,16,20 ply (more added later when interrupts and iterative deepening are supported)
+* ntest, edax
+  * 1,2,4,6,8,12,16,20,24,28,32 ply

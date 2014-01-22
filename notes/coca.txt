@@ -71,7 +71,7 @@ f4:6 vs f2:6 average result = 1.44 +/-0.079. T ~  18.2.  Time per game =  20.64 
 Note that f4 takes less time than f2 - this supports the hypothesis that the reason f2 takes longer is due to
 the nonlinear evaluation function.
 
-At low & high empties the coefficients are being generated with very few empties:
+At low & high empties the coefficients are being generated using very few positions:
     #empty   #positions
       3      1,806,469
       4      2,051,608
@@ -93,3 +93,49 @@ At low & high empties the coefficients are being generated with very few empties
 It would probably be a good idea to get some more positions at low/high empties.
 
 f4:6 vs f1:6, f4 wins by 2.21 +/-0.27, 20.68 ms vs  21.13 ms. So the improvement is definite but small.
+
+GGS positions (f5)
+-------------------
+The f5 coefficients are calculated using the same data as f4 plus positions from a large number of GGS games.
+The GGS games were selected from GGS's "Othello.latest" file by choosing games where both players are rated
+over 2000, on an 8x8 board, non-anti. Each position in the game was scored using the game result. This added about
+2M positions to the 19M positions that were used to generate f4. These games should be scored much better too -
+strong GGS bots should be getting probable solves around 40+ empties, while the other positions are valued by
+c5s:10, which does a probable solve at 19.
+
+This plays a bit better than f4:
+f5:6 vs f4:6, f5 wins by 0.767 +/-0.073, 20.90 ms vs  20.80 ms
+
+Future directions:
+* more MeValues
+* better eval strategy for MeValues
+* deeper search for MeValues
+* nonlinear value estimation
+* Better patterns (after we sort out coca)
+
+Better eval strategy for MeValues
+---------------------------------
+Currently using c5s:10. To determine the best eval strategy, played a tournament with c5s, d1s, f4.
+So that I don't die of old age before it completes, all players have search depth 4.
+
+    Tournament results:
+     +2.7  f5:4
+     +1.5  d1s:4
+     -4.2  c5s:4
+
+EvalStrategy d has the best patterns but f5 has the best coefficients. Thus f5 is currently the champ.
+c5s was used to generate the values so far.
+
+Plan: I'll generate new coefficients (d2) using the current MeValues, then use d2 to generate new MeValues overnight.
+
+
+Deeper search (f?)
+------------------
+The non-GGS positions are
+For planning purposes, midgame depth vs probable solve height:   (from the code, dProb/dMid = exactly 5/4)
+
+    mid  prob
+     10    19
+     12    21
+     14    24
+     16    26
