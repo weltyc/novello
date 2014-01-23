@@ -147,6 +147,17 @@ Just for the record, how close are we to matching ntestJ's coefficients?
 f6:6 vs ntestJ:6,  -4.07 +/-0.075.  21.65 ms vs  27.29 ms.
 The time difference is worth about 2 disks, leaving ntestJ still substantially stronger.
 
+More positions (f7)
+-------------------
+Perhaps using more positions will help. (Adding the GGS games helped, after all - 10% more positions resulted in
+an 0.77 better eval.)
+Capture positions from a search; 1% of evaluated positions were stored, up to a maximum of 200k per empty.
+We hit 200k for 11-47 empties, a very wide range. This resulted in 19xk distinct positions at each empty.
+We already had a large number of positions from 36 empty onward, so this will only increase the number of
+positions there by about 40%. At more empties though this will be a huge % increase on the number of positions.
+
+
+
 Deeper search (f?)
 ------------------
 The non-GGS positions are

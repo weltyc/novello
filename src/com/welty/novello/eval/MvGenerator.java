@@ -3,6 +3,7 @@ package com.welty.novello.eval;
 import com.orbanova.common.misc.Logger;
 import com.welty.novello.coca.*;
 import com.welty.novello.core.*;
+import com.welty.novello.solver.Counter;
 
 import java.io.IOException;
 import java.util.*;
@@ -25,10 +26,13 @@ public class MvGenerator {
         final List<MeValue> pvsx = new CachingMvSource(PLAYOUT_PLAYER_NAME, rareSource, "x.pvs").getMvs();
         final List<MeValue> pvsN = new CachingMvSource(PLAYOUT_PLAYER_NAME, NtestPvLoader.mrSource, "n.pvs").getMvs();
         final List<MeValue> ggs = new RandGameMvSource().getMvs();
-        log.info(String.format("%,d pvs from .pvs file, %,d from x.pvs file, %,d from n.pvs file, %,d from ggs games"
-                , pvs.size(), pvsx.size(), pvsN.size(), ggs.size()));
+        final List<MeValue> pvsCap = new CachingMvSource(PLAYOUT_PLAYER_NAME, new FileMrSource(Counter.capturePath), "-cap.pvs").getMvs();
+        log.info(String.format("%,d pvs from .pvs file, %,d from x.pvs file, %,d from n.pvs file," +
+                " %,d from ggs games, %,d from -cap.pvs file"
+                , pvs.size(), pvsx.size(), pvsN.size(), ggs.size(), pvsCap.size()));
         pvs.addAll(pvsx);
         pvs.addAll(pvsN);
+        pvs.addAll(pvsCap);
         pvs.addAll(ggs);
 
         log.info("Selecting distinct pvs");
