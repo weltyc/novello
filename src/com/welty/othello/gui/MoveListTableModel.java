@@ -2,7 +2,7 @@ package com.welty.othello.gui;
 
 import com.orbanova.common.misc.Utils;
 import com.welty.novello.core.BitBoardUtils;
-import com.welty.ggf.Move;
+import com.welty.novello.core.Move8x8;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
@@ -20,7 +20,7 @@ import java.util.List;
  */
 class MoveListTableModel extends AbstractTableModel implements GameView.ChangeListener {
     private final GameView gameView;
-    private List<Move> moves;
+    private List<Move8x8> moves;
 
     static JScrollPane of(GameView gameView) {
         final MoveListTableModel model = new MoveListTableModel(gameView);
@@ -78,7 +78,7 @@ class MoveListTableModel extends AbstractTableModel implements GameView.ChangeLi
     @Override public Object getValueAt(int rowIndex, int columnIndex) {
         final int moveNumber = moveNumber(rowIndex, columnIndex);
         if (moveNumber >= 0) {
-            final Move move = moves.get(moveNumber);
+            final Move8x8 move = moves.get(moveNumber);
             if (Utils.isOdd(columnIndex)) {
                 return move.eval;
             } else {

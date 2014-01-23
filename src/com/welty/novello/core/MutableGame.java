@@ -1,9 +1,9 @@
 package com.welty.novello.core;
 
 import com.orbanova.common.misc.Require;
-import com.welty.novello.eval.CoefficientCalculator;
 import com.welty.ggf.GgfGame;
 import com.welty.ggf.Move;
+import com.welty.novello.eval.CoefficientCalculator;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -23,13 +23,14 @@ public class MutableGame {
     /**
      * A list of all moves played in the game, including passes.
      */
-    private final List<Move> moves = new ArrayList<>();
+    private final List<Move8x8> moves = new ArrayList<>();
     private boolean isOver = false;
     private Position lastPosition;
 
     public MutableGame(@NotNull Position startPosition, @NotNull String blackName, @NotNull String whiteName, @NotNull String place) {
         this(startPosition, blackName, whiteName, place, new GameClock(0, 0), new GameClock(0, 0));
     }
+
     public MutableGame(@NotNull Position startPosition, @NotNull String blackName, @NotNull String whiteName
             , @NotNull String place, @NotNull GameClock blackClock, @NotNull GameClock whiteClock) {
         this.startState = new State(startPosition, blackClock, whiteClock);
@@ -42,7 +43,7 @@ public class MutableGame {
     /**
      * @return a list of all moves played in the game, including passes
      */
-    public List<Move> getMoves() {
+    public List<Move8x8> getMoves() {
         return new ArrayList<>(moves);
     }
 
@@ -55,8 +56,7 @@ public class MutableGame {
         sb.append("RE[").append(isOver ? netScore() : "?").append("]");
         if (startState.blackClock == startState.whiteClock) {
             sb.append("TI[").append(startState.blackClock).append("]");
-        }
-        else {
+        } else {
             sb.append("TB[").append(startState.blackClock).append("]");
             sb.append("TW[").append(startState.whiteClock).append("]");
         }
@@ -64,7 +64,7 @@ public class MutableGame {
 
         sb.append("BO[8 ").append(startState.position.positionString()).append("]");
         Position cur = startState.position;
-        for (Move move : moves) {
+        for (Move8x8 move : moves) {
             sb.append(cur.blackToMove ? "B[" : "W[");
             move.appendTo(sb);
             sb.append(']');
@@ -81,7 +81,7 @@ public class MutableGame {
      * @param moveText in GGF format. Square [/eval[/time]]
      */
     public void play(String moveText) {
-        play(new Move(moveText));
+        play(new Move8x8(moveText));
     }
 
     /**
@@ -91,11 +91,11 @@ public class MutableGame {
      * @param time      time taken to make the move, in seconds
      */
     public void play(MoveScore moveScore, double time) {
-        play(new Move(moveScore, time));
+        play(new Move8x8(moveScore, time));
     }
 
     public void pass() {
-        play(Move.PASS);
+        play(Move8x8.PASS);
     }
 
     public void finish() {
@@ -105,7 +105,7 @@ public class MutableGame {
         this.isOver = true;
     }
 
-    private void play(Move move) {
+    private void play(Move8x8 move) {
         moves.add(move);
         lastPosition = lastPosition.playOrPass(move.getSq());
     }
@@ -125,7 +125,7 @@ public class MutableGame {
         final int netScore = getLastPosition().terminalScore();
         final List<MeValue> pvs = new ArrayList<>();
         Position pos = getStartPosition();
-        for (Move move : moves) {
+        for (Move8x8 move : moves) {
             if (move.isPass()) {
                 pos = pos.pass();
             } else {
@@ -176,8 +176,7 @@ public class MutableGame {
         final GameClock whiteClock;
         if (tags.containsKey("TI")) {
             blackClock = whiteClock = new GameClock(tags.get("TI"));
-        }
-        else {
+        } else {
             blackClock = new GameClock(GgfGame.getRequiredTag(tags, "TB"));
             whiteClock = new GameClock(GgfGame.getRequiredTag(tags, "TW"));
         }
@@ -200,7 +199,7 @@ public class MutableGame {
             final String tag = ggf.substring(loc + 1, tagEnd).trim();
             final String value = ggf.substring(tagEnd + 1, valueEnd).trim();
             if (tag.equals("B") || tag.equals("W")) {
-                game.play(new Move(value));
+                game.play(new Move8x8(value));
             }
             loc = valueEnd;
         }
@@ -240,7 +239,7 @@ public class MutableGame {
      */
     public @Nullable Position calcPositionAt(int nEmpty) {
         Position pos = getStartPosition();
-        for (Move move : moves) {
+        for (Move8x8 move : moves) {
             if (move.isPass()) {
                 pos = pos.pass();
             } else {

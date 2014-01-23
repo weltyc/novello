@@ -501,9 +501,13 @@ public class BitBoardUtils {
      */
     public static int textToSq(String squareText) {
         Require.eq(squareText.length(), "# of chars in squareText", 2);
-        final int col = getCol("col", Character.toUpperCase(squareText.charAt(0)), 'H');
-        final int row = getCol("row", squareText.charAt(1), '8');
-        return square(row, col);
+        try {
+            final int col = getCol("col", Character.toUpperCase(squareText.charAt(0)), 'H');
+            final int row = getCol("row", squareText.charAt(1), '8');
+            return square(row, col);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Illegal square text: '" + squareText + "'");
+        }
     }
 
     private static int getCol(String name, char input, char limit) {
@@ -568,7 +572,7 @@ public class BitBoardUtils {
 
     /**
      * Calculate net number of disks when there are no more moves.
-     *
+     * <p/>
      * The winner gets empties if BitBoardUtils.WINNER_GETS_EMPTIES is true.
      *
      * @param mover mover disks
@@ -604,8 +608,8 @@ public class BitBoardUtils {
     public static int linearDiagonalPotMob(long mover, long enemy) {
         final long empty = ~(mover | enemy);
         final long center = CENTER_36 & mover;
-        final long ul = center&~(B7|G2);
-        final long ur = center&~(B2|G7);
+        final long ul = center & ~(B7 | G2);
+        final long ur = center & ~(B2 | G7);
 
         return bitCount(empty & (ul << 9)) + bitCount(empty & (ur << 7))
                 + bitCount(empty & (ul >>> 9)) + bitCount(empty & (ur >>> 7));

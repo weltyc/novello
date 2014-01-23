@@ -10,7 +10,7 @@ import java.text.DecimalFormat;
 public class Move {
     /**
      * Square of the move.
-     *
+     * <p/>
      * This may be longer than 2 characters; however only the first two characters are used to determine
      * the play location.
      */
@@ -25,14 +25,6 @@ public class Move {
      * Evaluation returned by the engine
      */
     public final double eval;
-
-    /**
-     * Generic pass move
-     * <p/>
-     * This is a pass move with no eval and no time elapsed.
-     * To create a pass move with an eval or time elapsed, use the constructor.
-     */
-    public static final Move PASS = new Move("PASS");
 
     public Move(String text) {
         final String[] split = text.split("/");
@@ -71,18 +63,16 @@ public class Move {
     }
 
     /**
-     * Square of the move, or -1 if the move was a pass
-     *
-     * This only returns a sensible value on an 8x8 board.
-     */
-    public int getSq() {
-        return isPass() ? -1 : BitBoardUtils.textToSq(square.substring(0,2));
-    }
-
-    /**
      * @return true if the move is a pass move
      */
     public boolean isPass() {
         return square.toUpperCase().startsWith("PA");
+    }
+
+    /**
+     * @return First two characters of square text
+     */
+    public String getSquare() {
+        return square.substring(0, 2);
     }
 }

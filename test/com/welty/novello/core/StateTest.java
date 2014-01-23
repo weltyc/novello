@@ -1,6 +1,5 @@
 package com.welty.novello.core;
 
-import com.welty.ggf.Move;
 import junit.framework.TestCase;
 
 /**
@@ -9,9 +8,9 @@ public class StateTest extends TestCase {
     public void testUpdate() {
         final State state = new State(Position.START_POSITION, new GameClock(500, 0), new GameClock(600, 0));
         checkClocks(state, 500, 600);
-        final State state1 = state.playOrPass(new Move("F5//0.01"));
+        final State state1 = state.playOrPass(new Move8x8("F5//0.01"));
         checkClocks(state1, 490, 600);
-        final State state2 = state1.playOrPass(new Move("D6//1"));
+        final State state2 = state1.playOrPass(new Move8x8("D6//1"));
         checkClocks(state2, 490, -400);
     }
 

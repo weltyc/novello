@@ -1,7 +1,6 @@
 package com.welty.novello.solver;
 
 import com.welty.novello.core.*;
-import com.welty.ggf.Move;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -27,9 +26,9 @@ public class EndgameAnalyzer {
     private static void analyzeGame(MutableGame game) {
         final int[] dropped = new int[2];
 
-        final List<Move> moves = game.getMoves();
+        final List<Move8x8> moves = game.getMoves();
         Position position = game.getStartPosition();
-        for (Move move : moves) {
+        for (Move8x8 move : moves) {
             final int nEmpty = position.nEmpty();
             if (nEmpty <= 22 && position.calcMoves() != 0) {
                 final MoveScore best = solver.getMoveScore(position.mover(), position.enemy());

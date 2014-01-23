@@ -1,11 +1,10 @@
 package com.welty.novello.core;
 
-import com.welty.ggf.Move;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * Board position + clocks.
- *
+ * <p/>
  * Immutable.
  */
 public class State {
@@ -19,12 +18,11 @@ public class State {
         this.whiteClock = whiteClock;
     }
 
-    public State playOrPass(Move move) {
+    public State playOrPass(Move8x8 move) {
         final Position nextPosition = position.playOrPass(move.getSq());
         if (position.blackToMove) {
             return new State(nextPosition, blackClock.update(move.time), whiteClock);
-        }
-        else {
+        } else {
             return new State(nextPosition, blackClock, whiteClock.update(move.time));
         }
     }
