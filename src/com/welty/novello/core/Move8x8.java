@@ -1,6 +1,7 @@
 package com.welty.novello.core;
 
 import com.welty.ggf.Move;
+import com.welty.novello.eval.CoefficientCalculator;
 
 /**
  */
@@ -32,7 +33,7 @@ public class Move8x8 extends Move {
      * @throws IllegalArgumentException if the move is not an 8x8 move.
      */
     public Move8x8(MoveScore moveScore, double time) {
-        super(moveScore, time);
+        super(BitBoardUtils.sqToText(moveScore.sq), moveScore.score / (double) CoefficientCalculator.DISK_VALUE, time);
         getSq();
     }
 

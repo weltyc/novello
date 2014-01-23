@@ -397,13 +397,17 @@ public class BitBoardUtils {
      * <p/>
      * This uses Novello conventions; the row and col increase as the text chars decrease.
      *
-     * @param sq index of square. A1 = 63, H1 = 56.
-     * @return text, for instance "D5"
+     * @param sq index of square. A1 = 63, H1 = 56. -1 = pass
+     * @return text, for instance "D5" or "PA"
      */
     public static String sqToText(int sq) {
-        final int col = col(sq);
-        final int row = row(sq);
-        return rowColToText(col, row);
+        if (sq < 0) {
+            return "PA";
+        } else {
+            final int col = col(sq);
+            final int row = row(sq);
+            return rowColToText(col, row);
+        }
     }
 
     /**
@@ -495,7 +499,7 @@ public class BitBoardUtils {
     }
 
     /**
-     * Convert test, for example "D5", to a square index
+     * Convert test, for example "D5", to a square index.
      *
      * @param squareText text of the square
      */

@@ -1,8 +1,5 @@
 package com.welty.ggf;
 
-import com.welty.novello.core.BitBoardUtils;
-import com.welty.novello.core.MoveScore;
-
 import java.text.DecimalFormat;
 
 /**
@@ -12,7 +9,9 @@ public class Move {
      * Square of the move.
      * <p/>
      * This may be longer than 2 characters; however only the first two characters are used to determine
-     * the play location.
+     * the play location, and case doesn't matter.
+     * <p/>
+     * This is either a square, e.g. "F5", or a pass move (e.g. "pass").
      */
     private final String square;
 
@@ -36,9 +35,9 @@ public class Move {
         time = (split.length > 2 && !split[2].isEmpty()) ? Double.parseDouble(split[2]) : 0;
     }
 
-    public Move(MoveScore moveScore, double time) {
-        square = BitBoardUtils.sqToText(moveScore.sq);
-        this.eval = moveScore.score * .01;
+    public Move(String square, double eval, double time) {
+        this.square = square;
+        this.eval = eval;
         this.time = time;
     }
 
