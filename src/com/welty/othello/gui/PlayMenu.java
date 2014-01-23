@@ -1,11 +1,12 @@
 package com.welty.othello.gui;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
 
 /**
  */
 public class PlayMenu extends JMenu {
-     private final MenuButtonGroup color;
+    private final MenuButtonGroup color;
     private final MenuButtonGroup startPosition;
 
     public PlayMenu() {
@@ -19,10 +20,18 @@ public class PlayMenu extends JMenu {
         this.add(startPositionMenu);
         startPosition = new MenuButtonGroup("StartPosition", PlayMenu.class, "Standard", "Alternate", "XOT");
         startPosition.addTo(startPositionMenu);
+        final Action selectOpponentAction = new AbstractAction("Select Opponent...") {
+
+            @Override public void actionPerformed(ActionEvent e) {
+                SelectOpponentWindow.getInstance().show();
+            }
+        };
+        this.add(selectOpponentAction);
     }
 
     /**
      * Determine the engine playing black
+     *
      * @param engine engine that might play black
      * @return the engine, if black should be played by an engine, or null if black should be played by the human.
      */
@@ -32,6 +41,7 @@ public class PlayMenu extends JMenu {
 
     /**
      * Determine the engine playing white
+     *
      * @param engine engine that might play white
      * @return the engine, if white should be played by an engine, or null if white should be played by the human.
      */
