@@ -24,7 +24,7 @@ public class SelectOpponentWindow {
             levels.setModel(levelModel);
             setUpList(levels);
             levels.setLayoutOrientation(JList.HORIZONTAL_WRAP);
-            levels.setVisibleRowCount(Opponent.advancedLevels.length / 2);
+            levels.setVisibleRowCount(Opponent.advancedLevels.length/2);
 
             // Opponent selection list box.
             final JList<Opponent> ops = new JList<>(opponents);
@@ -41,6 +41,7 @@ public class SelectOpponentWindow {
             setUpList(ops);
 
 
+
             instance = frame("Select Opponent", JFrame.HIDE_ON_CLOSE,
                     vBox(
                             grid(2, 0, -1,
@@ -51,7 +52,6 @@ public class SelectOpponentWindow {
                     )
 
             );
-            instance.setVisible(true);
         }
         return instance;
     }
