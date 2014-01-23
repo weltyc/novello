@@ -113,14 +113,14 @@ public class CachingMvSource implements MvSource {
     private void writePvs(Path file, Set<Mr> mrs) throws IOException {
         log.info("Generating pvs for " + String.format("%,d", mrs.size()) + " mrs, each of which will generate 2 pvs (unless there is only one remaining move in the game)");
         try (final DataOutputStream out = new DataOutputStream(new BufferedOutputStream(Files.newOutputStream(file)))) {
-            int nextMessage = 50000;
+            int nextMessage = 25000;
             int nWritten = 0;
 
             final int nThreads = 4;
             log.info("Starting Pvs executor service with " + nThreads + " threads");
             final ExecutorCompletionService<List<MeValue>> ecs = new ExecutorCompletionService<>(Executors.newFixedThreadPool(nThreads));
 
-            log.info("Generating and writing pvs...");
+            log.info("Generating and writing pvs to " + file.getFileName() + " ...");
             for (Mr mr : mrs) {
                 ecs.submit(new PvsTask(mr));
             }
@@ -133,8 +133,8 @@ public class CachingMvSource implements MvSource {
                     }
                     nWritten += firstTwoPvs.size();
                     if (nWritten >= nextMessage) {
-                        log.info(String.format("%,d positions written", nWritten));
-                        nextMessage += 50000;
+                        log.info(String.format("%,dk positions written", nWritten/1000));
+                        nextMessage *=2;
                     }
                 } catch (InterruptedException | ExecutionException e) {
                     // this thread spec does not allow InterruptedExceptions.

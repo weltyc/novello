@@ -67,7 +67,7 @@ public class NtestPvLoader {
         final String filename = "captured.pv";
         final Path path = Paths.get(filename);
         final long length = path.toFile().length();
-        System.out.format("%,d positions available\n\n", length / 23);
+//        System.out.format("%,d positions available\n\n", length / 23);
 
         try (final DataInputStream in = new DataInputStream(new BufferedInputStream(Files.newInputStream(path)))) {
             //noinspection InfiniteLoopStatement

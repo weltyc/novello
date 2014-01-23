@@ -1,5 +1,6 @@
 package com.welty.novello.hash;
 
+import com.orbanova.common.misc.Logger;
 import com.welty.novello.core.NovelloUtils;
 import com.welty.novello.solver.Solver;
 import org.jetbrains.annotations.Nullable;
@@ -11,6 +12,8 @@ import static com.welty.novello.core.NovelloUtils.NO_MOVE;
 /**
  */
 public class MidgameHashTables {
+    private static final Logger log = Logger.logger(MidgameHashTables.class);
+
     private final HashTable[] tables;
 
     // statistics
@@ -42,7 +45,7 @@ public class MidgameHashTables {
             int size = 1 << (nEmpty < 8 ? 10 : nEmpty < 12 ? 12 : 14);
             tables[nEmpty] = new HashTable(size);
         }
-        System.out.format("ouch: %d  (%,d entries)\n", count.incrementAndGet(), nEntries());
+        log.info(String.format("ouch: %d  (%,d entries)\n", count.incrementAndGet(), nEntries()));
     }
 
     private long nEntries() {

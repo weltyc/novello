@@ -1,0 +1,197 @@
+[Wed Jan 22 18:47:36 CST 2014]| INFO | MvGenerator | 2,131,295 pvs from .pvs file, 4,405,317 from x.pvs file, 13,981,684 from n.pvs file, 6,181,231 from ggs games
+[Wed Jan 22 18:47:37 CST 2014]| INFO | MvGenerator | Selecting distinct pvs
+[Wed Jan 22 18:47:49 CST 2014]| INFO | MvGenerator | selected 21,545,080 distinct pvs from 26,699,527 total pvs
+a total of 21,545,080 pvs are available.
+
+--- 3 ---
+  55,943 coefficients occurred 0 times
+  23,796 coefficients occurred 1-9 times
+  30,432 coefficients occurred 10-99 times
+  16,739 coefficients occurred 100-999 times
+   6,863 coefficients occurred 1000+ times
+
+estimating coefficients using 2,088,901 positions
+3:41 elapsed
+sum of coefficients squared = 2.08e+09
+
+77468 non-zero coefficients written
+--- 4 ---
+  55,151 coefficients occurred 0 times
+  22,846 coefficients occurred 1-9 times
+  30,437 coefficients occurred 10-99 times
+  17,827 coefficients occurred 100-999 times
+   7,512 coefficients occurred 1000+ times
+
+estimating coefficients using 2,332,119 positions
+3:52 elapsed
+sum of coefficients squared = 2.11e+09
+
+78207 non-zero coefficients written
+--- 11 ---
+  50,559 coefficients occurred 0 times
+  17,632 coefficients occurred 1-9 times
+  27,956 coefficients occurred 10-99 times
+  24,080 coefficients occurred 100-999 times
+  13,546 coefficients occurred 1000+ times
+
+estimating coefficients using 5,614,409 positions
+9:52 elapsed
+sum of coefficients squared = 2.43e+09
+
+82667 non-zero coefficients written
+--- 12 ---
+  50,550 coefficients occurred 0 times
+  17,460 coefficients occurred 1-9 times
+  27,665 coefficients occurred 10-99 times
+  24,171 coefficients occurred 100-999 times
+  13,927 coefficients occurred 1000+ times
+
+estimating coefficients using 5,825,419 positions
+10:04 elapsed
+sum of coefficients squared = 2.51e+09
+
+82712 non-zero coefficients written
+--- 19 ---
+  55,221 coefficients occurred 0 times
+  21,669 coefficients occurred 1-9 times
+  25,812 coefficients occurred 10-99 times
+  19,697 coefficients occurred 100-999 times
+  11,374 coefficients occurred 1000+ times
+
+estimating coefficients using 4,639,539 positions
+8:20 elapsed
+sum of coefficients squared = 2.85e+09
+
+78125 non-zero coefficients written
+--- 20 ---
+  56,447 coefficients occurred 0 times
+  21,628 coefficients occurred 1-9 times
+  25,521 coefficients occurred 10-99 times
+  19,082 coefficients occurred 100-999 times
+  11,095 coefficients occurred 1000+ times
+
+estimating coefficients using 4,582,453 positions
+7:54 elapsed
+sum of coefficients squared = 2.91e+09
+
+76862 non-zero coefficients written
+--- 27 ---
+  70,729 coefficients occurred 0 times
+  22,784 coefficients occurred 1-9 times
+  20,086 coefficients occurred 10-99 times
+  12,948 coefficients occurred 100-999 times
+   7,226 coefficients occurred 1000+ times
+
+estimating coefficients using 3,173,142 positions
+5:24 elapsed
+sum of coefficients squared = 2.32e+09
+
+62613 non-zero coefficients written
+--- 28 ---
+  73,591 coefficients occurred 0 times
+  22,446 coefficients occurred 1-9 times
+  18,963 coefficients occurred 10-99 times
+  11,999 coefficients occurred 100-999 times
+   6,774 coefficients occurred 1000+ times
+
+estimating coefficients using 2,996,108 positions
+6:52 elapsed
+sum of coefficients squared = 2.32e+09
+
+59877 non-zero coefficients written
+--- 35 ---
+  88,624 coefficients occurred 0 times
+  19,670 coefficients occurred 1-9 times
+  13,581 coefficients occurred 10-99 times
+   7,503 coefficients occurred 100-999 times
+   4,395 coefficients occurred 1000+ times
+
+estimating coefficients using 1,890,405 positions
+3:23 elapsed
+sum of coefficients squared = 1.51e+09
+
+44853 non-zero coefficients written
+--- 36 ---
+  90,634 coefficients occurred 0 times
+  19,261 coefficients occurred 1-9 times
+  12,845 coefficients occurred 10-99 times
+   6,931 coefficients occurred 100-999 times
+   4,102 coefficients occurred 1000+ times
+
+estimating coefficients using 1,726,895 positions
+2:37 elapsed
+sum of coefficients squared = 1.45e+09
+
+42858 non-zero coefficients written
+--- 43 ---
+ 108,088 coefficients occurred 0 times
+  13,253 coefficients occurred 1-9 times
+   6,990 coefficients occurred 10-99 times
+   3,480 coefficients occurred 100-999 times
+   1,962 coefficients occurred 1000+ times
+
+estimating coefficients using 735,902 positions
+0:59 elapsed
+sum of coefficients squared = 7.90e+08
+
+25556 non-zero coefficients written
+--- 44 ---
+ 110,576 coefficients occurred 0 times
+  12,090 coefficients occurred 1-9 times
+   6,253 coefficients occurred 10-99 times
+   3,111 coefficients occurred 100-999 times
+   1,743 coefficients occurred 1000+ times
+
+estimating coefficients using 654,355 positions
+0:50 elapsed
+sum of coefficients squared = 7.00e+08
+
+23065 non-zero coefficients written
+--- 51 ---
+ 125,097 coefficients occurred 0 times
+   4,491 coefficients occurred 1-9 times
+   2,356 coefficients occurred 10-99 times
+   1,221 coefficients occurred 100-999 times
+     608 coefficients occurred 1000+ times
+
+estimating coefficients using 296,683 positions
+0:10 elapsed
+sum of coefficients squared = 1.81e+08
+
+8597 non-zero coefficients written
+--- 52 ---
+ 126,488 coefficients occurred 0 times
+   3,728 coefficients occurred 1-9 times
+   2,013 coefficients occurred 10-99 times
+   1,038 coefficients occurred 100-999 times
+     506 coefficients occurred 1000+ times
+
+estimating coefficients using 230,777 positions
+0:08 elapsed
+sum of coefficients squared = 1.21e+08
+
+7223 non-zero coefficients written
+--- 59 ---
+ 133,077 coefficients occurred 0 times
+     168 coefficients occurred 1-9 times
+     238 coefficients occurred 10-99 times
+     106 coefficients occurred 100-999 times
+     184 coefficients occurred 1000+ times
+
+estimating coefficients using 86,198 positions
+0:00 elapsed
+sum of coefficients squared = 3.24e+07
+
+663 non-zero coefficients written
+--- 60 ---
+ 133,427 coefficients occurred 0 times
+      63 coefficients occurred 1-9 times
+      69 coefficients occurred 10-99 times
+      56 coefficients occurred 100-999 times
+     158 coefficients occurred 1000+ times
+
+estimating coefficients using 40,101 positions
+0:00 elapsed
+sum of coefficients squared = 3.38e+07
+
+341 non-zero coefficients written
