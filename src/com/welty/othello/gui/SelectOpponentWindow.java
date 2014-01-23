@@ -5,8 +5,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 
-import static com.orbanova.common.jsb.JSwingBuilder.frame;
-import static com.orbanova.common.jsb.JSwingBuilder.grid;
+import static com.orbanova.common.jsb.JSwingBuilder.*;
 
 /**
  */
@@ -25,7 +24,7 @@ public class SelectOpponentWindow {
             levels.setModel(levelModel);
             setUpList(levels);
             levels.setLayoutOrientation(JList.HORIZONTAL_WRAP);
-            levels.setVisibleRowCount(Opponent.advancedLevels.length/2);
+            levels.setVisibleRowCount(Opponent.advancedLevels.length / 2);
 
             // Opponent selection list box.
             final JList<Opponent> ops = new JList<>(opponents);
@@ -42,15 +41,32 @@ public class SelectOpponentWindow {
             setUpList(ops);
 
 
-
             instance = frame("Select Opponent", JFrame.HIDE_ON_CLOSE,
-                    grid(2, 0, -1,
-                            new JLabel("Opponent"), new JLabel("Level"),
-                            ops, levels
-                    ).spacing(5).border(10)
+                    vBox(
+                            grid(2, 0, -1,
+                                    wrap("Opponent", ops), wrap("Level", levels)
+                                    ),
+                            buttonBar(false, button("Add engine...")),
+                            buttonBar(true, button("OK"), button("Cancel"))
+                    )
+
             );
+            instance.setVisible(true);
         }
         return instance;
+    }
+
+    private static JComponent wrap(String title, JList list) {
+        final Dimension preferredSize = list.getPreferredSize();
+        list.setBorder(null);
+        final JLabel jLabel = new JLabel(title);
+        jLabel.setFont(UIManager.getFont("TitledBorder.font"));
+        final int minWidth = 50 + Math.max(preferredSize.width, jLabel.getPreferredSize().width);
+        System.out.println("min width = " + minWidth);
+        final JScrollPane scrollPane = scrollPane(list);
+        scrollPane.setPreferredSize(new Dimension(minWidth, 50 + preferredSize.height));
+        scrollPane.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.DARK_GRAY), title));
+        return scrollPane;
     }
 
     /**
@@ -65,21 +81,21 @@ public class SelectOpponentWindow {
 
     /**
      * Find the index of the highest level <= targetLevel.
-     *
+     * <p/>
      * This implementation assumes the levels are in order.
      *
      * @param targetLevel desired search depth
-     * @param levels available search depth
+     * @param levels      available search depth
      * @return index of search depth
      */
     private static int findNearestLevel(int targetLevel, Integer[] levels) {
         int i;
-        for (i=0; i<levels.length; i++) {
+        for (i = 0; i < levels.length; i++) {
             if (levels[i] > targetLevel) {
                 break;
             }
         }
-        if (i>0) {
+        if (i > 0) {
             i--;
         }
 
@@ -103,7 +119,7 @@ public class SelectOpponentWindow {
 
         private Opponent(String name, boolean isAdvanced) {
             this.name = name;
-            this.availableLevels = isAdvanced?advancedLevels: basicLevels;
+            this.availableLevels = isAdvanced ? advancedLevels : basicLevels;
         }
 
         @Override public String toString() {
