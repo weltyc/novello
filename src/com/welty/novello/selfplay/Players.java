@@ -27,16 +27,19 @@ public class Players {
      * Construct a Player from a text string
      * <p/>
      * The text string has the format
-     * {eval}:{depth}
+     * {eval}:{depth}{options}
      * <p/>
-     * {eval} is an evaluation strategy followed by a coefficient set, for example "c4s"
+     * {eval} is an evaluation strategy followed by a coefficient set, for example "d2"
      * <p/>
-     * {depth} is an integer, optionally followed by 'w' for full width, for example "8" or "5w". If 'w'
-     * is not specified, the Player will use MPC.
+     * {depth} is an integer.
      * <p/>
-     * {eval} may also be "ntest", in which case an external NTest process is launched. NTest always
-     * uses MPC regardless of trailing 'w'.
+     * {options} is a list of characters interpreted as option flags; see {@link com.welty.novello.solver.MidgameSearcher.Options}
+     * for a list available options.
+     * <p/>
+     * {eval} may also be "ntest", in which case an external NTest process is launched. NTest ignores options.
      *
+     * This function always returns a new player; it does not reuse old players even if the textString is the same.
+     * This is because the Player may not be multithreaded.
      * @param textString player text string
      * @return a newly constructed Player.
      */
@@ -46,7 +49,7 @@ public class Players {
             throw new IllegalArgumentException("require an eval and a search depth, for instance 'a1:3w'; had " + textString);
         }
 
-        final Pattern pattern = Pattern.compile("([0-9]+)([a-z]*)");
+        final Pattern pattern = Pattern.compile("([0-9]+)([a-zA-Z]*)");
         final Matcher matcher = pattern.matcher(parts[1]);
         if (!matcher.matches()) {
             throw new IllegalArgumentException("Illegal depth and options: " + parts[1]);

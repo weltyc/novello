@@ -17,7 +17,7 @@ import static com.welty.novello.eval.CoefficientCalculator.DISK_VALUE;
  */
 public class MidgameSearcher {
     public static final int SOLVER_START_DEPTH = 6;
-    public static final int LIMIT = 64* CoefficientCalculator.DISK_VALUE;
+    public static final int LIMIT = 64 * CoefficientCalculator.DISK_VALUE;
 
     private final MidgameHashTables midgameHashTables = new MidgameHashTables();
 
@@ -220,12 +220,12 @@ public class MidgameSearcher {
         if (depth >= 5) {
             // sortIndices[i] = (-value*256 + sq)
             final int[] sortIndices = new int[Long.bitCount(moverMoves)];
-            while (moverMoves !=0) {
+            while (moverMoves != 0) {
                 final int sq = Long.numberOfTrailingZeros(moverMoves);
                 final long placement = 1L << sq;
                 moverMoves ^= placement;
-                final int value =  calcMoveScore(mover, enemy, -LIMIT, LIMIT, 1, sq);
-                final int sortIndex = -value*256 + sq;
+                final int value = calcMoveScore(mover, enemy, -LIMIT, LIMIT, 1, sq);
+                final int sortIndex = -value * 256 + sq;
                 sortIndices[Long.bitCount(moverMoves)] = sortIndex;
             }
             Arrays.sort(sortIndices);
@@ -273,8 +273,8 @@ public class MidgameSearcher {
      * Make a move on the board and return its value
      *
      * @param depth depth of search, starting at current position
-     * @param sq square of move to make from current position.
-     * @return  value of the successor position, from current mover's POV.
+     * @param sq    square of move to make from current position.
+     * @return value of the successor position, from current mover's POV.
      */
     private int calcMoveScore(long mover, long enemy, int alpha, int beta, int depth, int sq) {
         final Square square = Square.of(sq);
@@ -428,6 +428,17 @@ public class MidgameSearcher {
         return sb.toString();
     }
 
+    /**
+     * Midgame search options.
+     * <p/>
+     * Options are characters interpreted as flags.
+     * Current flags are:
+     * <p/>
+     * w = use full-width search instead of mpc<br/>
+     * S = do not use solver in midgame search<br/>
+     * N = do not use NTest endgame search depths<br/>
+     * x = experimental<br/>
+     */
     public static class Options {
         final boolean mpc;
         public final boolean useSolver;

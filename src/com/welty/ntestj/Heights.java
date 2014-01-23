@@ -47,16 +47,17 @@ public class Heights {
 
     @Override public String toString() {
         final StringBuilder sb = new StringBuilder();
-        sb.append("---- Heights ----\n");
-        sb.append("midgame : ").append(hMidgame).append("\n");
-        for (int i = 0; i <= 5; i++)
-            sb.append(String.format("%3d %% WLD: %d\n", nSolvePct[i], hWLD[i]));
-        sb.append("novello depths: full solve at <= ")
+//        sb.append("---- Heights ----\n");
+//        sb.append("midgame : ").append(hMidgame).append("\n");
+//        for (int i = 0; i <= 5; i++)
+//            sb.append(String.format("%3d %% WLD: %d\n", nSolvePct[i], hWLD[i]));
+        sb.append("novello depths: midgame ").append(hMidgame).append(", full solve at <= ")
                 .append(getFullWidthHeight())
                 .append(", probable solve at <= ")
                 .append(getProbableSolveHeight())
-                .append("\n");
-        sb.append("\n");
+//                .append("\n")
+        ;
+//        sb.append("\n");
         return sb.toString();
     }
 

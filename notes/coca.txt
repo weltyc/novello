@@ -140,8 +140,12 @@ To see if that worked I'll play a new tournament:
 Combining the results of the two tournaments, d2 is almost 9 disks stronger than c5s.
 Now I'll generate new coefficients f6 using evals from d2.
 
+f6:6 vs f5:6, f6 wins by 0.441 +/-0.073. 21.01 ms vs  20.95 ms.
+Wow this is not very worth it.
 
-
+Just for the record, how close are we to matching ntestJ's coefficients?
+f6:6 vs ntestJ:6,  -4.07 +/-0.075.  21.65 ms vs  27.29 ms.
+The time difference is worth about 2 disks, leaving ntestJ still substantially stronger.
 
 Deeper search (f?)
 ------------------
