@@ -30,10 +30,9 @@ public class Viewer {
 
     final GameView gameView = new GameView();
 
-    private final LevelMenu levelMenu = new LevelMenu(1, 2, 3, 4, 6, 8, 12, 16, 20, 24);
     private final PlayMenu playMenu = new PlayMenu();
 
-    private final Engine engine = new Engine(Players.player("ntestJ:" + levelMenu.getSelectedLevel()));
+    private final Engine engine = null;//new Engine(Players.player("ntestJ:" + levelMenu.getSelectedLevel()));
 
     /**
      * Viewer constructor. Must run on the Event Dispatch Thread.
@@ -77,7 +76,7 @@ public class Viewer {
         );
         final JMenu moveMenu = createMenu("Move", 'm', moveActions);
 
-        final JMenuBar menuBar = menuBar(fileMenu, editMenu, moveMenu, levelMenu, playMenu);
+        final JMenuBar menuBar = menuBar(fileMenu, editMenu, moveMenu, playMenu);
 
         frame("Othello Viewer", JFrame.EXIT_ON_CLOSE, menuBar,
                 grid(2, -1, -1,
@@ -94,7 +93,7 @@ public class Viewer {
     }
 
     private void startNewGame() {
-        engine.setMaxDepth(levelMenu.getSelectedLevel());
+//        engine.setMaxDepth(levelMenu.getSelectedLevel());
         Engine blackEngine = playMenu.blackEngine(engine);
         Engine whiteEngine = playMenu.whiteEngine(engine);
         final String startPositionType = playMenu.getStartPositionType();
