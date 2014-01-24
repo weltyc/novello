@@ -40,12 +40,15 @@ Some things we need:
 * The GUI needs to get moves asynchronously and get responses on the EDT.
 * A Tournament needs to get moves synchronously.
 
-For tournaments, we only need to access engines synchronously (the tournament will run multiple games in
+For tournaments, we only need to access engines synchronously (the tournament will run multiple Matches in
 multiple threads). For performance reasons it should be able to access SyncEngines directly. For AsyncEngines
 it will need an adapter class.
+Each Match needs a GamePlayer, which the Match gets from a GamePlayerFactory. GamePlayer is like a SyncEngine
+but does not have a setDepth() command;
 
 The GUI needs not just an AsyncEngine, but also one that only responds on the EDT. Thus it requires an adapter
 class to use either an AsyncEngine or a SyncEngine.
+
 
 Engine Factories
 ----------------

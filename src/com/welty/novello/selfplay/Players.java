@@ -66,23 +66,6 @@ public class Players {
         return new EvalSyncEngine(eval, depth, matcher.group(2));
     }
 
-    /**
-     * Generates a list of Players from a text string.
-     * <p/>
-     * Each element of names[] is the name of a player, for instance "d1s:3".
-     * the first character of each player is the EvaluationStrategy; the second is the coefficient set.
-     *
-     * @param names players list
-     * @return Players
-     */
-    static SyncEngine[] players(String[] names) {
-        final SyncEngine[] syncEngines = new SyncEngine[names.length];
-        for (int i = 0; i < names.length; i++) {
-            syncEngines[i] = player(names[i]);
-        }
-        return syncEngines;
-    }
-
     private static Eval currentEval;
 
     public static synchronized Eval currentEval() {
