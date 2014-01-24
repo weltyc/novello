@@ -45,7 +45,7 @@ public class MidgameHashTables {
             int size = 1 << (nEmpty < 8 ? 10 : nEmpty < 12 ? 12 : 14);
             tables[nEmpty] = new HashTable(size);
         }
-        log.info(String.format("ouch: %d  (%,d entries)\n", count.incrementAndGet(), nEntries()));
+        log.info(String.format("ouch: %d  (%,d entries)", count.incrementAndGet(), nEntries()));
     }
 
     private long nEntries() {

@@ -158,11 +158,16 @@ positions there by about 40%. At more empties though this will be a huge % incre
 
 f7:6 vs f6:6, 0.509 +/-0.073. 20.92 ms vs  21.39 ms.
 
-This is also not very worth it. Perhaps
+Strength is getting close to d2:
+f7:4 vs d2:4, -0.831 +/-0.094. 6.01 ms vs   6.28 ms.
 
 Deeper search (f?)
 ------------------
-The non-GGS positions are
+Did the GGS positions help more because they had better players searching to a greater depth?
+Try increasing the depth on the non-GGS positions. Current depth is 10 which took about 4 hours
+to generate the 20M values in -cap.pvs. There are just under 40M positions to regenerate, so ~8 hours at
+depth 10.
+
 For planning purposes, midgame depth vs probable solve height:   (from the code, dProb/dMid = exactly 5/4)
 
     mid  prob
@@ -170,3 +175,12 @@ For planning purposes, midgame depth vs probable solve height:   (from the code,
      12    21
      14    24
      16    26
+
+To get an idea of the strength/time tradeoff, play d2:14 vs d2:10
+
+d2:14 vs d2:10    79 matches: average result = +11.8 +/-1.1. T ~  10.2.   824.81 ms vs 166.06 ms.
+d2:16 vs d2:10    80 matches: average result = +14.3 +/-1.0. T ~  13.9.     1.78  s vs 172.04 ms.
+
+16-ply takes roughly 10 times as long as 10-ply. If I start now it should be done Monday morning...
+
+
