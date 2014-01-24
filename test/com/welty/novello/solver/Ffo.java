@@ -2,7 +2,7 @@ package com.welty.novello.solver;
 
 import com.welty.novello.core.*;
 import com.welty.novello.eval.CoefficientCalculator;
-import com.welty.novello.ntest.NBoardPlayer;
+import com.welty.novello.ntest.NBoardSyncEngine;
 import com.welty.novello.selfplay.Players;
 import org.jetbrains.annotations.NotNull;
 
@@ -143,7 +143,7 @@ public class Ffo {
     }
 
     public static class NtestSearcher implements Searcher {
-        private final NBoardPlayer player = new NBoardPlayer("ntest", 50, false);
+        private final NBoardSyncEngine player = new NBoardSyncEngine("ntest", 50, false);
 
         @NotNull @Override public Counts getCounts() {
             return new Counts(0, 0);

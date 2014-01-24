@@ -1,0 +1,60 @@
+This describes the components of the Viewer and how they interact.
+
+First, many objects are "GUI Objects". A GUI Object may only be accessed from the Event Dispatch Thread ("EDT").
+
+Some GUI Objects are:
+Viewer - creates and shows the GUI
+GameModel - data about the current game
+BoardPanel - displays the board (disks only, no names or clocks)
+
+Engines
+-------
+The main job of an Engine is to generate moves given a board position. "Engine" is a concept,
+not a java interface. The two java interfaces are "SyncEngine" and "AsyncEngine" which accomplish
+the job synchronously and asynchronously respectively.
+
+Some things we need:
+* External engines need to communicate via NBoard protocol.
+* We need a simple (synchronous) way to write simple engines.
+
+AsyncEngine roughly parallels the NBoard protocol. The caller calls requestMove() and, sometime later
+and possibly in another thread, the Engine calls engineMove(). All external programs are used as AsyncEngines.
+
+A SyncEngine has "getMove()" and "setDepth()" methods. The caller calls
+getMove() and blocks until a move is calculated and returned. This is much simpler to implement
+and has lower threading overhead. It is used for (most? all?) internal engines.
+
+A SyncEngine is much simpler to implement and is used in non-interactive situations such as tournaments.
+An AsyncEngine is needed to communicate with external programs such as NTest and Edax.
+
+Due to the moderately high startup cost of some Engines, an Engine may be reused from game to game.
+
+All SyncEngines may assume that they will only be called from a single thread over their lifetime.
+This allows dramatic code simplification and performance improvements inside the Engine. (AsyncEngines too?)
+
+Engine Users
+------------
+These are programs that use Engines to accomplish a goal.
+
+Some things we need:
+* The GUI needs to get moves asynchronously and get responses on the EDT.
+* A Tournament needs to get moves synchronously.
+
+For tournaments, we only need to access engines synchronously (the tournament will run multiple games in
+multiple threads). For performance reasons it should be able to access SyncEngines directly. For AsyncEngines
+it will need an adapter class.
+
+The GUI needs not just an AsyncEngine, but also one that only responds on the EDT. Thus it requires an adapter
+class to use either an AsyncEngine or a SyncEngine.
+
+Engine Factories
+----------------
+Are used to select and create Engines.
+
+We need:
+* To create any Sync or Async Engine.
+* To re-use Engines where possible to reduce overhead costs
+  * Re-use any Engine in the same thread.
+  * call setDepth() instead of creating a new Engine.
+
+EngineFactories therefore will probably be implemented using a ThreadLocal cache of existing Engines.

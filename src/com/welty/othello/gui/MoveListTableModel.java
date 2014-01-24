@@ -18,14 +18,14 @@ import java.util.List;
 
 /**
  */
-class MoveListTableModel extends AbstractTableModel implements GameView.ChangeListener {
-    private final GameView gameView;
+class MoveListTableModel extends AbstractTableModel implements GameModel.ChangeListener {
+    private final GameModel gameModel;
     private List<Move8x8> moves;
 
-    static JScrollPane of(GameView gameView) {
-        final MoveListTableModel model = new MoveListTableModel(gameView);
+    static JScrollPane of(GameModel gameModel) {
+        final MoveListTableModel model = new MoveListTableModel(gameModel);
 
-        final JTable jTable = new MyTable(model, gameView);
+        final JTable jTable = new MyTable(model, gameModel);
         final JScrollPane scrollPane = new JScrollPane(jTable);
 
         // set size
@@ -38,10 +38,10 @@ class MoveListTableModel extends AbstractTableModel implements GameView.ChangeLi
         return scrollPane;
     }
 
-    private MoveListTableModel(GameView gameView) {
-        this.gameView = gameView;
-        gameView.addChangeListener(this);
-        moves = gameView.getMoves();
+    private MoveListTableModel(GameModel gameModel) {
+        this.gameModel = gameModel;
+        gameModel.addChangeListener(this);
+        moves = gameModel.getMoves();
     }
 
     @Override public int getRowCount() {
@@ -54,7 +54,7 @@ class MoveListTableModel extends AbstractTableModel implements GameView.ChangeLi
     }
 
     private int extra() {
-        return gameView.getStartPosition().blackToMove ? 0 : 1;
+        return gameModel.getStartPosition().blackToMove ? 0 : 1;
     }
 
     @Override public int getColumnCount() {
@@ -106,7 +106,7 @@ class MoveListTableModel extends AbstractTableModel implements GameView.ChangeLi
     }
 
     @Override public void gameViewChanged() {
-        moves = gameView.getMoves();
+        moves = gameModel.getMoves();
         fireTableDataChanged();
     }
 
@@ -125,7 +125,7 @@ class MoveListTableModel extends AbstractTableModel implements GameView.ChangeLi
             if (row >= 0 && col >= 0) {
                 final int move = model.moveNumber(row, col);
                 if (move >= 0) {
-                    model.gameView.setIPosition(move);
+                    model.gameModel.setIPosition(move);
                 }
             }
         }
@@ -150,14 +150,14 @@ class MoveListTableModel extends AbstractTableModel implements GameView.ChangeLi
         }
     }
 
-    private static class MyTable extends JTable implements GameView.ChangeListener {
+    private static class MyTable extends JTable implements GameModel.ChangeListener {
         private final MoveListTableModel model;
-        private final GameView gameView;
+        private final GameModel gameModel;
 
-        public MyTable(MoveListTableModel model, GameView gameView) {
+        public MyTable(MoveListTableModel model, GameModel gameModel) {
             super(model);
             this.model = model;
-            this.gameView = gameView;
+            this.gameModel = gameModel;
             final JTableHeader header = getTableHeader();
             header.setReorderingAllowed(false);
             header.setResizingAllowed(false);
@@ -177,14 +177,14 @@ class MoveListTableModel extends AbstractTableModel implements GameView.ChangeLi
             // add my own mouse listener
             addMouseListener(new MyMouseAdapter(model, this));
 
-            gameView.addChangeListener(this);
+            gameModel.addChangeListener(this);
             gameViewChanged();
         }
 
         @Override public void gameViewChanged() {
-            final int move = gameView.getIPosition();
-            final boolean shouldHighlightMove = move < gameView.nMoves();
-            final int scrollTo = Math.min(move, gameView.nMoves() - 1) + model.extra();
+            final int move = gameModel.getIPosition();
+            final boolean shouldHighlightMove = move < gameModel.nMoves();
+            final int scrollTo = Math.min(move, gameModel.nMoves() - 1) + model.extra();
             final int row = scrollTo / 2;
             final int col = scrollTo & 1;
             if (move > 0 || shouldHighlightMove) {

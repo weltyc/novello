@@ -1,7 +1,7 @@
 package com.welty.novello.selfplay;
 
 import com.welty.novello.eval.*;
-import com.welty.novello.ntest.NBoardPlayer;
+import com.welty.novello.ntest.NBoardSyncEngine;
 import com.welty.ntestj.CEvaluatorJ;
 
 import java.util.regex.Matcher;
@@ -24,7 +24,7 @@ public class Players {
     }
 
     /**
-     * Construct a Player from a text string
+     * Construct a SyncEngine from a text string
      * <p/>
      * The text string has the format
      * {eval}:{depth}{options}
@@ -39,11 +39,11 @@ public class Players {
      * {eval} may also be "ntest", in which case an external NTest process is launched. NTest ignores options.
      *
      * This function always returns a new player; it does not reuse old players even if the textString is the same.
-     * This is because the Player may not be multithreaded.
+     * This is because the SyncEngine may not be multithreaded.
      * @param textString player text string
-     * @return a newly constructed Player.
+     * @return a newly constructed SyncEngine.
      */
-    public static Player player(String textString) {
+    public static SyncEngine player(String textString) {
         final String[] parts = textString.split(":", 2);
         if (parts.length < 2) {
             throw new IllegalArgumentException("require an eval and a search depth, for instance 'a1:3w'; had " + textString);
@@ -59,11 +59,11 @@ public class Players {
 
         final String evalName = parts[0];
         if (evalName.equals("ntest") || evalName.equals("edax") || evalName.equals("ntest-new")) {
-            return new NBoardPlayer(evalName, depth, false);
+            return new NBoardSyncEngine(evalName, depth, false);
         }
         final Eval eval;
         eval = eval(evalName);
-        return new EvalPlayer(eval, depth, matcher.group(2));
+        return new EvalSyncEngine(eval, depth, matcher.group(2));
     }
 
     /**
@@ -75,12 +75,12 @@ public class Players {
      * @param names players list
      * @return Players
      */
-    static Player[] players(String[] names) {
-        final Player[] players = new Player[names.length];
+    static SyncEngine[] players(String[] names) {
+        final SyncEngine[] syncEngines = new SyncEngine[names.length];
         for (int i = 0; i < names.length; i++) {
-            players[i] = player(names[i]);
+            syncEngines[i] = player(names[i]);
         }
-        return players;
+        return syncEngines;
     }
 
     private static Eval currentEval;

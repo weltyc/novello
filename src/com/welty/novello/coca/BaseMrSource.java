@@ -4,7 +4,7 @@ import com.orbanova.common.misc.Logger;
 import com.welty.novello.core.MeValue;
 import com.welty.novello.core.Mr;
 import com.welty.novello.core.ObjectFeed;
-import com.welty.novello.selfplay.EvalPlayer;
+import com.welty.novello.selfplay.EvalSyncEngine;
 import com.welty.novello.selfplay.Players;
 import com.welty.novello.selfplay.SelfPlaySet;
 
@@ -22,7 +22,7 @@ public class BaseMrSource implements MrSource {
     public static final BaseMrSource instance = new BaseMrSource();
 
     @Override public Set<Mr> getMrs() throws IOException {
-        final EvalPlayer playoutPlayer = new EvalPlayer(Players.currentEval(), 8, "");
+        final EvalSyncEngine playoutPlayer = new EvalSyncEngine(Players.currentEval(), 8, "");
         final Path mrsPath = CachingMvSource.getCacheDir().resolve("base.mrs");
         if (!Files.exists(mrsPath)) {
             final Set<Mr> mrSet = new HashSet<>();

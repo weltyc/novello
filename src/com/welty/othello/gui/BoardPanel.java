@@ -15,7 +15,7 @@ import java.awt.image.BufferedImage;
 /**
  * View of the Othello Board
  */
-public class BoardPanel extends JPanel implements GameView.ChangeListener {
+public class BoardPanel extends JPanel implements GameModel.ChangeListener {
     private static final Color BOARD_COLOR = new Color(0x00, 0x60, 0x00);
     private Position position;
     private Position prevPosition;
@@ -28,11 +28,11 @@ public class BoardPanel extends JPanel implements GameView.ChangeListener {
      */
     private static final int speed = 100;
 
-    private final @NotNull GameView gameView;
+    private final @NotNull GameModel gameModel;
 
-    BoardPanel(@NotNull GameView gameView) {
-        this.gameView = gameView;
-        gameView.addChangeListener(this);
+    BoardPanel(@NotNull GameModel gameModel) {
+        this.gameModel = gameModel;
+        gameModel.addChangeListener(this);
         // find out ASAP whether images are available.
         Images.loadImages();
 
@@ -40,7 +40,7 @@ public class BoardPanel extends JPanel implements GameView.ChangeListener {
         setPreferredSize(dimension);
         setBackground(BOARD_COLOR);
         addMouseListener(new MyMouseListener());
-        prevPosition = position = gameView.getPosition();
+        prevPosition = position = gameModel.getPosition();
 
         ActionListener fadeTask = new ActionListener() {
             @Override public void actionPerformed(ActionEvent e) {
@@ -74,7 +74,7 @@ public class BoardPanel extends JPanel implements GameView.ChangeListener {
 
     @Override public void gameViewChanged() {
         prevPosition = position;
-        position = gameView.getPosition();
+        position = gameModel.getPosition();
         fadeIndex = 0;
         repaint();
     }
@@ -87,7 +87,7 @@ public class BoardPanel extends JPanel implements GameView.ChangeListener {
 
             if (!BitBoardUtils.badRowNum(row) && !BitBoardUtils.badRowNum(col)) {
                 final int sq = BitBoardUtils.square(row, col);
-                gameView.boardClick(sq);
+                gameModel.boardClick(sq);
             }
         }
     }

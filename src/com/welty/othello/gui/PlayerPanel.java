@@ -10,33 +10,33 @@ import java.awt.*;
 
 /**
  */
-public class PlayerPanel extends Grid<JComponent>  implements GameView.ChangeListener{
+public class PlayerPanel extends Grid<JComponent>  implements GameModel.ChangeListener{
     private final JLabel name;
     private final JLabel time = new JLabel();
     private final boolean isBlack;
-    private final @NotNull GameView gameView;
+    private final @NotNull GameModel gameModel;
 
     private static final int borderSize = 4;
 
     private static final Border moverBorder = BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.RED), BorderFactory.createEmptyBorder(borderSize-1,borderSize-1,borderSize-1,borderSize-1));
     private static final Border enemyBorder = BorderFactory.createEmptyBorder(borderSize,borderSize,borderSize,borderSize);
 
-    PlayerPanel(boolean isBlack, @NotNull GameView gameView) {
+    PlayerPanel(boolean isBlack, @NotNull GameModel gameModel) {
         super(2);
         this.isBlack = isBlack;
-        this.gameView = gameView;
+        this.gameModel = gameModel;
         final ImageIcon icon = new ImageIcon(isBlack ? Images.smallBlack : Images.smallWhite);
         name = new JLabel(icon);
         add(time);
         add(name);
         spacing(5);
-        gameView.addChangeListener(this);
+        gameModel.addChangeListener(this);
         gameViewChanged();
     }
 
     @Override public void gameViewChanged() {
-        name.setText(isBlack?gameView.getBlackName() : gameView.getWhiteName());
-        final State state = gameView.getState();
+        name.setText(isBlack? gameModel.getBlackName() : gameModel.getWhiteName());
+        final State state = gameModel.getState();
         time.setText((isBlack? state.blackClock : state.whiteClock).toString());
         final boolean useBorder = state.position.blackToMove == isBlack;
         final Border border = useBorder?moverBorder : enemyBorder;

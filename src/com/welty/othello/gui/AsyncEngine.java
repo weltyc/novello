@@ -2,7 +2,7 @@ package com.welty.othello.gui;
 
 import com.welty.novello.core.MoveScore;
 import com.welty.novello.core.Position;
-import com.welty.novello.selfplay.Player;
+import com.welty.novello.selfplay.SyncEngine;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -10,34 +10,34 @@ import javax.swing.*;
 
 /**
  */
-class Engine {
-    private final @NotNull Player player;
+class AsyncEngine {
+    private final @NotNull SyncEngine syncEngine;
     private final @NotNull RequestQueue queue = new RequestQueue();
 
-    Engine(@NotNull Player player) {
-        this.player = player;
+    AsyncEngine(@NotNull SyncEngine syncEngine) {
+        this.syncEngine = syncEngine;
         new Thread(queue).start();
     }
 
     /**
      * Notify the engine that it should move.
      * <p/>
-     * The Engine moves by calling GameView.engineMove() with its move and the given ping.
+     * The Engine moves by calling GameModel.engineMove() with its move and the given ping.
      * <p/>
      * This method may be called from the Event Dispatch Thread. To keep the GUI responsive, the engine should
      * not perform lengthy calculations in the calling thread. The Engine will normally perform computations in another
-     * thread and call GameView.engineMove() once the computation is complete.
+     * thread and call GameModel.engineMove() once the computation is complete.
      * <p/>
-     * The user may have changed the gameView between the time this method is called and when the Engine
-     * calls GameView.engineMove(). To ensure the Engine is calling engineMove() with a move for the correct position,
-     * the GameView ignores engineMove() calls that have outdated pings.
+     * The user may have changed the gameModel between the time this method is called and when the Engine
+     * calls GameModel.engineMove(). To ensure the Engine is calling engineMove() with a move for the correct position,
+     * the GameModel ignores engineMove() calls that have outdated pings.
      *
-     * @param gameView move requester.
+     * @param gameModel move requester.
      * @param position position for which a move is requested.
-     * @param ping     parameter that must be passed to GameView.engineMove() to validate the move
+     * @param ping     parameter that must be passed to GameModel.engineMove() to validate the move
      */
-    public void requestMove(@NotNull GameView gameView, @NotNull Position position, long ping) {
-        final MoveRequest moveRequest = new MoveRequest(gameView, position, ping);
+    public void requestMove(@NotNull GameModel gameModel, @NotNull Position position, long ping) {
+        final MoveRequest moveRequest = new MoveRequest(gameModel, position, ping);
         queue.add(moveRequest);
     }
 
@@ -50,7 +50,7 @@ class Engine {
      * @return the Engine's name
      */
     public @NotNull String getName() {
-        return player.toString();
+        return syncEngine.toString();
     }
 
     /**
@@ -59,31 +59,31 @@ class Engine {
      * @param maxDepth maximum search depth, in ply.
      */
     public void setMaxDepth(int maxDepth) {
-        player.setMaxDepth(maxDepth);
+        syncEngine.setMaxDepth(maxDepth);
     }
 
     private static class MoveRequest {
-        private final @NotNull GameView gameView;
+        private final @NotNull GameModel gameModel;
         private final @NotNull Position position;
         private final long ping;
 
-        private MoveRequest(@NotNull GameView gameView, @NotNull Position position, long ping) {
-            this.gameView = gameView;
+        private MoveRequest(@NotNull GameModel gameModel, @NotNull Position position, long ping) {
+            this.gameModel = gameModel;
             this.position = position;
             this.ping = ping;
         }
 
-        private void respond(Player player) {
+        private void respond(SyncEngine syncEngine) {
             final long moves = position.calcMoves();
             final MoveScore moveScore;
             if (moves == 0) {
                 moveScore = new MoveScore(-1, 0);
             } else {
-                moveScore = player.calcMove(position);
+                moveScore = syncEngine.calcMove(position);
             }
             SwingUtilities.invokeLater(new Runnable() {
                 @Override public void run() {
-                    gameView.engineMove(moveScore, ping);
+                    gameModel.engineMove(moveScore, ping);
                 }
             });
         }
@@ -120,7 +120,7 @@ class Engine {
         @Override public void run() {
             while (true) {
                 final MoveRequest request = take();
-                request.respond(player);
+                request.respond(syncEngine);
             }
         }
     }

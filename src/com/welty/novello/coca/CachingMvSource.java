@@ -2,7 +2,7 @@ package com.welty.novello.coca;
 
 import com.orbanova.common.misc.Logger;
 import com.welty.novello.core.*;
-import com.welty.novello.selfplay.Player;
+import com.welty.novello.selfplay.SyncEngine;
 import com.welty.novello.selfplay.Players;
 import com.welty.novello.selfplay.SelfPlayGame;
 import org.jetbrains.annotations.NotNull;
@@ -146,8 +146,8 @@ public class CachingMvSource implements MvSource {
         }
     }
 
-    private final ThreadLocal<Player> players = new ThreadLocal<Player>() {
-        @Override protected Player initialValue() {
+    private final ThreadLocal<SyncEngine> players = new ThreadLocal<SyncEngine>() {
+        @Override protected SyncEngine initialValue() {
             return Players.player(playerName);
         }
     };
@@ -157,11 +157,11 @@ public class CachingMvSource implements MvSource {
      * <p/>
      * This implementation values using a midgame search.
      *
-     * @param player   player to value a position.
+     * @param syncEngine   syncEngine to value a position.
      * @param position the position
      * @return The two pvs
      */
-    static List<MeValue> getFirstTwoPvsSearch(Player player, Position position) {
+    static List<MeValue> getFirstTwoPvsSearch(SyncEngine syncEngine, Position position) {
         // generate value using a midgame search
         List<MeValue> pvs = new ArrayList<>();
         if (!position.hasLegalMove()) {
@@ -170,7 +170,7 @@ public class CachingMvSource implements MvSource {
                 return pvs;
             }
         }
-        final MoveScore moveScore = player.calcMove(position);
+        final MoveScore moveScore = syncEngine.calcMove(position);
         pvs.add(new MeValue(position.mover(), position.enemy(), moveScore.score));
 
         position = position.play(moveScore.sq);
@@ -193,13 +193,13 @@ public class CachingMvSource implements MvSource {
      * <p/>
      * This implementation values using a midgame search.
      *
-     * @param player   player to value a position.
+     * @param syncEngine   syncEngine to value a position.
      * @param position the position
      * @return The two pvs
      */
-    static List<MeValue> getFirstTwoPvsPlayout(Player player, Position position) {
+    static List<MeValue> getFirstTwoPvsPlayout(SyncEngine syncEngine, Position position) {
         // generate using playout
-        final MutableGame game = new SelfPlayGame(position, player, player, "", 0).call();
+        final MutableGame game = new SelfPlayGame(position, syncEngine, syncEngine, "", 0).call();
         final List<MeValue> gamePvs = game.calcPositionValues();
         return gamePvs.subList(0, Math.min(2, gamePvs.size()));
     }

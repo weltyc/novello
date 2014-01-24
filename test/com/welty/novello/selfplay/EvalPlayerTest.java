@@ -9,7 +9,7 @@ import junit.framework.TestCase;
 public class EvalPlayerTest extends TestCase {
     public void test1PlySearch() throws Exception {
         final Eval eval = Players.currentEval();
-        final EvalPlayer player = new EvalPlayer(eval, 1, "");
+        final EvalSyncEngine player = new EvalSyncEngine(eval, 1, "");
 
         final Position prev = Position.of("--------\n" +
                 "--------\n" +
@@ -48,7 +48,7 @@ public class EvalPlayerTest extends TestCase {
     }
 
     public void testNameChangeOnDepthChange() {
-        final EvalPlayer evalPlayer = new EvalPlayer(Players.currentEval(), 1, "");
+        final EvalSyncEngine evalPlayer = new EvalSyncEngine(Players.currentEval(), 1, "");
         assertEquals(Players.currentEval()+":1", evalPlayer.toString());
         evalPlayer.setMaxDepth(2);
         assertEquals(Players.currentEval()+":2", evalPlayer.toString());
@@ -59,7 +59,7 @@ public class EvalPlayerTest extends TestCase {
      */
     public void testSolveValue() {
         final Eval eval = Players.currentEval();
-        final EvalPlayer player = new EvalPlayer(eval, 1, "");
+        final EvalSyncEngine player = new EvalSyncEngine(eval, 1, "");
 
         final Position prev = Position.of("OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO*. O");
 

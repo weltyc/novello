@@ -9,11 +9,11 @@ import com.welty.ntestj.Heights;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * A Player that chooses its move using an Eval and a search.
+ * A SyncEngine that chooses its move using an Eval and a search.
  * <p/>
  * This implementation is NOT thread-safe.
  */
-public class EvalPlayer implements Player {
+public class EvalSyncEngine implements SyncEngine {
     @NotNull private final Eval eval;
     private final MidgameSearcher.Options midgameOptions;
     private volatile int searchDepth;
@@ -21,7 +21,7 @@ public class EvalPlayer implements Player {
     private final MidgameSearcher searcher;
     private final Solver solver;
 
-    public EvalPlayer(@NotNull Eval eval, int searchDepth, String options) {
+    public EvalSyncEngine(@NotNull Eval eval, int searchDepth, String options) {
         this.eval = eval;
         this.searchDepth = searchDepth;
         this.options = options;

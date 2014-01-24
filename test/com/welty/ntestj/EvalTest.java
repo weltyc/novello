@@ -3,7 +3,7 @@ package com.welty.ntestj;
 import com.welty.novello.core.Me;
 import com.welty.novello.core.MoveScore;
 import com.welty.novello.core.Position;
-import com.welty.novello.ntest.NBoardPlayer;
+import com.welty.novello.ntest.NBoardSyncEngine;
 import junit.framework.TestCase;
 
 /**
@@ -67,11 +67,11 @@ public class EvalTest extends TestCase {
      * If ntest is not available on this computer, ignore.
      */
     public void test1Ply() {
-        if (NBoardPlayer.getExe("ntest")==null) {
+        if (NBoardSyncEngine.getExe("ntest")==null) {
             System.out.println("ntest not available on this machine, skipping test");
             return;
         }
-        final NBoardPlayer ntest = new NBoardPlayer("ntest", 1, true);
+        final NBoardSyncEngine ntest = new NBoardSyncEngine("ntest", 1, true);
         final CEvaluatorJ eval = CEvaluatorJ.getInstance();
 
         test1Ply(ntest, eval, Position.START_POSITION);
@@ -81,7 +81,7 @@ public class EvalTest extends TestCase {
 //        test1Ply(ntest, eval, Me.late.toPosition());
     }
 
-    private static void test1Ply(NBoardPlayer ntest, CEvaluatorJ eval, Position pos) {
+    private static void test1Ply(NBoardSyncEngine ntest, CEvaluatorJ eval, Position pos) {
         final MoveScore moveScore = ntest.calcMove(pos);
         final Position next = pos.play(moveScore.sq);
         final int value = eval.ValueJMobs(next.mover(), next.enemy(), next.calcMoves(), next.enemyMoves());

@@ -3,7 +3,7 @@ package com.welty.novello.ntest;
 import com.orbanova.common.misc.Logger;
 import com.orbanova.common.misc.Require;
 import com.welty.novello.core.*;
-import com.welty.novello.selfplay.Player;
+import com.welty.novello.selfplay.SyncEngine;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
@@ -11,7 +11,7 @@ import java.io.*;
 /**
  * An instance of the NTest othello program
  */
-public class NBoardPlayer implements Player {
+public class NBoardSyncEngine implements SyncEngine {
     private final PrintWriter out;
     private final BufferedReader in;
     private final String program;
@@ -19,9 +19,9 @@ public class NBoardPlayer implements Player {
     private final int depth;
     private final boolean debug;
 
-    private static final Logger log = Logger.logger(NBoardPlayer.class, Logger.Level.DEBUG);
+    private static final Logger log = Logger.logger(NBoardSyncEngine.class, Logger.Level.DEBUG);
 
-    public NBoardPlayer(String program, int depth, boolean debug) {
+    public NBoardSyncEngine(String program, int depth, boolean debug) {
         this.program = program;
         try {
             this.depth = depth;

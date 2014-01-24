@@ -33,7 +33,7 @@ larger siblings. Does this make a difference?
 
 EvalStrategyF: exactly the same as EvalStrategyJ but without the 2x4
   f1:2 vs j1:2: average result = 0.2
-I'm a little concerned that the order of players could matter because of cache effects.
+I'm a little concerned that the order of syncEngines could matter because of cache effects.
   j1:2 vs f1:2: average result = -0.3
 The order makes a difference, but not a huge difference. As does the 2x4 and edge term calculation.
 
@@ -97,7 +97,7 @@ f4:6 vs f1:6, f4 wins by 2.21 +/-0.27, 20.68 ms vs  21.13 ms. So the improvement
 GGS positions (f5)
 -------------------
 The f5 coefficients are calculated using the same data as f4 plus positions from a large number of GGS games.
-The GGS games were selected from GGS's "Othello.latest" file by choosing games where both players are rated
+The GGS games were selected from GGS's "Othello.latest" file by choosing games where both syncEngines are rated
 over 2000, on an 8x8 board, non-anti. Each position in the game was scored using the game result. This added about
 2M positions to the 19M positions that were used to generate f4. These games should be scored much better too -
 strong GGS bots should be getting probable solves around 40+ empties, while the other positions are valued by
@@ -119,7 +119,7 @@ Perhaps using a better eval for generating MeValues will result in better coeffi
 
 Currently the coefficient calculator uses c5s:10. To determine the best eval strategy,
 played a tournament with c5s, d1s, f4.
-So that I don't die of old age before it completes, all players have search depth 4.
+So that I don't die of old age before it completes, all syncEngines have search depth 4.
 
     Tournament results:
      +2.7  f5:4
@@ -156,7 +156,9 @@ We hit 200k for 11-47 empties, a very wide range. This resulted in 19xk distinct
 We already had a large number of positions from 36 empty onward, so this will only increase the number of
 positions there by about 40%. At more empties though this will be a huge % increase on the number of positions.
 
+f7:6 vs f6:6, 0.509 +/-0.073. 20.92 ms vs  21.39 ms.
 
+This is also not very worth it. Perhaps
 
 Deeper search (f?)
 ------------------

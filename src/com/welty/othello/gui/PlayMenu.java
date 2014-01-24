@@ -35,7 +35,7 @@ public class PlayMenu extends JMenu {
      * @param engine engine that might play black
      * @return the engine, if black should be played by an engine, or null if black should be played by the human.
      */
-    public Engine blackEngine(Engine engine) {
+    public AsyncEngine blackEngine(AsyncEngine engine) {
         return color.selectedIndex == 0 ? null : engine;
     }
 
@@ -45,7 +45,7 @@ public class PlayMenu extends JMenu {
      * @param engine engine that might play white
      * @return the engine, if white should be played by an engine, or null if white should be played by the human.
      */
-    public Engine whiteEngine(Engine engine) {
+    public AsyncEngine whiteEngine(AsyncEngine engine) {
         return color.selectedIndex == 1 ? null : engine;
     }
 

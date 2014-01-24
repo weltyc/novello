@@ -19,8 +19,8 @@ public class SelfPlaySet {
             System.err.println("usage: blackPlayerName whitePlayerName [# games]");
             System.err.println(" for example a1:2 ntest:2");
         }
-        final Player black = Players.player(args[0]);
-        final Player white = Players.player(args[1]);
+        final SyncEngine black = Players.player(args[0]);
+        final SyncEngine white = Players.player(args[1]);
 
         final MatchResultListener[] listeners = {new MatchPrinter(2), new StatPrinter()};
         final double result = run(black, white, listeners);
@@ -33,20 +33,20 @@ public class SelfPlaySet {
      * While this may run multithreaded, all listeners will receive results in the calling thread
      * and therefore need not be thread safe.
      * <p/>
-     * If player1==player2, this will play only one game per match. Otherwise each match will contain
-     * two games from the same start position, the first with player1 starting the second with player2 starting.
+     * If syncEngine1==syncEngine2, this will play only one game per match. Otherwise each match will contain
+     * two games from the same start position, the first with syncEngine1 starting the second with syncEngine2 starting.
      *
-     * @param player1   first player
-     * @param player2   second player
+     * @param syncEngine1   first player
+     * @param syncEngine2   second player
      * @param listeners listeners to match result
      * @return average match result (player 1 disks - player 2 disks).
      */
-    public static double run(Player player1, Player player2, MatchResultListener... listeners) {
-        return new SelfPlaySet(player1, player2, listeners).call();
+    public static double run(SyncEngine syncEngine1, SyncEngine syncEngine2, MatchResultListener... listeners) {
+        return new SelfPlaySet(syncEngine1, syncEngine2, listeners).call();
     }
 
-    private final @NotNull Player player1;
-    private final @NotNull Player player2;
+    private final @NotNull SyncEngine syncEngine1;
+    private final @NotNull SyncEngine syncEngine2;
     private final @NotNull MatchResultListener[] matchResultListeners;
 
     /**
@@ -54,25 +54,25 @@ public class SelfPlaySet {
      * <p/>
      * call() plays the games.
      *
-     * @param player1              first player
-     * @param player2              second player
+     * @param syncEngine1              first player
+     * @param syncEngine2              second player
      * @param matchResultListeners listeners to results of each match
      */
-    private SelfPlaySet(@NotNull Player player1, @NotNull Player player2, @NotNull MatchResultListener... matchResultListeners) {
-        this.player1 = player1;
-        this.player2 = player2;
+    private SelfPlaySet(@NotNull SyncEngine syncEngine1, @NotNull SyncEngine syncEngine2, @NotNull MatchResultListener... matchResultListeners) {
+        this.syncEngine1 = syncEngine1;
+        this.syncEngine2 = syncEngine2;
         this.matchResultListeners = matchResultListeners;
     }
 
     /**
      * Play all matches.
      * <p/>
-     * If player1==player2, plays one game from each start position. Otherwise plays two.
+     * If syncEngine1==syncEngine2, plays one game from each start position. Otherwise plays two.
      *
-     * @return average match score (player1 disks - player2 disks).
+     * @return average match score (syncEngine1 disks - syncEngine2 disks).
      */
     private double call() {
-        log.info("Starting " + player1 + " vs " + player2);
+        log.info("Starting " + syncEngine1 + " vs " + syncEngine2);
 
         final String hostName = NovelloUtils.getHostName();
         final List<Position> startPositions = generateStartPositions();
@@ -81,10 +81,10 @@ public class SelfPlaySet {
         double sum = 0;
         for (Position startPosition : startPositions) {
             final int netResult;
-            final MutableGame result = new SelfPlayGame(startPosition, player1, player2, hostName, 0).call();
+            final MutableGame result = new SelfPlayGame(startPosition, syncEngine1, syncEngine2, hostName, 0).call();
             final MutableGame result2;
-            if (player2 != player1) {
-                result2 = new SelfPlayGame(startPosition, player2, player1, hostName, 0).call();
+            if (syncEngine2 != syncEngine1) {
+                result2 = new SelfPlayGame(startPosition, syncEngine2, syncEngine1, hostName, 0).call();
                 netResult = (result.netScore() - result2.netScore());
             } else {
                 // if the same player plays both sides we don't need to play the return games
@@ -125,11 +125,11 @@ public class SelfPlaySet {
         /**
          * Handle the results of a match
          * <p/>
-         * The match may have one game (if player1==player2) or two games (otherwise). If there are two games, both
-         * will be from the same starting position; the first with player1 starting, the second with player2 starting.
+         * The match may have one game (if syncEngine1==syncEngine2) or two games (otherwise). If there are two games, both
+         * will be from the same starting position; the first with syncEngine1 starting, the second with syncEngine2 starting.
          *
          * @param nComplete # of matches completed so far
-         * @param netResult player1 disks - player 2 disks
+         * @param netResult syncEngine1 disks - player 2 disks
          * @param game1     first game of the completed match.
          * @param game2     second game of the match, or null if there was no second game.
          */
@@ -188,7 +188,7 @@ public class SelfPlaySet {
             final double variance = sumSq - sum * sum / nComplete;
             final double stdErr = Math.sqrt(variance);
             final double tStat = sum / stdErr;
-            log.info(String.format("%,6d matches: average result = %.3g +/-%3.2g. T ~ %5.1f.  Time per game =%ss vs%ss."
+            log.info(String.format("%,6d matches: average result = %+.3g +/-%3.2g. T ~ %5.1f.  %ss vs%ss."
                     , nComplete, sum / nComplete, stdErr / nComplete, tStat
                     , NovelloUtils.engineeringDouble(t1 / nComplete), NovelloUtils.engineeringDouble(t2 / nComplete))
             );

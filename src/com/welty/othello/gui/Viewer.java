@@ -2,7 +2,6 @@ package com.welty.othello.gui;
 
 import com.orbanova.common.jsb.Grid;
 import com.welty.novello.core.Position;
-import com.welty.novello.selfplay.Players;
 
 import javax.swing.*;
 import java.awt.*;
@@ -28,11 +27,11 @@ public class Viewer {
         });
     }
 
-    final GameView gameView = new GameView();
+    final GameModel gameModel = new GameModel();
 
     private final PlayMenu playMenu = new PlayMenu();
 
-    private final Engine engine = null;//new Engine(Players.player("ntestJ:" + levelMenu.getSelectedLevel()));
+    private final AsyncEngine engine = null;//new Engine(Players.player("ntestJ:" + levelMenu.getSelectedLevel()));
 
     /**
      * Viewer constructor. Must run on the Event Dispatch Thread.
@@ -57,7 +56,7 @@ public class Viewer {
                 try {
                     if (t != null && t.isDataFlavorSupported(DataFlavor.stringFlavor)) {
                         String text = (String) t.getTransferData(DataFlavor.stringFlavor);
-                        gameView.setGameGgf(text);
+                        gameModel.setGameGgf(text);
                     }
                 } catch (IllegalArgumentException ex) {
                     JOptionPane.showMessageDialog(null, ex.getMessage(), "Can't paste game", JOptionPane.ERROR_MESSAGE);
@@ -80,11 +79,11 @@ public class Viewer {
 
         frame("Othello Viewer", JFrame.EXIT_ON_CLOSE, menuBar,
                 grid(2, -1, -1,
-                        new PlayersPanel(gameView),
+                        new PlayersPanel(gameModel),
                         buttonBar(moveActions).align(Component.CENTER_ALIGNMENT, Component.CENTER_ALIGNMENT),
 
-                        new BoardPanel(gameView),
-                        MoveListTableModel.of(gameView)
+                        new BoardPanel(gameModel),
+                        MoveListTableModel.of(gameModel)
                 )
         );
 
@@ -94,33 +93,33 @@ public class Viewer {
 
     private void startNewGame() {
 //        engine.setMaxDepth(levelMenu.getSelectedLevel());
-        Engine blackEngine = playMenu.blackEngine(engine);
-        Engine whiteEngine = playMenu.whiteEngine(engine);
+        AsyncEngine blackEngine = playMenu.blackEngine(engine);
+        AsyncEngine whiteEngine = playMenu.whiteEngine(engine);
         final String startPositionType = playMenu.getStartPositionType();
         final Position startPosition = StartPositionChooser.next(startPositionType);
-        gameView.newGame(blackEngine, whiteEngine, startPosition);
+        gameModel.newGame(blackEngine, whiteEngine, startPosition);
     }
 
     private Action[] createMoveActions() {
         final AbstractAction first = new IconAction("First", 'F', Images.first, KeyEvent.VK_UP) {
             @Override public void actionPerformed(ActionEvent e) {
-                gameView.first();
+                gameModel.first();
             }
         };
 
         final AbstractAction prev = new IconAction("Prev", 'P', Images.prev, KeyEvent.VK_LEFT) {
             @Override public void actionPerformed(ActionEvent e) {
-                gameView.prev();
+                gameModel.prev();
             }
         };
         final AbstractAction next = new IconAction("Next", 'N', Images.next, KeyEvent.VK_RIGHT) {
             @Override public void actionPerformed(ActionEvent e) {
-                gameView.next();
+                gameModel.next();
             }
         };
         final AbstractAction last = new IconAction("Last", 'L', Images.last, KeyEvent.VK_DOWN) {
             @Override public void actionPerformed(ActionEvent e) {
-                gameView.last();
+                gameModel.last();
             }
         };
         return new Action[]{first, prev, next, last};

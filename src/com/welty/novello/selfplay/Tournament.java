@@ -31,8 +31,8 @@ public class Tournament implements Runnable {
     /**
      * Construct a tournament.
      *
-     * Since Player is not thread-safe, a new player must be constructed for each Set he's playing in.
-     * The playerName is used to construct a new Player for each set.
+     * Since SyncEngine is not thread-safe, a new player must be constructed for each Set he's playing in.
+     * The playerName is used to construct a new SyncEngine for each set.
      *
      * @param playerNames names of players, for instance "d1s:2".
      */
@@ -118,8 +118,8 @@ public class Tournament implements Runnable {
         }
 
         @Override public Result call() throws Exception {
-            final Player black = Players.player(playerNames[i]);
-            final Player white = Players.player(playerNames[j]);
+            final SyncEngine black = Players.player(playerNames[i]);
+            final SyncEngine white = Players.player(playerNames[j]);
             final double averageResult = SelfPlaySet.run(black, white, new SelfPlaySet.ProgressBarUpdater(progressBar));
             System.out.format("%+5.1f  %s vs %s%n", averageResult, black, white);
             return new Result(i, j, averageResult);

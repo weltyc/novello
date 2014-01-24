@@ -5,11 +5,11 @@ import com.welty.novello.core.Position;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Othello Player
+ * Othello SyncEngine
  *
  * Implementations do NOT need to be thread-safe.
  */
-public interface Player {
+public interface SyncEngine {
     /**
      * Determine the player's next move.
      * <p/>

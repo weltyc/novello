@@ -9,11 +9,11 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * Interface for the game that the Viewer is looking at.
+ * Information about the game that the Viewer is looking at.
  * <p/>
- * All functions that modify this GameView must happen on the Event Dispatch Thread.
+ * All functions that modify a GameModel must happen on the Event Dispatch Thread.
  */
-public class GameView {
+public class GameModel {
     /**
      * Index of the viewed position in the game (0 = start position, 1 = position after first move or pass)
      */
@@ -23,13 +23,13 @@ public class GameView {
     /**
      * Engine that is playing black, or null if a human is playing black
      */
-    private @Nullable Engine blackEngine;
+    private @Nullable AsyncEngine blackEngine;
     /**
      * Engine that is playing white, or null if a human is playing white
      */
-    private @Nullable Engine whiteEngine;
+    private @Nullable AsyncEngine whiteEngine;
 
-    public GameView() {
+    public GameModel() {
         game = new MutableGame(Position.START_POSITION, "", "", "");
     }
 
@@ -109,7 +109,7 @@ public class GameView {
      *
      * @param listener destination for Change events.
      */
-    public void addChangeListener(GameView.ChangeListener listener) {
+    public void addChangeListener(GameModel.ChangeListener listener) {
         // no need to synchronize because listeners is a CopyOnWriteArrayList.
         listeners.add(listener);
     }
@@ -125,7 +125,7 @@ public class GameView {
     }
 
     /**
-     * Set this GameView to the ggf of the given game
+     * Set this GameModel to the ggf of the given game
      *
      * @param ggf text of the game, in GGF format
      * @throws IllegalArgumentException if the text is not a ggf format game
@@ -181,7 +181,7 @@ public class GameView {
      * @param blackEngine Engine playing Black or null if a human player
      * @param whiteEngine Engine playing White or null if a human player
      */
-    public void newGame(@Nullable Engine blackEngine, @Nullable Engine whiteEngine) {
+    public void newGame(@Nullable AsyncEngine blackEngine, @Nullable AsyncEngine whiteEngine) {
         newGame(blackEngine, whiteEngine, Position.START_POSITION);
     }
 
@@ -195,7 +195,7 @@ public class GameView {
      * @param whiteEngine   Engine playing White
      * @param startPosition start position for the game
      */
-    public synchronized void newGame(@Nullable Engine blackEngine, @Nullable Engine whiteEngine, Position startPosition) {
+    public synchronized void newGame(@Nullable AsyncEngine blackEngine, @Nullable AsyncEngine whiteEngine, Position startPosition) {
         this.blackEngine = blackEngine;
         this.whiteEngine = whiteEngine;
         game = new MutableGame(startPosition, calcName(blackEngine), calcName(whiteEngine), NovelloUtils.getHostName());
@@ -210,7 +210,7 @@ public class GameView {
      */
     private void requestMove() {
         if (!isOver()) {
-            final Engine engine = currentEngine();
+            final AsyncEngine engine = currentEngine();
             // set moveRequestTime regardless of whether mover is a Human or an Engine
             moveRequestTime = System.currentTimeMillis();
             if (engine != null) {
@@ -219,7 +219,7 @@ public class GameView {
         }
     }
 
-    private @NotNull String calcName(Engine engine) {
+    private @NotNull String calcName(AsyncEngine engine) {
         if (engine == null) {
             // a human player!
             return NovelloUtils.getUserName();
@@ -231,9 +231,9 @@ public class GameView {
     /**
      * Update the game.
      * <p/>
-     * If the ping does not match the current state of this GameView, the move is considered outdated and thus ignored.
+     * If the ping does not match the current state of this GameModel, the move is considered outdated and thus ignored.
      * <p/>
-     * Like all functions that modify this GameView, this function should only be called from the Event Dispatch Thread.
+     * Like all functions that modify this GameModel, this function should only be called from the Event Dispatch Thread.
      *
      * @param moveScore move and Engine score of the move
      * @param ping      ping from Engine.requestMove()
@@ -292,7 +292,7 @@ public class GameView {
      *
      * @return engine or null if the human's move is at the last position.
      */
-    private @Nullable Engine currentEngine() {
+    private @Nullable AsyncEngine currentEngine() {
         return game.getLastPosition().blackToMove ? blackEngine : whiteEngine;
     }
 
