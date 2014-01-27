@@ -4,6 +4,7 @@ import com.welty.novello.core.Me;
 import com.welty.novello.core.MoveScore;
 import com.welty.novello.core.Position;
 import com.welty.novello.ntest.NBoardSyncEngine;
+import com.welty.othello.gui.ExternalEngineManager;
 import junit.framework.TestCase;
 
 /**
@@ -67,7 +68,8 @@ public class EvalTest extends TestCase {
      * If ntest is not available on this computer, ignore.
      */
     public void test1Ply() {
-        if (NBoardSyncEngine.getExe("ntest")==null) {
+
+        if (ExternalEngineManager.getXei("ntest")==null) {
             System.out.println("ntest not available on this machine, skipping test");
             return;
         }

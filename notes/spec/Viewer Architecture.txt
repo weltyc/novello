@@ -1,0 +1,64 @@
+This describes the components of the Viewer and how they interact.
+
+First, many objects are "GUI Objects". A GUI Object may only be accessed from the Event Dispatch Thread ("EDT").
+
+Some GUI Objects are:
+Viewer - creates and shows the GUI
+GameModel - data about the current game
+BoardPanel - displays the board (disks only, no names or clocks)
+
+EdtEngine
+---------
+An Engine that operates on the Event Dispatch Thread. The Model requests moves from the Engine on the EDT; the
+Engine calculates the moves, typically on a separate thread, and returns them to the Model on the EDT.
+
+### EngineSelection
+A structure that contains information about an Engine available for selection in the GUI.
+Fields include:
+* String name (name of the Engine)
+* int[] levels (available search depths for the Engine)
+
+Since this is a view object, it has no knowledge of how to create the Engine.
+
+Opponent
+--------
+An EngineSelection plus a search depth
+
+### OpponentSelector
+store for an Opponent, with a getOpponent() method.
+
+### OpponentSelectionWindow
+Is a GUI component which allows the user to select an Opponent. Implements OpponentSelector.
+Allows the user to add engines and binds the selection to the user preferences.
+
+Start Position
+--------------
+Games can be started with a variety of start positions. The user picks a start position generation method
+from the menu; this is used to generate the start position.
+
+### StartPositionGenerator
+* Position next()
+  Produces a StartPosition for new games. Some SPGs always generate the same Position (e.g. Standard, Alternate),
+    some generate a random Position (e.g. XOT).
+
+### StartPositionChooser
+* Position next(String startPositionType)
+  Produces a StartPosition for new games by choosing a StartPositionGenerator from its name, then using the
+  resulting StartPositionGenerator to generate a StartPosition
+
+### StartPositionSelector
+Encapsulates the picking of a StartPosition. Binds the chosen SPG to user preferences.
+ * implements Feed<StartPosition> : gives the resulting start position
+ * void addToMenu(JMenu menu) : Adds the start position choices to the menu.
+
+Use Cases
+=========
+
+New Game
+--------
+The user clicks "New Game". He has previously selected
+* "Vegtbl:10 ply" in the OpponentSelectionWindow
+* "Play Black" in the ? menu
+* "Standard Start Position" in the ? menu
+
+The Controller calls model.newGame(Opponent(Vegtbl:10 ply), true, StartPosition.STANDARD)

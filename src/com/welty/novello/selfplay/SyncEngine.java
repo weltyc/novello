@@ -31,10 +31,4 @@ public interface SyncEngine {
      * @param maxDepth maximum search depth, in ply
      */
     void setMaxDepth(int maxDepth);
-
-    /**
-     * Set the maximum search depth for
-     * @param maxDepth
-     */
-//    void setMaxDepth(int maxDepth);
 }

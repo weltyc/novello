@@ -21,9 +21,8 @@ public class PlayMenu extends JMenu {
         startPosition = new MenuButtonGroup("StartPosition", PlayMenu.class, "Standard", "Alternate", "XOT");
         startPosition.addTo(startPositionMenu);
         final Action selectOpponentAction = new AbstractAction("Select Opponent...") {
-
             @Override public void actionPerformed(ActionEvent e) {
-                SelectOpponentWindow.getInstance().show();
+                OpponentSelectionWindow.getInstance().show();
             }
         };
         this.add(selectOpponentAction);
@@ -51,5 +50,9 @@ public class PlayMenu extends JMenu {
 
     public String getStartPositionType() {
         return startPosition.getSelectedString();
+    }
+
+    public AsyncEngine getOpponent() {
+        return OpponentSelectionWindow.getInstance().getEngine();
     }
 }

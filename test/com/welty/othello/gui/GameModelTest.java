@@ -132,7 +132,7 @@ public class GameModelTest extends TestCase {
 
     public void testNewGame() {
         gameModel.last();
-        gameModel.newGame(null, null);
+        gameModel.newGame(null, null, Position.START_POSITION);
         assertEquals(Position.START_POSITION, gameModel.getStartPosition());
         assertEquals(0, gameModel.getIPosition());
         assertEquals(Position.START_POSITION, gameModel.getPosition());
@@ -144,13 +144,13 @@ public class GameModelTest extends TestCase {
     public void testBlackEngineMoveRequestResponse() {
         GameModel gameModel = new GameModel();
 
-        final AsyncEngine mock = Mockito.mock(AsyncEngine.class);
+        final AsyncEngineAdapter mock = Mockito.mock(AsyncEngineAdapter.class);
         final String engineName = "Mock Engine";
         Mockito.when(mock.getName()).thenReturn(engineName);
 
-        gameModel.newGame(mock, null);
+        gameModel.newGame(mock, null, Position.START_POSITION);
         assertEquals(engineName, gameModel.getBlackName());
-        Mockito.verify(mock).requestMove(gameModel, Position.START_POSITION, 1);
+        Mockito.verify(mock).requestMove(gameModel.consumer, Position.START_POSITION, 1);
 
         gameModel.engineMove(new MoveScore(f5, 0), -13);
         assertEquals("wrong ping, ignore", Position.START_POSITION, gameModel.getPosition());
@@ -163,19 +163,19 @@ public class GameModelTest extends TestCase {
     public void testWhiteEngineMoveRequestResponse() {
         GameModel gameModel = new GameModel();
 
-        final AsyncEngine mock = getMockEngine();
+        final AsyncEngineAdapter mock = getMockEngine();
 
-        gameModel.newGame(null, mock);
+        gameModel.newGame(null, mock, Position.START_POSITION);
         assertEquals(mockEngineName, gameModel.getWhiteName());
         verifyNoRequest(mock);
 
         gameModel.boardClick(f5);
         final Position position = Position.START_POSITION.play(f5);
-        Mockito.verify(mock).requestMove(gameModel, position, 2);
+        Mockito.verify(mock).requestMove(gameModel.consumer, position, 2);
     }
 
-    private AsyncEngine getMockEngine() {
-        final AsyncEngine mock = Mockito.mock(AsyncEngine.class);
+    private AsyncEngineAdapter getMockEngine() {
+        final AsyncEngineAdapter mock = Mockito.mock(AsyncEngineAdapter.class);
         Mockito.when(mock.getName()).thenReturn(mockEngineName);
         return mock;
     }
@@ -183,7 +183,7 @@ public class GameModelTest extends TestCase {
     public void testDontRequestMoveAtEndOfGame() {
         GameModel gameModel = new GameModel();
 
-        final AsyncEngine mock = Mockito.mock(AsyncEngine.class);
+        final AsyncEngineAdapter mock = Mockito.mock(AsyncEngineAdapter.class);
         final String engineName = "Mock Engine";
         Mockito.when(mock.getName()).thenReturn(engineName);
 
@@ -192,17 +192,17 @@ public class GameModelTest extends TestCase {
         verifyNoRequest(mock);
     }
 
-    private static void verifyNoRequest(AsyncEngine mock) {
-        Mockito.verify(mock, Mockito.never()).requestMove(Mockito.any(GameModel.class), Mockito.any(Position.class), Mockito.anyInt());
+    private static void verifyNoRequest(AsyncEngineAdapter mock) {
+        Mockito.verify(mock, Mockito.never()).requestMove(Mockito.any(AsyncConsumer.class), Mockito.any(Position.class), Mockito.anyInt());
     }
 
     public void testHumanMove() {
         final GameModel gameModel = new GameModel();
-        final AsyncEngine mock = Mockito.mock(AsyncEngine.class);
+        final AsyncEngineAdapter mock = Mockito.mock(AsyncEngineAdapter.class);
         final String engineName = "Mock Engine";
         Mockito.when(mock.getName()).thenReturn(engineName);
 
-        gameModel.newGame(null, mock);
+        gameModel.newGame(null, mock, Position.START_POSITION);
 
         gameModel.boardClick(f5);
         assertEquals("Human to move, update position", Position.START_POSITION.play(f5), gameModel.getPosition());

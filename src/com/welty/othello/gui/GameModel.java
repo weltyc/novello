@@ -4,6 +4,7 @@ import com.welty.novello.core.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -32,6 +33,8 @@ public class GameModel {
     public GameModel() {
         game = new MutableGame(Position.START_POSITION, "", "", "");
     }
+
+    final @NotNull AsyncConsumer consumer = new MyConsumer();
 
     /**
      * Get the currently displayed position.
@@ -171,20 +174,6 @@ public class GameModel {
      */
     private long moveRequestTime;
 
-    /**
-     * Start a game.
-     * <p/>
-     * Set the board position to the start position. Request moves from engines as appropriate.
-     * <p/>
-     * Shuts down previous engine.
-     *
-     * @param blackEngine Engine playing Black or null if a human player
-     * @param whiteEngine Engine playing White or null if a human player
-     */
-    public void newGame(@Nullable AsyncEngine blackEngine, @Nullable AsyncEngine whiteEngine) {
-        newGame(blackEngine, whiteEngine, Position.START_POSITION);
-    }
-
 
     /**
      * Start a game.
@@ -214,7 +203,7 @@ public class GameModel {
             // set moveRequestTime regardless of whether mover is a Human or an Engine
             moveRequestTime = System.currentTimeMillis();
             if (engine != null) {
-                engine.requestMove(this, getPosition(), ping);
+                engine.requestMove(consumer, getPosition(), ping);
             }
         }
     }
@@ -307,5 +296,15 @@ public class GameModel {
          * Do whatever processing is necessary when the game view changes
          */
         void gameViewChanged();
+    }
+
+    private class MyConsumer implements AsyncConsumer {
+        @Override public void engineMove(final MoveScore moveScore, final long ping) {
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override public void run() {
+                    GameModel.this.engineMove(moveScore, ping);
+                }
+            });
+        }
     }
 }

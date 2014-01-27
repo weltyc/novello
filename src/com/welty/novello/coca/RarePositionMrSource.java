@@ -61,6 +61,8 @@ public class RarePositionMrSource implements MrSource {
         final ProgressUpdater progressMonitor = new ProgressUpdater("Generate rare subpositions", pvs.size());
 
         final HashSet<Mr> mrs = new HashSet<>();
+        int nextProgressReport = 25000;
+
         for (int i = 0; i < pvs.size(); i++) {
             final MeValue pv = pvs.get(i);
 
@@ -76,9 +78,10 @@ public class RarePositionMrSource implements MrSource {
                     }
                 }
             }
-            if ((i & 0x3FFFF) == 0) {
+            if (i >= nextProgressReport) {
                 progressMonitor.setProgress(i);
                 log.info((i >> 10) + "k pvs processed; " + (mrs.size() >> 10) + "k rare positions generated");
+                nextProgressReport *= 2;
             }
         }
         log.info("A total of " + (mrs.size() >> 10) + "k rare positions were created.");

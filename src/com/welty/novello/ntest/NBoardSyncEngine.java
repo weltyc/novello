@@ -4,9 +4,12 @@ import com.orbanova.common.misc.Logger;
 import com.orbanova.common.misc.Require;
 import com.welty.novello.core.*;
 import com.welty.novello.selfplay.SyncEngine;
+import com.welty.othello.gui.ExternalEngineManager;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
+import java.util.List;
+import java.util.prefs.BackingStoreException;
 
 /**
  * An instance of the NTest othello program
@@ -21,25 +24,24 @@ public class NBoardSyncEngine implements SyncEngine {
 
     private static final Logger log = Logger.logger(NBoardSyncEngine.class, Logger.Level.DEBUG);
 
+
     public NBoardSyncEngine(String program, int depth, boolean debug) {
-        this.program = program;
+        this(ExternalEngineManager.getXei(program), depth, debug);
+    }
+
+    public NBoardSyncEngine(String program, int depth, boolean debug, String workingDirectory, String command) {
+        this(new ExternalEngineManager.Xei(program, workingDirectory, command), depth, debug);
+    }
+
+    private NBoardSyncEngine(ExternalEngineManager.Xei xei, int depth, boolean debug) {
+        this.program = xei.name;
         try {
             this.depth = depth;
             this.debug = debug;
-            final String exe = getExe(program);
-            if (exe == null) {
-                throw new RuntimeException("Program '" + program + "' is not listed in properties file " + Props.getInstance().getSourceFile());
-            }
-            final String args = getExe(program + ".args");
-            if (args == null) {
-                throw new RuntimeException("Program '" + program + ".args' is not listed in properties file " + Props.getInstance().getSourceFile());
-            }
-            final File ntestDir = new File(exe).getParentFile();
-            log.debug("exe : " + exe);
-            log.debug("wd  : " + ntestDir);
-            log.debug("args: '" + args + "'");
-            final String[] processArgs = makeArgs(exe, args);
-            final Process process = new ProcessBuilder(processArgs).directory(ntestDir).redirectErrorStream(true).start();
+            log.debug("wd  : " + xei.wd);
+            log.debug("cmd : " + xei.cmd);
+            final String[] processArgs = xei.cmd.split("\\s+");
+            final Process process = new ProcessBuilder(processArgs).directory(new File(xei.wd)).redirectErrorStream(true).start();
             out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(process.getOutputStream())), true);
             in = new BufferedReader(new InputStreamReader(process.getInputStream()));
 
@@ -49,24 +51,6 @@ public class NBoardSyncEngine implements SyncEngine {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    /**
-     * Get location of .exe file
-     *
-     * @param program program name
-     * @return program full path, or null if program is not listed in properties file
-     */
-    public static String getExe(String program) {
-        return Props.getInstance().get(program);
-    }
-
-    private String[] makeArgs(String exe, String args) {
-        final String[] split = args.split("\\s+");
-        final String[] out = new String[1 + split.length];
-        out[0] = exe;
-        System.arraycopy(split, 0, out, 1, split.length);
-        return out;
     }
 
     boolean wasWriting = true;
@@ -157,5 +141,11 @@ public class NBoardSyncEngine implements SyncEngine {
 
     @Override public String toString() {
         return program + ":" + depth;
+    }
+
+    public static void main(String[] args) throws IOException {
+        String[] processArgs = "./mEdax -nboard".split("\\s+");
+        final File wd = new File("/Applications/edax/4.3.2/bin");
+        final Process process = new ProcessBuilder(processArgs).directory(wd).redirectErrorStream(true).start();
     }
 }

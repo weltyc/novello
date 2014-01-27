@@ -31,8 +31,6 @@ public class Viewer {
 
     private final PlayMenu playMenu = new PlayMenu();
 
-    private final AsyncEngine engine = null;//new Engine(Players.player("ntestJ:" + levelMenu.getSelectedLevel()));
-
     /**
      * Viewer constructor. Must run on the Event Dispatch Thread.
      */
@@ -92,7 +90,7 @@ public class Viewer {
     }
 
     private void startNewGame() {
-//        engine.setMaxDepth(levelMenu.getSelectedLevel());
+        AsyncEngine engine = playMenu.getOpponent();
         AsyncEngine blackEngine = playMenu.blackEngine(engine);
         AsyncEngine whiteEngine = playMenu.whiteEngine(engine);
         final String startPositionType = playMenu.getStartPositionType();

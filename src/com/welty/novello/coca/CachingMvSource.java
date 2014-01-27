@@ -65,9 +65,8 @@ public class CachingMvSource implements MvSource {
     }
 
     static Path getCacheDir() {
-        final boolean isMac = System.getProperty("os.name").startsWith("Mac OS");
         final Path cacheDir;
-        if (isMac) {
+        if (OperatingSystem.os == OperatingSystem.MACINTOSH) {
             cacheDir = Paths.get(System.getProperty("user.home") + "/Library/Caches/" + "com.welty.novello");
         } else {
             cacheDir = Paths.get("c:/temp/novello");
