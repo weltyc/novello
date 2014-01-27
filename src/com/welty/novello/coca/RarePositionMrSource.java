@@ -3,6 +3,7 @@ package com.welty.novello.coca;
 import com.orbanova.common.misc.Logger;
 import com.welty.novello.core.MeValue;
 import com.welty.novello.core.Mr;
+import com.welty.novello.core.ProgressUpdater;
 import com.welty.novello.eval.EvalStrategy;
 import com.welty.novello.eval.PositionElement;
 
@@ -57,7 +58,7 @@ public class RarePositionMrSource implements MrSource {
 
         log.info(String.format("collected source positions. %,d distinct positions from %,d pvs", original.size(), pvs.size()));
 
-        final ProgressMonitor progressMonitor = new ProgressMonitor(null, "Generate rare subpositions", "", 0, pvs.size());
+        final ProgressUpdater progressMonitor = new ProgressUpdater("Generate rare subpositions", pvs.size());
 
         final HashSet<Mr> mrs = new HashSet<>();
         for (int i = 0; i < pvs.size(); i++) {
