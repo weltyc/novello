@@ -1497,3 +1497,104 @@ Results between ntestJ, d1s, and j1:
 It's probably more important to look at the 6-ply results since we'll usually be doing deeper searches.
 ntest's coefficient calculation is 8 disks better than novello's (j1 vs ntest), while ntest's patterns are
 2 disks worse than novello's (d1s vs j1).
+
+dRating/dTime
+-------------
+New formula:
+t = ln(time per game in milliseconds)
+SR = standard rating of player
+SR = -1.219 * t^2 + 21.427 * t
+Expected result = difference in standard ratings.
+This formula is valid from 6-14 ply. It will probably go horribly wrong outside this range.
+
+Search
+------
+Try some ideas related to LMRs. Pass into all search functions a "moveIndex". moveIndex is 0 if this is the first
+subposition  and 1 if it is second or later. Examine this by playing 12-ply games. Note that at 12-ply the score/time
+tradeoff is lower than at 6-ply; about 5 disks per factor of e time. Later moves (i.e. those with moveIndex == 1) should
+be pruned more aggressively. In recursive MPC calls, moveIndex is always reset to 0 to prevent catastrophe.
+
+experiment 1: for mpc cuts, multiply mpc sds by 0.7 if moveIndex==1. Both slower and weaker than the original (?).
+Same with a factor of 0.5 and 0.25. I am expecting slower, but weaker too?  Confused.
+
+experiment 2: inside mpcMove(), set
+    final int shallowAlpha = cutter.shallowAlpha(alpha)-moveIndex*CoefficientCalculator.DISK_VALUE;
+    final int shallowBeta = cutter.shallowBeta(beta)-moveIndex*CoefficientCalculator.DISK_VALUE;
+
+This seems much stronger. playing 'x' versions vs standard versions,
+    player0     player1    result   t0 t1	result/ln(t)
+    ntestJ:14x  ntestJ:12   +3.29   914	722    14
+    ntestJ:12x  ntestJ:12   -1.27   416	753     2
+    ntestJ:12x  ntestJ:10   +5.52   413	285    15
+    ntestJ:10x  ntestJ:10   -2.06   165	273     4
+
+A spreadsheet containing results at lower ply, plus graphs, is in [strength vs depth.ods].
+
+Tuning the results:
+1. Should we subtract from alpha, beta, or both?
+1a. Trying the code
+    final int shallowAlpha = cutter.shallowAlpha(alpha) - (options.experimental ? 0 : -moveIndex * CoefficientCalculator.DISK_VALUE);
+    final int shallowBeta = cutter.shallowBeta(beta) - moveIndex* CoefficientCalculator.DISK_VALUE;
+ntestJ:8x vs ntestJ:8  -0.0167 +/-0.10. 50.44 ms vs  49.90 ms.
+There is not much in it either way. The improvement must have come from modifying beta. (oops! note the double negative in the alpha calculation).
+Remove the double negative:
+ntestJ:8x vs ntestJ:8   -0.0941 +/-0.20. 49.83 ms vs  49.77 ms.
+shallowAlpha just doesn't matter much. This is convenient because it means we can just add the same adjustment to alpha and beta,
+and then not worrying about alpha becoming >= beta.
+
+
+1b. Is this whole lmr thing a red herring? Perhaps I should always subtract 1 disk from shallow alpha, beta, and not just when moveIndex == 1.
+Trying the code
+    final int margin = (options.experimental || moveIndex == 1 ? CoefficientCalculator.DISK_VALUE : 0);
+    final int shallowAlpha = cutter.shallowAlpha(alpha) - margin;
+    final int shallowBeta = cutter.shallowBeta(beta) - margin;
+
+ntestJ:8x vs ntestJ:8  -1.23 +/-0.082. T ~ -15.1.  45.42 ms vs  49.67 ms.
+This is exactly in line with the new dRating/dTime from the previous section. So we can clean up the code by just always subtracting one, ignoring moveIndex.
+
+1c. Trying the code
+    final int margin = (options.experimental ? CoefficientCalculator.DISK_VALUE : 0);
+    final int shallowAlpha = cutter.shallowAlpha(alpha) - margin;
+    final int shallowBeta = cutter.shallowBeta(beta) - margin;
+
+ntestJ:8x vs ntestJ:8  -4.15 +/-0.32. T ~ -12.9.  Time per game =  45.94 ms vs  82.03 ms.
+The rating formula predicts a rating difference of 6.6 at this time difference, so this is an improvement.
+
+1d. What size margin should I use? Trying the code
+    final int margin = (options.experimental ? CoefficientCalculator.DISK_VALUE *2 : CoefficientCalculator.DISK_VALUE);
+ntestJ:10x vs ntestJ:8  -5.67 +/-0.62. T ~  -9.2.  Time per game =  44.37 ms vs  45.31 ms.
+So this is terrible.
+
+    final int margin = (options.experimental ? CoefficientCalculator.DISK_VALUE /2 : CoefficientCalculator.DISK_VALUE);
+ntestJ:8x vs ntestJ:8    2.63 +/-0.34. T ~   7.8.  Time per game =  63.42 ms vs  46.12 ms.  (standard rating differential 3.7)
+ntestJ:10x vs ntestJ:10  3.11 +/-0.44. T ~   7.0.  Time per game = 183.36 ms vs 119.04 ms.  (standard rating differential 4.0)
+So using DISK_VALUE is about right.
+
+    final int margin = (options.experimental ? (int)(cutter.getSd()*0.25) : CoefficientCalculator.DISK_VALUE);
+ntestJ:10x vs ntestJ:10    1.57 +/-0.43. T ~   3.6.  Time per game = 161.59 ms vs 118.31 ms.  (standard rating differential 2.9)
+    final int margin = (options.experimental ? (int)(cutter.getSd()*0.55) : CoefficientCalculator.DISK_VALUE);
+ntestJ:8x vs ntestJ:8      -3.04 +/-0.51. T ~  -6.0.  Time per game =  34.48 ms vs  46.47 ms. (standard rating differential 3.7)
+    final int margin = (options.experimental ? (int)(cutter.getSd()*0.35) : CoefficientCalculator.DISK_VALUE);
+ntestJ:8x vs ntestJ:8     -0.0344 +/-0.17. T ~  -0.2.  Time per game =  46.58 ms vs  45.08 ms. (standard rating differential 0.4)
+
+1e. Does this work at higher depths?
+    final int margin = (options.experimental ? CoefficientCalculator.DISK_VALUE : 0);
+ntestJ:16x vs ntestJ:14   -1.15 +/-0.098. T ~ -11.7.  Time per game =   1.34  s vs   1.87  s.
+    final int margin = (options.experimental ? (int)(cutter.getSd()*0.35) : 0);
+ntestJ:16x vs ntestJ:14   -1.07 +/-0.099. T ~ -10.8.  Time per game =   1.41  s vs   1.88  s.
+ntestJ:17x vs ntestJ:14    1.16 +/-0.095. T ~  12.2.  Time per game =   2.17  s vs   1.99  s.
+(Interpolate to similar time: +0.64)
+ntestJ:19x vs ntestJ:16    0.0564 +/-0.073. T ~   0.8.  Time per game =   4.12  s vs   4.49  s.
+ntestJ:20x vs ntestJ:16    0.965 +/-0.080. T ~  12.1.  Time per game =   6.06  s vs   4.59  s.
+
+    final int margin = (options.experimental && depth<8 ? (int)(0.35*(cutter.getSd())) : 0);
+ntestJ:16x vs ntestJ:14    1.36 +/-0.098. T ~  13.8.  Time per game =   2.62  s vs   2.01  s.
+ntestJ:14x vs ntestJ:14   -2.29 +/-0.086. T ~ -26.6.  Time per game =   1.12  s vs   1.99  s.
+(Interpolate to similar time: +0.21)
+
+1f. Should I just shrink the MPC coefficients, at least for ntestJ?
+    final int margin = (int)(0.35*(cutter.getSd()));
+    final int shallowAlpha = cutter.shallowAlpha(alpha) + (options.experimental? margin: - margin);
+    final int shallowBeta = cutter.shallowBeta(beta) - margin;
+ntestJ:8 vs ntestJ:8x     -0.00307 +/-0.059. T ~  -0.1.  Time per game =  45.11 ms vs  46.11 ms.
+(Interpolate to similar time: +0.3).

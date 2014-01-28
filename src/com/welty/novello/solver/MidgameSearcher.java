@@ -216,7 +216,6 @@ public class MidgameSearcher {
     }
 
     private BA treeMoveNoSuggestion(long mover, long enemy, long moverMoves, int alpha, int beta, int depth, BA ba) {
-
         if (depth >= 5) {
             // sortIndices[i] = (-value*256 + sq)
             final int[] sortIndices = new int[Long.bitCount(moverMoves)];
@@ -384,8 +383,9 @@ public class MidgameSearcher {
         Mpc.Cutter[] cutters = counter.mpcs.cutters(nEmpty, depth);
 
         for (Mpc.Cutter cutter : cutters) {
-            final int shallowAlpha = cutter.shallowAlpha(alpha);
-            final int shallowBeta = cutter.shallowBeta(beta);
+            final int margin = (int) (0.35 * (cutter.getSd()));
+            final int shallowAlpha = cutter.shallowAlpha(alpha) + margin;
+            final int shallowBeta = cutter.shallowBeta(beta) - margin;
             final int shallowDepth = cutter.shallowDepth;
             if (shallowDepth <= 0) {
                 final int mpcScore = counter.eval(mover, enemy);
