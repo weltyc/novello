@@ -383,7 +383,7 @@ public class MidgameSearcher {
         Mpc.Cutter[] cutters = counter.mpcs.cutters(nEmpty, depth);
 
         for (Mpc.Cutter cutter : cutters) {
-            final int margin = (int) (0.35 * (cutter.getSd()));
+            final int margin = (options.experimental && depth < 8 ? (int) (0.35 * (cutter.getSd())) : 0);
             final int shallowAlpha = cutter.shallowAlpha(alpha) + margin;
             final int shallowBeta = cutter.shallowBeta(beta) - margin;
             final int shallowDepth = cutter.shallowDepth;
