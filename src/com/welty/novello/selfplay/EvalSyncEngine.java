@@ -48,11 +48,7 @@ public class EvalSyncEngine implements SyncEngine {
                 }
             }
         } else {
-            if (board.nEmpty() > 8) {
-                return searcher.getMoveScore(board, board.calcMoves(), sd);
-            } else {
-                return solveMove(board);
-            }
+            return searcher.getMoveScore(board, board.calcMoves(), sd);
         }
     }
 

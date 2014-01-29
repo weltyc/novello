@@ -13,23 +13,23 @@ import static com.welty.novello.eval.CoefficientCalculator.DISK_VALUE;
 public abstract class SimpleEval extends Eval {
     private static final Random random = new Random();
     private final String name;
-    private static final Map<String, SimpleEval> evalFromName = new TreeMap<>();
+    private static final Map<String, SimpleEval> fromName = new TreeMap<>();
 
     /**
      * @param name simple eval name
      * @return a SimpleEval with the given name, or null if there is no SimpleEval with that name.
      */
     public static SimpleEval getEval(String name) {
-        return evalFromName.get(name);
+        return fromName.get(name);
     }
 
     public static Collection<String> getEvalNames() {
-        return evalFromName.keySet();
+        return fromName.keySet();
     }
 
     SimpleEval(String name) {
         this.name = name;
-        evalFromName.put(name, this);
+        fromName.put(name, this);
     }
 
     @Override public int eval(long mover, long enemy) {
