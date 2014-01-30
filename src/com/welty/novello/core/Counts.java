@@ -1,5 +1,6 @@
 package com.welty.novello.core;
 
+import com.welty.othello.core.Engineering;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -15,7 +16,7 @@ public class Counts {
 
     @Override public String toString() {
         final long x = nFlips;
-        int prefixIndex = NovelloUtils.calcPrefix(x);
+        int prefixIndex = Engineering.calcPrefix(x);
         return toString(prefixIndex);
     }
 
@@ -25,7 +26,7 @@ public class Counts {
      * @return string representation of the counts
      */
     public @NotNull String toString(int prefixIndex) {
-        return NovelloUtils.engineeringLong(nFlips, prefixIndex) + "n, " + NovelloUtils.engineeringLong(nEvals, prefixIndex) + "evals, " + NovelloUtils.engineeringLong(cost(), prefixIndex) + "$";
+        return Engineering.engineeringLong(nFlips, prefixIndex) + "n, " + Engineering.engineeringLong(nEvals, prefixIndex) + "evals, " + Engineering.engineeringLong(cost(), prefixIndex) + "$";
     }
 
     public Counts plus(Counts counts) {

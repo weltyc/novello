@@ -5,6 +5,7 @@ import com.welty.novello.core.*;
 import com.welty.novello.selfplay.SyncEngine;
 import com.welty.novello.selfplay.Players;
 import com.welty.novello.selfplay.SelfPlayGame;
+import com.welty.othello.core.OperatingSystem;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedOutputStream;
