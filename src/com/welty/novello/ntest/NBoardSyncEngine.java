@@ -7,6 +7,7 @@ import com.welty.novello.core.MoveScore;
 import com.welty.novello.core.MutableGame;
 import com.welty.novello.core.Position;
 import com.welty.novello.selfplay.SyncEngine;
+import com.welty.othello.core.ProcessLogger;
 import com.welty.othello.gui.ExternalEngineManager;
 import org.jetbrains.annotations.NotNull;
 
@@ -16,12 +17,10 @@ import java.io.*;
  * An instance of the NTest othello program
  */
 public class NBoardSyncEngine implements SyncEngine {
-    private final PrintWriter out;
-    private final BufferedReader in;
     private final String program;
     private int ping = 0;
     private final int depth;
-    private final boolean debug;
+    private final ProcessLogger processLogger;
 
     private static final Logger log = Logger.logger(NBoardSyncEngine.class, Logger.Level.DEBUG);
 
@@ -38,50 +37,26 @@ public class NBoardSyncEngine implements SyncEngine {
         this.program = xei.name;
         try {
             this.depth = depth;
-            this.debug = debug;
             log.debug("wd  : " + xei.wd);
             log.debug("cmd : " + xei.cmd);
             final String[] processArgs = xei.cmd.split("\\s+");
             final Process process = new ProcessBuilder(processArgs).directory(new File(xei.wd)).redirectErrorStream(true).start();
-            out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(process.getOutputStream())), true);
-            in = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            processLogger = new ProcessLogger(process, debug);
 
             println("set depth " + depth);
-            System.out.println(in.readLine());
-
-            // todo: if the process is not an NBoard Engine, it will never respond "ping 1" so this call will block. Fix this.
+            processLogger.readLine();
             pingPong();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    boolean wasWriting = true;
-
-    private void changeState(boolean writing) {
-        if (debug && wasWriting != writing) {
-            System.out.println();
-            wasWriting = writing;
-        }
-    }
-
-    private void println(String text) {
-        out.println(text);
-        changeState(true);
-        if (debug) {
-            System.out.println("> " + text);
-        }
+    private void println(String s) {
+        processLogger.println(s);
     }
 
     private String readLine() throws IOException {
-        final String line = in.readLine();
-        if (line != null) {
-            changeState(false);
-            if (debug) {
-                System.out.println("< " + line);
-            }
-        }
-        return line;
+        return processLogger.readLine();
     }
 
     /**
@@ -144,11 +119,5 @@ public class NBoardSyncEngine implements SyncEngine {
 
     @Override public String toString() {
         return program + ":" + depth;
-    }
-
-    public static void main(String[] args) throws IOException {
-        String[] processArgs = "./mEdax -nboard".split("\\s+");
-        final File wd = new File("/Applications/edax/4.3.2/bin");
-        final Process process = new ProcessBuilder(processArgs).directory(wd).redirectErrorStream(true).start();
     }
 }

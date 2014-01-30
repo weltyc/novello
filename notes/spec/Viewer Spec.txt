@@ -36,20 +36,7 @@ Choose opponent
 You choose the opponent (engine and depth) from the opponent menu. New engines may be added via the add...
 menu item.
 
-* Beginner
-  * Abigail  (1-ply disk maximizer)
-  * Andrew   (2-ply disk maximizer)
-  * Charlie  (1-ply disks + corners)
-  * Cynthia  (2-ply disks + corners)
-  * Edwina   (1-ply disks + corners + x-squares)
-  * Ethelred (2-ply)
-* Intermediate
-  * George   (Edwina + mobility)
-  * Grace    (2-ply)
-  * Iago     (George + pot mob)
-  * Ivana    (2-ply)
-  * Kasimir  (Iago + edges)
-  * Kathy    (2-ply)
+* Basic engines with names
 * Vegtbl
   * 1,2,4,6,8,12,16,20 ply (more added later when interrupts and iterative deepening are supported)
 * ntest, edax

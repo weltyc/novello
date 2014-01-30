@@ -466,10 +466,11 @@ public class BitBoardUtils {
     }
 
     /**
-     * Calculate potential mobilities.
+     * Calculate potential mobilities for the opposing player.
      * <p/>
      * A potential mobility is a disk on the border of the playing field: there's at least one direction where
      * it's adjacent to an occupied square and not on the edge of the board in that direction.
+     *
      *
      * @return location of potMobs.
      */
@@ -481,7 +482,7 @@ public class BitBoardUtils {
     }
 
     /**
-     * Calculate potential mobilities 2.
+     * Calculate potential mobilities 2 for the opposing player.
      * <p/>
      * A potential mobility 2 is an empty square adjacent to a player square: there's at least one direction where
      * it's adjacent to an player square which is not on the edge of the board in that direction.
