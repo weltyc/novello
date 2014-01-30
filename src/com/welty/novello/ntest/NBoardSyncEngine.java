@@ -2,14 +2,15 @@ package com.welty.novello.ntest;
 
 import com.orbanova.common.misc.Logger;
 import com.orbanova.common.misc.Require;
-import com.welty.novello.core.*;
+import com.welty.novello.core.BitBoardUtils;
+import com.welty.novello.core.MoveScore;
+import com.welty.novello.core.MutableGame;
+import com.welty.novello.core.Position;
 import com.welty.novello.selfplay.SyncEngine;
 import com.welty.othello.gui.ExternalEngineManager;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
-import java.util.List;
-import java.util.prefs.BackingStoreException;
 
 /**
  * An instance of the NTest othello program
@@ -47,6 +48,8 @@ public class NBoardSyncEngine implements SyncEngine {
 
             println("set depth " + depth);
             System.out.println(in.readLine());
+
+            // todo: if the process is not an NBoard Engine, it will never respond "ping 1" so this call will block. Fix this.
             pingPong();
         } catch (IOException e) {
             throw new RuntimeException(e);
