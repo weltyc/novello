@@ -23,7 +23,7 @@ public class Opponent {
      *
      * @return opponent level
      */
-    public int getLevel() {
+    public int getMaxDepth() {
         return this.level;
     }
 }
