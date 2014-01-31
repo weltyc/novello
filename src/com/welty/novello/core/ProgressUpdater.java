@@ -89,7 +89,7 @@ public class ProgressUpdater implements AutoCloseable {
 
     private synchronized String getNote() {
         if (autoNote != null) {
-            note = Engineering.engineeringLong(progress) + " / " + Engineering.engineeringLong(max) + " " + autoNote;
+            note = Engineering.formatLong(progress) + " / " + Engineering.formatLong(max) + " " + autoNote;
         }
         return note;
     }

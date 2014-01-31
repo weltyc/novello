@@ -26,7 +26,7 @@ public class Counts {
      * @return string representation of the counts
      */
     public @NotNull String toString(int prefixIndex) {
-        return Engineering.engineeringLong(nFlips, prefixIndex) + "n, " + Engineering.engineeringLong(nEvals, prefixIndex) + "evals, " + Engineering.engineeringLong(cost(), prefixIndex) + "$";
+        return Engineering.formatLong(nFlips, prefixIndex) + "n, " + Engineering.formatLong(nEvals, prefixIndex) + "evals, " + Engineering.formatLong(cost(), prefixIndex) + "$";
     }
 
     public Counts plus(Counts counts) {
