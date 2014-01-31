@@ -1,11 +1,11 @@
-package com.welty.othello.gui;
+package com.welty.othello.gui.selector;
 
-import com.orbanova.common.feed.Feeds;
-import com.orbanova.common.jsb.Grid;
 import com.orbanova.common.jsb.JsbGridLayout;
-import com.orbanova.common.jsb.JsbTextField;
 import com.welty.novello.eval.SimpleEval;
-import com.welty.othello.core.OperatingSystem;
+import com.welty.othello.gui.AsyncEngine;
+import com.welty.othello.gui.ExternalEngineManager;
+import com.welty.othello.gui.Opponent;
+import com.welty.othello.gui.OpponentSelector;
 import com.welty.othello.gui.prefs.PrefInt;
 import com.welty.othello.gui.prefs.PrefString;
 import org.jetbrains.annotations.NotNull;
@@ -15,18 +15,18 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.prefs.BackingStoreException;
 
 import static com.orbanova.common.jsb.JSwingBuilder.*;
 
 /**
  */
-public class OpponentSelectionWindow {
+public class GuiOpponentSelector extends OpponentSelector {
 
-    private static final PrefInt levelPref = new PrefInt(OpponentSelectionWindow.class, "Level", 1);
-    private static final PrefString enginePref = new PrefString(OpponentSelectionWindow.class, "Opponent", "Abigail");
+    private static final PrefInt levelPref = new PrefInt(GuiOpponentSelector.class, "Level", 1);
+    private static final PrefString enginePref = new PrefString(GuiOpponentSelector.class, "Opponent", "Abigail");
     /**
      * Data used to initialize engineSelectors on startup.
      */
@@ -40,25 +40,25 @@ public class OpponentSelectionWindow {
     }
 
 
-    private static OpponentSelectionWindow instance;
+    private static GuiOpponentSelector instance;
 
     private final JDialog frame;
     private final JList<Integer> levels = new JList<>();
-    private static final EngineListModel engineListModel = new EngineListModel(ENGINE_SELECTORS);
+    static final EngineListModel engineListModel = new EngineListModel(ENGINE_SELECTORS);
     private final JList<EngineSelector> engineSelectors = new JList<>(engineListModel);
 
     // these are written to when the user clicks "OK"
     private int selectedLevel;
     private @NotNull EngineSelector selectedEngine;
 
-    public synchronized static OpponentSelectionWindow getInstance() {
+    public synchronized static GuiOpponentSelector getInstance() {
         if (instance == null) {
-            instance = new OpponentSelectionWindow();
+            instance = new GuiOpponentSelector();
         }
         return instance;
     }
 
-    private OpponentSelectionWindow() {
+    private GuiOpponentSelector() {
         // Level selection list box.
         // Need to create this before Opponent selection list box because the
         // Opponent selection list box modifies it.
@@ -93,6 +93,7 @@ public class OpponentSelectionWindow {
                 levelPref.put(levels.getSelectedValue());
                 selectedEngine = engineSelectors.getSelectedValue();
                 enginePref.put(selectedEngine.name);
+                fireOpponentChanged();
             }
         });
 
@@ -126,6 +127,16 @@ public class OpponentSelectionWindow {
         frame.setVisible(false);
 
         frame.getRootPane().setDefaultButton(ok);
+    }
+
+    /**
+     * Notify all listeners that the opponent was changed.
+     */
+    private void fireOpponentChanged() {
+        final List<Listener> listeners = getListeners();
+        for (Listener listener : listeners) {
+            listener.opponentChanged();
+        }
     }
 
     private void selectUsersPreferredLevel() {
@@ -204,7 +215,7 @@ public class OpponentSelectionWindow {
      * @return the Engine
      */
     public AsyncEngine getEngine() {
-        return new Opponent(selectedEngine, selectedLevel).getAsyncEngine();
+        return getOpponent().getAsyncEngine();
     }
 
     /**
@@ -214,127 +225,14 @@ public class OpponentSelectionWindow {
         frame.setVisible(true);
     }
 
-    static class Opponent {
-        private final EngineSelector engineSelector;
-        private final int level;
-
-        Opponent(@NotNull EngineSelector engineSelector, int level) {
-            this.engineSelector = engineSelector;
-            this.level = level;
-        }
-
-        public AsyncEngine getAsyncEngine() {
-            return AsyncEngineManager.getOrCreate(engineSelector, level);
-        }
-    }
-
-    private static class AddEngineDialog extends JDialog {
-        AddEngineDialog(Window parent) {
-            super(parent, "Add Engine", ModalityType.APPLICATION_MODAL);
-            final JsbTextField nameField = textField();
-            final JsbTextField wdField = textField();
-            wdField.setPreferredSize(new Dimension(300, wdField.getPreferredSize().height));
-            final JsbTextField commandField = textField();
-            final Grid<Component> controls = controlGrid(
-                    control("Name", nameField),
-                    control("Working Directory", wdField),
-                    control("Command", commandField)
-            );
-            final JButton ok = button(new AbstractAction("OK") {
-                @Override public void actionPerformed(ActionEvent e) {
-                    final String name = nameField.getText();
-                    if (!name.matches("[a-zA-Z0-9]+")) {
-                        JOptionPane.showMessageDialog(AddEngineDialog.this, "Engine name must be alphanumeric (all characters must be a-z, A-Z, or 0-9)");
-                        return;
-                    }
-                    final String wd = wdField.getText();
-                    if (wd.contains(";")) {
-                        JOptionPane.showMessageDialog(AddEngineDialog.this, "Working directory cannot contain a semicolon (;)");
-                        return;
-                    }
-                    if (wd.isEmpty()) {
-                        JOptionPane.showMessageDialog(AddEngineDialog.this, "Working directory must not be empty");
-                        return;
-                    }
-                    final String command = commandField.getText().trim();
-                    if (command.isEmpty()) {
-                        JOptionPane.showMessageDialog(AddEngineDialog.this, "Command must not be empty");
-                        return;
-                    }
-                    ExternalEngineManager.add(name, wd, command);
-                    engineListModel.put(new ExternalEngineSelector(name, wd, command));
-                    AddEngineDialog.this.setVisible(false);
-                    AddEngineDialog.this.dispose();
-                }
-            });
-
-            final JButton cancel = button(new AbstractAction("Cancel") {
-                @Override public void actionPerformed(ActionEvent e) {
-                    AddEngineDialog.this.setVisible(false);
-                    AddEngineDialog.this.dispose();
-                }
-            });
-
-            final String osName = (OperatingSystem.os == OperatingSystem.MACINTOSH) ? "Mac" : "Win";
-            final String helpFile = "OpponentSelectionWindow_" + osName + ".html";
-            final InputStream in = OpponentSelectionWindow.class.getResourceAsStream(helpFile);
-            final String helpHtml = Feeds.ofLines(in).join("\n");
-
-            add(vBox(
-                    controls,
-                    label(helpHtml),
-                    buttonBar(true, ok, cancel)
-            ));
-
-            getRootPane().setDefaultButton(ok);
-            pack();
-            setVisible(true);
-        }
-    }
-
-    private static class EngineListModel extends DefaultListModel<EngineSelector> {
-        public EngineListModel(java.util.List<EngineSelector> engineSelectors) {
-            for (EngineSelector es : engineSelectors) {
-                addElement(es);
-            }
-            try {
-                for (ExternalEngineManager.Xei xei : ExternalEngineManager.getXei()) {
-                    final ExternalEngineSelector selector = new ExternalEngineSelector(xei.name, xei.wd, xei.cmd);
-                    addElement(selector);
-                }
-            } catch (BackingStoreException e) {
-                JOptionPane.showMessageDialog(null, "External engine preferences are unavailable");
-            }
-        }
-
-        public void put(EngineSelector engineSelector) {
-            final int i = find(engineSelector.name);
-            if (i < 0) {
-                addElement(engineSelector);
-            } else {
-                set(i, engineSelector);
-            }
-        }
-
-        /**
-         * @param name name of element to find
-         * @return index of the first element whose name equals name, or -1 if no match found
-         */
-        private int find(String name) {
-            for (int i = 0; i < size(); i++) {
-                if (get(i).name.equals(name)) {
-                    return i;
-                }
-            }
-            return -1;
-        }
-
-    }
-
     /**
      * Nuke engine selectors
      */
     public static void main(String[] args) throws BackingStoreException {
         ExternalEngineManager.removeAll();
+    }
+
+    @NotNull @Override public Opponent getOpponent() {
+        return new Opponent(selectedEngine, selectedLevel);
     }
 }

@@ -1,6 +1,7 @@
 package com.welty.othello.gui;
 
 import com.welty.othello.gui.prefs.PrefSet;
+import com.welty.othello.gui.selector.GuiOpponentSelector;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,14 +9,14 @@ import java.util.Map;
 import java.util.prefs.BackingStoreException;
 
 public class ExternalEngineManager {
-    public static final PrefSet externalEngines = new PrefSet(OpponentSelectionWindow.class, "Engines");
+    public static final PrefSet externalEngines = new PrefSet(GuiOpponentSelector.class, "Engines");
 
     public static void add(String name, String wd, String command) {
         externalEngines.add(name, wd + ";" + command);
     }
 
     public static List<Xei> getXei() throws BackingStoreException {
-        final Map<String,String> map = externalEngines.getMap();
+        final Map<String, String> map = externalEngines.getMap();
         List<Xei> xeis = new ArrayList<>();
 
         for (Map.Entry<String, String> kv : map.entrySet()) {
@@ -29,7 +30,7 @@ public class ExternalEngineManager {
 
     private static Xei makeXei(String name, String value) {
         final String[] split = value.split(";", 2);
-        final String wd  = split[0];
+        final String wd = split[0];
         final String cmd = split[1];
         return new Xei(name, wd, cmd);
     }
@@ -46,7 +47,7 @@ public class ExternalEngineManager {
     public static Xei getXei(String program) {
         try {
             final String value = externalEngines.getMap().get(program);
-            if (value==null) {
+            if (value == null) {
                 return null;
             }
             return makeXei(program, value);

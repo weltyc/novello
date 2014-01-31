@@ -1,5 +1,7 @@
 package com.welty.othello.gui;
 
+import com.welty.othello.gui.selector.GuiOpponentSelector;
+
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 
@@ -22,7 +24,7 @@ public class PlayMenu extends JMenu {
         startPosition.addTo(startPositionMenu);
         final Action selectOpponentAction = new AbstractAction("Select Opponent...") {
             @Override public void actionPerformed(ActionEvent e) {
-                OpponentSelectionWindow.getInstance().show();
+                GuiOpponentSelector.getInstance().show();
             }
         };
         this.add(selectOpponentAction);
@@ -53,6 +55,6 @@ public class PlayMenu extends JMenu {
     }
 
     public AsyncEngine getOpponent() {
-        return OpponentSelectionWindow.getInstance().getEngine();
+        return GuiOpponentSelector.getInstance().getEngine();
     }
 }

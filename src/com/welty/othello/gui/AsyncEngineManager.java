@@ -1,5 +1,6 @@
 package com.welty.othello.gui;
 
+import com.welty.othello.gui.selector.EngineSelector;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
@@ -13,8 +14,7 @@ public class AsyncEngineManager {
         if (engine == null) {
             engine = engineSelector.createAsyncEngine(initialMaxDepth);
             engines.put(engineSelector.name, engine);
-        }
-        else {
+        } else {
             engine.setMaxDepth(initialMaxDepth);
         }
         return engine;

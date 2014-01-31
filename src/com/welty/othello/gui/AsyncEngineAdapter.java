@@ -9,11 +9,11 @@ import org.jetbrains.annotations.Nullable;
 /**
  * A class that creates an AsyncEngine from a SyncEngine
  */
-class AsyncEngineAdapter implements AsyncEngine {
+public class AsyncEngineAdapter implements AsyncEngine {
     private final @NotNull SyncEngine syncEngine;
     private final @NotNull RequestQueue queue = new RequestQueue();
 
-    AsyncEngineAdapter(@NotNull SyncEngine syncEngine) {
+    public AsyncEngineAdapter(@NotNull SyncEngine syncEngine) {
         this.syncEngine = syncEngine;
         new Thread(queue).start();
     }
