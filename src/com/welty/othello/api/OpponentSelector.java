@@ -1,4 +1,4 @@
-package com.welty.othello.gui;
+package com.welty.othello.api;
 
 
 import com.orbanova.common.misc.ListenerManager;

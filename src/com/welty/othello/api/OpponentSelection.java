@@ -1,5 +1,7 @@
-package com.welty.othello.gui;
+package com.welty.othello.api;
 
+import com.welty.othello.gui.AsyncEngine;
+import com.welty.othello.gui.AsyncEngineManager;
 import com.welty.othello.gui.selector.EngineSelector;
 import org.jetbrains.annotations.NotNull;
 

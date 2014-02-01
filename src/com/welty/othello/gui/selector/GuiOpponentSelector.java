@@ -2,10 +2,10 @@ package com.welty.othello.gui.selector;
 
 import com.orbanova.common.jsb.JsbGridLayout;
 import com.welty.novello.eval.SimpleEval;
+import com.welty.othello.api.OpponentSelection;
+import com.welty.othello.api.OpponentSelector;
 import com.welty.othello.gui.AsyncEngine;
 import com.welty.othello.gui.ExternalEngineManager;
-import com.welty.othello.gui.OpponentSelection;
-import com.welty.othello.gui.OpponentSelector;
 import com.welty.othello.gui.prefs.PrefInt;
 import com.welty.othello.gui.prefs.PrefString;
 import org.jetbrains.annotations.NotNull;
