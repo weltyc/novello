@@ -4,7 +4,7 @@ import com.orbanova.common.jsb.JsbGridLayout;
 import com.welty.novello.eval.SimpleEval;
 import com.welty.othello.gui.AsyncEngine;
 import com.welty.othello.gui.ExternalEngineManager;
-import com.welty.othello.gui.Opponent;
+import com.welty.othello.gui.OpponentSelection;
 import com.welty.othello.gui.OpponentSelector;
 import com.welty.othello.gui.prefs.PrefInt;
 import com.welty.othello.gui.prefs.PrefString;
@@ -232,7 +232,7 @@ public class GuiOpponentSelector extends OpponentSelector {
         ExternalEngineManager.removeAll();
     }
 
-    @NotNull @Override public Opponent getOpponent() {
-        return new Opponent(selectedEngine, selectedLevel);
+    @NotNull @Override public OpponentSelection getOpponent() {
+        return new OpponentSelection(selectedEngine, selectedLevel);
     }
 }

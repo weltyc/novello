@@ -10,7 +10,7 @@ public abstract class OpponentSelector extends ListenerManager<OpponentSelector.
      *
      * @return the Opponent
      */
-    public abstract @NotNull Opponent getOpponent();
+    public abstract @NotNull OpponentSelection getOpponent();
 
     public interface Listener {
         /**
