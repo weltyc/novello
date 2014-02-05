@@ -20,6 +20,8 @@ public abstract class ApiEngine extends ListenerManager<ApiEngine.Listener> {
 
     public abstract void setContempt(int contempt);
 
+    public abstract void setMaxDepth(int maxDepth);
+
     public abstract void sendMove(COsMoveListItem mli);
 
     public abstract void requestHints(int nMoves);
