@@ -44,7 +44,7 @@ public class ExternalNBoardEngine extends NBoardEngine {
 
     private static ProcessLogger createProcessLogger() throws IOException {
         final String[] command = "./mEdax -nboard".split("\\s+");
-        final File wd = new File("/Applications/edax/4.3.2/bin");
+        final File wd = new File("/Applications/edax/4.4/bin");
         final Process process = new ProcessBuilder(command).directory(wd).redirectErrorStream(true).start();
         return new ProcessLogger(process, true);
     }
