@@ -29,6 +29,8 @@ public abstract class ApiEngine extends ListenerManager<ApiEngine.Listener> {
 
     public abstract void requestMove();
 
+    public abstract String getName();
+
     protected void fireHint(int pong, boolean book, String pv, CMove move, String eval, int nGames, String depth, String freeformText) {
         for (ApiEngine.Listener l : getListeners()) {
             l.hint(pong, book, pv, move, eval, nGames, depth, freeformText);
