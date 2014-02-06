@@ -1,5 +1,6 @@
 package com.welty.novello.coca;
 
+import com.orbanova.common.misc.Logger;
 import com.welty.ggf.GgfGame;
 import com.welty.ggf.GgfMatch;
 import com.welty.novello.core.MeValue;
@@ -12,6 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RandGameMvSource implements MvSource {
+    private static final Logger log = Logger.logger(RandGameMvSource.class);
+
     /**
      * Select s8rXX, non-anti, games from the file  ~/dev/novello/Othello/latest.223270.bz2
      */
@@ -33,6 +36,7 @@ public class RandGameMvSource implements MvSource {
 
     @Override public List<MeValue> getMvs() throws IOException {
         final String filename = "Othello.latest.223270.bz2";
+        log.info("Selecting games from " + filename);
         int nSelected = 0;
         int nSelectedSynchro = 0;
         int nSelectedKomi = 0;
@@ -55,7 +59,7 @@ public class RandGameMvSource implements MvSource {
                     }
                     final MutableGame mg0 = MutableGame.ofGgf(game0.toString());
                     meValues.addAll(mg0.calcPositionValues());
-                    if (match.getGames().size()>1) {
+                    if (match.getGames().size() > 1) {
                         final GgfGame game1 = match.getGames().get(1);
                         final MutableGame mg1 = MutableGame.ofGgf(game1.toString());
                         meValues.addAll(mg1.calcPositionValues());
