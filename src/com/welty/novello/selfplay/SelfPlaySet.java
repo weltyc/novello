@@ -1,7 +1,10 @@
 package com.welty.novello.selfplay;
 
 import com.orbanova.common.misc.Logger;
-import com.welty.novello.core.*;
+import com.welty.novello.core.MeValue;
+import com.welty.novello.core.MutableGame;
+import com.welty.novello.core.NovelloUtils;
+import com.welty.novello.core.Position;
 import com.welty.othello.core.Engineering;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -37,9 +40,9 @@ public class SelfPlaySet {
      * If syncEngine1==syncEngine2, this will play only one game per match. Otherwise each match will contain
      * two games from the same start position, the first with syncEngine1 starting the second with syncEngine2 starting.
      *
-     * @param syncEngine1   first player
-     * @param syncEngine2   second player
-     * @param listeners listeners to match result
+     * @param syncEngine1 first player
+     * @param syncEngine2 second player
+     * @param listeners   listeners to match result
      * @return average match result (player 1 disks - player 2 disks).
      */
     public static double run(SyncEngine syncEngine1, SyncEngine syncEngine2, MatchResultListener... listeners) {
@@ -55,8 +58,8 @@ public class SelfPlaySet {
      * <p/>
      * call() plays the games.
      *
-     * @param syncEngine1              first player
-     * @param syncEngine2              second player
+     * @param syncEngine1          first player
+     * @param syncEngine2          second player
      * @param matchResultListeners listeners to results of each match
      */
     private SelfPlaySet(@NotNull SyncEngine syncEngine1, @NotNull SyncEngine syncEngine2, @NotNull MatchResultListener... matchResultListeners) {
@@ -99,6 +102,9 @@ public class SelfPlaySet {
             }
 
         }
+        for (MatchResultListener listener : matchResultListeners) {
+            listener.onMatchesComplete(nComplete);
+        }
         return sum / nComplete;
     }
 
@@ -135,6 +141,13 @@ public class SelfPlaySet {
          * @param game2     second game of the match, or null if there was no second game.
          */
         void handle(int nComplete, double netResult, @NotNull MutableGame game1, @Nullable MutableGame game2);
+
+        /**
+         * Notify the listener that the set of matches is complete.
+         *
+         * @param nComplete # of matches completed
+         */
+        void onMatchesComplete(int nComplete);
     }
 
     public static class ProgressBarUpdater implements MatchResultListener {
@@ -147,6 +160,11 @@ public class SelfPlaySet {
 
         public void handle(int nComplete, double netResult, @NotNull MutableGame game1, @Nullable MutableGame game2) {
             progressBar.setValue(nComplete);
+        }
+
+        @Override public void onMatchesComplete(int nComplete) {
+            progressBar.setValue(nComplete);
+            progressBar.setMaximum(nComplete);
         }
     }
 
@@ -185,6 +203,10 @@ public class SelfPlaySet {
             }
         }
 
+        @Override public void onMatchesComplete(int nComplete) {
+            printStats(nComplete);
+        }
+
         private void printStats(int nComplete) {
             final double variance = sumSq - sum * sum / nComplete;
             final double stdErr = Math.sqrt(variance);
@@ -211,6 +233,10 @@ public class SelfPlaySet {
                 }
             }
         }
+
+        @Override public void onMatchesComplete(int nComplete) {
+            // do nothing
+        }
     }
 
     public static class PvCollector implements MatchResultListener {
@@ -221,6 +247,10 @@ public class SelfPlaySet {
             if (game2 != null) {
                 pvs.addAll(game2.calcPositionValues());
             }
+        }
+
+        @Override public void onMatchesComplete(int nComplete) {
+            // do nothing
         }
     }
 }

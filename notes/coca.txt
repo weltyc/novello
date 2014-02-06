@@ -184,3 +184,13 @@ d2:16 vs d2:10    80 matches: average result = +14.3 +/-1.0. T ~  13.9.     1.78
 16-ply takes roughly 10 times as long as 10-ply. If I start now it should be done Monday morning...
 
 Evaluations were done with d2:16. In fact valuing positions with d2:16 took approx 8 days.
+
+Note: Times for the next four matches are larger than usual due to running multiple SelfPlaySets at once.
+
+f7:6 vs f8:6:  -0.155 +/-0.073.   26.02 ms vs  25.71 ms.
+f8:6 vs f7:6:  +0.365 +/-0.072.   29.53 ms vs  29.95 ms.
+Tried running f7 vs f8 and also f8 vs f7. It turns out, order matters about 0.2 to the results and about 1% to
+the timing ratio.
+
+After modifying SelfPlaySet to clear hash table before each game:
+
