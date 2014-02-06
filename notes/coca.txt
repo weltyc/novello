@@ -185,7 +185,7 @@ d2:16 vs d2:10    80 matches: average result = +14.3 +/-1.0. T ~  13.9.     1.78
 
 Evaluations were done with d2:16. In fact valuing positions with d2:16 took approx 8 days.
 
-Note: Times for the next four matches are larger than usual due to running multiple SelfPlaySets at once.
+Note: Times for the next three sets are larger than usual due to running multiple SelfPlaySets at once.
 
 f7:6 vs f8:6:  -0.155 +/-0.073.   26.02 ms vs  25.71 ms.
 f8:6 vs f7:6:  +0.365 +/-0.072.   29.53 ms vs  29.95 ms.
@@ -193,4 +193,7 @@ Tried running f7 vs f8 and also f8 vs f7. It turns out, order matters about 0.2 
 the timing ratio.
 
 After modifying SelfPlaySet to clear hash table before each game:
+f7:6 vs f8:6:  -0.171 +/-0.064. T ~  -2.7.    27.17 ms vs  26.82 ms.
+f8:6 vs f7:6:  +0.171 +/-0.064. T ~  -2.7.
 
+This is not a very big improvement. No plans to do this at 16 ply again!
