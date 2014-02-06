@@ -56,6 +56,11 @@ public class EvalSyncEngine implements SyncEngine {
         this.searchDepth = maxDepth;
     }
 
+    @Override public void clear() {
+        solver.clear(64);
+        searcher.clear();
+    }
+
     @Override public String toString() {
         return eval + ":" + searchDepth + options;
     }

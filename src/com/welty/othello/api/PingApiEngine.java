@@ -12,7 +12,7 @@ import com.welty.othello.gdk.COsMoveListItem;
  * that depend on game or engine state take a "pong" argument. The game and engine state are identical
  * if ping==pong.
  */
-public abstract class ApiEngine extends ListenerManager<ApiEngine.Listener> {
+public abstract class PingApiEngine extends ListenerManager<PingApiEngine.Listener> {
     public abstract void terminate();
 
     public abstract void setGame(int ping, COsGame game);
@@ -32,7 +32,7 @@ public abstract class ApiEngine extends ListenerManager<ApiEngine.Listener> {
     public abstract String getName();
 
     protected void fireHint(int pong, boolean book, String pv, CMove move, String eval, int nGames, String depth, String freeformText) {
-        for (ApiEngine.Listener l : getListeners()) {
+        for (PingApiEngine.Listener l : getListeners()) {
             l.hint(pong, book, pv, move, eval, nGames, depth, freeformText);
         }
     }

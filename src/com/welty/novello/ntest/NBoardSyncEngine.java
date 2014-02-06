@@ -11,7 +11,8 @@ import com.welty.othello.core.ProcessLogger;
 import com.welty.othello.gui.ExternalEngineManager;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 
 /**
  * An instance of the NTest othello program
@@ -103,6 +104,11 @@ public class NBoardSyncEngine implements SyncEngine {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override public void clear() {
+        // The NBoard protocol does not have this command
+        // todo add it
     }
 
     static MoveScore parseMoveScore(String line) {

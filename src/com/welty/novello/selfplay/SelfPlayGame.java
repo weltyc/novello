@@ -17,13 +17,13 @@ public class SelfPlayGame implements Callable<MutableGame> {
     private final int gameFlags;
 
     public static final int FLAG_PRINT_GAME = 1;
+
     /**
-     *
-     * @param board start position
-     * @param black black player
-     * @param white white player
-     * @param place location of the match (often, Props.getHostName())
-     * @param gameFlags  Sum of binary flags defined in SelfPlayGame (FLAG_PRINT_GAME, FLAG_MEASURE_TIME)
+     * @param board     start position
+     * @param black     black player
+     * @param white     white player
+     * @param place     location of the match (often, Props.getHostName())
+     * @param gameFlags Sum of binary flags defined in SelfPlayGame (FLAG_PRINT_GAME, FLAG_MEASURE_TIME)
      */
     public SelfPlayGame(@NotNull Position board, @NotNull SyncEngine black, @NotNull SyncEngine white, String place, int gameFlags) {
         this.game = new MutableGame(board, black.toString(), white.toString(), place);
@@ -33,6 +33,8 @@ public class SelfPlayGame implements Callable<MutableGame> {
     }
 
     @Override public MutableGame call() {
+        black.clear();
+        white.clear();
         while (true) {
             Position board = game.getLastPosition();
             final long moverMoves = board.calcMoves();
@@ -40,11 +42,10 @@ public class SelfPlayGame implements Callable<MutableGame> {
                 move(moverMoves);
             } else {
                 final long enemyMoves = board.enemyMoves();
-                if (enemyMoves!=0) {
+                if (enemyMoves != 0) {
                     game.pass();
                     move(enemyMoves);
-                }
-                else {
+                } else {
                     game.finish();
                     if (printGame()) {
                         System.out.println(game.toGgf());
@@ -57,7 +58,7 @@ public class SelfPlayGame implements Callable<MutableGame> {
     }
 
     private boolean printGame() {
-        return (gameFlags & FLAG_PRINT_GAME)!=0;
+        return (gameFlags & FLAG_PRINT_GAME) != 0;
     }
 
     private @NotNull SyncEngine player(boolean blackToMove) {
@@ -75,8 +76,8 @@ public class SelfPlayGame implements Callable<MutableGame> {
         }
         final long t0 = measuredTime();
         final MoveScore moveScore = player(board.blackToMove).calcMove(board);
-        final long dt = measuredTime()-t0;
-        game.play(moveScore, dt*.001);
+        final long dt = measuredTime() - t0;
+        game.play(moveScore, dt * .001);
         if (printGame()) {
             System.out.println("play " + moveScore);
             System.out.println();

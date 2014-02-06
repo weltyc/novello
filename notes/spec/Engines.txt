@@ -36,6 +36,33 @@ These uses are superficially similar but have so many small differences in imple
 that they are considered two entirely separate concepts within the program. Both users communicate with
 adaptors to Engines.
 
+Both synchronous and asynchronous engines have "tracks" that connect the user's required API with
+the engine's API.
+
+      Async Track                                Sync Track
+      -----------                                ----------
+     NBoard Window          User           SelfPlaySet, Tournament
+           |                                         |
+       EdtEngine       User Adaptor               Player
+           |                                         |
+      AsyncEngine        Interface              SyncEngine
+           |                                         |
+       PingEngine                                    |
+           |                                         |
+      NTest, Edax        Engines            Charlie, Novello
+
+
 The Gui's adaptor is the EdtEngine; this is an AsyncEngine that only communicates on the EDT.
 
 The Tournament's adaptor is the Player; this is like a SyncEngine but has a fixed search depth.
+
+The PingEngine is designed to allow multiple PingEngines to be combined into a new PingEngine.
+
+On the Sync track, engines expect to receive all commands on a single thread and return their responses
+synchronously on that thread.
+
+On the Async track, engines expect to receive all commands on a single thread.
+The responses they return are not required to be on a single thread, but all responses are required to
+happen-after both any previous requests and any previous responses from their underlying engine.
+
+Engines can switch tracks. In

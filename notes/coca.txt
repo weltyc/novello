@@ -161,7 +161,7 @@ f7:6 vs f6:6, 0.509 +/-0.073. 20.92 ms vs  21.39 ms.
 Strength is getting close to d2:
 f7:4 vs d2:4, -0.831 +/-0.094. 6.01 ms vs   6.28 ms.
 
-Deeper search (f?)
+Deeper search (f8)
 ------------------
 Did the GGS positions help more because they had better players searching to a greater depth?
 Try increasing the depth on the non-GGS positions. Current depth is 10 which took about 4 hours
@@ -183,4 +183,4 @@ d2:16 vs d2:10    80 matches: average result = +14.3 +/-1.0. T ~  13.9.     1.78
 
 16-ply takes roughly 10 times as long as 10-ply. If I start now it should be done Monday morning...
 
-
+Evaluations were done with d2:16. In fact valuing positions with d2:16 took approx 8 days.

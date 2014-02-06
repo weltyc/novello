@@ -1,0 +1,223 @@
+/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/bin/java -Xmx16G -Didea.launcher.port=7538 "-Didea.launcher.bin.path=/Applications/IntelliJ IDEA 12.app/bin" -Dfile.encoding=UTF-8 -classpath "/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/lib/ant-javafx.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/lib/dt.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/lib/javafx-doclet.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/lib/javafx-mx.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/lib/jconsole.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/lib/sa-jdi.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/lib/tools.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/jre/lib/charsets.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/jre/lib/deploy.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/jre/lib/htmlconverter.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/jre/lib/javaws.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/jre/lib/jce.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/jre/lib/jfr.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/jre/lib/jfxrt.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/jre/lib/JObjC.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/jre/lib/jsse.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/jre/lib/management-agent.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/jre/lib/plugin.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/jre/lib/resources.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/jre/lib/rt.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/jre/lib/ext/dnsns.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/jre/lib/ext/localedata.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/jre/lib/ext/sunec.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/jre/lib/ext/sunjce_provider.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/jre/lib/ext/sunpkcs11.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/jre/lib/ext/zipfs.jar:/Users/chris/dev/novello/target/classes:/Users/chris/.m2/repository/org/jetbrains/annotations/8.1/annotations-8.1.jar:/Users/chris/.m2/repository/com/orbanova/common/0.07-SNAPSHOT/common-0.07-SNAPSHOT.jar:/Users/chris/.m2/repository/com/intellij/annotations/9.0.4/annotations-9.0.4.jar:/Users/chris/.m2/repository/net/sf/trove4j/trove4j/3.0.3/trove4j-3.0.3.jar:/Users/chris/.m2/repository/org/codehaus/janino/janino/2.5.16/janino-2.5.16.jar:/Users/chris/.m2/repository/org/apache/commons/commons-compress/1.5/commons-compress-1.5.jar:/Users/chris/.m2/repository/org/tukaani/xz/1.2/xz-1.2.jar:/Users/chris/.m2/repository/org/mockito/mockito-all/1.8.5/mockito-all-1.8.5.jar:/Users/chris/dev/othello/target/classes:/Applications/IntelliJ IDEA 12.app/lib/idea_rt.jar" com.intellij.rt.execution.application.AppMain com.welty.novello.eval.CoefficientCalculator
+[Thu Feb 06 12:33:21 CST 2014]| INFO | Monitor | starting Loading pvs from file
+[Thu Feb 06 12:33:21 CST 2014]| INFO | Monitor | Loading pvs from file: 1M items
+...  loaded 2,131,295 pvs in 0.664 s
+[Thu Feb 06 12:33:22 CST 2014]| INFO | Monitor | Loading pvs from file ended with 2,131,295 items
+[Thu Feb 06 12:33:22 CST 2014]| INFO | Monitor | starting Loading pvs from file
+[Thu Feb 06 12:33:22 CST 2014]| INFO | Monitor | Loading pvs from file: 1M items
+...  loaded 4,416,945 pvs in 1.812 s
+[Thu Feb 06 12:33:24 CST 2014]| INFO | Monitor | Loading pvs from file ended with 4,416,945 items
+[Thu Feb 06 12:33:24 CST 2014]| INFO | Monitor | starting Loading pvs from file
+[Thu Feb 06 12:33:24 CST 2014]| INFO | Monitor | Loading pvs from file: 1M items
+...  loaded 13,981,684 pvs in 4.593 s
+[Thu Feb 06 12:33:28 CST 2014]| INFO | Monitor | Loading pvs from file ended with 13,981,684 items
+[Thu Feb 06 12:33:28 CST 2014]| INFO | RandGameMvSource | Selecting games from Othello.latest.223270.bz2
+..................................................50k
+..................................................100k
+..................................................150k
+..................................................200k
+.......................
+nSelected = 91537, nSelectedSynchro = 14681, nKomi = 0
+[Thu Feb 06 12:34:09 CST 2014]| INFO | Monitor | starting Loading pvs from file
+[Thu Feb 06 12:34:10 CST 2014]| INFO | Monitor | Loading pvs from file: 1M items
+...  loaded 17,363,211 pvs in 7.334 s
+[Thu Feb 06 12:34:17 CST 2014]| INFO | Monitor | Loading pvs from file ended with 17,363,211 items
+[Thu Feb 06 12:34:17 CST 2014]| INFO | MvGenerator | 2,131,295 pvs from .pvs file, 4,416,945 from x.pvs file, 13,981,684 from n.pvs file, 6,181,231 from ggs games, 17,363,211 from -cap.pvs file
+[Thu Feb 06 12:34:17 CST 2014]| INFO | MvGenerator | Selecting distinct pvs
+[Thu Feb 06 12:35:19 CST 2014]| INFO | MvGenerator | selected 38,834,955 distinct pvs from 44,074,366 total pvs
+a total of 38,834,955 pvs are available.
+
+--- 3 ---
+  53,521 coefficients occurred 0 times
+  21,569 coefficients occurred 1-9 times
+  31,210 coefficients occurred 10-99 times
+  19,153 coefficients occurred 100-999 times
+   8,320 coefficients occurred 1000+ times
+
+estimating coefficients using 2,910,949 positions
+5:29 elapsed
+sum of coefficients squared = 1.99e+09
+
+79831 non-zero coefficients written
+--- 4 ---
+  52,675 coefficients occurred 0 times
+  20,429 coefficients occurred 1-9 times
+  30,886 coefficients occurred 10-99 times
+  20,575 coefficients occurred 100-999 times
+   9,208 coefficients occurred 1000+ times
+
+estimating coefficients using 3,347,481 positions
+6:12 elapsed
+sum of coefficients squared = 2.05e+09
+
+80635 non-zero coefficients written
+--- 11 ---
+  49,041 coefficients occurred 0 times
+  15,946 coefficients occurred 1-9 times
+  27,092 coefficients occurred 10-99 times
+  25,693 coefficients occurred 100-999 times
+  16,001 coefficients occurred 1000+ times
+
+estimating coefficients using 7,931,886 positions
+15:13 elapsed
+sum of coefficients squared = 2.44e+09
+
+84093 non-zero coefficients written
+--- 12 ---
+  49,031 coefficients occurred 0 times
+  15,896 coefficients occurred 1-9 times
+  26,850 coefficients occurred 10-99 times
+  25,519 coefficients occurred 100-999 times
+  16,477 coefficients occurred 1000+ times
+
+estimating coefficients using 8,279,137 positions
+14:40 elapsed
+sum of coefficients squared = 2.46e+09
+
+84061 non-zero coefficients written
+--- 19 ---
+  53,553 coefficients occurred 0 times
+  20,020 coefficients occurred 1-9 times
+  25,592 coefficients occurred 10-99 times
+  20,773 coefficients occurred 100-999 times
+  13,835 coefficients occurred 1000+ times
+
+estimating coefficients using 7,394,317 positions
+12:57 elapsed
+sum of coefficients squared = 2.92e+09
+
+79631 non-zero coefficients written
+--- 20 ---
+  54,897 coefficients occurred 0 times
+  20,080 coefficients occurred 1-9 times
+  25,251 coefficients occurred 10-99 times
+  20,183 coefficients occurred 100-999 times
+  13,362 coefficients occurred 1000+ times
+
+estimating coefficients using 7,338,186 positions
+13:05 elapsed
+sum of coefficients squared = 2.92e+09
+
+78294 non-zero coefficients written
+--- 27 ---
+  68,194 coefficients occurred 0 times
+  22,148 coefficients occurred 1-9 times
+  20,389 coefficients occurred 10-99 times
+  14,047 coefficients occurred 100-999 times
+   8,995 coefficients occurred 1000+ times
+
+estimating coefficients using 5,933,967 positions
+12:30 elapsed
+sum of coefficients squared = 2.27e+09
+
+64979 non-zero coefficients written
+--- 28 ---
+  70,789 coefficients occurred 0 times
+  21,914 coefficients occurred 1-9 times
+  19,437 coefficients occurred 10-99 times
+  13,184 coefficients occurred 100-999 times
+   8,449 coefficients occurred 1000+ times
+
+estimating coefficients using 5,758,509 positions
+9:04 elapsed
+sum of coefficients squared = 2.09e+09
+
+62347 non-zero coefficients written
+--- 35 ---
+  85,249 coefficients occurred 0 times
+  20,140 coefficients occurred 1-9 times
+  14,307 coefficients occurred 10-99 times
+   8,245 coefficients occurred 100-999 times
+   5,832 coefficients occurred 1000+ times
+
+estimating coefficients using 4,653,927 positions
+7:10 elapsed
+sum of coefficients squared = 1.27e+09
+
+47874 non-zero coefficients written
+--- 36 ---
+  87,425 coefficients occurred 0 times
+  19,750 coefficients occurred 1-9 times
+  13,412 coefficients occurred 10-99 times
+   7,711 coefficients occurred 100-999 times
+   5,475 coefficients occurred 1000+ times
+
+estimating coefficients using 4,489,105 positions
+7:49 elapsed
+sum of coefficients squared = 1.16e+09
+
+45716 non-zero coefficients written
+--- 43 ---
+ 104,835 coefficients occurred 0 times
+  13,955 coefficients occurred 1-9 times
+   7,768 coefficients occurred 10-99 times
+   4,012 coefficients occurred 100-999 times
+   3,203 coefficients occurred 1000+ times
+
+estimating coefficients using 3,353,556 positions
+5:01 elapsed
+sum of coefficients squared = 5.38e+08
+
+28530 non-zero coefficients written
+--- 44 ---
+ 107,281 coefficients occurred 0 times
+  12,864 coefficients occurred 1-9 times
+   7,051 coefficients occurred 10-99 times
+   3,648 coefficients occurred 100-999 times
+   2,929 coefficients occurred 1000+ times
+
+estimating coefficients using 3,114,560 positions
+3:53 elapsed
+sum of coefficients squared = 4.70e+08
+
+26084 non-zero coefficients written
+--- 51 ---
+ 122,754 coefficients occurred 0 times
+   5,316 coefficients occurred 1-9 times
+   2,693 coefficients occurred 10-99 times
+   1,677 coefficients occurred 100-999 times
+   1,333 coefficients occurred 1000+ times
+
+estimating coefficients using 1,427,226 positions
+0:56 elapsed
+sum of coefficients squared = 1.40e+08
+
+10636 non-zero coefficients written
+--- 52 ---
+ 124,532 coefficients occurred 0 times
+   4,312 coefficients occurred 1-9 times
+   2,351 coefficients occurred 10-99 times
+   1,425 coefficients occurred 100-999 times
+   1,153 coefficients occurred 1000+ times
+
+estimating coefficients using 1,168,093 positions
+0:40 elapsed
+sum of coefficients squared = 8.92e+07
+
+8917 non-zero coefficients written
+--- 59 ---
+ 133,030 coefficients occurred 0 times
+     173 coefficients occurred 1-9 times
+     228 coefficients occurred 10-99 times
+     144 coefficients occurred 100-999 times
+     198 coefficients occurred 1000+ times
+
+estimating coefficients using 97,760 positions
+0:00 elapsed
+sum of coefficients squared = 3.31e+07
+
+717 non-zero coefficients written
+--- 60 ---
+ 133,420 coefficients occurred 0 times
+      64 coefficients occurred 1-9 times
+      70 coefficients occurred 10-99 times
+      58 coefficients occurred 100-999 times
+     161 coefficients occurred 1000+ times
+
+estimating coefficients using 42,477 positions
+0:00 elapsed
+sum of coefficients squared = 3.30e+07
+
+353 non-zero coefficients written
+
+Process finished with exit code 0

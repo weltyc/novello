@@ -64,6 +64,7 @@ public class HashTables {
      * @param maxNEmpties max # of empties that will be cleared in the hash table
      */
     public void clear(int maxNEmpties) {
+        maxNEmpties = Math.min(maxNEmpties, tables.length - 1);
         for (int nEmpty = Solver.MIN_HASH_DEPTH; nEmpty <= maxNEmpties; nEmpty++) {
             tables[nEmpty].clear();
         }
@@ -192,7 +193,7 @@ public class HashTables {
 
         /**
          * Get the Entry that this position can be stored in.
-         *
+         * <p/>
          * The position might or might not already be in the returned Entry.
          *
          * @param mover mover bits
