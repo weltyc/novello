@@ -2,7 +2,10 @@ package com.welty.novello.ntest;
 
 import com.orbanova.common.misc.Logger;
 import com.orbanova.common.misc.Require;
-import com.welty.novello.core.*;
+import com.welty.novello.core.BitBoardUtils;
+import com.welty.novello.core.MoveScore;
+import com.welty.novello.core.MutableGame;
+import com.welty.novello.core.Position;
 import com.welty.novello.selfplay.SyncEngine;
 import com.welty.othello.core.ProcessLogger;
 import com.welty.othello.gui.ExternalEngineManager;
