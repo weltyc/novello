@@ -9,7 +9,7 @@ import java.util.prefs.Preferences;
  * <p/>
  * This stores the most recently selected item in preferences.
  */
-class MenuButtonGroup {
+public class MenuButtonGroup {
     private final String key;
     private final Class menuClass;
     private final String[] texts;
@@ -20,7 +20,7 @@ class MenuButtonGroup {
      * @param menuClass Class used to determine a preferences folder
      * @param texts     text of menu items, e.g. {"Black", "White"}
      */
-    MenuButtonGroup(String key, Class menuClass, String... texts) {
+    public MenuButtonGroup(String key, Class menuClass, String... texts) {
         this.key = key;
         this.menuClass = menuClass;
         this.texts = texts;
@@ -38,7 +38,7 @@ class MenuButtonGroup {
      *
      * @param menu menu to add to
      */
-    void addTo(JMenu menu) {
+    public void addTo(JMenu menu) {
         final ButtonGroup buttonGroup = new ButtonGroup();
 
         for (int i = 0; i < texts.length; i++) {
