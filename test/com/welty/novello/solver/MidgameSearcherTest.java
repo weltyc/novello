@@ -37,10 +37,10 @@ public class MidgameSearcherTest extends TestCase {
         assertEquals(Long.bitCount(moves), counter.nFlips());
 
         final Position terminal = prev.play(moveScore.sq);
-        assertEquals(-eval.eval(terminal), moveScore.score);
+        assertEquals(-eval.eval(terminal), moveScore.centidisks);
 
         int score = simpleSearch(eval, prev, moves);
-        assertEquals(score, moveScore.score);
+        assertEquals(score, moveScore.centidisks);
     }
 
     // do a simple 1-ply search without sorting.
@@ -128,7 +128,7 @@ public class MidgameSearcherTest extends TestCase {
             final long n = fwSearcher.getCounts().nFlips;
             final int mpcScore = mpcSearcher.calcScore(position, depth);
             final long nMpc = mpcSearcher.getCounts().nFlips;
-            assertTrue("scores should be similar", Math.abs(fwScore - mpcScore)<100);
+            assertTrue("scores should be similar", Math.abs(fwScore - mpcScore) < 100);
             System.out.println("MPC used " + nMpc + ", full-width used " + n);
             assertTrue("MPC should give the same result with fewer nodes", nMpc < n);
         }

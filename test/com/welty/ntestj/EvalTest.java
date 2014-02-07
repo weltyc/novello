@@ -87,6 +87,6 @@ public class EvalTest extends TestCase {
         final MoveScore moveScore = ntest.calcMove(pos, 1);
         final Position next = pos.play(moveScore.sq);
         final int value = eval.ValueJMobs(next.mover(), next.enemy(), next.calcMoves(), next.enemyMoves());
-        assertEquals(-moveScore.score, value);
+        assertEquals(-moveScore.centidisks, value);
     }
 }

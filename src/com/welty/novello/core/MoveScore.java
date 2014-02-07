@@ -1,31 +1,34 @@
 package com.welty.novello.core;
 
+import com.welty.othello.gdk.OsMove;
+import com.welty.othello.gdk.OsMoveListItem;
+
 /**
  * A move with an evaluation
-*/
+ */
 public class MoveScore {
     public final int sq;
-    public final int score;
+    public final int centidisks;
 
     /**
-     * @param sq square index of the move
-     * @param score evaluation, from mover's point of view, in centidisks
+     * @param sq         square index of the move
+     * @param centidisks evaluation, from mover's point of view, in centidisks
      */
-    public MoveScore(int sq, int score) {
+    public MoveScore(int sq, int centidisks) {
         this.sq = sq;
-        this.score = score;
+        this.centidisks = centidisks;
     }
 
     /**
      * @param squareText square of move, in text format; for example "D5"
-     * @param score evaluation, from mover's point of view, in centidisks
+     * @param centidisks evaluation, from mover's point of view, in centidisks
      */
-    public MoveScore(String squareText, int score) {
-        this(BitBoardUtils.textToSq(squareText), score);
+    public MoveScore(String squareText, int centidisks) {
+        this(BitBoardUtils.textToSq(squareText), centidisks);
     }
 
     @Override public String toString() {
-        return BitBoardUtils.sqToText(sq)+"/"+score;
+        return BitBoardUtils.sqToText(sq) + "/" + centidisks;
     }
 
     @Override
@@ -35,14 +38,20 @@ public class MoveScore {
 
         MoveScore moveScore = (MoveScore) o;
 
-        return score == moveScore.score && sq == moveScore.sq;
+        return centidisks == moveScore.centidisks && sq == moveScore.sq;
 
     }
 
     @Override
     public int hashCode() {
         int result = sq;
-        result = 31 * result + score;
+        result = 31 * result + centidisks;
         return result;
+    }
+
+    public OsMoveListItem toMli() {
+        final OsMove move = new OsMove(BitBoardUtils.sqToText(sq));
+        final double eval = 0.01 * centidisks;
+        return new OsMoveListItem(move, eval, 0);
     }
 }

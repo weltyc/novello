@@ -26,10 +26,10 @@ public class EvalSyncEngineTest extends TestCase {
         assertTrue("must be a legal move", BitBoardUtils.isBitSet(moves, moveScore.sq));
 
         final Position terminal = prev.play(moveScore.sq);
-        assertEquals(-eval.eval(terminal), moveScore.score);
+        assertEquals(-eval.eval(terminal), moveScore.centidisks);
 
         int score = simpleSearch(eval, prev, moves);
-        assertEquals(score, moveScore.score);
+        assertEquals(score, moveScore.centidisks);
     }
 
     // do a simple 1-ply search without sorting.
@@ -56,6 +56,6 @@ public class EvalSyncEngineTest extends TestCase {
 
         final Position prev = Position.of("OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO*. O");
 
-        assertEquals(6400, player.calcMove(prev, 1).score);
+        assertEquals(6400, player.calcMove(prev, 1).centidisks);
     }
 }

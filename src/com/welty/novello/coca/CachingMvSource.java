@@ -171,17 +171,17 @@ public class CachingMvSource implements MvSource {
             }
         }
         final MoveScore moveScore = syncPlayer.calcMove(position);
-        pvs.add(new MeValue(position.mover(), position.enemy(), moveScore.score));
+        pvs.add(new MeValue(position.mover(), position.enemy(), moveScore.centidisks));
 
         position = position.play(moveScore.sq);
-        int subScore = -moveScore.score;
+        int subScore = -moveScore.centidisks;
 
         if (!position.hasLegalMove()) {
             position = position.pass();
             if (!position.hasLegalMove()) {
                 return pvs;
             }
-            subScore = moveScore.score;
+            subScore = moveScore.centidisks;
         }
 
         pvs.add(new MeValue(position.mover(), position.enemy(), subScore));

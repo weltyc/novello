@@ -35,8 +35,8 @@ public class EndgameAnalyzer {
                 Position next = position.play(move.getSq());
                 final int score = -solver.solve(next.mover(), next.enemy());
 
-                if (best.score != score) {
-                    final int drop = best.score - score;
+                if (best.centidisks != score) {
+                    final int drop = best.centidisks - score;
                     if (drop != 0) {
                         final String playerName = position.blackToMove ? "Black" : "White";
                         final String played = BitBoardUtils.sqToText(move.getSq()) + "/" + score;

@@ -7,7 +7,6 @@ import com.welty.novello.eval.Eval;
 import com.welty.novello.selfplay.EvalSyncEngine;
 import com.welty.othello.core.CMove;
 import com.welty.othello.gdk.OsBoard;
-import com.welty.othello.gdk.OsMoveListItem;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -35,14 +34,14 @@ public class SyncStatelessEngine extends StatelessEngine {
         final MoveScore moveScore = calcMove(state);
         final String pv = BitBoardUtils.sqToText(moveScore.sq);
         final CMove move = new CMove((byte) moveScore.sq);
-        final String eval = "" + moveScore.score;
+        final String eval = "" + 0.01 * moveScore.centidisks;
         fireHint(pong, false, pv, move, eval, 0, "2", "");
     }
 
     @Override public void requestMove(PingPong pingPong, SearchState state) {
         final int pong = pingPong.next();
         final MoveScore moveScore = calcMove(state);
-        fireEngineMove(pong, new OsMoveListItem(moveScore.toString()));
+        fireEngineMove(pong, moveScore.toMli());
     }
 
     @NotNull @Override public String getName() {

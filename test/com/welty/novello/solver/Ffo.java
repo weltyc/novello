@@ -59,7 +59,7 @@ public class Ffo {
                 final Counts c0 = searcher.getCounts();
 
                 final MoveScore moveScore = searcher.getMoveScore(position);
-                final int score = moveScore.score / CoefficientCalculator.DISK_VALUE;
+                final int score = moveScore.centidisks / CoefficientCalculator.DISK_VALUE;
 
                 final Counts counts = searcher.getCounts().minus(c0);
 
@@ -135,7 +135,7 @@ public class Ffo {
 
         @NotNull @Override public MoveScore getMoveScore(Position position) {
             final MoveScore moveScore = solver.getMoveScore(position.mover(), position.enemy());
-            return new MoveScore(moveScore.sq, moveScore.score * CoefficientCalculator.DISK_VALUE);
+            return new MoveScore(moveScore.sq, moveScore.centidisks * CoefficientCalculator.DISK_VALUE);
         }
 
         @Override public String toString() {
