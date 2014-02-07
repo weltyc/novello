@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
  */
 public class Players {
     public static Eval eval(String name) {
-        if (SimpleEval.getEval(name)!=null) {
+        if (SimpleEval.getEval(name) != null) {
             return SimpleEval.getEval(name);
         }
 
@@ -28,7 +28,7 @@ public class Players {
     }
 
     /**
-     * Construct a SyncEngine from a text string
+     * Construct a SyncPlayer from a text string
      * <p/>
      * The text string has the format
      * {eval}:{depth}{options}
@@ -41,13 +41,14 @@ public class Players {
      * for a list available options.
      * <p/>
      * {eval} may also be "ntest", in which case an external NTest process is launched. NTest ignores options.
-     *
+     * <p/>
      * This function always returns a new player; it does not reuse old players even if the textString is the same.
      * This is because the SyncEngine may not be multithreaded.
+     *
      * @param textString player text string
      * @return a newly constructed SyncEngine.
      */
-    public static SyncEngine player(String textString) {
+    public static SyncPlayer player(String textString) {
         final String[] parts = textString.split(":", 2);
         if (parts.length < 2) {
             throw new IllegalArgumentException("require an eval and a search depth, for instance 'a1:3w'; had " + textString);
@@ -63,11 +64,12 @@ public class Players {
 
         final String evalName = parts[0];
         if (evalName.equals("ntest") || evalName.equals("edax") || evalName.equals("ntest-new")) {
-            return new NBoardSyncEngine(evalName, depth, false);
+            return new SyncPlayer(new NBoardSyncEngine(evalName, depth, false), depth);
+        } else {
+            final Eval eval;
+            eval = eval(evalName);
+            return new SyncPlayer(new EvalSyncEngine(eval, matcher.group(2)), depth);
         }
-        final Eval eval;
-        eval = eval(evalName);
-        return new EvalSyncEngine(eval, depth, matcher.group(2));
     }
 
     private static Eval currentEval;

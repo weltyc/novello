@@ -1,16 +1,16 @@
 package com.welty.novello.eval;
 
+import com.welty.novello.core.Position;
 import com.welty.novello.selfplay.EvalSyncEngine;
 import com.welty.novello.selfplay.Players;
-import com.welty.novello.core.Position;
 
 /**
  */
 public class Explain {
     public static void main(String[] args) {
         final String evalName = "7B";
-        final CoefficientEval eval = (CoefficientEval)Players.eval(evalName);
-        final EvalSyncEngine player = new EvalSyncEngine(eval, 1, "");
+        final CoefficientEval eval = (CoefficientEval) Players.eval(evalName);
+        final EvalSyncEngine player = new EvalSyncEngine(eval, "");
 
         final Position prev = Position.of("--------\n" +
                 "--------\n" +
@@ -22,7 +22,7 @@ public class Explain {
                 "--------\n" +
                 "O");
         System.out.println(prev);
-        player.calcMove(prev);
+        player.calcMove(prev, 1);
 
         final String moves = "E3,G3";
         for (String move : moves.split(",")) {

@@ -2,9 +2,9 @@ package com.welty.novello.coca;
 
 import com.orbanova.common.misc.Logger;
 import com.welty.novello.core.*;
-import com.welty.novello.selfplay.SyncEngine;
 import com.welty.novello.selfplay.Players;
 import com.welty.novello.selfplay.SelfPlayGame;
+import com.welty.novello.selfplay.SyncPlayer;
 import com.welty.othello.core.OperatingSystem;
 import org.jetbrains.annotations.NotNull;
 
@@ -133,8 +133,8 @@ public class CachingMvSource implements MvSource {
                     }
                     nWritten += firstTwoPvs.size();
                     if (nWritten >= nextMessage) {
-                        log.info(String.format("%,dk positions written", nWritten/1000));
-                        nextMessage *=2;
+                        log.info(String.format("%,dk positions written", nWritten / 1000));
+                        nextMessage *= 2;
                     }
                 } catch (InterruptedException | ExecutionException e) {
                     // this thread spec does not allow InterruptedExceptions.
@@ -146,8 +146,8 @@ public class CachingMvSource implements MvSource {
         }
     }
 
-    private final ThreadLocal<SyncEngine> players = new ThreadLocal<SyncEngine>() {
-        @Override protected SyncEngine initialValue() {
+    private final ThreadLocal<SyncPlayer> players = new ThreadLocal<SyncPlayer>() {
+        @Override protected SyncPlayer initialValue() {
             return Players.player(playerName);
         }
     };
@@ -157,11 +157,11 @@ public class CachingMvSource implements MvSource {
      * <p/>
      * This implementation values using a midgame search.
      *
-     * @param syncEngine   syncEngine to value a position.
-     * @param position the position
+     * @param syncPlayer syncPlayer to value a position.
+     * @param position   the position
      * @return The two pvs
      */
-    static List<MeValue> getFirstTwoPvsSearch(SyncEngine syncEngine, Position position) {
+    static List<MeValue> getFirstTwoPvsSearch(SyncPlayer syncPlayer, Position position) {
         // generate value using a midgame search
         List<MeValue> pvs = new ArrayList<>();
         if (!position.hasLegalMove()) {
@@ -170,7 +170,7 @@ public class CachingMvSource implements MvSource {
                 return pvs;
             }
         }
-        final MoveScore moveScore = syncEngine.calcMove(position);
+        final MoveScore moveScore = syncPlayer.calcMove(position);
         pvs.add(new MeValue(position.mover(), position.enemy(), moveScore.score));
 
         position = position.play(moveScore.sq);
@@ -193,13 +193,13 @@ public class CachingMvSource implements MvSource {
      * <p/>
      * This implementation values using a midgame search.
      *
-     * @param syncEngine   syncEngine to value a position.
-     * @param position the position
+     * @param syncPlayer syncPlayer to value a position.
+     * @param position   the position
      * @return The two pvs
      */
-    static List<MeValue> getFirstTwoPvsPlayout(SyncEngine syncEngine, Position position) {
+    static List<MeValue> getFirstTwoPvsPlayout(SyncPlayer syncPlayer, Position position) {
         // generate using playout
-        final MutableGame game = new SelfPlayGame(position, syncEngine, syncEngine, "", 0).call();
+        final MutableGame game = new SelfPlayGame(position, syncPlayer, syncPlayer, "", 0).call();
         final List<MeValue> gamePvs = game.calcPositionValues();
         return gamePvs.subList(0, Math.min(2, gamePvs.size()));
     }

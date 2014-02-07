@@ -12,8 +12,8 @@ import java.util.concurrent.Callable;
  */
 public class SelfPlayGame implements Callable<MutableGame> {
     private @NotNull MutableGame game;
-    private final @NotNull SyncEngine black;
-    private final @NotNull SyncEngine white;
+    private final @NotNull SyncPlayer black;
+    private final @NotNull SyncPlayer white;
     private final int gameFlags;
 
     public static final int FLAG_PRINT_GAME = 1;
@@ -25,7 +25,7 @@ public class SelfPlayGame implements Callable<MutableGame> {
      * @param place     location of the match (often, Props.getHostName())
      * @param gameFlags Sum of binary flags defined in SelfPlayGame (FLAG_PRINT_GAME, FLAG_MEASURE_TIME)
      */
-    public SelfPlayGame(@NotNull Position board, @NotNull SyncEngine black, @NotNull SyncEngine white, String place, int gameFlags) {
+    public SelfPlayGame(@NotNull Position board, @NotNull SyncPlayer black, @NotNull SyncPlayer white, String place, int gameFlags) {
         this.game = new MutableGame(board, black.toString(), white.toString(), place);
         this.black = black;
         this.white = white;
@@ -61,7 +61,7 @@ public class SelfPlayGame implements Callable<MutableGame> {
         return (gameFlags & FLAG_PRINT_GAME) != 0;
     }
 
-    private @NotNull SyncEngine player(boolean blackToMove) {
+    private @NotNull SyncPlayer player(boolean blackToMove) {
         return blackToMove ? black : white;
     }
 

@@ -1,6 +1,6 @@
 package com.welty.othello.api;
 
-import com.welty.othello.gui.PingEngineManager;
+import com.welty.othello.gui.StatelessEngineManager;
 import com.welty.othello.gui.selector.EngineSelector;
 import org.jetbrains.annotations.NotNull;
 
@@ -20,12 +20,11 @@ public class OpponentSelection {
      * <p/>
      * This will reuse an existing engine if one exists in the pool; otherwise it will create a new one.
      *
-     * @param ping ping id for engine selection
      * @return the Engine
      * @throws IOException
      */
-    public PingEngine getOrCreateEngine(int ping) throws IOException {
-        return PingEngineManager.getInstance().getOrCreate(engineSelector, ping, level);
+    public StatelessEngine getOrCreateEngine() throws IOException {
+        return StatelessEngineManager.getInstance().getOrCreate(engineSelector, level);
     }
 
     /**

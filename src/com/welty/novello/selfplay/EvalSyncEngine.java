@@ -16,24 +16,21 @@ import org.jetbrains.annotations.NotNull;
 public class EvalSyncEngine implements SyncEngine {
     @NotNull private final Eval eval;
     private final MidgameSearcher.Options midgameOptions;
-    private volatile int searchDepth;
     private final String options;
     private final MidgameSearcher searcher;
     private final Solver solver;
 
-    public EvalSyncEngine(@NotNull Eval eval, int searchDepth, String options) {
+    public EvalSyncEngine(@NotNull Eval eval, String options) {
         this.eval = eval;
-        this.searchDepth = searchDepth;
         this.options = options;
         midgameOptions = new MidgameSearcher.Options(options);
         this.solver = new Solver(eval, midgameOptions);
         this.searcher = solver.midgameSearcher;
     }
 
-    public MoveScore calcMove(@NotNull Position board) {
-        final int sd = searchDepth;
+    public MoveScore calcMove(@NotNull Position board, int maxDepth) {
         if (midgameOptions.useNtestSearchDepths) {
-            final Heights heights = new Heights(sd);
+            final Heights heights = new Heights(maxDepth);
             if (board.nEmpty() <= heights.getFullWidthHeight()) {
                 // full-width solve
                 return solveMove(board);
@@ -44,16 +41,12 @@ public class EvalSyncEngine implements SyncEngine {
                     final int depth = board.nEmpty() - solverStart;
                     return searcher.getMoveScore(board, board.calcMoves(), depth);
                 } else {
-                    return searcher.getMoveScore(board, board.calcMoves(), sd);
+                    return searcher.getMoveScore(board, board.calcMoves(), maxDepth);
                 }
             }
         } else {
-            return searcher.getMoveScore(board, board.calcMoves(), sd);
+            return searcher.getMoveScore(board, board.calcMoves(), maxDepth);
         }
-    }
-
-    @Override public void setMaxDepth(int maxDepth) {
-        this.searchDepth = maxDepth;
     }
 
     @Override public void clear() {
@@ -62,7 +55,7 @@ public class EvalSyncEngine implements SyncEngine {
     }
 
     @Override public String toString() {
-        return eval + ":" + searchDepth + options;
+        return eval + ":" + options;
     }
 
     /**

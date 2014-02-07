@@ -4,6 +4,7 @@ import com.welty.novello.core.*;
 import com.welty.novello.eval.CoefficientCalculator;
 import com.welty.novello.ntest.NBoardSyncEngine;
 import com.welty.novello.selfplay.Players;
+import com.welty.novello.selfplay.SyncPlayer;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -143,7 +144,7 @@ public class Ffo {
     }
 
     public static class NtestSearcher implements Searcher {
-        private final NBoardSyncEngine player = new NBoardSyncEngine("ntest", 50, false);
+        private final SyncPlayer player = new SyncPlayer(new NBoardSyncEngine("ntest", 50, false), 50);
 
         @NotNull @Override public Counts getCounts() {
             return new Counts(0, 0);

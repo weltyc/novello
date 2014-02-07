@@ -23,8 +23,8 @@ public class SelfPlaySet {
             System.err.println("usage: blackPlayerName whitePlayerName [# games]");
             System.err.println(" for example a1:2 ntest:2");
         }
-        final SyncEngine black = Players.player(args[0]);
-        final SyncEngine white = Players.player(args[1]);
+        final SyncPlayer black = Players.player(args[0]);
+        final SyncPlayer white = Players.player(args[1]);
 
         final MatchResultListener[] listeners = {new MatchPrinter(2), new StatPrinter()};
         final double result = run(black, white, listeners);
@@ -45,12 +45,12 @@ public class SelfPlaySet {
      * @param listeners   listeners to match result
      * @return average match result (player 1 disks - player 2 disks).
      */
-    public static double run(SyncEngine syncEngine1, SyncEngine syncEngine2, MatchResultListener... listeners) {
+    public static double run(SyncPlayer syncEngine1, SyncPlayer syncEngine2, MatchResultListener... listeners) {
         return new SelfPlaySet(syncEngine1, syncEngine2, listeners).call();
     }
 
-    private final @NotNull SyncEngine syncEngine1;
-    private final @NotNull SyncEngine syncEngine2;
+    private final @NotNull SyncPlayer syncEngine1;
+    private final @NotNull SyncPlayer syncEngine2;
     private final @NotNull MatchResultListener[] matchResultListeners;
 
     /**
@@ -62,7 +62,7 @@ public class SelfPlaySet {
      * @param syncEngine2          second player
      * @param matchResultListeners listeners to results of each match
      */
-    private SelfPlaySet(@NotNull SyncEngine syncEngine1, @NotNull SyncEngine syncEngine2, @NotNull MatchResultListener... matchResultListeners) {
+    private SelfPlaySet(@NotNull SyncPlayer syncEngine1, @NotNull SyncPlayer syncEngine2, @NotNull MatchResultListener... matchResultListeners) {
         this.syncEngine1 = syncEngine1;
         this.syncEngine2 = syncEngine2;
         this.matchResultListeners = matchResultListeners;

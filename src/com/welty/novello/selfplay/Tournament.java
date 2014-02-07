@@ -18,7 +18,7 @@ import java.util.concurrent.*;
  */
 public class Tournament implements Runnable {
     public static void main(String[] args) throws Exception {
-        if (args.length ==0) {
+        if (args.length == 0) {
             System.err.println("usage: player1,player2,...");
             System.exit(-1);
         }
@@ -30,7 +30,7 @@ public class Tournament implements Runnable {
 
     /**
      * Construct a tournament.
-     *
+     * <p/>
      * Since SyncEngine is not thread-safe, a new player must be constructed for each Set he's playing in.
      * The playerName is used to construct a new SyncEngine for each set.
      *
@@ -89,7 +89,7 @@ public class Tournament implements Runnable {
         }
         System.out.println();
         final long dt = System.currentTimeMillis() - t0;
-        System.out.format("Tournament complete in %5.1f s", dt*.001);
+        System.out.format("Tournament complete in %5.1f s", dt * .001);
 
         progressFrame.dispose();
     }
@@ -118,8 +118,8 @@ public class Tournament implements Runnable {
         }
 
         @Override public Result call() throws Exception {
-            final SyncEngine black = Players.player(playerNames[i]);
-            final SyncEngine white = Players.player(playerNames[j]);
+            final SyncPlayer black = Players.player(playerNames[i]);
+            final SyncPlayer white = Players.player(playerNames[j]);
             final double averageResult = SelfPlaySet.run(black, white, new SelfPlaySet.ProgressBarUpdater(progressBar));
             System.out.format("%+5.1f  %s vs %s%n", averageResult, black, white);
             return new Result(i, j, averageResult);

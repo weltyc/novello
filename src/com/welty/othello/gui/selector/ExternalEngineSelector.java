@@ -1,7 +1,7 @@
 package com.welty.othello.gui.selector;
 
 import com.welty.othello.api.ParsedEngine;
-import com.welty.othello.api.PingEngine;
+import com.welty.othello.api.StatelessEngine;
 import com.welty.othello.engine.ExternalNBoardEngine;
 import org.jetbrains.annotations.NotNull;
 
@@ -18,7 +18,7 @@ public class ExternalEngineSelector extends EngineSelector {
         this.command = command.split("\\s+");
     }
 
-    @NotNull @Override public PingEngine createPingEngine(int maxDepth) throws IOException {
+    @NotNull @Override public StatelessEngine createPingEngine(int maxDepth) throws IOException {
         final ExternalNBoardEngine ext = new ExternalNBoardEngine(command, workingDirectory, true);
         return new ParsedEngine(ext);
     }

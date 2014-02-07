@@ -2,31 +2,21 @@ package com.welty.othello.api;
 
 import com.welty.othello.c.CReader;
 import com.welty.othello.core.CMove;
-import com.welty.othello.engine.ExternalNBoardEngine;
 import com.welty.othello.gdk.COsGame;
 import com.welty.othello.gdk.OsMoveListItem;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.EOFException;
-import java.io.IOException;
 
 /**
  * Class that controls communication with an engine.
  */
-public class ParsedEngine extends PingEngine implements NBoardEngine.Listener {
-    private int m_pong;
-    private String name = "ntest";
+public class ParsedEngine extends StatelessEngine implements NBoardEngine.Listener {
+    private volatile int lastPing;
+    private volatile int m_pong;
+    private String name;
     private final @NotNull NBoardEngine engine;
     private volatile @NotNull String status = "";
-
-    /**
-     * Construct with the default NBoardEngine
-     *
-     * @throws IOException
-     */
-    public ParsedEngine() throws IOException {
-        this(new ExternalNBoardEngine());
-    }
 
     /**
      * @param engine command-line engine
@@ -34,13 +24,41 @@ public class ParsedEngine extends PingEngine implements NBoardEngine.Listener {
     public ParsedEngine(@NotNull final NBoardEngine engine) {
         this.engine = engine;
         this.engine.sendCommand("nboard 1");
-
+        name = engine.toString();
         engine.addListener(this);
     }
 
+    @NotNull public String getName() {
+        return name;
+    }
 
-    public void sendPing(int ping) {
-        engine.sendCommand("ping " + ping);
+    /**
+     * Request hints (evaluation of the top n moves) from the engine, for the current board
+     *
+     * @param nMoves number of moves to evaluate
+     */
+    @Override public synchronized void requestHints(PingPong pingPong, SearchState state, int nMoves) {
+        updateEngineState(pingPong, state);
+        engine.sendCommand("hint " + nMoves);
+    }
+
+    /**
+     * Tell the Engine to learn the current game.
+     */
+    @Override public synchronized void learn(PingPong pingPong, SearchState state) {
+        updateEngineState(pingPong, state);
+        engine.sendCommand("learn");
+    }
+
+    /**
+     * Request a valid move from the engine, for the current board.
+     * <p/>
+     * Unlike {@link #requestHints(PingPong, SearchState, int)}, the engine does not have to return an evaluation;
+     * if it has only one legal move it may choose to return that move immediately without searching.
+     */
+    @Override public synchronized void requestMove(PingPong pingPong, SearchState state) {
+        updateEngineState(pingPong, state);
+        engine.sendCommand("go");
     }
 
     /**
@@ -53,16 +71,21 @@ public class ParsedEngine extends PingEngine implements NBoardEngine.Listener {
         engine.sendCommand("quit");
     }
 
-    @NotNull public String getName() {
-        return name;
-    }
-
     @Override public @NotNull String getStatus() {
         return status;
     }
 
+    @Override public boolean isReady() {
+        return m_pong >= lastPing;
+    }
+
     private void setName(String name) {
         this.name = name;
+    }
+
+
+    private void sendPing(int ping) {
+        engine.sendCommand("ping " + ping);
     }
 
     /**
@@ -70,16 +93,8 @@ public class ParsedEngine extends PingEngine implements NBoardEngine.Listener {
      *
      * @param game game to set.
      */
-    @Override public void setGame(int ping, COsGame game) {
-        sendPing(ping);
+    private void setGame(COsGame game) {
         engine.sendCommand("set game " + game);
-    }
-
-    /**
-     * Tell the Engine to learn the current game.
-     */
-    @Override public void learn() {
-        engine.sendCommand("learn");
     }
 
     /**
@@ -87,14 +102,12 @@ public class ParsedEngine extends PingEngine implements NBoardEngine.Listener {
      *
      * @param contempt contempt, in centidisks.
      */
-    @Override public void setContempt(int ping, int contempt) {
-        sendPing(ping);
+    private void setContempt(int contempt) {
         engine.sendCommand("set contempt " + contempt);
     }
 
 
-    @Override public void setMaxDepth(int ping, int maxDepth) {
-        sendPing(ping);
+    private void setMaxDepth(int maxDepth) {
         engine.sendCommand("set depth " + maxDepth);
     }
 
@@ -103,28 +116,18 @@ public class ParsedEngine extends PingEngine implements NBoardEngine.Listener {
      *
      * @param mli the move to append to the protocol's current game.
      */
-    @Override public void sendMove(int ping, OsMoveListItem mli) {
-        sendPing(ping);
+    private void sendMove(OsMoveListItem mli) {
         engine.sendCommand("move " + mli);
     }
 
-    /**
-     * Request hints (evaluation of the top n moves) from the engine, for the current board
-     *
-     * @param nMoves number of moves to evaluate
-     */
-    @Override public void requestHints(int nMoves) {
-        engine.sendCommand("hint " + nMoves);
-    }
-
-    /**
-     * Request a valid move from the engine, for the current board.
-     * <p/>
-     * Unlike {@link #requestHints(int)}, the engine does not have to return an evaluation;
-     * if it has only one legal move it may choose to return that move immediately without searching.
-     */
-    @Override public void requestMove() {
-        engine.sendCommand("go");
+    private void updateEngineState(PingPong pingPong, SearchState state) {
+        setGame(state.getGame());
+        setContempt(state.getContempt());
+        setMaxDepth(state.getMaxDepth());
+        synchronized (this) {
+            lastPing = pingPong.next();
+            sendPing(lastPing);
+        }
     }
 
     /**
@@ -141,7 +144,7 @@ public class ParsedEngine extends PingEngine implements NBoardEngine.Listener {
      * Commands that are known but the rest of the line is in an incorrect format result
      * in listeners receiving parseError().
      */
-    @Override public void onMessageReceived(String message) {
+    @Override public synchronized void onMessageReceived(String message) {
         final CReader is = new CReader(message);
         String sCommand = is.readString();
         is.ignoreWhitespace();
@@ -150,7 +153,9 @@ public class ParsedEngine extends PingEngine implements NBoardEngine.Listener {
             switch (sCommand) {
                 case "pong":
                     m_pong = is.readInt();
-                    firePong(m_pong);
+                    if (isReady()) {
+                        fireEngineReady(m_pong);
+                    }
                     break;
                 case "status":
                     // the engine is busy and is telling the user why
@@ -210,7 +215,7 @@ public class ParsedEngine extends PingEngine implements NBoardEngine.Listener {
         setStatus("The engine (" + name + ") has terminated.");
     }
 
-    private void setStatus(String status) {
+    private void setStatus(@NotNull String status) {
         this.status = status;
         fireStatusChanged();
     }

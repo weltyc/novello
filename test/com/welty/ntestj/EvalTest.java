@@ -64,12 +64,12 @@ public class EvalTest extends TestCase {
      */
     /**
      * Check that ntest's eval matches ntestJ's eval.
-     *
+     * <p/>
      * If ntest is not available on this computer, ignore.
      */
     public void test1Ply() {
 
-        if (ExternalEngineManager.getXei("ntest")==null) {
+        if (ExternalEngineManager.getXei("ntest") == null) {
             System.out.println("ntest not available on this machine, skipping test");
             return;
         }
@@ -84,7 +84,7 @@ public class EvalTest extends TestCase {
     }
 
     private static void test1Ply(NBoardSyncEngine ntest, CEvaluatorJ eval, Position pos) {
-        final MoveScore moveScore = ntest.calcMove(pos);
+        final MoveScore moveScore = ntest.calcMove(pos, 1);
         final Position next = pos.play(moveScore.sq);
         final int value = eval.ValueJMobs(next.mover(), next.enemy(), next.calcMoves(), next.enemyMoves());
         assertEquals(-moveScore.score, value);

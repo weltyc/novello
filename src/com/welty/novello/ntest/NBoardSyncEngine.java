@@ -79,10 +79,12 @@ public class NBoardSyncEngine implements SyncEngine {
         }
     }
 
-    @Override public MoveScore calcMove(@NotNull Position board) {
+    @Override public MoveScore calcMove(@NotNull Position board, int maxDepth) {
         try {
             pingPong();
             println("set game " + new MutableGame(board, "me", "you", "here").toGgf());
+            Require.geq(maxDepth, "max depth", 0);
+            println("set depth " + maxDepth);
             println("go");
             String line;
             while (null != (line = readLine())) {
@@ -94,16 +96,6 @@ public class NBoardSyncEngine implements SyncEngine {
             throw new RuntimeException(e);
         }
         throw new RuntimeException("NBoard connection to " + program + " failed");
-    }
-
-    @Override public void setMaxDepth(int maxDepth) {
-        Require.geq(maxDepth, "max depth", 0);
-        println("set depth " + maxDepth);
-        try {
-            pingPong();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     @Override public void clear() {

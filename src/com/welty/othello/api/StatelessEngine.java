@@ -2,45 +2,44 @@ package com.welty.othello.api;
 
 import com.orbanova.common.misc.ListenerManager;
 import com.welty.othello.core.CMove;
-import com.welty.othello.gdk.COsGame;
 import com.welty.othello.gdk.OsMoveListItem;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * An Engine that communicates via an API mimicking the NBoard protocol.
+ * An Engine that communicates in a stateless manner.
  * <p/>
- * Any command that updates the game or engine state takes a "ping" argument. Callbacks from the Engine
+ * Engine requests (hints or moves) depend on a pingPong and a shared state. Callbacks from the Engine
  * that depend on shared state (board position, engine state) take a "pong" argument. The caller checks that ping==pong when receiving a
  * message; if it is, the message relates to the current state.
  * <p/>
  * Callbacks may occur on any thread, and are not guaranteed to be on the same thread every time. Thread-safety is
  * maintained by the caller checking ping==pong.
  */
-public abstract class PingEngine extends ListenerManager<PingEngine.Listener> {
+public abstract class StatelessEngine extends ListenerManager<StatelessEngine.Listener> {
     public abstract void terminate();
 
-    public abstract void setGame(int ping, COsGame game);
+    public abstract void learn(PingPong pingPong, SearchState state);
 
-    public abstract void learn();
+    public abstract void requestHints(PingPong pingPong, SearchState state, int nMoves);
 
-    public abstract void setContempt(int ping, int contempt);
-
-    public abstract void setMaxDepth(int ping, int maxDepth);
-
-    public abstract void sendMove(int ping, OsMoveListItem mli);
-
-    public abstract void requestHints(int nMoves);
-
-    public abstract void requestMove();
+    public abstract void requestMove(PingPong pingPong, SearchState state);
 
     public abstract @NotNull String getName();
 
     public abstract @NotNull String getStatus();
 
-    public abstract void sendPing(int ping);
+    /**
+     * Determine if the engine can accept new commands
+     * <p/>
+     * If the engine is falling behind, it should return "false" until it is caught up, then fireEngineReady()
+     * so its listeners know they can call it again.
+     *
+     * @return true if the engine is ready to accept more commands
+     */
+    public abstract boolean isReady();
 
     protected void fireHint(int pong, boolean book, String pv, CMove move, String eval, int nGames, String depth, String freeformText) {
-        for (PingEngine.Listener l : getListeners()) {
+        for (StatelessEngine.Listener l : getListeners()) {
             l.hint(pong, book, pv, move, eval, nGames, depth, freeformText);
         }
     }
@@ -66,11 +65,11 @@ public abstract class PingEngine extends ListenerManager<PingEngine.Listener> {
     }
 
     /**
-     * Notify listeners that the engine has updated its state
+     * Notify listeners that the engine has become ready
      */
-    protected void firePong(int pong) {
+    protected void fireEngineReady(int pong) {
         for (Listener l : getListeners()) {
-            l.pong(pong);
+            l.engineReady(pong);
         }
     }
 
@@ -107,9 +106,9 @@ public abstract class PingEngine extends ListenerManager<PingEngine.Listener> {
         void engineMove(int pong, OsMoveListItem mli);
 
         /**
-         * The engine has updated its internal state
+         * The engine is now ready to accept new commands (it has no backlog).
          */
-        void pong(int pong);
+        void engineReady(int pong);
 
         /**
          * The engine's evaluation of a move.

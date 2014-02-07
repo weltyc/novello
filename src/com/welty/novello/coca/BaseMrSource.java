@@ -7,6 +7,7 @@ import com.welty.novello.core.ObjectFeed;
 import com.welty.novello.selfplay.EvalSyncEngine;
 import com.welty.novello.selfplay.Players;
 import com.welty.novello.selfplay.SelfPlaySet;
+import com.welty.novello.selfplay.SyncPlayer;
 
 import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
@@ -22,7 +23,9 @@ public class BaseMrSource implements MrSource {
     public static final BaseMrSource instance = new BaseMrSource();
 
     @Override public Set<Mr> getMrs() throws IOException {
-        final EvalSyncEngine playoutPlayer = new EvalSyncEngine(Players.currentEval(), 8, "");
+        final int maxDepth = 8;
+        final EvalSyncEngine playoutEngine = new EvalSyncEngine(Players.currentEval(), "");
+        final SyncPlayer playoutPlayer = new SyncPlayer(playoutEngine, maxDepth);
         final Path mrsPath = CachingMvSource.getCacheDir().resolve("base.mrs");
         if (!Files.exists(mrsPath)) {
             final Set<Mr> mrSet = new HashSet<>();
