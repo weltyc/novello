@@ -3,7 +3,7 @@ package com.welty.othello.api;
 import com.orbanova.common.misc.ListenerManager;
 import com.welty.othello.core.CMove;
 import com.welty.othello.gdk.COsGame;
-import com.welty.othello.gdk.COsMoveListItem;
+import com.welty.othello.gdk.OsMoveListItem;
 
 /**
  * An Engine that communicates via an API mimicking the NBoard protocol.
@@ -23,7 +23,7 @@ public abstract class PingApiEngine extends ListenerManager<PingApiEngine.Listen
 
     public abstract void setMaxDepth(int ping, int maxDepth);
 
-    public abstract void sendMove(int ping, COsMoveListItem mli);
+    public abstract void sendMove(int ping, OsMoveListItem mli);
 
     public abstract void requestHints(int nMoves);
 
@@ -53,7 +53,7 @@ public abstract class PingApiEngine extends ListenerManager<PingApiEngine.Listen
      *
      * @param mli move
      */
-    protected void fireEngineMove(int pong, COsMoveListItem mli) {
+    protected void fireEngineMove(int pong, OsMoveListItem mli) {
         for (Listener l : getListeners()) {
             l.engineMove(pong, mli);
         }
@@ -98,7 +98,7 @@ public abstract class PingApiEngine extends ListenerManager<PingApiEngine.Listen
          *
          * @param mli engine move
          */
-        void engineMove(int pong, COsMoveListItem mli);
+        void engineMove(int pong, OsMoveListItem mli);
 
         /**
          * The engine has updated its internal state
