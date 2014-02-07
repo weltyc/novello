@@ -1,11 +1,11 @@
 package com.welty.othello.gui.selector;
 
-import com.welty.novello.selfplay.EvalSyncEngine;
 import com.welty.novello.selfplay.Players;
-import com.welty.othello.gui.AsyncEngine;
-import com.welty.othello.gui.AsyncEngineAdapter;
+import com.welty.othello.api.PingEngine;
+import com.welty.othello.api.SyncPingEngine;
+import org.jetbrains.annotations.NotNull;
 
-class InternalEngineSelector extends EngineSelector {
+public class InternalEngineSelector extends EngineSelector {
     private final String eval;
     private final String options;
 
@@ -14,7 +14,7 @@ class InternalEngineSelector extends EngineSelector {
      *
      * @param name eval name, as sent to Players.eval().
      */
-    InternalEngineSelector(String name) {
+    public InternalEngineSelector(String name) {
         this(name, false, name, "NS");
     }
 
@@ -24,13 +24,13 @@ class InternalEngineSelector extends EngineSelector {
      * @param eval       eval code, e.g. "d2"
      * @param options    MidgameSearch.Options
      */
-    InternalEngineSelector(String name, boolean isAdvanced, String eval, String options) {
+    public InternalEngineSelector(String name, boolean isAdvanced, String eval, String options) {
         super(name, isAdvanced);
         this.eval = eval;
         this.options = options;
     }
 
-    @Override public AsyncEngine createAsyncEngine(int initialMaxDepth) {
-        return new AsyncEngineAdapter(new EvalSyncEngine(Players.eval(eval), initialMaxDepth, options));
+    @Override public @NotNull PingEngine createPingEngine(int initialMaxDepth) {
+        return new SyncPingEngine(Players.eval(eval), initialMaxDepth, options);
     }
 }

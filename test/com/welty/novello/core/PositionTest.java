@@ -1,6 +1,8 @@
 package com.welty.novello.core;
 
 import com.welty.novello.solver.BitBoardTestCase;
+import com.welty.othello.c.CReader;
+import com.welty.othello.gdk.OsBoard;
 
 /**
  */
@@ -18,13 +20,13 @@ public class PositionTest extends BitBoardTestCase {
 
     public void testMinimalReflection() {
         final long black = 0x3141592653589793L;
-        final long white = 0x2718281828459045L &~black;
+        final long white = 0x2718281828459045L & ~black;
 
         final Position bb = new Position(black, white, true);
         final Position minimal = bb.minimalReflection();
-        for (int r=0; r<8; r++) {
+        for (int r = 0; r < 8; r++) {
             final Position reflection = bb.reflection(r);
-            assertTrue(minimal.compareTo(reflection)<0 || minimal.equals(reflection));
+            assertTrue(minimal.compareTo(reflection) < 0 || minimal.equals(reflection));
         }
     }
 
@@ -34,5 +36,10 @@ public class PositionTest extends BitBoardTestCase {
         assertEquals("ignore spaces", s, s.playLine("   "));
         assertEquals(s.play("F5"), s.playLine(" F5 "));
         assertEquals(s.play("F5").play("D6"), s.playLine(" F5 d6"));
+    }
+
+    public void testOfOsPosition() {
+        final OsBoard board = new OsBoard(new CReader("8 " + Position.START_POSITION.positionString("")));
+        assertEquals(Position.START_POSITION, Position.of(board));
     }
 }

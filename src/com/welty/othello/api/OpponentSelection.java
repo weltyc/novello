@@ -1,9 +1,10 @@
 package com.welty.othello.api;
 
-import com.welty.othello.gui.AsyncEngine;
-import com.welty.othello.gui.AsyncEngineManager;
+import com.welty.othello.gui.PingEngineManager;
 import com.welty.othello.gui.selector.EngineSelector;
 import org.jetbrains.annotations.NotNull;
+
+import java.io.IOException;
 
 public class OpponentSelection {
     private final EngineSelector engineSelector;
@@ -14,8 +15,8 @@ public class OpponentSelection {
         this.level = level;
     }
 
-    public AsyncEngine getAsyncEngine() {
-        return AsyncEngineManager.getOrCreate(engineSelector, level);
+    public PingEngine getPingEngine(int ping) throws IOException {
+        return PingEngineManager.getInstance().getOrCreate(engineSelector, ping, level);
     }
 
     /**

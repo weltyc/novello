@@ -1,7 +1,6 @@
 package com.welty.othello.gui;
 
 import com.welty.othello.gui.prefs.PrefSet;
-import com.welty.othello.gui.selector.GuiOpponentSelector;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +8,7 @@ import java.util.Map;
 import java.util.prefs.BackingStoreException;
 
 public class ExternalEngineManager {
-    public static final PrefSet externalEngines = new PrefSet(GuiOpponentSelector.class, "Engines");
+    public static final PrefSet externalEngines = new PrefSet(ExternalEngineManager.class, "Engines");
 
     public static void add(String name, String wd, String command) {
         externalEngines.add(name, wd + ";" + command);

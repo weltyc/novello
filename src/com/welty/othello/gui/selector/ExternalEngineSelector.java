@@ -1,20 +1,25 @@
 package com.welty.othello.gui.selector;
 
-import com.welty.novello.ntest.NBoardSyncEngine;
-import com.welty.othello.gui.AsyncEngine;
-import com.welty.othello.gui.AsyncEngineAdapter;
+import com.welty.othello.api.ParsedEngine;
+import com.welty.othello.api.PingEngine;
+import com.welty.othello.engine.ExternalNBoardEngine;
+import org.jetbrains.annotations.NotNull;
 
-class ExternalEngineSelector extends EngineSelector {
-    private final String workingDirectory;
-    private final String command;
+import java.io.File;
+import java.io.IOException;
 
-    ExternalEngineSelector(String name, String workingDirectory, String command) {
+public class ExternalEngineSelector extends EngineSelector {
+    private final File workingDirectory;
+    private final String[] command;
+
+    public ExternalEngineSelector(String name, String workingDirectory, String command) {
         super(name, true);
-        this.workingDirectory = workingDirectory;
-        this.command = command;
+        this.workingDirectory = new File(workingDirectory);
+        this.command = command.split("\\s+");
     }
 
-    @Override public AsyncEngine createAsyncEngine(int initialMaxDepth) {
-        return new AsyncEngineAdapter(new NBoardSyncEngine(this.name, initialMaxDepth, false, workingDirectory, command));
+    @NotNull @Override public PingEngine createPingEngine(int maxDepth) throws IOException {
+        final ExternalNBoardEngine ext = new ExternalNBoardEngine(command, workingDirectory, true);
+        return new ParsedEngine(ext);
     }
 }

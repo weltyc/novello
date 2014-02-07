@@ -1,13 +1,16 @@
 package com.welty.othello.gui.selector;
 
-import com.welty.othello.gui.AsyncEngine;
+import com.welty.othello.api.PingEngine;
+import org.jetbrains.annotations.NotNull;
+
+import java.io.IOException;
 
 public abstract class EngineSelector {
     public final String name;
-    final Integer[] availableLevels;
+    public final Integer[] availableLevels;
 
     static final Integer[] basicLevels = {1, 2};
-    static final Integer[] advancedLevels = {1, 2, 3, 4, 5, 6, 8, 10, 12, 16, 20, 24};
+    public static final Integer[] advancedLevels = {1, 2, 3, 4, 5, 6, 8, 10, 12, 16, 20, 24};
 
     EngineSelector(String name, boolean isAdvanced) {
         this.name = name;
@@ -19,6 +22,6 @@ public abstract class EngineSelector {
         return " " + name + " ";
     }
 
-    public abstract AsyncEngine createAsyncEngine(int initialMaxDepth);
+    public abstract @NotNull PingEngine createPingEngine(int maxDepth) throws IOException;
 }
 

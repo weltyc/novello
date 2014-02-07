@@ -15,7 +15,11 @@ public class ExternalNBoardEngine extends NBoardEngine {
     private volatile boolean shutdown = false;
 
     public ExternalNBoardEngine() throws IOException {
-        this.processLogger = createProcessLogger();
+        this("./mEdax -nboard".split("\\s+"), new File("/Applications/edax/4.4/bin"), true);
+    }
+
+    public ExternalNBoardEngine(String[] command, File wd, boolean debug) throws IOException {
+        this.processLogger = createProcessLogger(command, wd, debug);
 
         new Thread("NBoard Feeder") {
             @Override public void run() {
@@ -38,15 +42,11 @@ public class ExternalNBoardEngine extends NBoardEngine {
                 }
             }
         }.start();
-
-
     }
 
-    private static ProcessLogger createProcessLogger() throws IOException {
-        final String[] command = "./mEdax -nboard".split("\\s+");
-        final File wd = new File("/Applications/edax/4.4/bin");
+    private static ProcessLogger createProcessLogger(String[] command, File wd, boolean debug) throws IOException {
         final Process process = new ProcessBuilder(command).directory(wd).redirectErrorStream(true).start();
-        return new ProcessLogger(process, true);
+        return new ProcessLogger(process, debug);
     }
 
     @Override public void sendCommand(String command) {

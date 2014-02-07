@@ -16,7 +16,7 @@ import org.jetbrains.annotations.NotNull;
  * Callbacks may occur on any thread, and are not guaranteed to be on the same thread every time. Thread-safety is
  * maintained by the caller checking ping==pong.
  */
-public abstract class PingApiEngine extends ListenerManager<PingApiEngine.Listener> {
+public abstract class PingEngine extends ListenerManager<PingEngine.Listener> {
     public abstract void terminate();
 
     public abstract void setGame(int ping, COsGame game);
@@ -40,7 +40,7 @@ public abstract class PingApiEngine extends ListenerManager<PingApiEngine.Listen
     public abstract void ping(int ping);
 
     protected void fireHint(int pong, boolean book, String pv, CMove move, String eval, int nGames, String depth, String freeformText) {
-        for (PingApiEngine.Listener l : getListeners()) {
+        for (PingEngine.Listener l : getListeners()) {
             l.hint(pong, book, pv, move, eval, nGames, depth, freeformText);
         }
     }
