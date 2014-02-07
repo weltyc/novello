@@ -12,7 +12,7 @@ public class StartPositionChooser {
 
     public static Position next(String startPositionType) {
         final Position startPosition;
-        switch(startPositionType) {
+        switch (startPositionType) {
             case "Standard":
                 startPosition = Position.START_POSITION;
                 break;
@@ -21,6 +21,9 @@ public class StartPositionChooser {
                 break;
             case "XOT":
                 startPosition = xotChooser.next();
+                break;
+            case "F5":
+                startPosition = Position.START_POSITION.play("F5");
                 break;
             default:
                 throw new RuntimeException("Unknown start position type : " + startPositionType);
