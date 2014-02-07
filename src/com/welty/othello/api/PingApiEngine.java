@@ -4,13 +4,17 @@ import com.orbanova.common.misc.ListenerManager;
 import com.welty.othello.core.CMove;
 import com.welty.othello.gdk.COsGame;
 import com.welty.othello.gdk.OsMoveListItem;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * An Engine that communicates via an API mimicking the NBoard protocol.
  * <p/>
  * Any command that updates the game or engine state takes a "ping" argument. Callbacks from the Engine
- * that depend on game or engine state take a "pong" argument. The game and engine state are identical
- * if ping==pong.
+ * that depend on shared state (board position, engine state) take a "pong" argument. The caller checks that ping==pong when receiving a
+ * message; if it is, the message relates to the current state.
+ * <p/>
+ * Callbacks may occur on any thread, and are not guaranteed to be on the same thread every time. Thread-safety is
+ * maintained by the caller checking ping==pong.
  */
 public abstract class PingApiEngine extends ListenerManager<PingApiEngine.Listener> {
     public abstract void terminate();
@@ -29,7 +33,11 @@ public abstract class PingApiEngine extends ListenerManager<PingApiEngine.Listen
 
     public abstract void requestMove();
 
-    public abstract String getName();
+    public abstract @NotNull String getName();
+
+    public abstract @NotNull String getStatus();
+
+    public abstract void ping(int ping);
 
     protected void fireHint(int pong, boolean book, String pv, CMove move, String eval, int nGames, String depth, String freeformText) {
         for (PingApiEngine.Listener l : getListeners()) {
@@ -39,12 +47,10 @@ public abstract class PingApiEngine extends ListenerManager<PingApiEngine.Listen
 
     /**
      * Notify listeners of a status update
-     *
-     * @param status status text
      */
-    protected void fireStatus(int pong, String status) {
+    protected void fireStatusChanged() {
         for (Listener l : getListeners()) {
-            l.status(pong, status);
+            l.statusChanged();
         }
     }
 
@@ -85,10 +91,10 @@ public abstract class PingApiEngine extends ListenerManager<PingApiEngine.Listen
     public interface Listener {
         /**
          * The Engine updated its status
-         *
-         * @param status status text
+         * <p/>
+         * call getStatus() to get the status. This is because the status is independent of the ping state.
          */
-        public void status(int pong, String status);
+        public void statusChanged();
 
         /**
          * The engine moved.
