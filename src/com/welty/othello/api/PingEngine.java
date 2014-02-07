@@ -37,7 +37,7 @@ public abstract class PingEngine extends ListenerManager<PingEngine.Listener> {
 
     public abstract @NotNull String getStatus();
 
-    public abstract void ping(int ping);
+    public abstract void sendPing(int ping);
 
     protected void fireHint(int pong, boolean book, String pv, CMove move, String eval, int nGames, String depth, String freeformText) {
         for (PingEngine.Listener l : getListeners()) {

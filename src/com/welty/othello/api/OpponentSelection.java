@@ -15,7 +15,16 @@ public class OpponentSelection {
         this.level = level;
     }
 
-    public PingEngine getPingEngine(int ping) throws IOException {
+    /**
+     * Get the engine for this selector.
+     * <p/>
+     * This will reuse an existing engine if one exists in the pool; otherwise it will create a new one.
+     *
+     * @param ping ping id for engine selection
+     * @return the Engine
+     * @throws IOException
+     */
+    public PingEngine getOrCreateEngine(int ping) throws IOException {
         return PingEngineManager.getInstance().getOrCreate(engineSelector, ping, level);
     }
 

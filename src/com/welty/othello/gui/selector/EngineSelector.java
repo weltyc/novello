@@ -22,6 +22,15 @@ public abstract class EngineSelector {
         return " " + name + " ";
     }
 
+    /**
+     * Starts up a new engine.
+     * <p/>
+     * This does not cache engines; a new engine will always be started up.
+     *
+     * @param maxDepth max depth for the new engine
+     * @return the new engine
+     * @throws IOException if one occurs while starting up an engine.
+     */
     public abstract @NotNull PingEngine createPingEngine(int maxDepth) throws IOException;
 }
 

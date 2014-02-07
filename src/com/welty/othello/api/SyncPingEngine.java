@@ -1,16 +1,25 @@
 package com.welty.othello.api;
 
+import com.welty.novello.core.BitBoardUtils;
+import com.welty.novello.core.MoveScore;
 import com.welty.novello.core.Position;
 import com.welty.novello.eval.Eval;
 import com.welty.novello.selfplay.EvalSyncEngine;
+import com.welty.othello.core.CMove;
 import com.welty.othello.gdk.COsGame;
 import com.welty.othello.gdk.OsBoard;
 import com.welty.othello.gdk.OsMoveListItem;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * A PingEngine that responds on the same thread it receives data on
+ * <p/>
+ * Threading: This implementation assumes all incoming calls will be from the same thread.
+ */
 public class SyncPingEngine extends PingEngine {
     private final EvalSyncEngine evalSyncEngine;
     private COsGame game;
+    private int lastPong;
 
     public SyncPingEngine(Eval eval, int maxDepth, String options) {
         evalSyncEngine = new EvalSyncEngine(eval, maxDepth, options);
@@ -20,7 +29,7 @@ public class SyncPingEngine extends PingEngine {
     }
 
     @Override public synchronized void setGame(int ping, COsGame game) {
-        game = new COsGame(game);
+        this.game = new COsGame(game);
         firePong(ping);
     }
 
@@ -42,24 +51,39 @@ public class SyncPingEngine extends PingEngine {
 
     @Override public void requestHints(int nMoves) {
         // todo return hints for nMoves moves rather than 1
-        final OsBoard board = game.GetPos().board;
-        final Position position = Position.of(board);
-        evalSyncEngine.calcMove(position);
+        final MoveScore moveScore = calcMove();
+        final String pv = BitBoardUtils.sqToText(moveScore.sq);
+        final CMove move = new CMove((byte) moveScore.sq);
+        final String eval = "" + moveScore.score;
+        fireHint(lastPong, false, pv, move, eval, 0, "2", "");
+    }
+
+    @Override protected void firePong(int pong) {
+        super.firePong(pong);
+        lastPong = pong;
     }
 
     @Override public void requestMove() {
-        //To change body of implemented methods use File | Settings | File Templates.
+        final MoveScore moveScore = calcMove();
+        fireEngineMove(lastPong, new OsMoveListItem(moveScore.toString()));
+
     }
 
     @NotNull @Override public String getName() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return evalSyncEngine.toString();
     }
 
     @NotNull @Override public String getStatus() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return "";
     }
 
-    @Override public void ping(int ping) {
-        //To change body of implemented methods use File | Settings | File Templates.
+    @Override public void sendPing(int ping) {
+        firePong(ping);
+    }
+
+    private MoveScore calcMove() {
+        final OsBoard board = game.GetPos().board;
+        final Position position = Position.of(board);
+        return evalSyncEngine.calcMove(position);
     }
 }

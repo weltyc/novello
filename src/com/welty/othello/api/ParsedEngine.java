@@ -39,7 +39,7 @@ public class ParsedEngine extends PingEngine implements NBoardEngine.Listener {
     }
 
 
-    public void ping(int ping) {
+    public void sendPing(int ping) {
         engine.sendCommand("ping " + ping);
     }
 
@@ -71,7 +71,7 @@ public class ParsedEngine extends PingEngine implements NBoardEngine.Listener {
      * @param game game to set.
      */
     @Override public void setGame(int ping, COsGame game) {
-        ping(ping);
+        sendPing(ping);
         engine.sendCommand("set game " + game);
     }
 
@@ -88,13 +88,13 @@ public class ParsedEngine extends PingEngine implements NBoardEngine.Listener {
      * @param contempt contempt, in centidisks.
      */
     @Override public void setContempt(int ping, int contempt) {
-        ping(ping);
+        sendPing(ping);
         engine.sendCommand("set contempt " + contempt);
     }
 
 
     @Override public void setMaxDepth(int ping, int maxDepth) {
-        ping(ping);
+        sendPing(ping);
         engine.sendCommand("set depth " + maxDepth);
     }
 
@@ -104,7 +104,7 @@ public class ParsedEngine extends PingEngine implements NBoardEngine.Listener {
      * @param mli the move to append to the protocol's current game.
      */
     @Override public void sendMove(int ping, OsMoveListItem mli) {
-        ping(ping);
+        sendPing(ping);
         engine.sendCommand("move " + mli);
     }
 

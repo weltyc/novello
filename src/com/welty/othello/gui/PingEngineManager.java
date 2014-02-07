@@ -16,6 +16,15 @@ public class PingEngineManager {
 
     private static PingEngineManager instance;
 
+    /**
+     * Get an engine from the pool; if the engine doesn't exist in the pool, create one and add to the pool.
+     *
+     * @param engineSelector engine to get
+     * @param ping           ping id for engine switching
+     * @param maxDepth       max search depth to set for the engine
+     * @return the Engine
+     * @throws IOException
+     */
     public synchronized @NotNull PingEngine getOrCreate(@NotNull EngineSelector engineSelector, int ping, int maxDepth) throws IOException {
         PingEngine engine = engines.get(engineSelector.name);
         if (engine == null) {
