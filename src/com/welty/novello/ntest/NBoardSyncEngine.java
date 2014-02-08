@@ -30,10 +30,6 @@ public class NBoardSyncEngine implements SyncEngine {
         this(ExternalEngineManager.getXei(program), depth, debug);
     }
 
-    public NBoardSyncEngine(String program, int depth, boolean debug, String workingDirectory, String command) {
-        this(new ExternalEngineManager.Xei(program, workingDirectory, command), depth, debug);
-    }
-
     private NBoardSyncEngine(ExternalEngineManager.Xei xei, int depth, boolean debug) {
         this.program = xei.name;
         try {
