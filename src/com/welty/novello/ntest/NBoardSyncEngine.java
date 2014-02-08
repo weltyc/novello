@@ -20,27 +20,23 @@ import java.io.IOException;
 public class NBoardSyncEngine implements SyncEngine {
     private final String program;
     private int ping = 0;
-    private final int depth;
     private final ProcessLogger processLogger;
 
     private static final Logger log = Logger.logger(NBoardSyncEngine.class, Logger.Level.DEBUG);
 
 
-    public NBoardSyncEngine(String program, int depth, boolean debug) {
-        this(ExternalEngineManager.getXei(program), depth, debug);
+    public NBoardSyncEngine(String program, boolean debug) {
+        this(ExternalEngineManager.getXei(program), debug);
     }
 
-    private NBoardSyncEngine(ExternalEngineManager.Xei xei, int depth, boolean debug) {
+    private NBoardSyncEngine(ExternalEngineManager.Xei xei, boolean debug) {
         this.program = xei.name;
         try {
-            this.depth = depth;
             log.debug("wd  : " + xei.wd);
             log.debug("cmd : " + xei.cmd);
             final String[] processArgs = xei.cmd.split("\\s+");
             final Process process = new ProcessBuilder(processArgs).directory(new File(xei.wd)).redirectErrorStream(true).start();
             processLogger = new ProcessLogger(process, debug);
-
-            println("set depth " + depth);
             processLogger.readLine();
             pingPong();
         } catch (IOException e) {
@@ -112,6 +108,6 @@ public class NBoardSyncEngine implements SyncEngine {
     }
 
     @Override public String toString() {
-        return program + ":" + depth;
+        return program;
     }
 }

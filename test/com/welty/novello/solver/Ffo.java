@@ -144,7 +144,7 @@ public class Ffo {
     }
 
     public static class NtestSearcher implements Searcher {
-        private final SyncPlayer player = new SyncPlayer(new NBoardSyncEngine("ntest", 50, false), 50);
+        private final SyncPlayer player = new SyncPlayer(new NBoardSyncEngine("ntest", false), 50);
 
         @NotNull @Override public Counts getCounts() {
             return new Counts(0, 0);

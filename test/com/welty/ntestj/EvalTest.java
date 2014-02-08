@@ -73,7 +73,7 @@ public class EvalTest extends TestCase {
             System.out.println("ntest not available on this machine, skipping test");
             return;
         }
-        final NBoardSyncEngine ntest = new NBoardSyncEngine("ntest", 1, true);
+        final NBoardSyncEngine ntest = new NBoardSyncEngine("ntest", true);
         final CEvaluatorJ eval = CEvaluatorJ.getInstance();
 
         test1Ply(ntest, eval, Position.START_POSITION);

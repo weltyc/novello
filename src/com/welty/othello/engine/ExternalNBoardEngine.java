@@ -18,10 +18,6 @@ public class ExternalNBoardEngine extends NBoardEngine {
     private final ProcessLogger processLogger;
     private volatile boolean shutdown = false;
 
-    public ExternalNBoardEngine() throws IOException {
-        this("./mEdax -nboard".split("\\s+"), new File("/Applications/edax/4.4/bin"), true);
-    }
-
     public ExternalNBoardEngine(String[] command, File wd, boolean debug) throws IOException {
         this.processLogger = createProcessLogger(command, wd, debug);
 

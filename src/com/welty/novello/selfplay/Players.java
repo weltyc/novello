@@ -64,7 +64,7 @@ public class Players {
 
         final String evalName = parts[0];
         if (evalName.equals("ntest") || evalName.equals("edax") || evalName.equals("ntest-new")) {
-            return new SyncPlayer(new NBoardSyncEngine(evalName, depth, false), depth);
+            return new SyncPlayer(new NBoardSyncEngine(evalName, false), depth);
         } else {
             final Eval eval;
             eval = eval(evalName);
