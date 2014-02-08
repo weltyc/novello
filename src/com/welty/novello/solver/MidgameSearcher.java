@@ -71,6 +71,9 @@ public class MidgameSearcher {
      * @return the best move from this position, and its score in centi-disks
      */
     public MoveScore getMoveScore(Position position, long moverMoves, int depth) {
+        if (moverMoves==0) {
+            throw new IllegalArgumentException("must have a legal move");
+        }
         this.rootDepth = depth;
         final BA ba = hashMove(position.mover(), position.enemy(), moverMoves, NovelloUtils.NO_MOVE, -NovelloUtils.NO_MOVE, depth);
         return new MoveScore(ba.bestMove, ba.score);

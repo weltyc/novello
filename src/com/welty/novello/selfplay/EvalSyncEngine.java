@@ -29,6 +29,10 @@ public class EvalSyncEngine implements SyncEngine {
     }
 
     public MoveScore calcMove(@NotNull Position board, int maxDepth) {
+        final long moverMoves = board.calcMoves();
+        if (moverMoves==0) {
+            throw new IllegalArgumentException("Must have a legal move to call calcMove()");
+        }
         if (midgameOptions.useNtestSearchDepths) {
             final Heights heights = new Heights(maxDepth);
             if (board.nEmpty() <= heights.getFullWidthHeight()) {
@@ -39,13 +43,13 @@ public class EvalSyncEngine implements SyncEngine {
                     // probable solve
                     final int solverStart = midgameOptions.useSolver ? MidgameSearcher.SOLVER_START_DEPTH - 1 : 0;
                     final int depth = board.nEmpty() - solverStart;
-                    return searcher.getMoveScore(board, board.calcMoves(), depth);
+                    return searcher.getMoveScore(board, moverMoves, depth);
                 } else {
-                    return searcher.getMoveScore(board, board.calcMoves(), maxDepth);
+                    return searcher.getMoveScore(board, moverMoves, maxDepth);
                 }
             }
         } else {
-            return searcher.getMoveScore(board, board.calcMoves(), maxDepth);
+            return searcher.getMoveScore(board, moverMoves, maxDepth);
         }
     }
 
