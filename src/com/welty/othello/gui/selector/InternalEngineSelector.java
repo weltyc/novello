@@ -3,6 +3,7 @@ package com.welty.othello.gui.selector;
 import com.welty.novello.selfplay.Players;
 import com.welty.othello.api.StatelessEngine;
 import com.welty.othello.api.SyncStatelessEngine;
+import com.welty.othello.protocol.ResponseHandler;
 import org.jetbrains.annotations.NotNull;
 
 public class InternalEngineSelector extends EngineSelector {
@@ -30,7 +31,7 @@ public class InternalEngineSelector extends EngineSelector {
         this.options = options;
     }
 
-    @Override public @NotNull StatelessEngine createPingEngine(int initialMaxDepth) {
-        return new SyncStatelessEngine(Players.eval(eval), options);
+    @Override public @NotNull StatelessEngine createPingEngine(int initialMaxDepth, ResponseHandler responseHandler) {
+        return new SyncStatelessEngine(Players.eval(eval), options, responseHandler);
     }
 }

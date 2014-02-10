@@ -4,9 +4,11 @@ import com.welty.novello.core.MoveScore;
 import com.welty.novello.core.Position;
 import com.welty.novello.eval.Eval;
 import com.welty.novello.selfplay.EvalSyncEngine;
-import com.welty.othello.core.CMove;
 import com.welty.othello.gdk.OsBoard;
 import com.welty.othello.gdk.OsMoveListItem;
+import com.welty.othello.protocol.HintResponse;
+import com.welty.othello.protocol.MoveResponse;
+import com.welty.othello.protocol.ResponseHandler;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -14,10 +16,12 @@ import org.jetbrains.annotations.NotNull;
  * <p/>
  * Threading: This implementation assumes all incoming calls will be from the same thread.
  */
-public class SyncStatelessEngine extends StatelessEngine {
+public class SyncStatelessEngine implements StatelessEngine {
     private final EvalSyncEngine evalSyncEngine;
+    private final ResponseHandler responseHandler;
 
-    public SyncStatelessEngine(Eval eval, String options) {
+    public SyncStatelessEngine(Eval eval, String options, ResponseHandler responseHandler) {
+        this.responseHandler = responseHandler;
         evalSyncEngine = new EvalSyncEngine(eval, options);
     }
 
@@ -33,15 +37,16 @@ public class SyncStatelessEngine extends StatelessEngine {
 
         final OsMoveListItem mli = calcMli(state);
         final String pv = mli.move.toString();
-        final CMove move = new CMove(mli.move);
-        final String eval = "" + mli.getEval();
-        fireHint(pong, false, pv, move, eval, 0, "2", "");
+        final float eval = (float) mli.getEval();
+        final HintResponse response = new HintResponse(pong, false, pv, "" + eval, 0, "" + state.getMaxDepth(), "");
+        responseHandler.handle(response);
     }
 
     @Override public void requestMove(PingPong pingPong, SearchState state) {
         final int pong = pingPong.next();
         final OsMoveListItem mli = calcMli(state);
-        fireEngineMove(pong, mli);
+        final MoveResponse response = new MoveResponse(pong, mli);
+        responseHandler.handle(response);
     }
 
     @NotNull @Override public String getName() {

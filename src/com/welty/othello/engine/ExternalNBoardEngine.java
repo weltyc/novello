@@ -3,14 +3,16 @@ package com.welty.othello.engine;
 import com.orbanova.common.misc.Logger;
 import com.welty.othello.api.NBoardEngine;
 import com.welty.othello.core.ProcessLogger;
+import com.welty.othello.protocol.ResponseParser;
 
-import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 
 /**
- * An NBoard Engine reached via an external process
+ * An NBoard Engine reached via an external process.
+ * <p/>
+ * Responses to the gui are passed to the responseParser in a separate thread.
  */
 public class ExternalNBoardEngine extends NBoardEngine {
     private static final Logger log = Logger.logger(ExternalNBoardEngine.class);
@@ -18,26 +20,17 @@ public class ExternalNBoardEngine extends NBoardEngine {
     private final ProcessLogger processLogger;
     private volatile boolean shutdown = false;
 
-    public ExternalNBoardEngine(String[] command, File wd, boolean debug) throws IOException {
+    public ExternalNBoardEngine(String[] command, File wd, boolean debug, final ResponseParser responseParser) throws IOException {
         this.processLogger = createProcessLogger(command, wd, debug);
 
-        new Thread("NBoard Feeder") {
+        new Thread(command[0] + " Feeder") {
             @Override public void run() {
                 while (!shutdown) {
                     try {
-                        final String line = processLogger.readLine();
-
-                        SwingUtilities.invokeLater(new Runnable() {
-                            public void run() {
-                                fireMessageReceived(line);
-                            }
-                        });
+                        final String msg = processLogger.readLine();
+                        responseParser.handle(msg);
                     } catch (IOException e) {
-                        SwingUtilities.invokeLater(new Runnable() {
-                            public void run() {
-                                fireEngineTerminated();
-                            }
-                        });
+                        responseParser.engineTerminated();
                     }
                 }
             }

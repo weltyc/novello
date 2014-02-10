@@ -1,6 +1,7 @@
 package com.welty.othello.gui.selector;
 
 import com.welty.othello.api.StatelessEngine;
+import com.welty.othello.protocol.ResponseHandler;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -31,6 +32,6 @@ public abstract class EngineSelector {
      * @return the new engine
      * @throws IOException if one occurs while starting up an engine.
      */
-    public abstract @NotNull StatelessEngine createPingEngine(int maxDepth) throws IOException;
+    public abstract @NotNull StatelessEngine createPingEngine(int maxDepth, ResponseHandler handler) throws IOException;
 }
 

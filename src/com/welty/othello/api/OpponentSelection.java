@@ -2,6 +2,7 @@ package com.welty.othello.api;
 
 import com.welty.othello.gui.StatelessEngineManager;
 import com.welty.othello.gui.selector.EngineSelector;
+import com.welty.othello.protocol.ResponseHandler;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -20,11 +21,12 @@ public class OpponentSelection {
      * <p/>
      * This will reuse an existing engine if one exists in the pool; otherwise it will create a new one.
      *
+     * @param responseHandler handler for engine responses
      * @return the Engine
      * @throws IOException
      */
-    public StatelessEngine getOrCreateEngine() throws IOException {
-        return StatelessEngineManager.getInstance().getOrCreate(engineSelector, level);
+    public StatelessEngine getOrCreateEngine(ResponseHandler responseHandler) throws IOException {
+        return StatelessEngineManager.getInstance().getOrCreate(engineSelector, level, responseHandler);
     }
 
     /**
