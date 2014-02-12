@@ -9,6 +9,7 @@ public class SearchStateTest extends TestCase {
         game.Initialize("8");
 
         final SearchState searchState = new SearchState(game, 1, 0);
-        assertEquals(0, searchState.getGame().GetMoveList().size());
+        assertEquals(0, searchState.getGame().getMoveList().size());
+        assertEquals(0, searchState.getGame().nMoves());
     }
 }
