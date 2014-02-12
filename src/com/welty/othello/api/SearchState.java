@@ -35,7 +35,7 @@ public class SearchState {
     }
 
     public SearchState(COsGame game, int maxDepth, int contempt) {
-        this(game, game.ml.size(), maxDepth, contempt);
+        this(game, game.nMoves(), maxDepth, contempt);
     }
 
     public COsGame getGame() {
