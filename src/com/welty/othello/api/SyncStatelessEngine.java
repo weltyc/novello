@@ -20,6 +20,8 @@ public class SyncStatelessEngine implements StatelessEngine {
     private final EvalSyncEngine evalSyncEngine;
     private final ResponseHandler responseHandler;
 
+    private static final boolean debug = true;
+
     public SyncStatelessEngine(Eval eval, String options, ResponseHandler responseHandler) {
         this.responseHandler = responseHandler;
         evalSyncEngine = new EvalSyncEngine(eval, options);
@@ -32,6 +34,9 @@ public class SyncStatelessEngine implements StatelessEngine {
     }
 
     @Override public void requestHints(PingPong pingPong, SearchState state, int nMoves) {
+        if (debug) {
+            System.out.println("> hint " + nMoves + " from " + state.getGame().getPos().board);
+        }
         // todo return hints for nMoves moves rather than 1
         final int pong = pingPong.next();
 
@@ -39,6 +44,9 @@ public class SyncStatelessEngine implements StatelessEngine {
         final String pv = mli.move.toString();
         final float eval = (float) mli.getEval();
         final HintResponse response = new HintResponse(pong, false, pv, "" + eval, 0, "" + state.getMaxDepth(), "");
+        if (debug) {
+            System.out.println("< " + response);
+        }
         responseHandler.handle(response);
     }
 
