@@ -71,7 +71,7 @@ public class SyncStatelessEngine implements StatelessEngine {
      * @return MoveListItem
      */
     @NotNull OsMoveListItem calcMli(SearchState state) {
-        final OsBoard board = state.getGame().GetPos().board;
+        final OsBoard board = state.getGame().getPos().board;
         final Position position = Position.of(board);
         // calcMove() can't handle a pass. So we handle it right here.
         if (position.hasLegalMove()) {
