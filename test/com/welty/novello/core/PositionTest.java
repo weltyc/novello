@@ -30,14 +30,6 @@ public class PositionTest extends BitBoardTestCase {
         }
     }
 
-    public void testPlayLine() {
-        final Position s = Position.START_POSITION;
-        assertEquals("base case", s, s.playLine(""));
-        assertEquals("ignore spaces", s, s.playLine("   "));
-        assertEquals(s.play("F5"), s.playLine(" F5 "));
-        assertEquals(s.play("F5").play("D6"), s.playLine(" F5 d6"));
-    }
-
     public void testOfOsPosition() {
         final OsBoard board = new OsBoard(new CReader("8 " + Position.START_POSITION.positionString("")));
         assertEquals(Position.START_POSITION, Position.of(board));

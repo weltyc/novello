@@ -391,26 +391,6 @@ public class Position implements Comparable<Position> {
         return new Mr(mover(), enemy());
     }
 
-    /**
-     * Play a move list from the current position.
-     * <p/>
-     * A move list is a sequence of squares to play, for example "F5 D6"
-     * <p/>
-     * This currently handles upper and lower case, and arbitrary spacing (or no spaces at all) between moves.
-     * It does not handle passes.
-     *
-     * @param moveList String containing moves
-     * @return The position resulting from playing those moves.
-     */
-    public Position playLine(String moveList) {
-        final String ml = moveList.replaceAll("[ \t\r\n]+", "");
-        Position p = this;
-        for (int i = 0; i < ml.length(); i += 2) {
-            p = p.play(ml.substring(i, i + 2));
-        }
-        return p;
-    }
-
     public static Position of(OsBoard board) {
         final OsBoard.GetTextResult text = board.getText();
         return new Position(text.getText(), text.isBlackMove());
