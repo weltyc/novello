@@ -1,8 +1,6 @@
 package com.welty.othello.api;
 
 import com.welty.othello.engine.ExternalNBoardEngine;
-import com.welty.othello.gdk.COsGame;
-import com.welty.othello.gdk.OsMoveListItem;
 import com.welty.othello.protocol.ResponseHandler;
 import com.welty.othello.protocol.ResponseParser;
 import org.jetbrains.annotations.NotNull;
@@ -25,9 +23,16 @@ public class ParsedEngine implements StatelessEngine {
     private final @NotNull ResponseParser responseParser;
 
     public ParsedEngine(String[] command, File workingDirectory, boolean debug, @NotNull ResponseHandler responseHandler) throws IOException {
-        responseParser = new ResponseParser(responseHandler, command[0]);
-        engine = new ExternalNBoardEngine(command, workingDirectory, debug, responseParser);
+        this(new ResponseParser(responseHandler, command[0]), command, workingDirectory, debug);
+    }
 
+    private ParsedEngine(@NotNull ResponseParser responseParser, String[] command, File workingDirectory, boolean debug) throws IOException {
+        this(responseParser, new ExternalNBoardEngine(command, workingDirectory, debug, responseParser));
+    }
+
+    ParsedEngine(@NotNull ResponseParser responseParser, @NotNull NBoardEngine engine) {
+        this.responseParser = responseParser;
+        this.engine = engine;
     }
 
     @NotNull public String getName() {
@@ -39,7 +44,7 @@ public class ParsedEngine implements StatelessEngine {
      *
      * @param nMoves number of moves to evaluate
      */
-    @Override public synchronized void requestHints(PingPong pingPong, SearchState state, int nMoves) {
+    @Override public synchronized void requestHints(PingPong pingPong, NBoardState state, int nMoves) {
         updateEngineState(pingPong, state);
         engine.sendCommand("hint " + nMoves);
     }
@@ -47,7 +52,7 @@ public class ParsedEngine implements StatelessEngine {
     /**
      * Tell the Engine to learn the current game.
      */
-    @Override public synchronized void learn(PingPong pingPong, SearchState state) {
+    @Override public synchronized void learn(PingPong pingPong, NBoardState state) {
         updateEngineState(pingPong, state);
         engine.sendCommand("learn");
     }
@@ -55,10 +60,10 @@ public class ParsedEngine implements StatelessEngine {
     /**
      * Request a valid move from the engine, for the current board.
      * <p/>
-     * Unlike {@link #requestHints(PingPong, SearchState, int)}, the engine does not have to return an evaluation;
+     * Unlike {@link #requestHints(PingPong, NBoardState, int)}, the engine does not have to return an evaluation;
      * if it has only one legal move it may choose to return that move immediately without searching.
      */
-    @Override public synchronized void requestMove(PingPong pingPong, SearchState state) {
+    @Override public synchronized void requestMove(PingPong pingPong, NBoardState state) {
         updateEngineState(pingPong, state);
         engine.sendCommand("go");
     }
@@ -81,45 +86,70 @@ public class ParsedEngine implements StatelessEngine {
         return responseParser.getPong() >= lastPing;
     }
 
-    /**
-     * Set the NBoard protocol's current game.
-     *
-     * @param game game to set.
-     */
-    private void setGame(COsGame game) {
-        engine.sendCommand("set game " + game);
-    }
-
-    /**
-     * Set the engine's contempt factor (scoring of proven draws).
-     *
-     * @param contempt contempt, in centidisks.
-     */
-    private void setContempt(int contempt) {
-        engine.sendCommand("set contempt " + contempt);
-    }
-
-
-    private void setMaxDepth(int maxDepth) {
-        engine.sendCommand("set depth " + maxDepth);
-    }
-
-    /**
-     * Append a move to the NBoard protocol's current game.
-     *
-     * @param mli the move to append to the protocol's current game.
-     */
-    private void sendMove(OsMoveListItem mli) {
-        engine.sendCommand("move " + mli);
-    }
-
-    private void updateEngineState(PingPong pingPong, SearchState state) {
-        setGame(state.getGame());
-        setContempt(state.getContempt());
-        setMaxDepth(state.getMaxDepth());
+    private void updateEngineState(PingPong pingPong, NBoardState state) {
+        updateState(state);
         synchronized (this) {
             lastPing = pingPong.next();
             engine.sendCommand("ping " + lastPing);
         }
+    }
+
+    /**
+     * Last contempt value sent to the engine; defaults to 0.
+     */
+    private int oldContempt = 0;
+    private String oldGameText = "";
+    private int oldDepth = -1;
+
+    /**
+     * Send messages to the engine to update the NBoard state
+     *
+     * @param state new NBoardState
+     */
+    void updateState(NBoardState state) {
+        final String gameText = state.getGame().toString();
+        if (!oldGameText.equals(gameText)) {
+            final String moveDiff = calcMoveDiff(oldGameText, gameText);
+            if (moveDiff != null) {
+                engine.sendCommand("move " + moveDiff);
+            } else {
+                engine.sendCommand("set game " + gameText);
+            }
+            oldGameText = gameText;
+        }
+        if (oldContempt != state.getContempt()) {
+            oldContempt = state.getContempt();
+            engine.sendCommand("set contempt " + oldContempt);
+        }
+        if (oldDepth != state.getMaxDepth()) {
+            oldDepth = state.getMaxDepth();
+            engine.sendCommand("set depth " + oldDepth);
+        }
+    }
+
+    /**
+     * @return difference in games, if it's a single move; otherwise null
+     */
+    private static String calcMoveDiff(String oldGameText, String gameText) {
+        if (gameText.length() <= oldGameText.length()) {
+            return null;
+        }
+        if (oldGameText.isEmpty()) {
+            return null;
+        }
+        final int loc = oldGameText.length() - 2;
+        if (!gameText.substring(0, loc).equals(oldGameText.substring(0, loc))) {
+            return null;
+        }
+        final String moveDiff = gameText.substring(loc, gameText.length() - 2);
+        // need to check how many moves it is
+        final int index = moveDiff.indexOf('[');
+        final int endIndex = moveDiff.indexOf(']');
+        if (index == 1 && endIndex == moveDiff.length() - 1) {
+            return moveDiff.substring(index + 1, endIndex);
+        } else {
+            return null;
+        }
+
     }
 }

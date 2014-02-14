@@ -30,10 +30,10 @@ public class SyncStatelessEngine implements StatelessEngine {
     @Override public void terminate() {
     }
 
-    @Override public void learn(PingPong pingPong, SearchState state) {
+    @Override public void learn(PingPong pingPong, NBoardState state) {
     }
 
-    @Override public void requestHints(PingPong pingPong, SearchState state, int nMoves) {
+    @Override public void requestHints(PingPong pingPong, NBoardState state, int nMoves) {
         if (debug) {
             System.out.println("> hint " + nMoves + " from " + state.getGame().getPos().board);
         }
@@ -50,7 +50,7 @@ public class SyncStatelessEngine implements StatelessEngine {
         responseHandler.handle(response);
     }
 
-    @Override public void requestMove(PingPong pingPong, SearchState state) {
+    @Override public void requestMove(PingPong pingPong, NBoardState state) {
         final int pong = pingPong.next();
         final OsMoveListItem mli = calcMli(state);
         final MoveResponse response = new MoveResponse(pong, mli);
@@ -78,7 +78,7 @@ public class SyncStatelessEngine implements StatelessEngine {
      * @param state position and engine options
      * @return MoveListItem
      */
-    @NotNull OsMoveListItem calcMli(SearchState state) {
+    @NotNull OsMoveListItem calcMli(NBoardState state) {
         final OsBoard board = state.getGame().getPos().board;
         final Position position = Position.of(board);
         // calcMove() can't handle a pass. So we handle it right here.

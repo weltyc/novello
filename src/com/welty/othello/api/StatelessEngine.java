@@ -14,11 +14,11 @@ import org.jetbrains.annotations.NotNull;
 public interface StatelessEngine {
     public abstract void terminate();
 
-    public abstract void learn(PingPong pingPong, SearchState state);
+    public abstract void learn(PingPong pingPong, NBoardState state);
 
-    public abstract void requestHints(PingPong pingPong, SearchState state, int nMoves);
+    public abstract void requestHints(PingPong pingPong, NBoardState state, int nMoves);
 
-    public abstract void requestMove(PingPong pingPong, SearchState state);
+    public abstract void requestMove(PingPong pingPong, NBoardState state);
 
     public abstract @NotNull String getName();
 
