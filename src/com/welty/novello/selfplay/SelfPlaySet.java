@@ -213,7 +213,7 @@ public class SelfPlaySet {
             final double tStat = sum / stdErr;
             log.info(String.format("%,6d matches: average result = %+.3g +/-%3.2g. T ~ %5.1f.  %ss vs%ss."
                     , nComplete, sum / nComplete, stdErr / nComplete, tStat
-                    , Engineering.engineeringDouble(t1 / nComplete), Engineering.engineeringDouble(t2 / nComplete))
+                    , Engineering.compactFormat(t1 / nComplete), Engineering.compactFormat(t2 / nComplete))
             );
         }
     }
