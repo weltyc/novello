@@ -5,7 +5,7 @@ import com.welty.novello.core.MeValue;
 import com.welty.novello.core.MutableGame;
 import com.welty.novello.core.NovelloUtils;
 import com.welty.novello.core.Position;
-import com.welty.othello.core.Engineering;
+import com.orbanova.common.misc.Engineering;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

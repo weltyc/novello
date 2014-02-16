@@ -1,6 +1,5 @@
 package com.welty.novello.core;
 
-import com.welty.othello.core.Engineering;
 import junit.framework.TestCase;
 
 /**

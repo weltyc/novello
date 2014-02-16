@@ -1,6 +1,6 @@
 package com.welty.novello.core;
 
-import com.welty.othello.core.Engineering;
+import com.orbanova.common.misc.Engineering;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;

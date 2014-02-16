@@ -1,7 +1,7 @@
 package com.welty.novello.solver;
 
 import com.welty.novello.core.BitBoardUtils;
-import com.welty.othello.core.Engineering;
+import com.orbanova.common.misc.Engineering;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
