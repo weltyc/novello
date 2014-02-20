@@ -85,8 +85,7 @@ public class SyncStatelessEngine implements StatelessEngine {
         requests.add(new Runnable() {
             @Override public void run() {
                 final OsMoveListItem mli = calcMli(state, pong);
-                final MoveResponse response = new MoveResponse(pong, mli);
-                responseHandler.handle(response);
+                responseHandler.handle(new MoveResponse(pong, mli));
             }
         });
     }

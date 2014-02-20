@@ -57,25 +57,54 @@ public class EvalSyncEngine implements SyncEngine {
             // full-width solve
             result = solver.getMoveScore(position.mover(), position.enemy(), abortCheck);
         } else {
-            final int depth = calcSearchDepth(position, maxDepth);
-            final Depth displayDepth = calcDisplayDepth(position, depth);
+            final Depths depths = calcSearchDepth(position, maxDepth);
+            final Depth displayDepth = depths.displayDepth();
             listener.updateStatus("Searching at " + displayDepth);
-            result = searcher.getMoveScore(position, moverMoves, depth, abortCheck);
+            result = searcher.getMoveScore(position, moverMoves, depths.searchDepth, abortCheck);
         }
-        listener.updateNodeStats(searcher.getCounts().nFlips- n0, System.currentTimeMillis() - t0);
+        listener.updateNodeStats(searcher.getCounts().nFlips - n0, System.currentTimeMillis() - t0);
         return result;
     }
 
-    final int calcSearchDepth(Position position, int maxDepth) {
+    final Depths calcSearchDepth(Position position, int maxDepth) {
+        final int nEmpty = position.nEmpty();
+        final int solverStart = midgameOptions.useSolver ? MidgameSearcher.SOLVER_START_DEPTH - 1 : 0;
+
+        final int probableSolveHeight;
         if (midgameOptions.useNtestSearchDepths) {
             final Heights heights = new Heights(maxDepth);
-            if (position.nEmpty() <= heights.getProbableSolveHeight()) {
-                // probable solve
-                final int solverStart = midgameOptions.useSolver ? MidgameSearcher.SOLVER_START_DEPTH - 1 : 0;
-                return position.nEmpty() - solverStart;
-            }
+            probableSolveHeight = heights.getProbableSolveHeight();
+        } else {
+            probableSolveHeight = nEmpty;
         }
-        return maxDepth;
+
+        if (nEmpty <= probableSolveHeight) {
+            // probable solve
+            return new Depths(nEmpty - solverStart, true);
+        } else {
+            return new Depths(maxDepth, false);
+        }
+    }
+
+    private static class Depths {
+        /**
+         * Depth passed into midgame searcher
+         */
+        final int searchDepth;
+
+        /**
+         * If true, a search at the searchDepth
+         */
+        final boolean isProbable;
+
+        private Depths(int searchDepth, boolean probable) {
+            this.searchDepth = searchDepth;
+            isProbable = probable;
+        }
+
+        private Depth displayDepth() {
+            return isProbable? new Depth("60%") : new Depth(searchDepth);
+        }
     }
 
     /**
@@ -90,9 +119,9 @@ public class EvalSyncEngine implements SyncEngine {
         }
         final long n0 = searcher.getCounts().nFlips;
         final long t0 = System.currentTimeMillis();
-        final int depth = calcSearchDepth(position, maxDepth);
+        final Depths depths = calcSearchDepth(position, maxDepth);
 
-        for (int i = 1; i <= depth; i++) {
+        for (int i = 1; i <= depths.searchDepth; i++) {
             final Depth displayDepth = calcDisplayDepth(position, i);
             listener.updateStatus("Searching at " + displayDepth);
             final MoveScore moveScore1 = searcher.getMoveScore(position, moverMoves, i, abortCheck);
