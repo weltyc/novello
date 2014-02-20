@@ -5,6 +5,7 @@ import com.welty.novello.eval.CoefficientCalculator;
 import com.welty.novello.ntest.NBoardSyncEngine;
 import com.welty.novello.selfplay.Players;
 import com.welty.novello.selfplay.SyncPlayer;
+import com.welty.othello.api.AbortCheck;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -58,7 +59,7 @@ public class Ffo {
 
                 final Counts c0 = searcher.getCounts();
 
-                final MoveScore moveScore = searcher.getMoveScore(position);
+                final MoveScore moveScore = searcher.getMoveScore(position, AbortCheck.NEVER);
                 final int score = moveScore.centidisks / CoefficientCalculator.DISK_VALUE;
 
                 final Counts counts = searcher.getCounts().minus(c0);
@@ -99,7 +100,7 @@ public class Ffo {
          * @param position position to evaluate
          * @return best move and score
          */
-        @NotNull MoveScore getMoveScore(Position position);
+        @NotNull MoveScore getMoveScore(Position position, AbortCheck abortCheck);
     }
 
     public static class Midgame implements Searcher {
@@ -113,8 +114,8 @@ public class Ffo {
             return searcher.getCounts();
         }
 
-        @NotNull @Override public MoveScore getMoveScore(Position position) {
-            return searcher.getMoveScore(position, position.calcMoves(), position.nEmpty());
+        @NotNull @Override public MoveScore getMoveScore(Position position, AbortCheck abortCheck) {
+            return searcher.getMoveScore(position, position.calcMoves(), position.nEmpty(), abortCheck);
         }
 
         @Override public String toString() {
@@ -133,8 +134,8 @@ public class Ffo {
             return solver.getCounts();
         }
 
-        @NotNull @Override public MoveScore getMoveScore(Position position) {
-            final MoveScore moveScore = solver.getMoveScore(position.mover(), position.enemy());
+        @NotNull @Override public MoveScore getMoveScore(Position position, AbortCheck abortCheck) {
+            final MoveScore moveScore = solver.getMoveScore(position.mover(), position.enemy(), abortCheck);
             return new MoveScore(moveScore.sq, moveScore.centidisks * CoefficientCalculator.DISK_VALUE);
         }
 
@@ -150,7 +151,7 @@ public class Ffo {
             return new Counts(0, 0);
         }
 
-        @NotNull @Override public MoveScore getMoveScore(Position position) {
+        @NotNull @Override public MoveScore getMoveScore(Position position, AbortCheck abortCheck) {
             return player.calcMove(position);
         }
 

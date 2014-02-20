@@ -57,7 +57,8 @@ public class Tournament implements Runnable {
             }
         }
 
-        final JsbFrame progressFrame = JSwingBuilder.frame("Tournament progress", JFrame.EXIT_ON_CLOSE, JSwingBuilder.controlGrid(Feeds.of(controls)));
+        final JsbFrame progressFrame = JSwingBuilder.frame("Tournament progress", JFrame.EXIT_ON_CLOSE, true,
+                JSwingBuilder.controlGrid(Feeds.of(controls)));
 
         executorService.shutdown();
 

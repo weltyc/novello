@@ -4,6 +4,7 @@ import com.orbanova.common.misc.Logger;
 import com.welty.novello.core.Counts;
 import com.welty.novello.core.DefaultThreadLocal;
 import com.welty.novello.core.MeValue;
+import com.welty.othello.api.AbortCheck;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +30,7 @@ public class DeepSolverTimer implements Tunable {
     public static void main(String[] args) {
         warmUpHotSpot();
 
-        final int depth = args.length==0?20:Integer.parseInt(args[0]);
+        final int depth = args.length == 0 ? 20 : Integer.parseInt(args[0]);
 
 
 //        System.out.println(Typical.timing(new DeepSolverTimer(20)));
@@ -69,22 +70,22 @@ public class DeepSolverTimer implements Tunable {
             futures.add(executorService.submit(task));
         }
         executorService.shutdown();
-        Counts counts = new Counts(0,0);
+        Counts counts = new Counts(0, 0);
 
         for (Future<Counts> future : futures) {
             try {
-               counts = counts.plus(future.get());
+                counts = counts.plus(future.get());
             } catch (InterruptedException | ExecutionException e) {
                 throw new RuntimeException(e);
             }
         }
 
-        final double dt = (System.currentTimeMillis() - t0)/1000.;
+        final double dt = (System.currentTimeMillis() - t0) / 1000.;
 
         final long mf = counts.nFlips / 1000000;
-        log.info(String.format("Total flip count at %d: %s / %,.0f s = %3.1f Mn/s", pvs.get(0).nEmpty(), counts, dt, mf/dt));
+        log.info(String.format("Total flip count at %d: %s / %,.0f s = %3.1f Mn/s", pvs.get(0).nEmpty(), counts, dt, mf / dt));
 
-        return (double)counts.cost();
+        return (double) counts.cost();
     }
 
     private static final DefaultThreadLocal<Solver> solvers = new DefaultThreadLocal<>(Solver.class);
@@ -101,7 +102,7 @@ public class DeepSolverTimer implements Tunable {
         @Override public Counts call() throws Exception {
             final Solver solver = solvers.getOrCreate();
             final Counts c0 = solver.getCounts();
-            final int score = solver.solve(pv.mover, pv.enemy);
+            final int score = solver.solve(pv.mover, pv.enemy, AbortCheck.NEVER);
             final Counts counts = solver.getCounts().minus(c0);
             if (logResults) {
                 final String msg = String.format("position %2d:   score %+3d %s", i, score, counts.toString(2));

@@ -4,6 +4,10 @@ import com.welty.novello.core.*;
 import com.welty.novello.eval.CoefficientCalculator;
 import com.welty.novello.eval.Mpc;
 import com.welty.novello.hash.MidgameHashTables;
+import com.welty.othello.api.AbortCheck;
+import com.welty.othello.protocol.Depth;
+import com.welty.othello.protocol.NodeStatsResponse;
+import com.welty.othello.protocol.ResponseHandler;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
@@ -20,6 +24,25 @@ public class MidgameSearcher {
     public static final int LIMIT = 64 * CoefficientCalculator.DISK_VALUE;
 
     private final MidgameHashTables midgameHashTables = new MidgameHashTables();
+
+    private final @NotNull Options options;
+    private final @NotNull Counter counter;
+
+    //////////////////////////////////////////////////////////
+    //
+    // Mutable options, reset each call to move() or score()
+    //
+    //////////////////////////////////////////////////////////
+
+    /**
+     * Depth of the search passed to move() or score() by the client.
+     */
+    private int rootDepth;
+
+    /**
+     * Search abort check
+     */
+    private AbortCheck abortCheck;
 
     /**
      * Create with the given Counter and default options
@@ -68,13 +91,16 @@ public class MidgameSearcher {
      * @param moverMoves legal moves to check. If this is a subset of all legal moves, only the subset will
      *                   be checked.
      * @param depth      search depth
+     * @param abortCheck test for whether the search should be abandoned
      * @return the best move from this position, and its score in centi-disks
      */
-    public MoveScore getMoveScore(Position position, long moverMoves, int depth) {
-        if (moverMoves==0) {
+    public MoveScore getMoveScore(Position position, long moverMoves, int depth, AbortCheck abortCheck) {
+        if (moverMoves == 0) {
             throw new IllegalArgumentException("must have a legal move");
         }
         this.rootDepth = depth;
+        this.abortCheck = abortCheck;
+
         final BA ba = hashMove(position.mover(), position.enemy(), moverMoves, NovelloUtils.NO_MOVE, -NovelloUtils.NO_MOVE, depth);
         return new MoveScore(ba.bestMove, ba.score);
     }
@@ -109,16 +135,26 @@ public class MidgameSearcher {
         return searchScore(mover, enemy, NovelloUtils.NO_MOVE, -NovelloUtils.NO_MOVE, depth);
     }
 
-    private final @NotNull Options options;
-    private final @NotNull Counter counter;
-
-    /**
-     * Depth of the search passed to move() or score() by the client.
-     */
-    private int rootDepth;
-
     public void clear() {
         midgameHashTables.clear(63);
+    }
+
+    public void calcHints(Position position, long moverMoves, int depth, AbortCheck abortCheck, int pong, ResponseHandler responseHandler) {
+        final long t0 = System.currentTimeMillis();
+        final long n0 = counter.nFlips();
+
+        for (int i = 1; i <= depth; i++) {
+            final MoveScore moveScore = getMoveScore(position, moverMoves, i, abortCheck);
+            final Depth displayDepth;
+            if (i + SOLVER_START_DEPTH > position.nEmpty()) {
+                displayDepth = new Depth("60%");
+            } else {
+                displayDepth = new Depth(i);
+            }
+            responseHandler.handle(moveScore.toHintResponse(pong, displayDepth));
+            final double tElapsed = 0.001 * (System.currentTimeMillis() - t0);
+            responseHandler.handle(new NodeStatsResponse(pong, counter.nFlips() - n0, tElapsed));
+        }
     }
 
     static class BA {
@@ -281,6 +317,8 @@ public class MidgameSearcher {
     private int calcMoveScore(long mover, long enemy, int alpha, int beta, int depth, int sq) {
         final Square square = Square.of(sq);
         final long flips = counter.calcFlips(square, mover, enemy);
+
+        // Abort check
         final long subEnemy = mover | (1L << sq) | flips;
         final long subMover = enemy & ~flips;
         if (options.printSearch) {
@@ -304,6 +342,9 @@ public class MidgameSearcher {
      * @return score
      */
     private int searchScore(long mover, long enemy, int alpha, int beta, int depth) {
+        if (depth >= 8 && abortCheck.shouldAbort()) {
+            throw new SearchAbortedException();
+        }
         final long moverMoves = BitBoardUtils.calcMoves(mover, enemy);
         if (moverMoves != 0) {
             final int score = treeScore(mover, enemy, moverMoves, alpha, beta, depth);

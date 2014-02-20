@@ -2,7 +2,7 @@ package com.welty.novello.core;
 
 import com.welty.novello.solver.BitBoardTestCase;
 import com.welty.othello.c.CReader;
-import com.welty.othello.gdk.OsBoard;
+import com.welty.othello.gdk.COsBoard;
 
 /**
  */
@@ -31,7 +31,7 @@ public class PositionTest extends BitBoardTestCase {
     }
 
     public void testOfOsPosition() {
-        final OsBoard board = new OsBoard(new CReader("8 " + Position.START_POSITION.positionString("")));
+        final COsBoard board = new COsBoard(new CReader("8 " + Position.START_POSITION.positionString("")));
         assertEquals(Position.START_POSITION, Position.of(board));
     }
 }

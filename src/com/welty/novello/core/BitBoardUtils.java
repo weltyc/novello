@@ -51,7 +51,7 @@ public class BitBoardUtils {
      * @param sq square
      * @return Column number
      */
-    static int col(int sq) {
+    public static int col(int sq) {
         return sq & 7;
     }
 
@@ -65,7 +65,7 @@ public class BitBoardUtils {
      * @param sq square
      * @return Row number
      */
-    static int row(int sq) {
+    public static int row(int sq) {
         return sq >> 3;
     }
 
@@ -470,7 +470,6 @@ public class BitBoardUtils {
      * <p/>
      * A potential mobility is a disk on the border of the playing field: there's at least one direction where
      * it's adjacent to an occupied square and not on the edge of the board in that direction.
-     *
      *
      * @return location of potMobs.
      */

@@ -4,11 +4,10 @@ import com.welty.novello.core.MoveScore;
 import com.welty.novello.core.Position;
 import com.welty.novello.eval.Eval;
 import com.welty.novello.selfplay.EvalSyncEngine;
-import com.welty.othello.gdk.OsBoard;
+import com.welty.novello.solver.SearchAbortedException;
+import com.welty.othello.gdk.COsBoard;
 import com.welty.othello.gdk.OsMoveListItem;
-import com.welty.othello.protocol.HintResponse;
-import com.welty.othello.protocol.MoveResponse;
-import com.welty.othello.protocol.ResponseHandler;
+import com.welty.othello.protocol.*;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -20,11 +19,29 @@ public class SyncStatelessEngine implements StatelessEngine {
     private final EvalSyncEngine evalSyncEngine;
     private final ResponseHandler responseHandler;
 
+    /**
+     * The next request queued up for the engine, or null if no request is queued up
+     */
+    private final RequestQueue requests = new RequestQueue();
+
+    /**
+     * Checker to see if the search should be aborted.
+     * <p/>
+     * This implementation aborts if there are new requests in the request queue.
+     */
+    private final AbortCheck abortCheck = new AbortCheck() {
+        @Override public boolean shouldAbort() {
+            return requests.hasRequest();
+        }
+    };
+
     private static final boolean debug = true;
+    private String status = "";
 
     public SyncStatelessEngine(Eval eval, String options, ResponseHandler responseHandler) {
         this.responseHandler = responseHandler;
         evalSyncEngine = new EvalSyncEngine(eval, options);
+        new Thread(new Runner(), getName()).start();
     }
 
     @Override public void terminate() {
@@ -33,36 +50,58 @@ public class SyncStatelessEngine implements StatelessEngine {
     @Override public void learn(PingPong pingPong, NBoardState state) {
     }
 
-    @Override public void requestHints(PingPong pingPong, NBoardState state, int nMoves) {
+    @Override public void requestHints(final PingPong pingPong, final NBoardState state, int nMoves) {
         if (debug) {
             System.out.println("> hint " + nMoves + " from " + state.getGame().getPos().board);
         }
-        // todo return hints for nMoves moves rather than 1
         final int pong = pingPong.next();
 
-        final OsMoveListItem mli = calcMli(state);
-        final String pv = mli.move.toString();
-        final float eval = (float) mli.getEval();
-        final HintResponse response = new HintResponse(pong, false, pv, "" + eval, 0, "" + state.getMaxDepth(), "");
-        if (debug) {
-            System.out.println("< " + response);
-        }
-        responseHandler.handle(response);
+        requests.add(new Runnable() {
+            @Override public void run() {
+                // todo return hints for nMoves moves rather than 1
+
+                final COsBoard board = state.getGame().getPos().board;
+                final Position position = Position.of(board);
+                // calcMove() can't handle a pass. So we handle it right here.
+                if (position.hasLegalMove()) {
+                    evalSyncEngine.calcHints(position, state.getMaxDepth(), abortCheck, pong, responseHandler);
+                } else {
+                    final OsMoveListItem mli = OsMoveListItem.PASS;
+                    final String pv = mli.move.toString();
+                    final float eval = Float.NaN;
+                    final HintResponse response = new HintResponse(pong, false, pv, new Value(eval), 0, new Depth(state.getMaxDepth()), "");
+                    if (debug) {
+                        System.out.println("< " + response);
+                    }
+                    responseHandler.handle(response);
+                }
+            }
+        });
+
     }
 
-    @Override public void requestMove(PingPong pingPong, NBoardState state) {
+    @Override public void requestMove(PingPong pingPong, final NBoardState state) {
         final int pong = pingPong.next();
-        final OsMoveListItem mli = calcMli(state);
-        final MoveResponse response = new MoveResponse(pong, mli);
-        responseHandler.handle(response);
+        requests.add(new Runnable() {
+            @Override public void run() {
+                final OsMoveListItem mli = calcMli(state);
+                final MoveResponse response = new MoveResponse(pong, mli);
+                responseHandler.handle(response);
+            }
+        });
     }
 
     @NotNull @Override public String getName() {
         return evalSyncEngine.toString();
     }
 
-    @NotNull @Override public String getStatus() {
-        return "";
+    public synchronized void setStatus(@NotNull String status) {
+        this.status = status;
+        responseHandler.handle(new StatusChangedResponse());
+    }
+
+    @NotNull @Override public synchronized String getStatus() {
+        return status;
     }
 
     @Override public boolean isReady() {
@@ -79,14 +118,40 @@ public class SyncStatelessEngine implements StatelessEngine {
      * @return MoveListItem
      */
     @NotNull OsMoveListItem calcMli(NBoardState state) {
-        final OsBoard board = state.getGame().getPos().board;
+        final COsBoard board = state.getGame().getPos().board;
         final Position position = Position.of(board);
         // calcMove() can't handle a pass. So we handle it right here.
         if (position.hasLegalMove()) {
-            final MoveScore moveScore = evalSyncEngine.calcMove(position, state.getMaxDepth());
+            final MoveScore moveScore = evalSyncEngine.calcMove(position, state.getMaxDepth(), abortCheck);
             return moveScore.toMli();
         } else {
             return OsMoveListItem.PASS;
         }
     }
+
+    /**
+     * Runs requests from the queue
+     */
+    private class Runner implements Runnable {
+        @Override public void run() {
+            while (true) {
+                try {
+                    final Runnable take = requests.take();
+                    setStatus("Thinking...");
+
+                    System.out.println("running request");
+                    try {
+                        take.run();
+                        System.out.println("request complete");
+                    } catch (SearchAbortedException e) {
+                        System.out.println("request aborted");
+                    }
+                    setStatus("");
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
 }

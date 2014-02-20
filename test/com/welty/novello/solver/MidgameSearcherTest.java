@@ -8,6 +8,7 @@ import com.welty.novello.eval.CoefficientCalculator;
 import com.welty.novello.eval.DiskEval;
 import com.welty.novello.eval.Eval;
 import com.welty.novello.selfplay.Players;
+import com.welty.othello.api.AbortCheck;
 import junit.framework.TestCase;
 
 import static com.welty.novello.eval.CoefficientCalculator.DISK_VALUE;
@@ -32,7 +33,7 @@ public class MidgameSearcherTest extends TestCase {
 
 
         final long moves = prev.calcMoves();
-        final MoveScore moveScore = midgameSearcher.getMoveScore(prev, moves, 1);
+        final MoveScore moveScore = midgameSearcher.getMoveScore(prev, moves, 1, AbortCheck.NEVER);
         assertTrue("must be a legal move", BitBoardUtils.isBitSet(moves, moveScore.sq));
         assertEquals(Long.bitCount(moves), counter.nFlips());
 
@@ -140,7 +141,7 @@ public class MidgameSearcherTest extends TestCase {
         final int depth = 4;
 
         Position position = Position.START_POSITION;
-        midgameSearcher.getMoveScore(position, position.calcMoves(), depth);
+        midgameSearcher.getMoveScore(position, position.calcMoves(), depth, AbortCheck.NEVER);
         final Counts counts = midgameSearcher.getCounts();
         final long nFlips = counts.nFlips;
         final long nEvals = counts.nEvals;

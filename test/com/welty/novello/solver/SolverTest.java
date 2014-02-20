@@ -3,6 +3,7 @@ package com.welty.novello.solver;
 import com.welty.novello.core.BitBoardUtils;
 import com.welty.novello.core.MoveScore;
 import com.welty.novello.core.Position;
+import com.welty.othello.api.AbortCheck;
 import junit.framework.TestCase;
 
 import static com.welty.novello.core.BitBoardUtils.reflection;
@@ -191,7 +192,7 @@ public class SolverTest extends TestCase {
     private static void executeTestCase(Solver solver, long white, long black, int expected) {
         final int nEmpties = BitBoardUtils.nEmpty(white, black);
         solver.clear(nEmpties); // we use this for benchmarking. Don't cheat!
-        int actual = solver.solve(white, black);
+        int actual = solver.solve(white, black, AbortCheck.NEVER);
         if (expected != actual) {
             final Position position = new Position(black, white, false);
             System.out.println(position.positionString());
@@ -240,16 +241,27 @@ public class SolverTest extends TestCase {
         Position bb = testCases[2];
         final Solver solver = new Solver();
         // switch player to move because mover has no move.
-        final MoveScore result = solver.getMoveScore(bb.enemy(), bb.mover());
+        final MoveScore result = solver.getMoveScore(bb.enemy(), bb.mover(), AbortCheck.NEVER);
         assertEquals(1, result.sq);
     }
 
     public void testSolveWithMove2() {
         Position bb = new Position("********************O*****OO*O****-********O*****O.OOO**--O---**", true);
         final Solver solver = new Solver();
-        final MoveScore result = solver.getMoveScore(bb.mover(), bb.enemy());
+        final MoveScore result = solver.getMoveScore(bb.mover(), bb.enemy(), AbortCheck.NEVER);
         // A8, F8, C5 all win by 64.
         //noinspection OctalInteger
         assertTrue(result.sq == 007 || result.sq == 002 || result.sq == 035);
+    }
+
+    public void testAborts() {
+        Position bb = testCases[20];
+        final Solver solver = new Solver();
+        try {
+            solver.getMoveScore(bb.mover(), bb.enemy(), AbortCheck.ALWAYS);
+            fail("should abort, but didn't");
+        } catch (SearchAbortedException e) {
+            // expected
+        }
     }
 }

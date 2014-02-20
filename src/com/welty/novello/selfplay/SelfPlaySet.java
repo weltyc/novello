@@ -5,7 +5,7 @@ import com.welty.novello.core.MeValue;
 import com.welty.novello.core.MutableGame;
 import com.welty.novello.core.NovelloUtils;
 import com.welty.novello.core.Position;
-import com.welty.othello.core.Engineering;
+import com.orbanova.common.misc.Engineering;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -213,7 +213,7 @@ public class SelfPlaySet {
             final double tStat = sum / stdErr;
             log.info(String.format("%,6d matches: average result = %+.3g +/-%3.2g. T ~ %5.1f.  %ss vs%ss."
                     , nComplete, sum / nComplete, stdErr / nComplete, tStat
-                    , Engineering.engineeringDouble(t1 / nComplete), Engineering.engineeringDouble(t2 / nComplete))
+                    , Engineering.compactFormat(t1 / nComplete), Engineering.compactFormat(t2 / nComplete))
             );
         }
     }

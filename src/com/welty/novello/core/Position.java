@@ -1,7 +1,7 @@
 package com.welty.novello.core;
 
 import com.orbanova.common.misc.Require;
-import com.welty.othello.gdk.OsBoard;
+import com.welty.othello.gdk.COsBoard;
 import org.jetbrains.annotations.Nullable;
 
 import static java.lang.Long.bitCount;
@@ -179,6 +179,8 @@ public class Position implements Comparable<Position> {
 
 
     /**
+     * Get the text of the contents of the board, with spaces between each row of pieces.
+     *
      * @return Text of the contents of the board, without player-to-move.
      */
     public String boardString() {
@@ -391,8 +393,8 @@ public class Position implements Comparable<Position> {
         return new Mr(mover(), enemy());
     }
 
-    public static Position of(OsBoard board) {
-        final OsBoard.GetTextResult text = board.getText();
+    public static Position of(COsBoard board) {
+        final COsBoard.GetTextResult text = board.getText();
         return new Position(text.getText(), text.isBlackMove());
     }
 }

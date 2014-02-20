@@ -1,6 +1,6 @@
 package com.welty.novello.core;
 
-import com.welty.othello.core.Engineering;
+import com.orbanova.common.misc.Engineering;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -89,7 +89,7 @@ public class ProgressUpdater implements AutoCloseable {
 
     private synchronized String getNote() {
         if (autoNote != null) {
-            note = Engineering.formatLong(progress) + " / " + Engineering.formatLong(max) + " " + autoNote;
+            note = Engineering.compactFormat(progress) + " / " + Engineering.compactFormat(max) + " " + autoNote;
         }
         return note;
     }

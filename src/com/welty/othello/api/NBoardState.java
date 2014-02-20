@@ -5,7 +5,7 @@ import com.welty.othello.gdk.COsGame;
 /**
  * Information necessary for an engine to do a search.
  * <p/>
- * This is the shared state in the NBoard protocol.
+ * This class is immutable. It is a snapshot of the shared state in the NBoard protocol.
  */
 public class NBoardState {
     /**

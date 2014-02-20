@@ -5,6 +5,7 @@ import com.welty.novello.core.Move8x8;
 import com.welty.novello.core.MutableGame;
 import com.welty.novello.core.Position;
 import com.welty.novello.selfplay.Players;
+import com.welty.othello.api.AbortCheck;
 
 import java.util.List;
 
@@ -67,7 +68,7 @@ public class SearchTimer {
                 if (nEmpty >= 10 && nEmpty <= 40) {
                     final long moves = pos.calcMoves();
                     if (moves != 0) {
-                        midgameSearcher.getMoveScore(pos, moves, depth);
+                        midgameSearcher.getMoveScore(pos, moves, depth, AbortCheck.NEVER);
                         midgameSearcher.clear();
                     }
                 }
