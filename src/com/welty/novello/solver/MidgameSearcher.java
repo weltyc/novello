@@ -138,24 +138,6 @@ public class MidgameSearcher {
         midgameHashTables.clear(63);
     }
 
-    public void calcHints(Position position, long moverMoves, int depth, AbortCheck abortCheck, EvalSyncEngine.Listener listener) {
-        final long t0 = System.currentTimeMillis();
-        final long n0 = counter.nFlips();
-
-        for (int i = 1; i <= depth; i++) {
-            final Depth displayDepth;
-            if (i + SOLVER_START_DEPTH > position.nEmpty()) {
-                displayDepth = new Depth("60%");
-            } else {
-                displayDepth = new Depth(i);
-            }
-            listener.updateStatus("Searching at " + displayDepth);
-            final MoveScore moveScore = getMoveScore(position, moverMoves, i, abortCheck);
-            listener.hint(moveScore, displayDepth);
-            listener.updateNodeStats(counter.nFlips() - n0, System.currentTimeMillis() - t0);
-        }
-    }
-
     static class BA {
         int bestMove = -1;
         int score = NovelloUtils.NO_MOVE;

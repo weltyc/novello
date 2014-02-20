@@ -64,20 +64,7 @@ public class SyncStatelessEngine implements StatelessEngine {
                 final Position position = Position.of(board);
                 // calcMove() can't handle a pass. So we handle it right here.
                 if (position.hasLegalMove()) {
-                    final EvalSyncEngine.Listener engineListener = new EvalSyncEngine.Listener() {
-                        @Override public void updateStatus(String status) {
-                            setStatus(status);
-                        }
-
-                        @Override public void updateNodeStats(long nodeCount, long millis) {
-                            responseHandler.handle(new NodeStatsResponse(pong, nodeCount, millis*0.001));
-                        }
-
-                        @Override public void hint(MoveScore moveScore, Depth depth) {
-                            responseHandler.handle(moveScore.toHintResponse(pong, depth));
-                        }
-                    };
-                    evalSyncEngine.calcHints(position, state.getMaxDepth(), abortCheck, engineListener);
+                    evalSyncEngine.calcHints(position, state.getMaxDepth(), abortCheck, new EngineListener(pong));
                 } else {
                     final OsMoveListItem mli = OsMoveListItem.PASS;
                     final String pv = mli.move.toString();
@@ -97,7 +84,7 @@ public class SyncStatelessEngine implements StatelessEngine {
         final int pong = pingPong.next();
         requests.add(new Runnable() {
             @Override public void run() {
-                final OsMoveListItem mli = calcMli(state);
+                final OsMoveListItem mli = calcMli(state, pong);
                 final MoveResponse response = new MoveResponse(pong, mli);
                 responseHandler.handle(response);
             }
@@ -130,13 +117,13 @@ public class SyncStatelessEngine implements StatelessEngine {
      * @param state position and engine options
      * @return MoveListItem
      */
-    @NotNull OsMoveListItem calcMli(NBoardState state) {
+    @NotNull OsMoveListItem calcMli(NBoardState state, int pong) {
         final COsBoard board = state.getGame().getPos().board;
         final Position position = Position.of(board);
         // calcMove() can't handle a pass. So we handle it right here.
         if (position.hasLegalMove()) {
             final long t0 = System.currentTimeMillis();
-            final MoveScore moveScore = evalSyncEngine.calcMove(position, state.getMaxDepth(), abortCheck);
+            final MoveScore moveScore = evalSyncEngine.calcMove(position, state.getMaxDepth(), abortCheck, new EngineListener(pong));
             return moveScore.toMli(System.currentTimeMillis() - t0);
         } else {
             return OsMoveListItem.PASS;
@@ -166,4 +153,23 @@ public class SyncStatelessEngine implements StatelessEngine {
         }
     }
 
+    private class EngineListener implements EvalSyncEngine.Listener {
+        private final int pong;
+
+        public EngineListener(int pong) {
+            this.pong = pong;
+        }
+
+        @Override public void updateStatus(String status) {
+            setStatus(status);
+        }
+
+        @Override public void updateNodeStats(long nodeCount, long millis) {
+            responseHandler.handle(new NodeStatsResponse(pong, nodeCount, millis*0.001));
+        }
+
+        @Override public void hint(MoveScore moveScore, Depth depth) {
+            responseHandler.handle(moveScore.toHintResponse(pong, depth));
+        }
+    }
 }

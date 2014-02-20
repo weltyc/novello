@@ -7,9 +7,7 @@ import com.welty.novello.solver.MidgameSearcher;
 import com.welty.novello.solver.Solver;
 import com.welty.ntestj.Heights;
 import com.welty.othello.api.AbortCheck;
-import com.welty.othello.gdk.OsMove;
 import com.welty.othello.protocol.Depth;
-import com.welty.othello.protocol.ResponseHandler;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -33,11 +31,7 @@ public class EvalSyncEngine implements SyncEngine {
     }
 
     public MoveScore calcMove(@NotNull Position position, int maxDepth) {
-        return calcMove(position, maxDepth, new AbortCheck() {
-            @Override public boolean shouldAbort() {
-                return false;
-            }
-        });
+        return calcMove(position, maxDepth, AbortCheck.NEVER, Listener.NULL);
     }
 
     @Override public void clear() {
@@ -49,18 +43,27 @@ public class EvalSyncEngine implements SyncEngine {
         return eval + ":" + options;
     }
 
-    public MoveScore calcMove(Position position, int maxDepth, AbortCheck abortCheck) {
+    public MoveScore calcMove(Position position, int maxDepth, AbortCheck abortCheck, Listener listener) {
         final long moverMoves = position.calcMoves();
         if (moverMoves == 0) {
             throw new IllegalArgumentException("Must have a legal move to call calcMove()");
         }
-        if (midgameOptions.useNtestSearchDepths && position.nEmpty() <= new Heights(maxDepth).getFullWidthHeight()) {
-            // full-width solve
-            return solver.getMoveScore(position.mover(), position.enemy(), abortCheck);
-        }
+        final long n0 = searcher.getCounts().nFlips;
+        final long t0 = System.currentTimeMillis();
 
-        final int depth = calcSearchDepth(position, maxDepth);
-        return searcher.getMoveScore(position, moverMoves, depth, abortCheck);
+        final MoveScore result;
+        if (shouldSolve(position, maxDepth)) {
+            listener.updateStatus("Solving...");
+            // full-width solve
+            result = solver.getMoveScore(position.mover(), position.enemy(), abortCheck);
+        } else {
+            final int depth = calcSearchDepth(position, maxDepth);
+            final Depth displayDepth = calcDisplayDepth(position, depth);
+            listener.updateStatus("Searching at " + displayDepth);
+            result = searcher.getMoveScore(position, moverMoves, depth, abortCheck);
+        }
+        listener.updateNodeStats(searcher.getCounts().nFlips- n0, System.currentTimeMillis() - t0);
+        return result;
     }
 
     final int calcSearchDepth(Position position, int maxDepth) {
@@ -78,9 +81,6 @@ public class EvalSyncEngine implements SyncEngine {
     /**
      * Only called if there is at least one legal move from this position
      *
-     * @param position
-     * @param maxDepth
-     * @param abortCheck
      * @param listener listener for intermediate results
      */
     public void calcHints(Position position, int maxDepth, AbortCheck abortCheck, Listener listener) {
@@ -91,23 +91,54 @@ public class EvalSyncEngine implements SyncEngine {
         final long n0 = searcher.getCounts().nFlips;
         final long t0 = System.currentTimeMillis();
         final int depth = calcSearchDepth(position, maxDepth);
-        searcher.calcHints(position, moverMoves, depth, abortCheck, listener);
 
-        if (midgameOptions.useNtestSearchDepths) {
-            final int fullWidthHeight = new Heights(maxDepth).getFullWidthHeight();
-            if (position.nEmpty() <= fullWidthHeight) {
-                // full-width solve
-                listener.updateStatus("Solving");
-                final MoveScore moveScore = solver.getMoveScore(position.mover(), position.enemy(), abortCheck);
-                listener.hint(moveScore, new Depth("100%"));
-                listener.updateNodeStats(solver.getCounts().nFlips - n0, System.currentTimeMillis() - t0);
-            }
+        for (int i = 1; i <= depth; i++) {
+            final Depth displayDepth = calcDisplayDepth(position, i);
+            listener.updateStatus("Searching at " + displayDepth);
+            final MoveScore moveScore1 = searcher.getMoveScore(position, moverMoves, i, abortCheck);
+            listener.hint(moveScore1, displayDepth);
+            listener.updateNodeStats(searcher.getCounts().nFlips - n0, System.currentTimeMillis() - t0);
+        }
+
+        if (shouldSolve(position, maxDepth)) {
+            // full-width solve
+            listener.updateStatus("Solving");
+            final MoveScore moveScore = solver.getMoveScore(position.mover(), position.enemy(), abortCheck);
+            listener.hint(moveScore, new Depth("100%"));
+            listener.updateNodeStats(solver.getCounts().nFlips - n0, System.currentTimeMillis() - t0);
         }
     }
 
+    private static Depth calcDisplayDepth(Position position, int i) {
+        final Depth displayDepth;
+        if (i + MidgameSearcher.SOLVER_START_DEPTH > position.nEmpty()) {
+            displayDepth = new Depth("60%");
+        } else {
+            displayDepth = new Depth(i);
+        }
+        return displayDepth;
+    }
+
+    private boolean shouldSolve(Position position, int maxDepth) {
+        return midgameOptions.useNtestSearchDepths && position.nEmpty() <= new Heights(maxDepth).getFullWidthHeight();
+    }
+
     public interface Listener {
+        Listener NULL = new Listener() {
+            @Override public void updateStatus(String status) {
+            }
+
+            @Override public void updateNodeStats(long nodeCount, long millis) {
+            }
+
+            @Override public void hint(MoveScore moveScore, Depth depth) {
+            }
+        };
+
         void updateStatus(String status);
+
         void updateNodeStats(long nodeCount, long millis);
+
         void hint(MoveScore moveScore, Depth depth);
     }
 }
