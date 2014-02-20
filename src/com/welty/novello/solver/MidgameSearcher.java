@@ -7,8 +7,6 @@ import com.welty.novello.hash.MidgameHashTables;
 import com.welty.novello.selfplay.EvalSyncEngine;
 import com.welty.othello.api.AbortCheck;
 import com.welty.othello.protocol.Depth;
-import com.welty.othello.protocol.NodeStatsResponse;
-import com.welty.othello.protocol.ResponseHandler;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
@@ -145,13 +143,14 @@ public class MidgameSearcher {
         final long n0 = counter.nFlips();
 
         for (int i = 1; i <= depth; i++) {
-            final MoveScore moveScore = getMoveScore(position, moverMoves, i, abortCheck);
             final Depth displayDepth;
             if (i + SOLVER_START_DEPTH > position.nEmpty()) {
                 displayDepth = new Depth("60%");
             } else {
                 displayDepth = new Depth(i);
             }
+            listener.updateStatus("Searching at " + displayDepth);
+            final MoveScore moveScore = getMoveScore(position, moverMoves, i, abortCheck);
             listener.hint(moveScore, displayDepth);
             listener.updateNodeStats(counter.nFlips() - n0, System.currentTimeMillis() - t0);
         }

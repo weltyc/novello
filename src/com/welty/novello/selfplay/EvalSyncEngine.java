@@ -97,6 +97,7 @@ public class EvalSyncEngine implements SyncEngine {
             final int fullWidthHeight = new Heights(maxDepth).getFullWidthHeight();
             if (position.nEmpty() <= fullWidthHeight) {
                 // full-width solve
+                listener.updateStatus("Solving");
                 final MoveScore moveScore = solver.getMoveScore(position.mover(), position.enemy(), abortCheck);
                 listener.hint(moveScore, new Depth("100%"));
                 listener.updateNodeStats(solver.getCounts().nFlips - n0, System.currentTimeMillis() - t0);
