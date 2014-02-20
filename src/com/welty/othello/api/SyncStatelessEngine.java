@@ -122,8 +122,9 @@ public class SyncStatelessEngine implements StatelessEngine {
         final Position position = Position.of(board);
         // calcMove() can't handle a pass. So we handle it right here.
         if (position.hasLegalMove()) {
+            final long t0 = System.currentTimeMillis();
             final MoveScore moveScore = evalSyncEngine.calcMove(position, state.getMaxDepth(), abortCheck);
-            return moveScore.toMli();
+            return moveScore.toMli(System.currentTimeMillis() - t0);
         } else {
             return OsMoveListItem.PASS;
         }
@@ -138,13 +139,11 @@ public class SyncStatelessEngine implements StatelessEngine {
                 try {
                     final Runnable take = requests.take();
                     setStatus("Thinking...");
-
-                    System.out.println("running request");
                     try {
                         take.run();
-                        System.out.println("request complete");
                     } catch (SearchAbortedException e) {
-                        System.out.println("request aborted");
+                        // The search was aborted because we have a new task.
+                        // continue so we do the new task.
                     }
                     setStatus("");
                 } catch (InterruptedException e) {

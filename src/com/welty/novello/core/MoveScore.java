@@ -52,10 +52,16 @@ public class MoveScore {
         return result;
     }
 
-    public OsMoveListItem toMli() {
+    /**
+     * Convert this MoveScore to an OsMoveListItem.
+     *
+     * @param millis elapsed time, in milliseconds
+     * @return the OsMoveListItem
+     */
+    public OsMoveListItem toMli(long millis) {
         final OsMove move = new OsMove(BitBoardUtils.sqToText(sq));
         final double eval = 0.01 * centidisks;
-        return new OsMoveListItem(move, eval, 0);
+        return new OsMoveListItem(move, eval, 0.001*millis);
     }
 
     public HintResponse toHintResponse(int pong, Depth depth) {
