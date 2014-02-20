@@ -105,5 +105,6 @@
             <artifactId>othello</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
+
     </dependencies>
 </project>

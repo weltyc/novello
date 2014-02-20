@@ -6,6 +6,9 @@ import com.welty.novello.eval.Eval;
 import com.welty.novello.solver.MidgameSearcher;
 import com.welty.novello.solver.Solver;
 import com.welty.ntestj.Heights;
+import com.welty.othello.api.AbortCheck;
+import com.welty.othello.protocol.Depth;
+import com.welty.othello.protocol.ResponseHandler;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -28,29 +31,12 @@ public class EvalSyncEngine implements SyncEngine {
         this.searcher = solver.midgameSearcher;
     }
 
-    public MoveScore calcMove(@NotNull Position board, int maxDepth) {
-        final long moverMoves = board.calcMoves();
-        if (moverMoves==0) {
-            throw new IllegalArgumentException("Must have a legal move to call calcMove()");
-        }
-        if (midgameOptions.useNtestSearchDepths) {
-            final Heights heights = new Heights(maxDepth);
-            if (board.nEmpty() <= heights.getFullWidthHeight()) {
-                // full-width solve
-                return solveMove(board);
-            } else {
-                if (board.nEmpty() <= heights.getProbableSolveHeight()) {
-                    // probable solve
-                    final int solverStart = midgameOptions.useSolver ? MidgameSearcher.SOLVER_START_DEPTH - 1 : 0;
-                    final int depth = board.nEmpty() - solverStart;
-                    return searcher.getMoveScore(board, moverMoves, depth);
-                } else {
-                    return searcher.getMoveScore(board, moverMoves, maxDepth);
-                }
+    public MoveScore calcMove(@NotNull Position position, int maxDepth) {
+        return calcMove(position, maxDepth, new AbortCheck() {
+            @Override public boolean shouldAbort() {
+                return false;
             }
-        } else {
-            return searcher.getMoveScore(board, moverMoves, maxDepth);
-        }
+        });
     }
 
     @Override public void clear() {
@@ -62,12 +48,54 @@ public class EvalSyncEngine implements SyncEngine {
         return eval + ":" + options;
     }
 
+    public MoveScore calcMove(Position position, int maxDepth, AbortCheck abortCheck) {
+        final long moverMoves = position.calcMoves();
+        if (moverMoves == 0) {
+            throw new IllegalArgumentException("Must have a legal move to call calcMove()");
+        }
+        if (midgameOptions.useNtestSearchDepths && position.nEmpty() <= new Heights(maxDepth).getFullWidthHeight()) {
+            // full-width solve
+            return solver.getMoveScore(position.mover(), position.enemy(), abortCheck);
+        }
+
+        final int depth = calcSearchDepth(position, maxDepth);
+        return searcher.getMoveScore(position, moverMoves, depth, abortCheck);
+    }
+
+    final int calcSearchDepth(Position position, int maxDepth) {
+        if (midgameOptions.useNtestSearchDepths) {
+            final Heights heights = new Heights(maxDepth);
+            if (position.nEmpty() <= heights.getProbableSolveHeight()) {
+                // probable solve
+                final int solverStart = midgameOptions.useSolver ? MidgameSearcher.SOLVER_START_DEPTH - 1 : 0;
+                return position.nEmpty() - solverStart;
+            }
+        }
+        return maxDepth;
+    }
+
     /**
-     * @param board board to move from
-     * @return the perfect-play move
+     * Only called if there is at least one legal move from this position
+     *
+     * @param position
+     * @param maxDepth
+     * @param abortCheck
+     * @param pong
+     * @param responseHandler
      */
-    MoveScore solveMove(Position board) {
-        return solver.getMoveScore(board.mover(), board.enemy());
+    public void calcHints(Position position, int maxDepth, AbortCheck abortCheck, int pong, ResponseHandler responseHandler) {
+        final long moverMoves = position.calcMoves();
+        if (moverMoves == 0) {
+            throw new IllegalArgumentException("Must have a legal move to call calcMove()");
+        }
+        final int depth = calcSearchDepth(position, maxDepth);
+        searcher.calcHints(position, moverMoves, depth, abortCheck, pong, responseHandler);
+
+        if (midgameOptions.useNtestSearchDepths && position.nEmpty() <= new Heights(maxDepth).getFullWidthHeight()) {
+            // full-width solve
+            final MoveScore moveScore = solver.getMoveScore(position.mover(), position.enemy(), abortCheck);
+            responseHandler.handle(moveScore.toHintResponse(pong, new Depth("100%")));
+        }
     }
 }
 

@@ -2,6 +2,9 @@ package com.welty.novello.core;
 
 import com.welty.othello.gdk.OsMove;
 import com.welty.othello.gdk.OsMoveListItem;
+import com.welty.othello.protocol.Depth;
+import com.welty.othello.protocol.HintResponse;
+import com.welty.othello.protocol.Value;
 
 /**
  * A move with an evaluation
@@ -53,5 +56,11 @@ public class MoveScore {
         final OsMove move = new OsMove(BitBoardUtils.sqToText(sq));
         final double eval = 0.01 * centidisks;
         return new OsMoveListItem(move, eval, 0);
+    }
+
+    public HintResponse toHintResponse(int pong, Depth depth) {
+        final String pv = BitBoardUtils.sqToText(sq);
+        final Value eval = new Value(0.01f * centidisks);
+        return new HintResponse(pong, false, pv, eval, 0, depth, "");
     }
 }

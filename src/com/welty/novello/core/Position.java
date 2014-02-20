@@ -1,7 +1,7 @@
 package com.welty.novello.core;
 
 import com.orbanova.common.misc.Require;
-import com.welty.othello.gdk.OsBoard;
+import com.welty.othello.gdk.COsBoard;
 import org.jetbrains.annotations.Nullable;
 
 import static java.lang.Long.bitCount;
@@ -179,6 +179,8 @@ public class Position implements Comparable<Position> {
 
 
     /**
+     * Get the text of the contents of the board, with spaces between each row of pieces.
+     *
      * @return Text of the contents of the board, without player-to-move.
      */
     public String boardString() {
@@ -391,28 +393,8 @@ public class Position implements Comparable<Position> {
         return new Mr(mover(), enemy());
     }
 
-    /**
-     * Play a move list from the current position.
-     * <p/>
-     * A move list is a sequence of squares to play, for example "F5 D6"
-     * <p/>
-     * This currently handles upper and lower case, and arbitrary spacing (or no spaces at all) between moves.
-     * It does not handle passes.
-     *
-     * @param moveList String containing moves
-     * @return The position resulting from playing those moves.
-     */
-    public Position playLine(String moveList) {
-        final String ml = moveList.replaceAll("[ \t\r\n]+", "");
-        Position p = this;
-        for (int i = 0; i < ml.length(); i += 2) {
-            p = p.play(ml.substring(i, i + 2));
-        }
-        return p;
-    }
-
-    public static Position of(OsBoard board) {
-        final OsBoard.GetTextResult text = board.getText();
+    public static Position of(COsBoard board) {
+        final COsBoard.GetTextResult text = board.getText();
         return new Position(text.getText(), text.isBlackMove());
     }
 }

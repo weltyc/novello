@@ -8,6 +8,7 @@ import com.welty.novello.eval.CoefficientCalculator;
 import com.welty.novello.eval.Eval;
 import com.welty.novello.hash.HashTables;
 import com.welty.novello.selfplay.Players;
+import com.welty.othello.api.AbortCheck;
 import org.jetbrains.annotations.NotNull;
 
 import static java.lang.Long.bitCount;
@@ -58,6 +59,13 @@ public class Solver {
      * Squares are removed/replaced during the course of the search.
      */
     private ListOfEmpties empties;
+
+    /**
+     * Abort check, to see whether the search should be aborted.
+     * <p/>
+     * This must be set at the start of every search.
+     */
+    private @NotNull AbortCheck abortCheck;
 
     private final @NotNull Counter counter;
     public final @NotNull MidgameSearcher midgameSearcher;
@@ -110,8 +118,9 @@ public class Solver {
      * @param enemy bitboard of enemy's disks
      * @return value of the game to the mover
      */
-    public int solve(long mover, long enemy) {
+    public int solve(long mover, long enemy, @NotNull AbortCheck abortCheck) {
         this.empties = ShallowSolver.createEmptiesList(mover, enemy);
+        this.abortCheck = abortCheck;
 
         return solve(mover, enemy, -64, 64);
     }
@@ -121,15 +130,18 @@ public class Solver {
      * <p/>
      * Precondition: mover has a legal move
      *
-     * @param mover mover disks
-     * @param enemy enemy disks
+     * @param mover      mover disks
+     * @param enemy      enemy disks
+     * @param abortCheck checker for whether search should abort
      * @return a {@link MoveScore} containing the best move
      */
-    @NotNull public MoveScore getMoveScore(long mover, long enemy) {
+    public @NotNull MoveScore getMoveScore(long mover, long enemy, @NotNull AbortCheck abortCheck) {
         if (BitBoardUtils.calcMoves(mover, enemy) == 0) {
             throw new IllegalArgumentException("mover must have a legal move");
         }
         this.empties = ShallowSolver.createEmptiesList(mover, enemy);
+        this.abortCheck = abortCheck;
+
         final int nEmpties = bitCount(~(mover | enemy));
         final TreeSearchResult result = treeSearchResults[nEmpties];
 
@@ -137,7 +149,7 @@ public class Solver {
         moverResultWithSorting(result, mover, enemy, -64, 64, nEmpties, parity, PRED_PV, -1);
         final MoveSorter moveSorter = moveSorters.get(nEmpties);
         final int sq = moveSorter.sq(result.iBestMove);
-        return new MoveScore(sq, result.score* CoefficientCalculator.DISK_VALUE);
+        return new MoveScore(sq, result.score * CoefficientCalculator.DISK_VALUE);
     }
 
     /**
@@ -198,6 +210,9 @@ public class Solver {
      */
     private int solveDeep(long mover, long enemy, int alpha, int beta, int nEmpties, long parity, int nodeType
             , long movesToCheck) {
+        if (nEmpties >= 9 && abortCheck.shouldAbort()) {
+            throw new SearchAbortedException();
+        }
         if (nEmpties < ShallowSolver.MIN_PARITY_DEPTH) {
             return ShallowSolver.solveNoParity(counter, mover, enemy, alpha, beta, empties, nEmpties);
         }
