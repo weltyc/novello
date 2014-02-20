@@ -64,7 +64,20 @@ public class SyncStatelessEngine implements StatelessEngine {
                 final Position position = Position.of(board);
                 // calcMove() can't handle a pass. So we handle it right here.
                 if (position.hasLegalMove()) {
-                    evalSyncEngine.calcHints(position, state.getMaxDepth(), abortCheck, pong, responseHandler);
+                    final EvalSyncEngine.Listener engineListener = new EvalSyncEngine.Listener() {
+                        @Override public void updateStatus(String status) {
+                            setStatus(status);
+                        }
+
+                        @Override public void updateNodeStats(long nodeCount, long millis) {
+                            responseHandler.handle(new NodeStatsResponse(pong, nodeCount, millis*0.001));
+                        }
+
+                        @Override public void hint(MoveScore moveScore, Depth depth) {
+                            responseHandler.handle(moveScore.toHintResponse(pong, depth));
+                        }
+                    };
+                    evalSyncEngine.calcHints(position, state.getMaxDepth(), abortCheck, engineListener);
                 } else {
                     final OsMoveListItem mli = OsMoveListItem.PASS;
                     final String pv = mli.move.toString();

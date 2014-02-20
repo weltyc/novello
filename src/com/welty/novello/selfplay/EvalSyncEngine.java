@@ -7,6 +7,7 @@ import com.welty.novello.solver.MidgameSearcher;
 import com.welty.novello.solver.Solver;
 import com.welty.ntestj.Heights;
 import com.welty.othello.api.AbortCheck;
+import com.welty.othello.gdk.OsMove;
 import com.welty.othello.protocol.Depth;
 import com.welty.othello.protocol.ResponseHandler;
 import org.jetbrains.annotations.NotNull;
@@ -80,25 +81,33 @@ public class EvalSyncEngine implements SyncEngine {
      * @param position
      * @param maxDepth
      * @param abortCheck
-     * @param pong
-     * @param responseHandler
+     * @param listener listener for intermediate results
      */
-    public void calcHints(Position position, int maxDepth, AbortCheck abortCheck, int pong, ResponseHandler responseHandler) {
+    public void calcHints(Position position, int maxDepth, AbortCheck abortCheck, Listener listener) {
         final long moverMoves = position.calcMoves();
         if (moverMoves == 0) {
             throw new IllegalArgumentException("Must have a legal move to call calcMove()");
         }
+        final long n0 = searcher.getCounts().nFlips;
+        final long t0 = System.currentTimeMillis();
         final int depth = calcSearchDepth(position, maxDepth);
-        searcher.calcHints(position, moverMoves, depth, abortCheck, pong, responseHandler);
+        searcher.calcHints(position, moverMoves, depth, abortCheck, listener);
 
         if (midgameOptions.useNtestSearchDepths) {
             final int fullWidthHeight = new Heights(maxDepth).getFullWidthHeight();
             if (position.nEmpty() <= fullWidthHeight) {
                 // full-width solve
                 final MoveScore moveScore = solver.getMoveScore(position.mover(), position.enemy(), abortCheck);
-                responseHandler.handle(moveScore.toHintResponse(pong, new Depth("100%")));
+                listener.hint(moveScore, new Depth("100%"));
+                listener.updateNodeStats(solver.getCounts().nFlips - n0, System.currentTimeMillis() - t0);
             }
         }
+    }
+
+    public interface Listener {
+        void updateStatus(String status);
+        void updateNodeStats(long nodeCount, long millis);
+        void hint(MoveScore moveScore, Depth depth);
     }
 }
 

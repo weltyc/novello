@@ -4,6 +4,7 @@ import com.welty.novello.core.*;
 import com.welty.novello.eval.CoefficientCalculator;
 import com.welty.novello.eval.Mpc;
 import com.welty.novello.hash.MidgameHashTables;
+import com.welty.novello.selfplay.EvalSyncEngine;
 import com.welty.othello.api.AbortCheck;
 import com.welty.othello.protocol.Depth;
 import com.welty.othello.protocol.NodeStatsResponse;
@@ -139,7 +140,7 @@ public class MidgameSearcher {
         midgameHashTables.clear(63);
     }
 
-    public void calcHints(Position position, long moverMoves, int depth, AbortCheck abortCheck, int pong, ResponseHandler responseHandler) {
+    public void calcHints(Position position, long moverMoves, int depth, AbortCheck abortCheck, EvalSyncEngine.Listener listener) {
         final long t0 = System.currentTimeMillis();
         final long n0 = counter.nFlips();
 
@@ -151,9 +152,8 @@ public class MidgameSearcher {
             } else {
                 displayDepth = new Depth(i);
             }
-            responseHandler.handle(moveScore.toHintResponse(pong, displayDepth));
-            final double tElapsed = 0.001 * (System.currentTimeMillis() - t0);
-            responseHandler.handle(new NodeStatsResponse(pong, counter.nFlips() - n0, tElapsed));
+            listener.hint(moveScore, displayDepth);
+            listener.updateNodeStats(counter.nFlips() - n0, System.currentTimeMillis() - t0);
         }
     }
 
