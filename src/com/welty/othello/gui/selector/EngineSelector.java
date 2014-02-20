@@ -10,8 +10,8 @@ public abstract class EngineSelector {
     public final String name;
     public final Integer[] availableLevels;
 
-    static final Integer[] basicLevels = {1, 2};
-    public static final Integer[] advancedLevels = {1, 2, 3, 4, 5, 6, 8, 10, 12, 16, 20, 24};
+    static final Integer[] basicLevels = {1, 2, 3, 4};
+    public static final Integer[] advancedLevels = {1, 2, 3, 4, 5, 6, 8, 10, 12, 16, 20, 24, 26, 30};
 
     EngineSelector(String name, boolean isAdvanced) {
         this.name = name;

@@ -91,10 +91,13 @@ public class EvalSyncEngine implements SyncEngine {
         final int depth = calcSearchDepth(position, maxDepth);
         searcher.calcHints(position, moverMoves, depth, abortCheck, pong, responseHandler);
 
-        if (midgameOptions.useNtestSearchDepths && position.nEmpty() <= new Heights(maxDepth).getFullWidthHeight()) {
-            // full-width solve
-            final MoveScore moveScore = solver.getMoveScore(position.mover(), position.enemy(), abortCheck);
-            responseHandler.handle(moveScore.toHintResponse(pong, new Depth("100%")));
+        if (midgameOptions.useNtestSearchDepths) {
+            final int fullWidthHeight = new Heights(maxDepth).getFullWidthHeight();
+            if (position.nEmpty() <= fullWidthHeight) {
+                // full-width solve
+                final MoveScore moveScore = solver.getMoveScore(position.mover(), position.enemy(), abortCheck);
+                responseHandler.handle(moveScore.toHintResponse(pong, new Depth("100%")));
+            }
         }
     }
 }

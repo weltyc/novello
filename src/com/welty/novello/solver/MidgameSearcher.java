@@ -146,7 +146,7 @@ public class MidgameSearcher {
         for (int i = 1; i <= depth; i++) {
             final MoveScore moveScore = getMoveScore(position, moverMoves, i, abortCheck);
             final Depth displayDepth;
-            if (i + SOLVER_START_DEPTH >= position.nEmpty()) {
+            if (i + SOLVER_START_DEPTH > position.nEmpty()) {
                 displayDepth = new Depth("60%");
             } else {
                 displayDepth = new Depth(i);
