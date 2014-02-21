@@ -58,8 +58,7 @@ public class EvalSyncEngine implements SyncEngine {
             result = solver.getMoveScore(position.mover(), position.enemy(), abortCheck);
         } else {
             final Depths depths = calcSearchDepth(position, maxDepth);
-            final Depth displayDepth = depths.displayDepth();
-            listener.updateStatus("Searching at " + displayDepth);
+            listener.updateStatus("Searching at " + depths.displayDepth().humanString());
             result = searcher.getMoveScore(position, moverMoves, depths.searchDepth, abortCheck);
         }
         listener.updateNodeStats(searcher.getCounts().nFlips - n0, System.currentTimeMillis() - t0);
@@ -122,8 +121,8 @@ public class EvalSyncEngine implements SyncEngine {
         final Depths depths = calcSearchDepth(position, maxDepth);
 
         for (int i = 1; i <= depths.searchDepth; i++) {
-            final Depth displayDepth = calcDisplayDepth(position, i);
-            listener.updateStatus("Searching at " + displayDepth);
+            final Depth displayDepth = i<depths.searchDepth? new Depth(i) : depths.displayDepth();
+            listener.updateStatus("Searching at " + displayDepth.humanString());
             final MoveScore moveScore1 = searcher.getMoveScore(position, moverMoves, i, abortCheck);
             listener.hint(moveScore1, displayDepth);
             listener.updateNodeStats(searcher.getCounts().nFlips - n0, System.currentTimeMillis() - t0);
@@ -136,16 +135,6 @@ public class EvalSyncEngine implements SyncEngine {
             listener.hint(moveScore, new Depth("100%"));
             listener.updateNodeStats(solver.getCounts().nFlips - n0, System.currentTimeMillis() - t0);
         }
-    }
-
-    private static Depth calcDisplayDepth(Position position, int i) {
-        final Depth displayDepth;
-        if (i + MidgameSearcher.SOLVER_START_DEPTH > position.nEmpty()) {
-            displayDepth = new Depth("60%");
-        } else {
-            displayDepth = new Depth(i);
-        }
-        return displayDepth;
     }
 
     private boolean shouldSolve(Position position, int maxDepth) {
