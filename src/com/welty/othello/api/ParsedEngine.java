@@ -33,6 +33,7 @@ public class ParsedEngine implements StatelessEngine {
     ParsedEngine(@NotNull ResponseParser responseParser, @NotNull NBoardEngine engine) {
         this.responseParser = responseParser;
         this.engine = engine;
+        engine.sendCommand("nboard 2");
     }
 
     @NotNull public String getName() {
