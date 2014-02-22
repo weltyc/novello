@@ -35,4 +35,8 @@ public class SyncPlayer {
     public void clear() {
         engine.clear();
     }
+
+    @Override public String toString() {
+        return engine + ":" + maxDepth;
+    }
 }

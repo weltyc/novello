@@ -40,7 +40,7 @@ public class EvalSyncEngine implements SyncEngine {
     }
 
     @Override public String toString() {
-        return eval + ":" + options;
+        return eval + "-" + options;
     }
 
     public MoveScore calcMove(Position position, int maxDepth, AbortCheck abortCheck, Listener listener) {

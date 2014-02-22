@@ -19,7 +19,7 @@ import java.util.concurrent.*;
 public class Tournament implements Runnable {
     public static void main(String[] args) throws Exception {
         if (args.length == 0) {
-            System.err.println("usage: player1,player2,...");
+            System.err.println("usage: player1 player2 ...");
             System.exit(-1);
         }
         new Tournament(args).run();

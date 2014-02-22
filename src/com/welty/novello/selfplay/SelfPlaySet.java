@@ -22,6 +22,7 @@ public class SelfPlaySet {
         if (args.length < 2) {
             System.err.println("usage: blackPlayerName whitePlayerName [# games]");
             System.err.println(" for example a1:2 ntest:2");
+            System.exit(-1);
         }
         final SyncPlayer black = Players.player(args[0]);
         final SyncPlayer white = Players.player(args[1]);
@@ -211,7 +212,7 @@ public class SelfPlaySet {
             final double variance = sumSq - sum * sum / nComplete;
             final double stdErr = Math.sqrt(variance);
             final double tStat = sum / stdErr;
-            log.info(String.format("%,6d matches: average result = %+.3g +/-%3.2g. T ~ %5.1f.  %ss vs%ss."
+            log.info(String.format("%,6d matches: average result = %+.3g +/-%3.2g. T ~ %5.1f.  %ss vs %ss."
                     , nComplete, sum / nComplete, stdErr / nComplete, tStat
                     , Engineering.compactFormat(t1 / nComplete), Engineering.compactFormat(t2 / nComplete))
             );
