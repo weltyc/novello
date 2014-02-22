@@ -1,5 +1,6 @@
 package com.welty.othello.gui;
 
+import com.orbanova.common.misc.ListenerManager;
 import com.welty.othello.gui.prefs.PrefSet;
 
 import java.util.ArrayList;
@@ -7,14 +8,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.prefs.BackingStoreException;
 
-public class ExternalEngineManager {
-    public static final PrefSet externalEngines = new PrefSet(ExternalEngineManager.class, "Engines");
+public class ExternalEngineManager extends ListenerManager<ExternalEngineManager.Listener> {
+    public static final ExternalEngineManager instance = new ExternalEngineManager();
 
-    public static void add(String name, String wd, String command) {
+    private final PrefSet externalEngines = new PrefSet(ExternalEngineManager.class, "Engines");
+
+    public void add(String name, String wd, String command) {
         externalEngines.add(name, wd + ";" + command);
+        for (Listener listener : getListeners()) {
+            listener.engineAdded(name, wd, command);
+        }
+
     }
 
-    public static List<Xei> getXei() throws BackingStoreException {
+    public List<Xei> getXei() throws BackingStoreException {
         final Map<String, String> map = externalEngines.getMap();
         List<Xei> xeis = new ArrayList<>();
 
@@ -27,14 +34,14 @@ public class ExternalEngineManager {
         return xeis;
     }
 
-    private static Xei makeXei(String name, String value) {
+    private Xei makeXei(String name, String value) {
         final String[] split = value.split(";", 2);
         final String wd = split[0];
         final String cmd = split[1];
         return new Xei(name, wd, cmd);
     }
 
-    public static void removeAll() throws BackingStoreException {
+    public void removeAll() throws BackingStoreException {
         externalEngines.removeAll();
     }
 
@@ -43,7 +50,7 @@ public class ExternalEngineManager {
      *
      * @return external engine info, or null if there is no info for the program.
      */
-    public static Xei getXei(String program) {
+    public Xei getXei(String program) {
         try {
             final String value = externalEngines.getMap().get(program);
             if (value == null) {
@@ -65,5 +72,9 @@ public class ExternalEngineManager {
             this.wd = wd;
             this.cmd = cmd;
         }
+    }
+
+    public interface Listener {
+        void engineAdded(String name, String wd, String command);
     }
 }

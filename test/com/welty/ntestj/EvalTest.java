@@ -69,7 +69,7 @@ public class EvalTest extends TestCase {
      */
     public void test1Ply() {
 
-        if (ExternalEngineManager.getXei("ntest") == null) {
+        if (ExternalEngineManager.instance.getXei("ntest") == null) {
             System.out.println("ntest not available on this machine, skipping test");
             return;
         }

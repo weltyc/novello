@@ -26,7 +26,7 @@ public class NBoardSyncEngine implements SyncEngine {
 
 
     public NBoardSyncEngine(String program, boolean debug) {
-        this(ExternalEngineManager.getXei(program), debug);
+        this(ExternalEngineManager.instance.getXei(program), debug);
     }
 
     private NBoardSyncEngine(ExternalEngineManager.Xei xei, boolean debug) {
