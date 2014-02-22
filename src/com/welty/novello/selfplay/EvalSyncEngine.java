@@ -74,7 +74,7 @@ public class EvalSyncEngine implements SyncEngine {
             final Heights heights = new Heights(maxDepth);
             probableSolveHeight = heights.getProbableSolveHeight();
         } else {
-            probableSolveHeight = nEmpty;
+            probableSolveHeight = maxDepth;
         }
 
         if (nEmpty <= probableSolveHeight) {
@@ -85,7 +85,7 @@ public class EvalSyncEngine implements SyncEngine {
         }
     }
 
-    private static class Depths {
+    static class Depths {
         /**
          * Depth passed into midgame searcher
          */

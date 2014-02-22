@@ -58,4 +58,9 @@ public class EvalSyncEngineTest extends TestCase {
 
         assertEquals(6400, player.calcMove(prev, 1).centidisks);
     }
+
+    public void testCalcSearchDepth() {
+        final EvalSyncEngine engine = new EvalSyncEngine(Players.currentEval(), "NS");
+        assertEquals(6, engine.calcSearchDepth(Position.START_POSITION, 6).searchDepth);
+    }
 }
