@@ -16,7 +16,7 @@ public interface SyncEngine {
      * Precondition: the board has a legal move
      *
      * @param board    board to move on
-     * @param maxDepth maximum search depth, in ply
+     * @param maxDepth maximum search depth, in ply, in the midgame. The engine determines search depth in the endgame.
      * @return square and value of the player's chosen move
      */
     MoveScore calcMove(@NotNull Position board, int maxDepth);

@@ -35,7 +35,7 @@ public class SyncStatelessEngine implements StatelessEngine {
         }
     };
 
-    private static final boolean debug = true;
+    public static final boolean debug = true;
     private String status = "";
 
     public SyncStatelessEngine(Eval eval, String options, ResponseHandler responseHandler) {
@@ -47,7 +47,13 @@ public class SyncStatelessEngine implements StatelessEngine {
     @Override public void terminate() {
     }
 
-    @Override public void learn(PingPong pingPong, NBoardState state) {
+    @Override public void learn(PingPong pingPong, final NBoardState state) {
+        final int pong = pingPong.next();
+        requests.add(new Runnable() {
+            @Override public void run() {
+                evalSyncEngine.learn(state.getGame(), state.getMaxDepth(), abortCheck, new EngineListener(pong));
+            }
+        });
     }
 
     @Override public void requestHints(final PingPong pingPong, final NBoardState state, int nMoves) {
@@ -169,6 +175,10 @@ public class SyncStatelessEngine implements StatelessEngine {
 
         @Override public void hint(MoveScore moveScore, Depth depth) {
             responseHandler.handle(moveScore.toHintResponse(pong, depth));
+        }
+
+        @Override public void analysis(int moveNumber, double eval) {
+            responseHandler.handle(new AnalysisResponse(pong, moveNumber, eval));
         }
     }
 }

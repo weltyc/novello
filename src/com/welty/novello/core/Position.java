@@ -94,6 +94,11 @@ public class Position implements Comparable<Position> {
         return new Position(squished.substring(0, 64), blackToMove);
     }
 
+    public static Position of(COsBoard board) {
+        final COsBoard.GetTextResult text = board.getText();
+        return new Position(text.getText(), text.isBlackMove());
+    }
+
     private void validate() {
         if ((black & white) != 0) {
             throw new IllegalStateException("Internal error.");
@@ -391,10 +396,5 @@ public class Position implements Comparable<Position> {
 
     public Mr toMr() {
         return new Mr(mover(), enemy());
-    }
-
-    public static Position of(COsBoard board) {
-        final COsBoard.GetTextResult text = board.getText();
-        return new Position(text.getText(), text.isBlackMove());
     }
 }
