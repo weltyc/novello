@@ -89,7 +89,7 @@ public class EvalSyncEngine implements SyncEngine {
         }
     }
 
-    public void learn(COsGame game, int maxDepth, AbortCheck abortCheck, Listener listener) {
+    public void analyze(COsGame game, int maxDepth, AbortCheck abortCheck, Listener listener) {
         final int nMoves = game.nMoves();
 
         // retrograde analysis.
@@ -114,9 +114,12 @@ public class EvalSyncEngine implements SyncEngine {
                     return;
                 }
                 final OsMove playedMove = game.getMli(i).move;
-                final int playedSq = BitBoardUtils.square(playedMove.row(), playedMove.col());
+                // need to use 7-row and 7-col because osMove orders row and col differently than moveScore.
+                final int playedSq = BitBoardUtils.square(7-playedMove.row(), 7-playedMove.col());
                 if (moveScore.sq != playedSq) {
-                    score = 0.01 * moveScore.centidisks * moverSign(board);
+                    final double newScore = 0.01 * moveScore.centidisks * moverSign(board);
+                    System.out.println("move " + (i+1) + " played " + BitBoardUtils.sqToText(playedSq) + " recommended " + BitBoardUtils.sqToText(moveScore.sq) + ", lost " + Math.abs(score-newScore));
+                    score = newScore;
                 }
                 listener.analysis(i, score);
             }
@@ -144,6 +147,9 @@ public class EvalSyncEngine implements SyncEngine {
 
     private static int moverSign(COsBoard board) {
         return board.isBlackMove() ? +1 : -1;
+    }
+
+    public void learn(COsGame game, int maxDepth, AbortCheck abortCheck, Listener listener) {
     }
 
     static class Depths {

@@ -56,6 +56,15 @@ public class SyncStatelessEngine implements StatelessEngine {
         });
     }
 
+    @Override public void analyze(PingPong pingPong, final NBoardState state) {
+        final int pong = pingPong.next();
+        requests.add(new Runnable() {
+            @Override public void run() {
+                evalSyncEngine.analyze(state.getGame(), state.getMaxDepth(), abortCheck, new EngineListener(pong));
+            }
+        });
+    }
+
     @Override public void requestHints(final PingPong pingPong, final NBoardState state, int nMoves) {
         if (debug) {
             System.out.println("> hint " + nMoves + " from " + state.getGame().getPos().board);

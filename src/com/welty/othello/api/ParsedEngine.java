@@ -59,6 +59,14 @@ public class ParsedEngine implements StatelessEngine {
     }
 
     /**
+     * Request a retrograde analysis from the engine
+     */
+    @Override public synchronized void analyze(PingPong pingPong, NBoardState state) {
+        updateEngineState(pingPong, state);
+        engine.sendCommand("analyze");
+    }
+
+    /**
      * Request a valid move from the engine, for the current board.
      * <p/>
      * Unlike {@link #requestHints(PingPong, NBoardState, int)}, the engine does not have to return an evaluation;

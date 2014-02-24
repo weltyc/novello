@@ -16,6 +16,8 @@ public interface StatelessEngine {
 
     public abstract void learn(PingPong pingPong, NBoardState state);
 
+    public abstract void analyze(PingPong pingPong, NBoardState state);
+
     public abstract void requestHints(PingPong pingPong, NBoardState state, int nMoves);
 
     public abstract void requestMove(PingPong pingPong, NBoardState state);
