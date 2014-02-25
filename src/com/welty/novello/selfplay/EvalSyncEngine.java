@@ -1,8 +1,10 @@
 package com.welty.novello.selfplay;
 
+import com.orbanova.common.misc.Require;
 import com.welty.novello.core.BitBoardUtils;
 import com.welty.novello.core.MoveScore;
 import com.welty.novello.core.Position;
+import com.welty.novello.eval.CoefficientCalculator;
 import com.welty.novello.eval.Eval;
 import com.welty.novello.solver.MidgameSearcher;
 import com.welty.novello.solver.Solver;
@@ -13,6 +15,8 @@ import com.welty.othello.gdk.COsGame;
 import com.welty.othello.gdk.OsMove;
 import com.welty.othello.protocol.Depth;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
 
 /**
  * A SyncEngine that chooses its move using an Eval and a search.
@@ -115,10 +119,10 @@ public class EvalSyncEngine implements SyncEngine {
                 }
                 final OsMove playedMove = game.getMli(i).move;
                 // need to use 7-row and 7-col because osMove orders row and col differently than moveScore.
-                final int playedSq = BitBoardUtils.square(7-playedMove.row(), 7-playedMove.col());
+                final int playedSq = BitBoardUtils.square(7 - playedMove.row(), 7 - playedMove.col());
                 if (moveScore.sq != playedSq) {
                     final double newScore = 0.01 * moveScore.centidisks * moverSign(board);
-                    System.out.println("move " + (i+1) + " played " + BitBoardUtils.sqToText(playedSq) + " recommended " + BitBoardUtils.sqToText(moveScore.sq) + ", lost " + Math.abs(score-newScore));
+                    System.out.println("move " + (i + 1) + " played " + BitBoardUtils.sqToText(playedSq) + " recommended " + BitBoardUtils.sqToText(moveScore.sq) + ", lost " + Math.abs(score - newScore));
                     score = newScore;
                 }
                 listener.analysis(i, score);
@@ -178,21 +182,41 @@ public class EvalSyncEngine implements SyncEngine {
      *
      * @param listener listener for intermediate results
      */
-    public void calcHints(Position position, int maxDepth, AbortCheck abortCheck, Listener listener) {
+    public void calcHints(Position position, int maxDepth, int nHints, AbortCheck abortCheck, Listener listener) {
         final long moverMoves = position.calcMoves();
         if (moverMoves == 0) {
-            throw new IllegalArgumentException("Must have a legal move to call calcMove()");
+            throw new IllegalArgumentException("Must have a legal move to call calcHints()");
         }
         final long n0 = searcher.getCounts().nFlips;
         final long t0 = System.currentTimeMillis();
         final Depths depths = calcSearchDepth(position, maxDepth);
 
+        // list of moveScores, sorted in descending order by score for at least the first nHints scores
+        final ArrayList<MoveScore> moveScores = new ArrayList<>();
+        long moves = position.calcMoves();
+        while (moves != 0) {
+            final int sq = Long.numberOfTrailingZeros(moves);
+            moveScores.add(new MoveScore(sq, 0));
+            moves &= moves - 1;
+        }
+
         for (int i = 1; i <= depths.searchDepth; i++) {
             final Depth displayDepth = i < depths.searchDepth ? new Depth(i) : depths.displayDepth();
             listener.updateStatus("Searching at " + displayDepth.humanString());
-            final MoveScore moveScore1 = searcher.getMoveScore(position, moverMoves, i, abortCheck);
-            listener.hint(moveScore1, displayDepth);
-            listener.updateNodeStats(searcher.getCounts().nFlips - n0, System.currentTimeMillis() - t0);
+            for (int j = 0; j < moveScores.size(); j++) {
+                final int beta = 64 * CoefficientCalculator.DISK_VALUE;
+                final int alpha = j < nHints ? -64 * CoefficientCalculator.DISK_VALUE : moveScores.get(nHints-1).centidisks;
+                final int sq = moveScores.get(j).sq;
+                final int score = -searcher.calcScore(position.play(sq), alpha, beta, i - 1, abortCheck);
+                final MoveScore moveScore = new MoveScore(sq, score);
+                if (score > alpha || score==-64*CoefficientCalculator.DISK_VALUE) {
+                    insertSorted(moveScores, j, moveScore);
+                    listener.hint(moveScore, displayDepth);
+                } else {
+                    moveScores.set(j, moveScore);
+                }
+                listener.updateNodeStats(searcher.getCounts().nFlips - n0, System.currentTimeMillis() - t0);
+            }
         }
 
         if (shouldSolve(position, maxDepth)) {
@@ -202,6 +226,21 @@ public class EvalSyncEngine implements SyncEngine {
             listener.hint(moveScore, new Depth("100%"));
             listener.updateNodeStats(solver.getCounts().nFlips - n0, System.currentTimeMillis() - t0);
         }
+    }
+
+    /**
+     * Insert the moveScore in the list so that it remains sorted by moveScore.
+     */
+    static void insertSorted(ArrayList<MoveScore> moveScores, int j, MoveScore moveScore) {
+        Require.eq(moveScores.get(j).sq, "array move", moveScore.sq, "moveScore move");
+        int k;
+        for (k = j - 1; k >= 0; k--) {
+            if (moveScores.get(k).centidisks >= moveScore.centidisks) {
+                break;
+            }
+            moveScores.set(k + 1, moveScores.get(k));
+        }
+        moveScores.set(k + 1, moveScore);
     }
 
     private boolean shouldSolve(Position position, int maxDepth) {

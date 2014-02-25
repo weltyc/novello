@@ -65,7 +65,7 @@ public class SyncStatelessEngine implements StatelessEngine {
         });
     }
 
-    @Override public void requestHints(final PingPong pingPong, final NBoardState state, int nMoves) {
+    @Override public void requestHints(final PingPong pingPong, final NBoardState state, final int nMoves) {
         if (debug) {
             System.out.println("> hint " + nMoves + " from " + state.getGame().getPos().board);
         }
@@ -73,13 +73,11 @@ public class SyncStatelessEngine implements StatelessEngine {
 
         requests.add(new Runnable() {
             @Override public void run() {
-                // todo return hints for nMoves moves rather than 1
-
                 final COsBoard board = state.getGame().getPos().board;
                 final Position position = Position.of(board);
                 // calcMove() can't handle a pass. So we handle it right here.
                 if (position.hasLegalMove()) {
-                    evalSyncEngine.calcHints(position, state.getMaxDepth(), abortCheck, new EngineListener(pong));
+                    evalSyncEngine.calcHints(position, state.getMaxDepth(), nMoves, abortCheck, new EngineListener(pong));
                 } else {
                     final OsMoveListItem mli = OsMoveListItem.PASS;
                     final String pv = mli.move.toString();

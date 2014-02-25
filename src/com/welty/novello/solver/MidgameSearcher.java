@@ -103,6 +103,29 @@ public class MidgameSearcher {
     }
 
     /**
+     * Select a move based on a midgame search.
+     * <p/>
+     * Precondition: The mover has at least one legal move.
+     *
+     * @param position   position to search
+     * @param alpha      search alpha, in centi-disks
+     * @param beta       search beta, in centi-disks
+     * @param depth      search depth
+     * @param abortCheck test for whether the search should be abandoned
+     * @return the score of the position in centi-disks
+     */
+    public int calcScore(Position position, int alpha, int beta, int depth, AbortCheck abortCheck) {
+        return calcScore(position.mover(), position.enemy(), alpha, beta, depth, abortCheck);
+    }
+
+    private int calcScore(long mover, long enemy, int alpha, int beta, int depth, AbortCheck abortCheck) {
+        this.rootDepth = depth;
+        this.abortCheck = abortCheck;
+
+        return searchScore(mover, enemy, alpha, beta, depth);
+    }
+
+    /**
      * Return a score estimate based on a midgame search.
      * <p/>
      * The mover does not need to have a legal move - if he doesn't this method will pass or return a terminal value as
@@ -122,14 +145,15 @@ public class MidgameSearcher {
      * The mover does not need to have a legal move - if he doesn't this method will pass or return a terminal value as
      * necessary.
      *
+     * This is a full-width search that never aborts.
+     *
      * @param mover mover disks
      * @param enemy enemy disks
      * @param depth search depth. If &le; 0, returns the eval.
      * @return score of the move.
      */
     public int calcScore(long mover, long enemy, int depth) {
-        this.rootDepth = depth;
-        return searchScore(mover, enemy, NovelloUtils.NO_MOVE, -NovelloUtils.NO_MOVE, depth);
+        return calcScore(mover, enemy, NovelloUtils.NO_MOVE, -NovelloUtils.NO_MOVE, depth, AbortCheck.NEVER);
     }
 
     public void clear() {
@@ -297,7 +321,6 @@ public class MidgameSearcher {
         final Square square = Square.of(sq);
         final long flips = counter.calcFlips(square, mover, enemy);
 
-        // Abort check
         final long subEnemy = mover | (1L << sq) | flips;
         final long subMover = enemy & ~flips;
         if (options.printSearch) {

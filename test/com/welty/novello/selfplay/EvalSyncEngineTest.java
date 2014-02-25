@@ -6,6 +6,9 @@ import com.welty.novello.core.Position;
 import com.welty.novello.eval.Eval;
 import junit.framework.TestCase;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 public class EvalSyncEngineTest extends TestCase {
     public void test1PlySearch() throws Exception {
         final Eval eval = Players.currentEval();
@@ -62,5 +65,22 @@ public class EvalSyncEngineTest extends TestCase {
     public void testCalcSearchDepth() {
         final EvalSyncEngine engine = new EvalSyncEngine(Players.currentEval(), "NS");
         assertEquals(6, engine.calcSearchDepth(Position.START_POSITION, 6).searchDepth);
+    }
+
+    public void testInsertSorted() {
+        ArrayList<MoveScore> moveScores = new ArrayList<>();
+        final MoveScore m30 = new MoveScore(30, 30);
+        final MoveScore m20 = new MoveScore(20, 20);
+        final MoveScore m10 = new MoveScore(10, 10);
+        moveScores.add(m30);
+        moveScores.add(m20);
+        moveScores.add(m10);
+        final MoveScore m15 = new MoveScore(20, 15);
+        EvalSyncEngine.insertSorted(moveScores, 1, m15);
+        assertEquals(Arrays.asList(m30, m15, m10), moveScores);
+
+        final MoveScore m40 = new MoveScore(10, 40);
+        EvalSyncEngine.insertSorted(moveScores, 2, m40);
+        assertEquals(Arrays.asList(m40, m30, m15), moveScores);
     }
 }
