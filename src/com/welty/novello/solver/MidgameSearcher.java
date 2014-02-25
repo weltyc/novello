@@ -4,9 +4,7 @@ import com.welty.novello.core.*;
 import com.welty.novello.eval.CoefficientCalculator;
 import com.welty.novello.eval.Mpc;
 import com.welty.novello.hash.MidgameHashTables;
-import com.welty.novello.selfplay.EvalSyncEngine;
 import com.welty.othello.api.AbortCheck;
-import com.welty.othello.protocol.Depth;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
