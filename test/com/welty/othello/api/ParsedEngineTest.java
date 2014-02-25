@@ -16,6 +16,7 @@ public class ParsedEngineTest extends TestCase {
         final ParsedEngine parsedEngine = new ParsedEngine(Mockito.mock(ResponseParser.class), nBoardEngine);
         final COsGame game = new COsGame();
         game.Initialize("8", OsClock.DEFAULT, OsClock.DEFAULT);
+        verify(nBoardEngine).sendCommand("nboard 2");
 
         // New game. must send set game message and depth, but contempt defaults to 0 so don't send
         parsedEngine.updateState(new NBoardState(game, 0, 12, 0));

@@ -1,6 +1,7 @@
 package com.welty.novello.selfplay;
 
 import com.orbanova.common.misc.Require;
+import com.orbanova.common.misc.Utils;
 import com.welty.novello.core.BitBoardUtils;
 import com.welty.novello.core.MoveScore;
 import com.welty.novello.core.Position;
@@ -12,9 +13,11 @@ import com.welty.ntestj.Heights;
 import com.welty.othello.api.AbortCheck;
 import com.welty.othello.gdk.COsBoard;
 import com.welty.othello.gdk.COsGame;
+import com.welty.othello.gdk.OsClock;
 import com.welty.othello.gdk.OsMove;
 import com.welty.othello.protocol.Depth;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 
@@ -38,8 +41,8 @@ public class EvalSyncEngine implements SyncEngine {
         this.searcher = solver.midgameSearcher;
     }
 
-    public MoveScore calcMove(@NotNull Position position, int maxDepth) {
-        return calcMove(position, maxDepth, AbortCheck.NEVER, Listener.NULL);
+    public MoveScore calcMove(@NotNull Position position, @Nullable OsClock clock, int maxDepth) {
+        return calcMove(position, clock, maxDepth, AbortCheck.NEVER, Listener.NULL);
     }
 
     @Override public void clear() {
@@ -51,11 +54,24 @@ public class EvalSyncEngine implements SyncEngine {
         return eval + "-" + options;
     }
 
-    public MoveScore calcMove(Position position, int maxDepth, AbortCheck abortCheck, Listener listener) {
+    /**
+     * Calc the move that the engine would like to play
+     *
+     * @param position
+     * @param clock      amount of time remaining, or null if the player should ignore the clock
+     * @param maxDepth
+     * @param baseAbortCheck
+     * @param listener
+     * @return the move the engine would like to play and its score.
+     */
+    public MoveScore calcMove(Position position, @Nullable OsClock clock, int maxDepth, AbortCheck baseAbortCheck, Listener listener) {
         final long moverMoves = position.calcMoves();
         if (moverMoves == 0) {
             throw new IllegalArgumentException("Must have a legal move to call calcMove()");
         }
+
+        final AbortCheck abortCheck = clock==null ? baseAbortCheck : new TimeAbortCheck(baseAbortCheck, clock, position.nEmpty());
+
         final long n0 = searcher.getCounts().nFlips;
         final long t0 = System.currentTimeMillis();
 
@@ -71,6 +87,59 @@ public class EvalSyncEngine implements SyncEngine {
         }
         listener.updateNodeStats(searcher.getCounts().nFlips - n0, System.currentTimeMillis() - t0);
         return result;
+    }
+
+    private static double calcTargetMillis(OsClock clock, int nEmpty) {
+        final int baseNEmpty = Utils.isOdd(nEmpty) ? 1 : 2;
+        double tTarget = 0;
+
+        for (int solveAt = baseNEmpty; solveAt <= nEmpty; solveAt++) {
+            final double tSolve = 60 * Math.pow(5, solveAt);
+            if (tSolve > clock.tCurrent) {
+                break;
+            }
+            final int nMidgameMoves = (nEmpty - solveAt) / 2;
+            if (nMidgameMoves == 0) {
+                tTarget = tSolve;
+                break;
+            }
+            final double tMidgame = (clock.tCurrent - tSolve) / nMidgameMoves;
+            if (tMidgame < tSolve) {
+                tTarget = tMidgame;
+            } else {
+                break;
+            }
+        }
+        return tTarget;
+    }
+
+    private static class TimeAbortCheck implements AbortCheck {
+        private final AbortCheck chainedAbortCheck;
+        private final long tNoMoreRounds;
+        private final long tHardAbort;
+
+        TimeAbortCheck(AbortCheck chainedAbortCheck, @NotNull OsClock clock, int nEmpty) {
+            this.chainedAbortCheck = chainedAbortCheck;
+            final long now = System.currentTimeMillis();
+            final double tTarget = calcTargetMillis(clock, nEmpty);
+            tHardAbort = now + cap(tTarget*2, clock.tCurrent);
+            tNoMoreRounds = now + cap(tTarget*0.5, clock.tCurrent);
+        }
+
+        private static long cap(double t, double tCurrent) {
+            if (t>=tCurrent) {
+                t = tCurrent * 0.8;
+            }
+            return Math.max(1, (long)(1000*t));
+        }
+
+        @Override public boolean shouldAbort() {
+            return System.currentTimeMillis() >= tHardAbort;
+        }
+
+        @Override public boolean abortNextRound() {
+            return System.currentTimeMillis() >= tNoMoreRounds;
+        }
     }
 
     final Depths calcSearchDepth(Position position, int maxDepth) {
@@ -113,7 +182,7 @@ public class EvalSyncEngine implements SyncEngine {
             if (Long.bitCount(moverMoves) > 1) {
                 // The move is not forced. Do a search. If the search move is the same as the played move, return the
                 // evaluation from the next position with the sign flipped. Otherwise, return the result of the eval.
-                final MoveScore moveScore = calcMove(position, maxDepth, abortCheck, Listener.NULL);
+                final MoveScore moveScore = calcMove(position, null, maxDepth, abortCheck, Listener.NULL);
                 if (abortCheck.shouldAbort()) {
                     return;
                 }
@@ -135,12 +204,12 @@ public class EvalSyncEngine implements SyncEngine {
         final double scoreToBlack;
         final double moverSign = moverSign(board);
         if (position.hasLegalMove()) {
-            final MoveScore moveScore = calcMove(position, maxDepth, abortCheck, Listener.NULL);
+            final MoveScore moveScore = calcMove(position, null, maxDepth, abortCheck, Listener.NULL);
             scoreToBlack = moveScore.centidisks * 0.01 * moverSign;
         } else {
             position = position.pass();
             if (position.hasLegalMove()) {
-                final MoveScore moveScore = calcMove(position, maxDepth, abortCheck, Listener.NULL);
+                final MoveScore moveScore = calcMove(position, null, maxDepth, abortCheck, Listener.NULL);
                 scoreToBlack = moveScore.centidisks * -0.01 * moverSign;
             } else {
                 scoreToBlack = board.netBlackSquares();
@@ -205,11 +274,11 @@ public class EvalSyncEngine implements SyncEngine {
             listener.updateStatus("Searching at " + displayDepth.humanString());
             for (int j = 0; j < moveScores.size(); j++) {
                 final int beta = 64 * CoefficientCalculator.DISK_VALUE;
-                final int alpha = j < nHints ? -64 * CoefficientCalculator.DISK_VALUE : moveScores.get(nHints-1).centidisks;
+                final int alpha = j < nHints ? -64 * CoefficientCalculator.DISK_VALUE : moveScores.get(nHints - 1).centidisks;
                 final int sq = moveScores.get(j).sq;
                 final int score = -searcher.calcScore(position.play(sq), alpha, beta, i - 1, abortCheck);
                 final MoveScore moveScore = new MoveScore(sq, score);
-                if (score > alpha || score==-64*CoefficientCalculator.DISK_VALUE) {
+                if (score > alpha || score == -64 * CoefficientCalculator.DISK_VALUE) {
                     insertSorted(moveScores, j, moveScore);
                     listener.hint(moveScore, displayDepth);
                 } else {

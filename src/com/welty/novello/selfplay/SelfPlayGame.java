@@ -75,7 +75,7 @@ public class SelfPlayGame implements Callable<MutableGame> {
             System.out.println(player(board.blackToMove) + " to move");
         }
         final long t0 = measuredTime();
-        final MoveScore moveScore = player(board.blackToMove).calcMove(board);
+        final MoveScore moveScore = player(board.blackToMove).calcMove(board, null);
         final long dt = measuredTime() - t0;
         game.play(moveScore, dt * .001);
         if (printGame()) {

@@ -2,7 +2,9 @@ package com.welty.novello.selfplay;
 
 import com.welty.novello.core.MoveScore;
 import com.welty.novello.core.Position;
+import com.welty.othello.gdk.OsClock;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Othello SyncEngine
@@ -16,10 +18,10 @@ public interface SyncEngine {
      * Precondition: the board has a legal move
      *
      * @param board    board to move on
-     * @param maxDepth maximum search depth, in ply, in the midgame. The engine determines search depth in the endgame.
-     * @return square and value of the player's chosen move
+     * @param clock    amount of time remaining, or null if the player should ignore the clock
+     * @param maxDepth maximum search depth, in ply, in the midgame. The engine determines search depth in the endgame.  @return square and value of the player's chosen move
      */
-    MoveScore calcMove(@NotNull Position board, int maxDepth);
+    MoveScore calcMove(@NotNull Position board, @Nullable OsClock clock, int maxDepth);
 
     /**
      * Clear all transposition tables and state

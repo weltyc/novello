@@ -2,12 +2,10 @@ package com.welty.novello.ntest;
 
 import com.orbanova.common.misc.Logger;
 import com.orbanova.common.misc.Require;
-import com.welty.novello.core.BitBoardUtils;
-import com.welty.novello.core.MoveScore;
-import com.welty.novello.core.MutableGame;
-import com.welty.novello.core.Position;
+import com.welty.novello.core.*;
 import com.welty.novello.selfplay.SyncEngine;
 import com.welty.othello.core.ProcessLogger;
+import com.welty.othello.gdk.OsClock;
 import com.welty.othello.gui.ExternalEngineManager;
 import org.jetbrains.annotations.NotNull;
 
@@ -71,10 +69,11 @@ public class NBoardSyncEngine implements SyncEngine {
         }
     }
 
-    @Override public MoveScore calcMove(@NotNull Position board, int maxDepth) {
+    @Override public MoveScore calcMove(@NotNull Position position, OsClock clock, int maxDepth) {
         try {
             pingPong();
-            println("set game " + new MutableGame(board, "me", "you", "here").toGgf());
+            final GameClock gameClock = new GameClock((long) (clock.tCurrent * 1000), (long) (clock.getGraceTime() * 1000));
+            println("set game " + new MutableGame(position, "me", "you", "here", gameClock, gameClock).toGgf());
             Require.geq(maxDepth, "max depth", 0);
             println("set depth " + maxDepth);
             println("go");

@@ -6,6 +6,7 @@ import com.welty.novello.eval.Eval;
 import com.welty.novello.selfplay.EvalSyncEngine;
 import com.welty.novello.solver.SearchAbortedException;
 import com.welty.othello.gdk.COsBoard;
+import com.welty.othello.gdk.COsPosition;
 import com.welty.othello.gdk.OsMoveListItem;
 import com.welty.othello.protocol.*;
 import org.jetbrains.annotations.NotNull;
@@ -32,6 +33,10 @@ public class SyncStatelessEngine implements StatelessEngine {
     private final AbortCheck abortCheck = new AbortCheck() {
         @Override public boolean shouldAbort() {
             return requests.hasRequest();
+        }
+
+        @Override public boolean abortNextRound() {
+            return shouldAbort();
         }
     };
 
@@ -130,12 +135,13 @@ public class SyncStatelessEngine implements StatelessEngine {
      * @return MoveListItem
      */
     @NotNull OsMoveListItem calcMli(NBoardState state, int pong) {
-        final COsBoard board = state.getGame().getPos().board;
+        final COsPosition pos = state.getGame().getPos();
+        final COsBoard board = pos.board;
         final Position position = Position.of(board);
         // calcMove() can't handle a pass. So we handle it right here.
         if (position.hasLegalMove()) {
             final long t0 = System.currentTimeMillis();
-            final MoveScore moveScore = evalSyncEngine.calcMove(position, state.getMaxDepth(), abortCheck, new EngineListener(pong));
+            final MoveScore moveScore = evalSyncEngine.calcMove(position, pos.getCurrentClock(), state.getMaxDepth(), abortCheck, new EngineListener(pong));
             return moveScore.toMli(System.currentTimeMillis() - t0);
         } else {
             return OsMoveListItem.PASS;

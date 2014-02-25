@@ -25,7 +25,7 @@ public class EvalSyncEngineTest extends TestCase {
                 "O");
 
         final long moves = prev.calcMoves();
-        final MoveScore moveScore = engine.calcMove(prev, 1);
+        final MoveScore moveScore = engine.calcMove(prev, null, 1);
         assertTrue("must be a legal move", BitBoardUtils.isBitSet(moves, moveScore.sq));
 
         final Position terminal = prev.play(moveScore.sq);
@@ -59,7 +59,7 @@ public class EvalSyncEngineTest extends TestCase {
 
         final Position prev = Position.of("OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO*. O");
 
-        assertEquals(6400, player.calcMove(prev, 1).centidisks);
+        assertEquals(6400, player.calcMove(prev, null, 1).centidisks);
     }
 
     public void testCalcSearchDepth() {

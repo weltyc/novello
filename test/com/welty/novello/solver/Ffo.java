@@ -152,7 +152,7 @@ public class Ffo {
         }
 
         @NotNull @Override public MoveScore getMoveScore(Position position, AbortCheck abortCheck) {
-            return player.calcMove(position);
+            return player.calcMove(position, null);
         }
 
         @Override public String toString() {

@@ -84,7 +84,7 @@ public class EvalTest extends TestCase {
     }
 
     private static void test1Ply(NBoardSyncEngine ntest, CEvaluatorJ eval, Position pos) {
-        final MoveScore moveScore = ntest.calcMove(pos, 1);
+        final MoveScore moveScore = ntest.calcMove(pos, null, 1);
         final Position next = pos.play(moveScore.sq);
         final int value = eval.ValueJMobs(next.mover(), next.enemy(), next.calcMoves(), next.enemyMoves());
         assertEquals(-moveScore.centidisks, value);

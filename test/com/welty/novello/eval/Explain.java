@@ -22,7 +22,7 @@ public class Explain {
                 "--------\n" +
                 "O");
         System.out.println(prev);
-        player.calcMove(prev, 1);
+        player.calcMove(prev, null, 1);
 
         final String moves = "E3,G3";
         for (String move : moves.split(",")) {

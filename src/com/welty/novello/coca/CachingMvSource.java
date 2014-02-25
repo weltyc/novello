@@ -170,7 +170,7 @@ public class CachingMvSource implements MvSource {
                 return pvs;
             }
         }
-        final MoveScore moveScore = syncPlayer.calcMove(position);
+        final MoveScore moveScore = syncPlayer.calcMove(position, null);
         pvs.add(new MeValue(position.mover(), position.enemy(), moveScore.centidisks));
 
         position = position.play(moveScore.sq);
