@@ -334,15 +334,23 @@ public class EvalSyncEngine implements SyncEngine {
         private final long t0;
         private final Solver solver;
 
+        private long nextUpdateMillis;
+        private static final long UPDATE_INTERVAL_MILLIS = 1000;
+
         public MyStatsListener(Listener listener, long n0, long t0, Solver solver) {
             this.listener = listener;
             this.n0 = n0;
             this.t0 = t0;
             this.solver = solver;
+            nextUpdateMillis = System.currentTimeMillis() + UPDATE_INTERVAL_MILLIS;
         }
 
         @Override public void update() {
-            listener.updateNodeStats(solver.getCounts().nFlips - n0, System.currentTimeMillis() - t0);
+            final long now = System.currentTimeMillis();
+            if (now > nextUpdateMillis) {
+                listener.updateNodeStats(solver.getCounts().nFlips - n0, now - t0);
+                nextUpdateMillis = now + UPDATE_INTERVAL_MILLIS;
+            }
         }
     }
 }

@@ -246,11 +246,11 @@ public class Solver {
      */
     private int solveDeep(long mover, long enemy, int alpha, int beta, int nEmpties, long parity, int nodeType
             , long movesToCheck) throws SearchAbortedException {
-        if (nEmpties >= 9) {
+        if (nEmpties >= 14) {
             if (abortCheck.shouldAbort()) {
                 throw new SearchAbortedException();
             }
-            if (nEmpties >= 20) {
+            if (nEmpties >= 21) {
                 statsListener.update();
             }
         }
