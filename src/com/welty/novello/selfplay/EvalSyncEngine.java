@@ -259,13 +259,14 @@ public class EvalSyncEngine implements SyncEngine {
                 final int beta = 64 * CoefficientCalculator.DISK_VALUE;
                 final int alpha = j < nHints ? -64 * CoefficientCalculator.DISK_VALUE : moveScores.get(nHints - 1).centidisks;
                 final int sq = moveScores.get(j).sq;
-                final MoveScore moveScore;
+                final Position subPos = position.play(sq);
+                final int score;
                 if (searchDepth.isFullSolve()) {
-                    moveScore = solver.getMoveScore(position.mover(), position.enemy(), abortCheck);
+                    score = -solver.solve(subPos.mover(), subPos.enemy(), abortCheck);
                 } else {
-                    final int score = -searcher.calcScore(position.play(sq), alpha, beta, searchDepth.depth - 1, abortCheck);
-                    moveScore = new MoveScore(sq, score);
+                    score = -searcher.calcScore(subPos, alpha, beta, searchDepth.depth - 1, abortCheck);
                 }
+                final MoveScore moveScore = new MoveScore(sq, score);
                 if (moveScore.centidisks > alpha || moveScore.centidisks == -64 * CoefficientCalculator.DISK_VALUE) {
                     insertSorted(moveScores, j, moveScore);
                     listener.hint(moveScore, searchDepth.displayDepth());
