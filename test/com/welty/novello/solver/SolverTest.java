@@ -255,7 +255,8 @@ public class SolverTest extends TestCase {
     }
 
     public void testAborts() {
-        Position bb = testCases[20];
+        Position bb = new Position(0x00FFFFFF00000000L, 0xFFFFFF00L, true);
+        System.out.println(bb.nEmpty());
         final Solver solver = new Solver();
         try {
             solver.getMoveScore(bb.mover(), bb.enemy(), AbortCheck.ALWAYS, StatsListener.NULL);
