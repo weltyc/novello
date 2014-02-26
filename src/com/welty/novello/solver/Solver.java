@@ -130,7 +130,7 @@ public class Solver {
     /**
      * @param mover bitboard of mover's disks
      * @param enemy bitboard of enemy's disks
-     * @return value of the game to the mover
+     * @return value of the game to the mover, in disks
      */
     public int solve(long mover, long enemy, @NotNull AbortCheck abortCheck) throws SearchAbortedException {
         this.empties = ShallowSolver.createEmptiesList(mover, enemy);

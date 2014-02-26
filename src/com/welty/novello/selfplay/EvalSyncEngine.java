@@ -262,7 +262,7 @@ public class EvalSyncEngine implements SyncEngine {
                 final Position subPos = position.play(sq);
                 final int score;
                 if (searchDepth.isFullSolve()) {
-                    score = -solver.solve(subPos.mover(), subPos.enemy(), abortCheck);
+                    score = -solver.solve(subPos.mover(), subPos.enemy(), abortCheck) * CoefficientCalculator.DISK_VALUE;
                 } else {
                     score = -searcher.calcScore(subPos, alpha, beta, searchDepth.depth - 1, abortCheck);
                 }
