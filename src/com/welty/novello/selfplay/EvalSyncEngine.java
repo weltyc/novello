@@ -87,7 +87,7 @@ public class EvalSyncEngine implements SyncEngine {
             result = null;
         }
         listener.updateNodeStats(searcher.getCounts().nFlips - n0, System.currentTimeMillis() - t0);
-        for (int depth = 1; depth <= maxDepth; depth++) {
+        for (int depth = 1; depth <= maxDepth  && !abortCheck.abortNextRound(); depth++) {
             try {
                 result = calcMoveInternal(position, depth, listener, moverMoves, abortCheck);
             } catch (SearchAbortedException e) {
@@ -112,12 +112,12 @@ public class EvalSyncEngine implements SyncEngine {
         return result;
     }
 
-    private static double calcTargetMillis(OsClock clock, int nEmpty) {
+    static double calcTargetTime(OsClock clock, int nEmpty) {
         final int baseNEmpty = Utils.isOdd(nEmpty) ? 1 : 2;
         double tTarget = 0;
 
-        for (int solveAt = baseNEmpty; solveAt <= nEmpty; solveAt++) {
-            final double tSolve = 60 * Math.pow(5, solveAt);
+        for (int solveAt = baseNEmpty; solveAt <= nEmpty; solveAt+=2) {
+            final double tSolve = 60 * Math.pow(solveAt > 26 ? 5:4, solveAt-26);
             if (tSolve > clock.tCurrent) {
                 break;
             }
@@ -127,9 +127,8 @@ public class EvalSyncEngine implements SyncEngine {
                 break;
             }
             final double tMidgame = (clock.tCurrent - tSolve) / nMidgameMoves;
+            tTarget = tMidgame;
             if (tMidgame < tSolve) {
-                tTarget = tMidgame;
-            } else {
                 break;
             }
         }
@@ -144,9 +143,14 @@ public class EvalSyncEngine implements SyncEngine {
         TimeAbortCheck(AbortCheck chainedAbortCheck, @NotNull OsClock clock, int nEmpty) {
             this.chainedAbortCheck = chainedAbortCheck;
             final long now = System.currentTimeMillis();
-            final double tTarget = calcTargetMillis(clock, nEmpty);
+            final double tTarget = calcTargetTime(clock, nEmpty);
             tHardAbort = now + cap(tTarget * 2, clock.tCurrent);
             tNoMoreRounds = now + cap(tTarget * 0.5, clock.tCurrent);
+            System.out.println("now: " + now);
+            System.out.println("clock.tCurrent: " + clock.tCurrent);
+            System.out.println("nEmpty: " + nEmpty);
+            System.out.println("tHardAbort: +" + (tHardAbort - now));
+            System.out.println("tNoMoreRounds: +" + (tNoMoreRounds - now));
         }
 
         private static long cap(double t, double tCurrent) {
@@ -157,11 +161,11 @@ public class EvalSyncEngine implements SyncEngine {
         }
 
         @Override public boolean shouldAbort() {
-            return System.currentTimeMillis() >= tHardAbort;
+            return System.currentTimeMillis() >= tHardAbort || chainedAbortCheck.shouldAbort();
         }
 
         @Override public boolean abortNextRound() {
-            return System.currentTimeMillis() >= tNoMoreRounds;
+            return System.currentTimeMillis() >= tNoMoreRounds || chainedAbortCheck.abortNextRound();
         }
     }
 

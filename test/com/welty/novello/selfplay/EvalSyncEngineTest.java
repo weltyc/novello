@@ -4,6 +4,7 @@ import com.welty.novello.core.BitBoardUtils;
 import com.welty.novello.core.MoveScore;
 import com.welty.novello.core.Position;
 import com.welty.novello.eval.Eval;
+import com.welty.othello.gdk.OsClock;
 import junit.framework.TestCase;
 
 import java.util.ArrayList;
@@ -82,5 +83,18 @@ public class EvalSyncEngineTest extends TestCase {
         final MoveScore m40 = new MoveScore(10, 40);
         EvalSyncEngine.insertSorted(moveScores, 2, m40);
         assertEquals(Arrays.asList(m40, m30, m15), moveScores);
+    }
+
+    public void testCalcTargetMillis60() {
+        final double seconds = EvalSyncEngine.calcTargetTime(new OsClock(60), 60);
+        assertTrue(seconds > 1);
+        assertTrue(seconds < 5);
+    }
+
+    public void testCalcTargetMillis34() {
+        final OsClock clock = new OsClock(27.407);
+        final double seconds = EvalSyncEngine.calcTargetTime(clock, 34);
+        assertTrue(seconds > 1);
+        assertTrue(seconds < 10);
     }
 }
