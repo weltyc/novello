@@ -22,8 +22,8 @@ public class ParsedEngine implements StatelessEngine {
     private final @NotNull NBoardEngine engine;
     private final @NotNull ResponseParser responseParser;
 
-    public ParsedEngine(String[] command, File workingDirectory, boolean debug, @NotNull ResponseHandler responseHandler) throws IOException {
-        this(new ResponseParser(responseHandler, command[0]), command, workingDirectory, debug);
+    public ParsedEngine(@NotNull String name, String[] command, File workingDirectory, boolean debug, @NotNull ResponseHandler responseHandler) throws IOException {
+        this(new ResponseParser(responseHandler, name), command, workingDirectory, debug);
     }
 
     private ParsedEngine(@NotNull ResponseParser responseParser, String[] command, File workingDirectory, boolean debug) throws IOException {

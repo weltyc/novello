@@ -19,6 +19,6 @@ public class ExternalEngineSelector extends EngineSelector {
     }
 
     @NotNull @Override public StatelessEngine createPingEngine(int maxDepth, ResponseHandler responseHandler) throws IOException {
-        return new ParsedEngine(command, workingDirectory, true, responseHandler);
+        return new ParsedEngine(name, command, workingDirectory, true, responseHandler);
     }
 }
