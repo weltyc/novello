@@ -18,7 +18,8 @@ import org.jetbrains.annotations.NotNull;
  */
 public class SyncStatelessEngine implements StatelessEngine {
     private final EvalSyncEngine evalSyncEngine;
-    private final ResponseHandler responseHandler;
+    private final String name;
+    private final @NotNull ResponseHandler responseHandler;
 
     /**
      * The next request queued up for the engine, or null if no request is queued up
@@ -43,7 +44,8 @@ public class SyncStatelessEngine implements StatelessEngine {
     public static final boolean debug = true;
     private String status = "";
 
-    public SyncStatelessEngine(Eval eval, String options, ResponseHandler responseHandler) {
+    public SyncStatelessEngine(String name, Eval eval, String options, @NotNull ResponseHandler responseHandler) {
+        this.name = name;
         this.responseHandler = responseHandler;
         evalSyncEngine = new EvalSyncEngine(eval, options);
         new Thread(new Runner(), getName()).start();
@@ -113,7 +115,7 @@ public class SyncStatelessEngine implements StatelessEngine {
     }
 
     @NotNull @Override public String getName() {
-        return evalSyncEngine.toString();
+        return name;
     }
 
     public synchronized void setStatus(@NotNull String status) {

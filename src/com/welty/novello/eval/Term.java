@@ -80,67 +80,6 @@ class CornerTerm extends Term {
     }
 }
 
-class CornerTerm2 extends Term {
-    private final int sq;
-
-    @SuppressWarnings("OctalInteger")
-    public static final CornerTerm2[] terms = {
-            new CornerTerm2(000), new CornerTerm2(007), new CornerTerm2(070), new CornerTerm2(077)
-    };
-
-    public CornerTerm2(int sq) {
-        super(Features.corner2Feature);
-        this.sq = sq;
-    }
-
-    /**
-     * Instance =
-     * 4 mover occupies corner
-     * 5 enemy occupies corner
-     * <p/>
-     * if corner is empty,
-     * 1 mover has access
-     * 2 enemy has access
-     * 3 both players have access
-     * <p/>
-     * if nobody has access,
-     * 0 = empty x-square
-     * 6 = mover on x-square,
-     * 7 = enemy on x-square
-     *
-     * @return the instance for this term
-     */
-    @Override
-    public int instance(long mover, long enemy, long moverMoves, long enemyMoves) {
-        return orid(mover, enemy, moverMoves, enemyMoves, sq);
-    }
-
-    static int orid(long mover, long enemy, long moverMoves, long enemyMoves, int sq) {
-        final int cornerOccupier = getBitAsInt(mover, sq) + 2 * getBitAsInt(enemy, sq);
-        if (cornerOccupier > 0) {
-            return cornerOccupier + 3;
-        }
-        final int cornerMobility = getBitAsInt(moverMoves, sq) + 2 * getBitAsInt(enemyMoves, sq);
-        if (cornerMobility > 0) {
-            return cornerMobility;
-        } else {
-            @SuppressWarnings("OctalInteger")
-            final int xSq = sq ^ 011;
-            final int xSquareOccupier = BitBoardUtils.getBitAsInt(mover, xSq) + 2 * BitBoardUtils.getBitAsInt(enemy, xSq);
-            if (xSquareOccupier > 0) {
-                return xSquareOccupier + 5;
-            } else {
-                return 0;
-            }
-        }
-    }
-
-
-    @Override String oridGen() {
-        return "CornerTerm2.orid(mover, enemy, moverMoves, enemyMoves, " + sq + ")";
-    }
-}
-
 class Terms {
     static final Term moverDisks = new Term(Features.moverDisks) {
         @Override
@@ -196,7 +135,7 @@ class Terms {
         }
     };
 
-   static final Term enemyMobilities64 = new Term(Features.enemyMobilities64) {
+    static final Term enemyMobilities64 = new Term(Features.enemyMobilities64) {
         @Override
         public int instance(long mover, long enemy, long moverMoves, long enemyMoves) {
             return Long.bitCount(enemyMoves);
@@ -232,7 +171,7 @@ class Terms {
     static final Term moverLinearPotMobs = new Term(Features.moverLinearPotMobs) {
         @Override
         public int instance(long mover, long enemy, long moverMoves, long enemyMoves) {
-            return BitBoardUtils.linearPotMob(mover, enemy)>>1;
+            return BitBoardUtils.linearPotMob(mover, enemy) >> 1;
         }
 
         @Override String oridGen() {
@@ -246,7 +185,7 @@ class Terms {
     static final Term enemyLinearPotMobs = new Term(Features.enemyLinearPotMobs) {
         @Override
         public int instance(long mover, long enemy, long moverMoves, long enemyMoves) {
-            return BitBoardUtils.linearPotMob(enemy, mover)>>1;
+            return BitBoardUtils.linearPotMob(enemy, mover) >> 1;
         }
 
         @Override String oridGen() {
@@ -283,7 +222,7 @@ class Terms {
     static final Term parity = new Term(Features.parity) {
         @Override
         public int instance(long mover, long enemy, long moverMoves, long enemyMoves) {
-            return Long.bitCount(mover|enemy)&1;
+            return Long.bitCount(mover | enemy) & 1;
         }
 
         @Override String oridGen() {
@@ -423,8 +362,7 @@ class UldrTerm extends DiagonalTerm {
     }
 }
 
-@SuppressWarnings("OctalInteger")
-class Edge2XTerm extends Term {
+@SuppressWarnings("OctalInteger") class Edge2XTerm extends Term {
     private static final Feature feature = LinePatternFeatureFactory.of("edge2X", 10);
     static final Edge2XTerm[] terms = {new Edge2XTerm(0), new Edge2XTerm(1), new Edge2XTerm(2), new Edge2XTerm(3)};
 

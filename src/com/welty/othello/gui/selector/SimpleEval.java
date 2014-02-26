@@ -1,86 +1,38 @@
-package com.welty.novello.eval;
+package com.welty.othello.gui.selector;
 
 
 import com.welty.novello.core.BitBoardUtils;
+import com.welty.novello.eval.CornerTerm2;
+import com.welty.novello.eval.Eval;
 
-import java.util.Collection;
-import java.util.Map;
 import java.util.Random;
-import java.util.TreeMap;
 
 import static com.welty.novello.eval.CoefficientCalculator.DISK_VALUE;
 
 public abstract class SimpleEval extends Eval {
     private static final Random random = new Random();
-    private final String name;
-    private static final Map<String, SimpleEval> fromName = new TreeMap<>();
+    private final int randomness;
 
-    /**
-     * @param name simple eval name
-     * @return a SimpleEval with the given name, or null if there is no SimpleEval with that name.
-     */
-    public static SimpleEval getEval(String name) {
-        return fromName.get(name);
+    SimpleEval() {
+        this(2 * DISK_VALUE);
     }
 
-    public static Collection<String> getEvalNames() {
-        return fromName.keySet();
-    }
-
-    SimpleEval(String name) {
-        this.name = name;
-        fromName.put(name, this);
+    SimpleEval(int randomness) {
+        this.randomness = randomness;
     }
 
     @Override public int eval(long mover, long enemy) {
-        return random.nextInt(2 * DISK_VALUE) + eval(new Situation(mover, enemy));
-    }
-
-    @Override public String toString() {
-        return name;
+        return random.nextInt(randomness) + eval(new Situation(mover, enemy));
     }
 
     protected abstract int eval(Situation s);
-
-    // Initialize inbuilt players
-    static {
-        new SimpleEval("Abigail") {
-            @Override public int eval(Situation s) {
-                return s.netDisks();
-            }
-        };
-
-        new SimpleEval("Charlie") {
-            @Override public int eval(Situation s) {
-                return s.netDisks() + 9 * s.netCorners();
-            }
-        };
-
-        new SimpleEval("Ethelred") {
-            @Override public int eval(Situation s) {
-                return s.netDisks() + s.corner2Value();
-            }
-        };
-
-        new SimpleEval("Gertrude") {
-            @Override public int eval(Situation s) {
-                return s.interpolate(s.netMobs() + s.corner2Value());
-            }
-        };
-
-        new SimpleEval("Ivan") {
-            @Override public int eval(Situation s) {
-                return s.interpolate(s.netMobs() + s.corner2Value() + s.netPotMobs() / 2);
-            }
-        };
-    }
 
     private static final int[] coeffs = {0, 800, -800, 500, 1000, -1000, -600, 600};
 
     /**
      * board situation + evaluation components for simple players
      */
-    private static class Situation {
+    static class Situation {
         private final long mover;
         private final long enemy;
         private final long moverMoves;
@@ -97,7 +49,7 @@ public abstract class SimpleEval extends Eval {
             return DISK_VALUE * (Long.bitCount(a) - Long.bitCount(b));
         }
 
-        private int interpolate(int eval) {
+        int interpolate(int eval) {
             final int nEmpty = nEmpty();
             if (nEmpty < 8) {
                 eval = ((8 - nEmpty) * netDisks() + nEmpty * eval) / 8;
@@ -105,15 +57,15 @@ public abstract class SimpleEval extends Eval {
             return eval;
         }
 
-        private int netDisks() {
+        int netDisks() {
             return netCentidisks(mover, enemy);
         }
 
-        private int netMobs() {
+        int netMobs() {
             return netCentidisks(moverMoves, enemyMoves);
         }
 
-        private int netPotMobs() {
+        int netPotMobs() {
             final long empty = empty();
             return netCentidisks(BitBoardUtils.potMobs(enemy, empty), BitBoardUtils.potMobs(mover, empty));
         }
@@ -122,11 +74,11 @@ public abstract class SimpleEval extends Eval {
             return ~(mover | enemy);
         }
 
-        private int netCorners() {
+        int netCorners() {
             return netCentidisks(mover & BitBoardUtils.CORNERS, enemy & BitBoardUtils.CORNERS);
         }
 
-        private int corner2Value() {
+        int corner2Value() {
             int eval = 0;
             for (CornerTerm2 term : CornerTerm2.terms) {
                 final int instance = term.instance(mover, enemy, moverMoves, enemyMoves);

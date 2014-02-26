@@ -12,10 +12,6 @@ import java.util.regex.Pattern;
  */
 public class Players {
     public static Eval eval(String name) {
-        if (SimpleEval.getEval(name) != null) {
-            return SimpleEval.getEval(name);
-        }
-
         switch (name) {
             case "ntestJ":
                 return CEvaluatorJ.getInstance();
