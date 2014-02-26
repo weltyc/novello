@@ -42,7 +42,7 @@ public class NBoardState {
         return game;
     }
 
-    public int getMaxDepth() {
+    public int getMaxMidgameDepth() {
         return maxDepth;
     }
 

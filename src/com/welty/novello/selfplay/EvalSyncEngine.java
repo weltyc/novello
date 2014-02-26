@@ -58,14 +58,14 @@ public class EvalSyncEngine implements SyncEngine {
     /**
      * Calc the move that the engine would like to play
      *
-     * @param position
-     * @param clock          amount of time remaining, or null if the player should ignore the clock
-     * @param maxDepth
-     * @param baseAbortCheck
-     * @param listener
+     * @param position        position to search from
+     * @param clock           amount of time remaining, or null if the player should ignore the clock
+     * @param maxMidgameDepth maximum search depth, during midgame
+     * @param baseAbortCheck  abort check (not including time caps, which are calculated inside this method)
+     * @param listener        search status listener
      * @return the move the engine would like to play and its score.
      */
-    public MoveScore calcMove(Position position, @Nullable OsClock clock, int maxDepth, AbortCheck baseAbortCheck, Listener listener) {
+    public MoveScore calcMove(Position position, @Nullable OsClock clock, int maxMidgameDepth, AbortCheck baseAbortCheck, Listener listener) {
         final long moverMoves = position.calcMoves();
         if (moverMoves == 0) {
             throw new IllegalArgumentException("Must have a legal move to call calcMove()");
@@ -76,38 +76,38 @@ public class EvalSyncEngine implements SyncEngine {
         final long n0 = searcher.getCounts().nFlips;
         final long t0 = System.currentTimeMillis();
 
-        /**
-         */
         // Make sure we have a legal move by calculating the first round without aborts
         MoveScore result;
-        try {
-            result = calcMoveInternal(position, 1, listener, moverMoves, AbortCheck.NEVER);
-        } catch (SearchAbortedException e) {
-            // this will never happen, because we used AbortCheck.NEVER.
-            result = null;
-        }
-        listener.updateNodeStats(searcher.getCounts().nFlips - n0, System.currentTimeMillis() - t0);
-        for (int depth = 1; depth <= maxDepth  && !abortCheck.abortNextRound(); depth++) {
-            try {
-                result = calcMoveInternal(position, depth, listener, moverMoves, abortCheck);
-            } catch (SearchAbortedException e) {
-                break;
-            }
-            listener.updateNodeStats(searcher.getCounts().nFlips - n0, System.currentTimeMillis() - t0);
-        }
-        return result;
-    }
-
-    private MoveScore calcMoveInternal(Position position, int maxDepth, Listener listener, long moverMoves, AbortCheck abortCheck) throws SearchAbortedException {
-        MoveScore result;
-        if (shouldSolve(position, maxDepth)) {
+        if (shouldSolve(position, 1)) {
             listener.updateStatus("Solving...");
             // full-width solve
-            result = solver.getMoveScore(position.mover(), position.enemy(), abortCheck);
+            return solver.getMoveScore(position.mover(), position.enemy());
         } else {
-            final Depths depths = calcSearchDepth(position, maxDepth);
-            listener.updateStatus("Searching at " + depths.displayDepth().humanString());
-            result = searcher.getMoveScore(position, moverMoves, depths.searchDepth, abortCheck);
+            listener.updateStatus("Searching at 1 ply");
+            result = searcher.getMoveScore(position, moverMoves, 1);
+        }
+        listener.updateNodeStats(searcher.getCounts().nFlips - n0, System.currentTimeMillis() - t0);
+
+        //  calculate further rounds with aborts enabled
+        final SearchDepth maxDepth = SearchDepth.maxDepth(position.nEmpty(), maxMidgameDepth, midgameOptions);
+        for (SearchDepth searchDepth : maxDepth.depthFeed()) {
+            if (abortCheck.abortNextRound()) {
+                break;
+            }
+            try {
+                if (searchDepth.isFullSolve()) {
+                    listener.updateStatus("Solving...");
+                    // full-width solve
+                    result = solver.getMoveScore(position.mover(), position.enemy(), abortCheck);
+                } else {
+                    listener.updateStatus("Searching at " + searchDepth.humanString());
+                    result = searcher.getMoveScore(position, moverMoves, searchDepth.depth, abortCheck);
+                }
+            } catch (SearchAbortedException e) {
+                listener.updateStatus("Round aborted");
+                listener.updateNodeStats(searcher.getCounts().nFlips - n0, System.currentTimeMillis() - t0);
+            }
+            listener.updateNodeStats(searcher.getCounts().nFlips - n0, System.currentTimeMillis() - t0);
         }
         return result;
     }
@@ -116,23 +116,21 @@ public class EvalSyncEngine implements SyncEngine {
         final int baseNEmpty = Utils.isOdd(nEmpty) ? 1 : 2;
         double tTarget = 0;
 
-        for (int solveAt = baseNEmpty; solveAt <= nEmpty; solveAt+=2) {
-            final double tSolve = 60 * Math.pow(solveAt > 26 ? 5:4, solveAt-26);
+        for (int solveAt = baseNEmpty; solveAt <= nEmpty; solveAt += 2) {
+            final double tSolve = 120 * Math.pow(solveAt > 26 ? 5 : 4, solveAt - 26);
             if (tSolve > clock.tCurrent) {
                 break;
             }
-            final int nMidgameMoves = (nEmpty - solveAt) / 2;
-            if (nMidgameMoves == 0) {
-                tTarget = tSolve;
-                break;
-            }
+            final int nMidgameMoves = 1 + (nEmpty - solveAt) / 2;
             final double tMidgame = (clock.tCurrent - tSolve) / nMidgameMoves;
-            tTarget = tMidgame;
+            if (tMidgame > tTarget) {
+                tTarget = tMidgame;
+            }
             if (tMidgame < tSolve) {
                 break;
             }
         }
-        return tTarget;
+        return Math.min(tTarget, clock.tCurrent / 4);
     }
 
     private static class TimeAbortCheck implements AbortCheck {
@@ -166,26 +164,6 @@ public class EvalSyncEngine implements SyncEngine {
 
         @Override public boolean abortNextRound() {
             return System.currentTimeMillis() >= tNoMoreRounds || chainedAbortCheck.abortNextRound();
-        }
-    }
-
-    final Depths calcSearchDepth(Position position, int maxDepth) {
-        final int nEmpty = position.nEmpty();
-        final int solverStart = midgameOptions.useSolver ? MidgameSearcher.SOLVER_START_DEPTH - 1 : 0;
-
-        final int probableSolveHeight;
-        if (midgameOptions.useNtestSearchDepths) {
-            final Heights heights = new Heights(maxDepth);
-            probableSolveHeight = heights.getProbableSolveHeight();
-        } else {
-            probableSolveHeight = maxDepth;
-        }
-
-        if (nEmpty <= probableSolveHeight) {
-            // probable solve
-            return new Depths(nEmpty - solverStart, true);
-        } else {
-            return new Depths(maxDepth, false);
         }
     }
 
@@ -252,40 +230,19 @@ public class EvalSyncEngine implements SyncEngine {
     public void learn(COsGame game, int maxDepth, AbortCheck abortCheck, Listener listener) {
     }
 
-    static class Depths {
-        /**
-         * Depth passed into midgame searcher
-         */
-        final int searchDepth;
-
-        /**
-         * If true, a search at the searchDepth
-         */
-        final boolean isProbable;
-
-        private Depths(int searchDepth, boolean probable) {
-            this.searchDepth = searchDepth;
-            isProbable = probable;
-        }
-
-        private Depth displayDepth() {
-            return isProbable ? new Depth("60%") : new Depth(searchDepth);
-        }
-    }
-
     /**
      * Only called if there is at least one legal move from this position
      *
      * @param listener listener for intermediate results
      */
-    public void calcHints(Position position, int maxDepth, int nHints, AbortCheck abortCheck, Listener listener) throws SearchAbortedException {
+    public void calcHints(Position position, int maxMidgameDepth, int nHints, AbortCheck abortCheck, Listener listener) throws SearchAbortedException {
         final long moverMoves = position.calcMoves();
         if (moverMoves == 0) {
             throw new IllegalArgumentException("Must have a legal move to call calcHints()");
         }
         final long n0 = searcher.getCounts().nFlips;
         final long t0 = System.currentTimeMillis();
-        final Depths depths = calcSearchDepth(position, maxDepth);
+        final SearchDepth maxDepth = SearchDepth.maxDepth(position.nEmpty(), maxMidgameDepth, midgameOptions);
 
         // list of moveScores, sorted in descending order by score for at least the first nHints scores
         final ArrayList<MoveScore> moveScores = new ArrayList<>();
@@ -296,31 +253,27 @@ public class EvalSyncEngine implements SyncEngine {
             moves &= moves - 1;
         }
 
-        for (int i = 1; i <= depths.searchDepth; i++) {
-            final Depth displayDepth = i < depths.searchDepth ? new Depth(i) : depths.displayDepth();
-            listener.updateStatus("Searching at " + displayDepth.humanString());
+        for (SearchDepth searchDepth : maxDepth.depthFeed()) {
+            listener.updateStatus("Searching at " + searchDepth.humanString());
             for (int j = 0; j < moveScores.size(); j++) {
                 final int beta = 64 * CoefficientCalculator.DISK_VALUE;
                 final int alpha = j < nHints ? -64 * CoefficientCalculator.DISK_VALUE : moveScores.get(nHints - 1).centidisks;
                 final int sq = moveScores.get(j).sq;
-                final int score = -searcher.calcScore(position.play(sq), alpha, beta, i - 1, abortCheck);
-                final MoveScore moveScore = new MoveScore(sq, score);
-                if (score > alpha || score == -64 * CoefficientCalculator.DISK_VALUE) {
+                final MoveScore moveScore;
+                if (searchDepth.isFullSolve()) {
+                    moveScore = solver.getMoveScore(position.mover(), position.enemy(), abortCheck);
+                } else {
+                    final int score = -searcher.calcScore(position.play(sq), alpha, beta, searchDepth.depth - 1, abortCheck);
+                    moveScore = new MoveScore(sq, score);
+                }
+                if (moveScore.centidisks > alpha || moveScore.centidisks == -64 * CoefficientCalculator.DISK_VALUE) {
                     insertSorted(moveScores, j, moveScore);
-                    listener.hint(moveScore, displayDepth);
+                    listener.hint(moveScore, searchDepth.displayDepth());
                 } else {
                     moveScores.set(j, moveScore);
                 }
                 listener.updateNodeStats(searcher.getCounts().nFlips - n0, System.currentTimeMillis() - t0);
             }
-        }
-
-        if (shouldSolve(position, maxDepth)) {
-            // full-width solve
-            listener.updateStatus("Solving");
-            final MoveScore moveScore = solver.getMoveScore(position.mover(), position.enemy(), abortCheck);
-            listener.hint(moveScore, new Depth("100%"));
-            listener.updateNodeStats(solver.getCounts().nFlips - n0, System.currentTimeMillis() - t0);
         }
     }
 

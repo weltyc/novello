@@ -56,7 +56,7 @@ public class SyncStatelessEngine implements StatelessEngine {
         final int pong = pingPong.next();
         requests.add(new Runnable() {
             @Override public void run() {
-                evalSyncEngine.learn(state.getGame(), state.getMaxDepth(), abortCheck, new EngineListener(pong));
+                evalSyncEngine.learn(state.getGame(), state.getMaxMidgameDepth(), abortCheck, new EngineListener(pong));
             }
         });
     }
@@ -65,7 +65,7 @@ public class SyncStatelessEngine implements StatelessEngine {
         final int pong = pingPong.next();
         requests.add(new Runnable() {
             @Override public void run() {
-                evalSyncEngine.analyze(state.getGame(), state.getMaxDepth(), abortCheck, new EngineListener(pong));
+                evalSyncEngine.analyze(state.getGame(), state.getMaxMidgameDepth(), abortCheck, new EngineListener(pong));
             }
         });
     }
@@ -83,7 +83,7 @@ public class SyncStatelessEngine implements StatelessEngine {
                 // calcMove() can't handle a pass. So we handle it right here.
                 if (position.hasLegalMove()) {
                     try {
-                        evalSyncEngine.calcHints(position, state.getMaxDepth(), nMoves, abortCheck, new EngineListener(pong));
+                        evalSyncEngine.calcHints(position, state.getMaxMidgameDepth(), nMoves, abortCheck, new EngineListener(pong));
                     } catch (SearchAbortedException e) {
                         // We're done because there's a new request. Move on to the next request.
                     }
@@ -91,7 +91,7 @@ public class SyncStatelessEngine implements StatelessEngine {
                     final OsMoveListItem mli = OsMoveListItem.PASS;
                     final String pv = mli.move.toString();
                     final float eval = Float.NaN;
-                    final HintResponse response = new HintResponse(pong, false, pv, new Value(eval), 0, new Depth(state.getMaxDepth()), "");
+                    final HintResponse response = new HintResponse(pong, false, pv, new Value(eval), 0, new Depth(state.getMaxMidgameDepth()), "");
                     if (debug) {
                         System.out.println("< " + response);
                     }
@@ -118,7 +118,7 @@ public class SyncStatelessEngine implements StatelessEngine {
 
     public synchronized void setStatus(@NotNull String status) {
         this.status = status;
-        responseHandler.handle(new StatusChangedResponse());
+        responseHandler.handle(new StatusChangedResponse(status));
     }
 
     @NotNull @Override public synchronized String getStatus() {
@@ -145,7 +145,7 @@ public class SyncStatelessEngine implements StatelessEngine {
         // calcMove() can't handle a pass. So we handle it right here.
         if (position.hasLegalMove()) {
             final long t0 = System.currentTimeMillis();
-            final MoveScore moveScore = evalSyncEngine.calcMove(position, pos.getCurrentClock(), state.getMaxDepth(), abortCheck, new EngineListener(pong));
+            final MoveScore moveScore = evalSyncEngine.calcMove(position, pos.getCurrentClock(), state.getMaxMidgameDepth(), abortCheck, new EngineListener(pong));
             return moveScore.toMli(System.currentTimeMillis() - t0);
         } else {
             return OsMoveListItem.PASS;

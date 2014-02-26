@@ -63,11 +63,6 @@ public class EvalSyncEngineTest extends TestCase {
         assertEquals(6400, player.calcMove(prev, null, 1).centidisks);
     }
 
-    public void testCalcSearchDepth() {
-        final EvalSyncEngine engine = new EvalSyncEngine(Players.currentEval(), "NS");
-        assertEquals(6, engine.calcSearchDepth(Position.START_POSITION, 6).searchDepth);
-    }
-
     public void testInsertSorted() {
         ArrayList<MoveScore> moveScores = new ArrayList<>();
         final MoveScore m30 = new MoveScore(30, 30);
@@ -96,5 +91,26 @@ public class EvalSyncEngineTest extends TestCase {
         final double seconds = EvalSyncEngine.calcTargetTime(clock, 34);
         assertTrue(seconds > 1);
         assertTrue(seconds < 10);
+    }
+
+    public void testCalcTargetMillis26() {
+        final OsClock clock = new OsClock(3.751);
+        final double seconds = EvalSyncEngine.calcTargetTime(clock, 26);
+        assertTrue(seconds > 0.1);
+        assertTrue(seconds < 2);
+    }
+
+    public void testCalcTargetMillis18() {
+        final OsClock clock = new OsClock(1.071);
+        final double seconds = EvalSyncEngine.calcTargetTime(clock, 18);
+        assertTrue(seconds > 0.1);
+        assertTrue(seconds < 2);
+    }
+
+    public void testCalcTargetMillis2() {
+        final OsClock clock = new OsClock(1.62);
+        final double seconds = EvalSyncEngine.calcTargetTime(clock, 2);
+        assertTrue(seconds > 0.25);
+        assertTrue(seconds < 1.62);
     }
 }

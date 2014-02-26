@@ -130,8 +130,8 @@ public class ParsedEngine implements StatelessEngine {
             oldContempt = state.getContempt();
             engine.sendCommand("set contempt " + oldContempt);
         }
-        if (oldDepth != state.getMaxDepth()) {
-            oldDepth = state.getMaxDepth();
+        if (oldDepth != state.getMaxMidgameDepth()) {
+            oldDepth = state.getMaxMidgameDepth();
             engine.sendCommand("set depth " + oldDepth);
         }
     }
