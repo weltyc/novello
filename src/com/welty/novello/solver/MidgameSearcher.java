@@ -88,10 +88,33 @@ public class MidgameSearcher {
      * @param moverMoves legal moves to check. If this is a subset of all legal moves, only the subset will
      *                   be checked.
      * @param depth      search depth
+     * @return the best move from this position, and its score in centi-disks
+     * @throws IllegalArgumentException if the position has no legal moves
+     */
+    public MoveScore getMoveScore(Position position, long moverMoves, int depth)  {
+        try {
+            return getMoveScore(position, moverMoves, depth, AbortCheck.NEVER);
+        } catch (SearchAbortedException e) {
+            // this can never happen because we used AbortCheck.NEVER
+            throw new IllegalStateException("Shouldn't be here.");
+        }
+    }
+
+    /**
+     * Select a move based on a midgame search.
+     * <p/>
+     * Precondition: The mover has at least one legal move.
+     *
+     * @param position   position to search
+     * @param moverMoves legal moves to check. If this is a subset of all legal moves, only the subset will
+     *                   be checked.
+     * @param depth      search depth
      * @param abortCheck test for whether the search should be abandoned
      * @return the best move from this position, and its score in centi-disks
+     * @throws IllegalArgumentException if the position has no legal moves
+     * @throws SearchAbortedException   if the search was aborted
      */
-    public MoveScore getMoveScore(Position position, long moverMoves, int depth, AbortCheck abortCheck) {
+    public MoveScore getMoveScore(Position position, long moverMoves, int depth, AbortCheck abortCheck) throws SearchAbortedException {
         if (moverMoves == 0) {
             throw new IllegalArgumentException("must have a legal move");
         }
@@ -113,12 +136,23 @@ public class MidgameSearcher {
      * @param depth      search depth
      * @param abortCheck test for whether the search should be abandoned
      * @return the score of the position in centi-disks
+     * @throws SearchAbortedException if the search was aborted
      */
-    public int calcScore(Position position, int alpha, int beta, int depth, AbortCheck abortCheck) {
+    public int calcScore(Position position, int alpha, int beta, int depth, AbortCheck abortCheck) throws SearchAbortedException {
         return calcScore(position.mover(), position.enemy(), alpha, beta, depth, abortCheck);
     }
 
-    private int calcScore(long mover, long enemy, int alpha, int beta, int depth, AbortCheck abortCheck) {
+    /**
+     * @param mover      mover disks
+     * @param enemy      enemy disks
+     * @param alpha      search alpha, in centi-disks
+     * @param beta       search beta, in centi-disks
+     * @param depth      remaining search depth, in ply. If &le; 0, returns the eval.
+     * @param abortCheck test for whether the search should be abandoned
+     * @return score of the position, in centidisks
+     * @throws SearchAbortedException if the search was aborted
+     */
+    private int calcScore(long mover, long enemy, int alpha, int beta, int depth, AbortCheck abortCheck) throws SearchAbortedException {
         this.rootDepth = depth;
         this.abortCheck = abortCheck;
 
@@ -144,7 +178,7 @@ public class MidgameSearcher {
      * <p/>
      * The mover does not need to have a legal move - if he doesn't this method will pass or return a terminal value as
      * necessary.
-     *
+     * <p/>
      * This is a full-width search that never aborts.
      *
      * @param mover mover disks
@@ -153,7 +187,12 @@ public class MidgameSearcher {
      * @return score of the move.
      */
     public int calcScore(long mover, long enemy, int depth) {
-        return calcScore(mover, enemy, NovelloUtils.NO_MOVE, -NovelloUtils.NO_MOVE, depth, AbortCheck.NEVER);
+        try {
+            return calcScore(mover, enemy, NovelloUtils.NO_MOVE, -NovelloUtils.NO_MOVE, depth, AbortCheck.NEVER);
+        } catch (SearchAbortedException e) {
+            // this can never happen because we used AbortCheck.NEVER
+            throw new IllegalStateException("Shouldn't be here.");
+        }
     }
 
     public void clear() {
@@ -185,8 +224,9 @@ public class MidgameSearcher {
      * @param moverMoves mover legal moves
      * @param depth      remaining search depth
      * @return BA see above
+     * @throws SearchAbortedException if the search was aborted
      */
-    BA hashMove(long mover, long enemy, long moverMoves, int alpha, int beta, int depth) {
+    BA hashMove(long mover, long enemy, long moverMoves, int alpha, int beta, int depth) throws SearchAbortedException {
         assert beta > alpha;
         assert depth > 0;
 
@@ -215,7 +255,10 @@ public class MidgameSearcher {
         return ba;
     }
 
-    private int getSuggestedMove(long mover, long enemy, long moverMoves, int alpha, int beta, int depth) {
+    /**
+     * @throws SearchAbortedException if the search was aborted
+     */
+    private int getSuggestedMove(long mover, long enemy, long moverMoves, int alpha, int beta, int depth) throws SearchAbortedException {
         final MidgameHashTables.Entry entry = midgameHashTables.find(mover, enemy);
 
         if (entry != null && entry.getBestMove() >= 0) {
@@ -227,7 +270,10 @@ public class MidgameSearcher {
         return -1;
     }
 
-    private BA treeMoveWithPossibleSuggestion(long mover, long enemy, long moverMoves, int alpha, int beta, int depth, int suggestedMove) {
+    /**
+     * @throws SearchAbortedException if the search was aborted
+     */
+    private BA treeMoveWithPossibleSuggestion(long mover, long enemy, long moverMoves, int alpha, int beta, int depth, int suggestedMove) throws SearchAbortedException {
         final BA ba;
         if (suggestedMove >= 0) {
             ba = treeMoveWithSuggestion(mover, enemy, moverMoves, alpha, beta, depth, suggestedMove);
@@ -239,8 +285,9 @@ public class MidgameSearcher {
 
     /**
      * @return best move and score.
+     * @throws SearchAbortedException if the search was aborted
      */
-    private BA treeMoveWithSuggestion(long mover, long enemy, long moverMoves, int alpha, int beta, int depth, int suggestedMove) {
+    private BA treeMoveWithSuggestion(long mover, long enemy, long moverMoves, int alpha, int beta, int depth, int suggestedMove) throws SearchAbortedException {
         BA ba = new BA();
         final int subScore = calcMoveScore(mover, enemy, alpha, beta, depth, suggestedMove);
         if (subScore > ba.score) {
@@ -257,7 +304,10 @@ public class MidgameSearcher {
         return treeMoveNoSuggestion(mover, enemy, moverMoves, alpha, beta, depth, ba);
     }
 
-    private BA treeMoveNoSuggestion(long mover, long enemy, long moverMoves, int alpha, int beta, int depth, BA ba) {
+    /**
+     * @throws SearchAbortedException if the search was aborted
+     */
+    private BA treeMoveNoSuggestion(long mover, long enemy, long moverMoves, int alpha, int beta, int depth, BA ba) throws SearchAbortedException {
         if (depth >= 5) {
             // sortIndices[i] = (-value*256 + sq)
             final int[] sortIndices = new int[Long.bitCount(moverMoves)];
@@ -316,8 +366,9 @@ public class MidgameSearcher {
      * @param depth depth of search, starting at current position
      * @param sq    square of move to make from current position.
      * @return value of the successor position, from current mover's POV.
+     * @throws SearchAbortedException if the search was aborted
      */
-    private int calcMoveScore(long mover, long enemy, int alpha, int beta, int depth, int sq) {
+    private int calcMoveScore(long mover, long enemy, int alpha, int beta, int depth, int sq) throws SearchAbortedException {
         final Square square = Square.of(sq);
         final long flips = counter.calcFlips(square, mover, enemy);
 
@@ -342,8 +393,9 @@ public class MidgameSearcher {
      *
      * @param depth remaining search depth. If depth &le; 0 this will return the eval.
      * @return score
+     * @throws SearchAbortedException if the search was aborted
      */
-    private int searchScore(long mover, long enemy, int alpha, int beta, int depth) {
+    private int searchScore(long mover, long enemy, int alpha, int beta, int depth) throws SearchAbortedException {
         if (depth >= 8 && abortCheck.shouldAbort()) {
             throw new SearchAbortedException();
         }
@@ -362,7 +414,10 @@ public class MidgameSearcher {
         }
     }
 
-    int treeScore(long mover, long enemy, long moverMoves, int alpha, int beta, int depth) {
+    /**
+     * @throws SearchAbortedException if the search was aborted
+     */
+    int treeScore(long mover, long enemy, long moverMoves, int alpha, int beta, int depth) throws SearchAbortedException {
         if (depth <= 0) {
             // todo pass moverMoves into counter.eval to save calculation
             return counter.eval(mover, enemy);
@@ -407,7 +462,7 @@ public class MidgameSearcher {
      *
      * @return best move (or -1 if no best move) and score
      */
-    private BA mpcMove(long mover, long enemy, long moverMoves, int alpha, int beta, int depth) {
+    private BA mpcMove(long mover, long enemy, long moverMoves, int alpha, int beta, int depth) throws SearchAbortedException {
         final BA ba = new BA();
 
         // see if it cuts off

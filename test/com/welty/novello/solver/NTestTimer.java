@@ -33,7 +33,7 @@ public class NTestTimer {
             if (position == null) {
                 throw new IllegalStateException("ntest games file is messed up");
             }
-            log.info(solver.getMoveScore(position.mover(), position.enemy(), AbortCheck.NEVER));
+            log.info(solver.getMoveScore(position.mover(), position.enemy()));
         }
         final long dt = System.currentTimeMillis() - t0;
         final double s = dt / 1000.;
@@ -52,7 +52,7 @@ public class NTestTimer {
             if (position == null) {
                 throw new IllegalStateException("ntest games file is messed up");
             }
-            log.info(midgameSearcher.getMoveScore(position, position.calcMoves(), depth, AbortCheck.NEVER));
+            log.info(midgameSearcher.getMoveScore(position, position.calcMoves(), depth));
         }
         final long dt = System.currentTimeMillis() - t0;
         final double s = dt / 1000.;

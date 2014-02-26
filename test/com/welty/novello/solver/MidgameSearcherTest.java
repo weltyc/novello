@@ -82,7 +82,7 @@ public class MidgameSearcherTest extends TestCase {
         assertTrue(subScore > 20 * DISK_VALUE);
     }
 
-    public void testTreeMove() {
+    public void testTreeMove() throws SearchAbortedException {
         final Eval eval = new DiskEval();
         final MidgameSearcher midgameSearcher = new MidgameSearcher(new Counter(eval));
         final Position position = Position.of("-------- -------- -------- --OO---- --*O*--- ----OO-- -------- -------- *");
@@ -141,7 +141,7 @@ public class MidgameSearcherTest extends TestCase {
         final int depth = 4;
 
         Position position = Position.START_POSITION;
-        midgameSearcher.getMoveScore(position, position.calcMoves(), depth, AbortCheck.NEVER);
+        midgameSearcher.getMoveScore(position, position.calcMoves(), depth);
         final Counts counts = midgameSearcher.getCounts();
         final long nFlips = counts.nFlips;
         final long nEvals = counts.nEvals;

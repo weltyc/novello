@@ -5,5 +5,5 @@ package com.welty.novello.solver;
  * <p/>
  * Using an exception causes the stack to be unwound and ensures no corrupt values are stored in the transposition table.
  */
-public class SearchAbortedException extends RuntimeException {
+public class SearchAbortedException extends Exception {
 }

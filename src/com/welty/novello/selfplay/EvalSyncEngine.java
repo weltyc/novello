@@ -8,6 +8,7 @@ import com.welty.novello.core.Position;
 import com.welty.novello.eval.CoefficientCalculator;
 import com.welty.novello.eval.Eval;
 import com.welty.novello.solver.MidgameSearcher;
+import com.welty.novello.solver.SearchAbortedException;
 import com.welty.novello.solver.Solver;
 import com.welty.ntestj.Heights;
 import com.welty.othello.api.AbortCheck;
@@ -58,7 +59,7 @@ public class EvalSyncEngine implements SyncEngine {
      * Calc the move that the engine would like to play
      *
      * @param position
-     * @param clock      amount of time remaining, or null if the player should ignore the clock
+     * @param clock          amount of time remaining, or null if the player should ignore the clock
      * @param maxDepth
      * @param baseAbortCheck
      * @param listener
@@ -70,12 +71,35 @@ public class EvalSyncEngine implements SyncEngine {
             throw new IllegalArgumentException("Must have a legal move to call calcMove()");
         }
 
-        final AbortCheck abortCheck = clock==null ? baseAbortCheck : new TimeAbortCheck(baseAbortCheck, clock, position.nEmpty());
+        final AbortCheck abortCheck = clock == null ? baseAbortCheck : new TimeAbortCheck(baseAbortCheck, clock, position.nEmpty());
 
         final long n0 = searcher.getCounts().nFlips;
         final long t0 = System.currentTimeMillis();
 
-        final MoveScore result;
+        /**
+         */
+        // Make sure we have a legal move by calculating the first round without aborts
+        MoveScore result;
+        try {
+            result = calcMoveInternal(position, 1, listener, moverMoves, AbortCheck.NEVER);
+        } catch (SearchAbortedException e) {
+            // this will never happen, because we used AbortCheck.NEVER.
+            result = null;
+        }
+        listener.updateNodeStats(searcher.getCounts().nFlips - n0, System.currentTimeMillis() - t0);
+        for (int depth = 1; depth <= maxDepth; depth++) {
+            try {
+                result = calcMoveInternal(position, depth, listener, moverMoves, abortCheck);
+            } catch (SearchAbortedException e) {
+                break;
+            }
+            listener.updateNodeStats(searcher.getCounts().nFlips - n0, System.currentTimeMillis() - t0);
+        }
+        return result;
+    }
+
+    private MoveScore calcMoveInternal(Position position, int maxDepth, Listener listener, long moverMoves, AbortCheck abortCheck) throws SearchAbortedException {
+        MoveScore result;
         if (shouldSolve(position, maxDepth)) {
             listener.updateStatus("Solving...");
             // full-width solve
@@ -85,7 +109,6 @@ public class EvalSyncEngine implements SyncEngine {
             listener.updateStatus("Searching at " + depths.displayDepth().humanString());
             result = searcher.getMoveScore(position, moverMoves, depths.searchDepth, abortCheck);
         }
-        listener.updateNodeStats(searcher.getCounts().nFlips - n0, System.currentTimeMillis() - t0);
         return result;
     }
 
@@ -122,15 +145,15 @@ public class EvalSyncEngine implements SyncEngine {
             this.chainedAbortCheck = chainedAbortCheck;
             final long now = System.currentTimeMillis();
             final double tTarget = calcTargetMillis(clock, nEmpty);
-            tHardAbort = now + cap(tTarget*2, clock.tCurrent);
-            tNoMoreRounds = now + cap(tTarget*0.5, clock.tCurrent);
+            tHardAbort = now + cap(tTarget * 2, clock.tCurrent);
+            tNoMoreRounds = now + cap(tTarget * 0.5, clock.tCurrent);
         }
 
         private static long cap(double t, double tCurrent) {
-            if (t>=tCurrent) {
+            if (t >= tCurrent) {
                 t = tCurrent * 0.8;
             }
-            return Math.max(1, (long)(1000*t));
+            return Math.max(1, (long) (1000 * t));
         }
 
         @Override public boolean shouldAbort() {
@@ -251,7 +274,7 @@ public class EvalSyncEngine implements SyncEngine {
      *
      * @param listener listener for intermediate results
      */
-    public void calcHints(Position position, int maxDepth, int nHints, AbortCheck abortCheck, Listener listener) {
+    public void calcHints(Position position, int maxDepth, int nHints, AbortCheck abortCheck, Listener listener) throws SearchAbortedException {
         final long moverMoves = position.calcMoves();
         if (moverMoves == 0) {
             throw new IllegalArgumentException("Must have a legal move to call calcHints()");

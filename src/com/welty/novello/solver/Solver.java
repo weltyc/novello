@@ -118,7 +118,21 @@ public class Solver {
      * @param enemy bitboard of enemy's disks
      * @return value of the game to the mover
      */
-    public int solve(long mover, long enemy, @NotNull AbortCheck abortCheck) {
+    public int solve(long mover, long enemy) {
+        try {
+            return solve(mover, enemy, AbortCheck.NEVER);
+        } catch (SearchAbortedException e) {
+            // this can never happen because we used AbortCheck.NEVER
+            throw new IllegalStateException("Shouldn't be here.");
+        }
+    }
+
+    /**
+     * @param mover bitboard of mover's disks
+     * @param enemy bitboard of enemy's disks
+     * @return value of the game to the mover
+     */
+    public int solve(long mover, long enemy, @NotNull AbortCheck abortCheck) throws SearchAbortedException {
         this.empties = ShallowSolver.createEmptiesList(mover, enemy);
         this.abortCheck = abortCheck;
 
@@ -130,12 +144,31 @@ public class Solver {
      * <p/>
      * Precondition: mover has a legal move
      *
+     * @param mover mover disks
+     * @param enemy enemy disks
+     * @return a {@link MoveScore} containing the best move
+     */
+    public @NotNull MoveScore getMoveScore(long mover, long enemy) {
+        try {
+            return getMoveScore(mover, enemy, AbortCheck.NEVER);
+        } catch (SearchAbortedException e) {
+            // this can never happen because we used AbortCheck.NEVER
+            throw new IllegalStateException("Shouldn't be here.");
+        }
+    }
+
+    /**
+     * Solve the game and return the best move.
+     * <p/>
+     * Precondition: mover has a legal move
+     *
      * @param mover      mover disks
      * @param enemy      enemy disks
      * @param abortCheck checker for whether search should abort
      * @return a {@link MoveScore} containing the best move
+     * @throws SearchAbortedException if abortCheck returned true
      */
-    public @NotNull MoveScore getMoveScore(long mover, long enemy, @NotNull AbortCheck abortCheck) {
+    public @NotNull MoveScore getMoveScore(long mover, long enemy, @NotNull AbortCheck abortCheck) throws SearchAbortedException {
         if (BitBoardUtils.calcMoves(mover, enemy) == 0) {
             throw new IllegalArgumentException("mover must have a legal move");
         }
@@ -170,7 +203,7 @@ public class Solver {
      * @param beta  beta for alpha-beta search
      * @return net disks to mover, with perfect play. Winner does NOT get empties.
      */
-    private int solve(long mover, long enemy, int alpha, int beta) {
+    private int solve(long mover, long enemy, int alpha, int beta) throws SearchAbortedException {
         final int nEmpty = bitCount(~(mover | enemy));
         if (nEmpty == 0) {
             return BitBoardUtils.terminalScore(mover, enemy);
@@ -209,7 +242,7 @@ public class Solver {
      * @param movesToCheck bitBoard containing moves to check (if the mover moves).
      */
     private int solveDeep(long mover, long enemy, int alpha, int beta, int nEmpties, long parity, int nodeType
-            , long movesToCheck) {
+            , long movesToCheck) throws SearchAbortedException {
         if (nEmpties >= 9 && abortCheck.shouldAbort()) {
             throw new SearchAbortedException();
         }
@@ -236,7 +269,7 @@ public class Solver {
      * @return solve value according to fail-soft alpha/beta, unless there are no legal moves in which case it returns NO_MOVE.
      */
     private int moverResultDeep(long mover, long enemy, int alpha, int beta, int nEmpties, long parity
-            , int nodeType, long movesToCheck) {
+            , int nodeType, long movesToCheck) throws SearchAbortedException {
         if (nEmpties < MIN_SORT_DEPTH) {
             return ShallowSolver.moverResultNoSort(counter, mover, enemy, alpha, beta, empties, nEmpties, parity, movesToCheck);
         } else {
@@ -244,7 +277,7 @@ public class Solver {
         }
     }
 
-    private int moverResultWithHash(long mover, long enemy, int alpha, int beta, int nEmpties, long parity, int nodeType, long movesToCheck) {
+    private int moverResultWithHash(long mover, long enemy, int alpha, int beta, int nEmpties, long parity, int nodeType, long movesToCheck) throws SearchAbortedException {
         // searchAlpha and searchBeta are the alpha and beta used for the search.
         // They are normally equal to the original alpha and beta.
         //
@@ -326,7 +359,7 @@ public class Solver {
      * If there is no legal move, returns score==NO_MOVE and iBestMove==-1.
      */
     private void moverResultWithSorting(TreeSearchResult treeSearchResult, long mover, long enemy, int alpha, int beta
-            , int nEmpties, long parity, int nodeType, long movesToCheck) {
+            , int nEmpties, long parity, int nodeType, long movesToCheck) throws SearchAbortedException {
         int score = ShallowSolver.NO_MOVE;
         int iBestMove = -1;
 

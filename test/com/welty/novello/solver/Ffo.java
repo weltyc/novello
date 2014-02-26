@@ -59,7 +59,14 @@ public class Ffo {
 
                 final Counts c0 = searcher.getCounts();
 
-                final MoveScore moveScore = searcher.getMoveScore(position, AbortCheck.NEVER);
+                final MoveScore moveScore;
+                try {
+                    moveScore = searcher.getMoveScore(position, AbortCheck.NEVER);
+                } catch (SearchAbortedException e) {
+                    // this can never happen because we used AbortCheck.NEVER
+                    throw new IllegalStateException("Shouldn't be here.");
+
+                }
                 final int score = moveScore.centidisks / CoefficientCalculator.DISK_VALUE;
 
                 final Counts counts = searcher.getCounts().minus(c0);
@@ -100,7 +107,7 @@ public class Ffo {
          * @param position position to evaluate
          * @return best move and score
          */
-        @NotNull MoveScore getMoveScore(Position position, AbortCheck abortCheck);
+        @NotNull MoveScore getMoveScore(Position position, AbortCheck abortCheck) throws SearchAbortedException;
     }
 
     public static class Midgame implements Searcher {
@@ -114,7 +121,7 @@ public class Ffo {
             return searcher.getCounts();
         }
 
-        @NotNull @Override public MoveScore getMoveScore(Position position, AbortCheck abortCheck) {
+        @NotNull @Override public MoveScore getMoveScore(Position position, AbortCheck abortCheck) throws SearchAbortedException {
             return searcher.getMoveScore(position, position.calcMoves(), position.nEmpty(), abortCheck);
         }
 
@@ -134,7 +141,7 @@ public class Ffo {
             return solver.getCounts();
         }
 
-        @NotNull @Override public MoveScore getMoveScore(Position position, AbortCheck abortCheck) {
+        @NotNull @Override public MoveScore getMoveScore(Position position, AbortCheck abortCheck) throws SearchAbortedException {
             final MoveScore moveScore = solver.getMoveScore(position.mover(), position.enemy(), abortCheck);
             return new MoveScore(moveScore.sq, moveScore.centidisks * CoefficientCalculator.DISK_VALUE);
         }

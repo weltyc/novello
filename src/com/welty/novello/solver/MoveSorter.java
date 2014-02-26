@@ -118,7 +118,7 @@ final class MoveSorter {
      * Choose a move sorting method appropriate for the position and sort the moves.
      */
     void createSort(long mover, long enemy, int alpha, int beta, int nEmpties, long parity, long movesToCheck
-            , ListOfEmpties empties, HashTables hashTables, int predictedNodeType) {
+            , ListOfEmpties empties, HashTables hashTables, int predictedNodeType) throws SearchAbortedException {
         if (nEmpties >= MIN_ETC_DEPTH) {
             final int searchDepth; // search depth for createWithEtcAndEval, or -1 to use createWithEtc.
             final int fastestFirstWeight;
@@ -184,7 +184,7 @@ final class MoveSorter {
      */
     @SuppressWarnings("PointlessBitwiseExpression")
     private void createWithEtcAndEval(ListOfEmpties empties, long mover, long enemy, long movesToCheck
-            , HashTables hashTables, int alpha, int beta, int searchDepth, int fastestFirstWeight) {
+            , HashTables hashTables, int alpha, int beta, int searchDepth, int fastestFirstWeight) throws SearchAbortedException {
         size = 0;
 
         for (ListOfEmpties.Node node = empties.first(); node != empties.end; node = node.next) {
@@ -209,7 +209,7 @@ final class MoveSorter {
 
 
     private int scoreWithEtcAndEval(HashTables hashTables, int alpha, int beta, long nextEnemy, long nextMover
-            , long nextMoverMoves, int searchDepth, int fastestFirstWeight) {
+            , long nextMoverMoves, int searchDepth, int fastestFirstWeight) throws SearchAbortedException {
         final int nMobs = Long.bitCount(nextMoverMoves);
 
         final int evalScore;

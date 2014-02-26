@@ -32,9 +32,9 @@ public class EndgameAnalyzer {
         for (Move8x8 move : moves) {
             final int nEmpty = position.nEmpty();
             if (nEmpty <= 22 && position.calcMoves() != 0) {
-                final MoveScore best = solver.getMoveScore(position.mover(), position.enemy(), AbortCheck.NEVER);
+                final MoveScore best = solver.getMoveScore(position.mover(), position.enemy());
                 Position next = position.play(move.getSq());
-                final int score = -solver.solve(next.mover(), next.enemy(), AbortCheck.NEVER);
+                final int score = -solver.solve(next.mover(), next.enemy());
 
                 if (best.centidisks != score) {
                     final int drop = best.centidisks - score;

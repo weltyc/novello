@@ -68,7 +68,7 @@ public class SearchTimer {
                 if (nEmpty >= 10 && nEmpty <= 40) {
                     final long moves = pos.calcMoves();
                     if (moves != 0) {
-                        midgameSearcher.getMoveScore(pos, moves, depth, AbortCheck.NEVER);
+                        midgameSearcher.getMoveScore(pos, moves, depth);
                         midgameSearcher.clear();
                     }
                 }

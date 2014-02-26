@@ -82,7 +82,11 @@ public class SyncStatelessEngine implements StatelessEngine {
                 final Position position = Position.of(board);
                 // calcMove() can't handle a pass. So we handle it right here.
                 if (position.hasLegalMove()) {
-                    evalSyncEngine.calcHints(position, state.getMaxDepth(), nMoves, abortCheck, new EngineListener(pong));
+                    try {
+                        evalSyncEngine.calcHints(position, state.getMaxDepth(), nMoves, abortCheck, new EngineListener(pong));
+                    } catch (SearchAbortedException e) {
+                        // We're done because there's a new request. Move on to the next request.
+                    }
                 } else {
                     final OsMoveListItem mli = OsMoveListItem.PASS;
                     final String pv = mli.move.toString();
@@ -157,12 +161,7 @@ public class SyncStatelessEngine implements StatelessEngine {
                 try {
                     final Runnable take = requests.take();
                     setStatus("Thinking...");
-                    try {
-                        take.run();
-                    } catch (SearchAbortedException e) {
-                        // The search was aborted because we have a new task.
-                        // continue so we do the new task.
-                    }
+                    take.run();
                     setStatus("");
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -183,7 +182,7 @@ public class SyncStatelessEngine implements StatelessEngine {
         }
 
         @Override public void updateNodeStats(long nodeCount, long millis) {
-            responseHandler.handle(new NodeStatsResponse(pong, nodeCount, millis*0.001));
+            responseHandler.handle(new NodeStatsResponse(pong, nodeCount, millis * 0.001));
         }
 
         @Override public void hint(MoveScore moveScore, Depth depth) {
