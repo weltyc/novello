@@ -258,7 +258,7 @@ public class SolverTest extends TestCase {
         Position bb = testCases[20];
         final Solver solver = new Solver();
         try {
-            solver.getMoveScore(bb.mover(), bb.enemy(), AbortCheck.ALWAYS);
+            solver.getMoveScore(bb.mover(), bb.enemy(), AbortCheck.ALWAYS, StatsListener.NULL);
             fail("should abort, but didn't");
         } catch (SearchAbortedException e) {
             // expected

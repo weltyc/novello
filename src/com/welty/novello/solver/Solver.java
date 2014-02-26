@@ -81,6 +81,7 @@ public class Solver {
      * Transposition table.
      */
     final HashTables hashTables = new HashTables();
+    private StatsListener statsListener;
 
     /**
      * Set up data structures for a Solver.
@@ -120,7 +121,7 @@ public class Solver {
      */
     public int solve(long mover, long enemy) {
         try {
-            return solve(mover, enemy, AbortCheck.NEVER);
+            return solve(mover, enemy, AbortCheck.NEVER, StatsListener.NULL);
         } catch (SearchAbortedException e) {
             // this can never happen because we used AbortCheck.NEVER
             throw new IllegalStateException("Shouldn't be here.");
@@ -132,7 +133,8 @@ public class Solver {
      * @param enemy bitboard of enemy's disks
      * @return value of the game to the mover, in disks
      */
-    public int solve(long mover, long enemy, @NotNull AbortCheck abortCheck) throws SearchAbortedException {
+    public int solve(long mover, long enemy, @NotNull AbortCheck abortCheck, @NotNull StatsListener statsListener) throws SearchAbortedException {
+        this.statsListener = statsListener;
         this.empties = ShallowSolver.createEmptiesList(mover, enemy);
         this.abortCheck = abortCheck;
 
@@ -150,7 +152,7 @@ public class Solver {
      */
     public @NotNull MoveScore getMoveScore(long mover, long enemy) {
         try {
-            return getMoveScore(mover, enemy, AbortCheck.NEVER);
+            return getMoveScore(mover, enemy, AbortCheck.NEVER, StatsListener.NULL);
         } catch (SearchAbortedException e) {
             // this can never happen because we used AbortCheck.NEVER
             throw new IllegalStateException("Shouldn't be here.");
@@ -168,12 +170,13 @@ public class Solver {
      * @return a {@link MoveScore} containing the best move
      * @throws SearchAbortedException if abortCheck returned true
      */
-    public @NotNull MoveScore getMoveScore(long mover, long enemy, @NotNull AbortCheck abortCheck) throws SearchAbortedException {
+    public @NotNull MoveScore getMoveScore(long mover, long enemy, @NotNull AbortCheck abortCheck, @NotNull StatsListener statsListener) throws SearchAbortedException {
         if (BitBoardUtils.calcMoves(mover, enemy) == 0) {
             throw new IllegalArgumentException("mover must have a legal move");
         }
         this.empties = ShallowSolver.createEmptiesList(mover, enemy);
         this.abortCheck = abortCheck;
+        this.statsListener = statsListener;
 
         final int nEmpties = bitCount(~(mover | enemy));
         final TreeSearchResult result = treeSearchResults[nEmpties];
@@ -243,8 +246,13 @@ public class Solver {
      */
     private int solveDeep(long mover, long enemy, int alpha, int beta, int nEmpties, long parity, int nodeType
             , long movesToCheck) throws SearchAbortedException {
-        if (nEmpties >= 9 && abortCheck.shouldAbort()) {
-            throw new SearchAbortedException();
+        if (nEmpties >= 9) {
+            if (abortCheck.shouldAbort()) {
+                throw new SearchAbortedException();
+            }
+            if (nEmpties >= 20) {
+                statsListener.update();
+            }
         }
         if (nEmpties < ShallowSolver.MIN_PARITY_DEPTH) {
             return ShallowSolver.solveNoParity(counter, mover, enemy, alpha, beta, empties, nEmpties);

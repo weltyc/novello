@@ -61,7 +61,7 @@ public class Ffo {
 
                 final MoveScore moveScore;
                 try {
-                    moveScore = searcher.getMoveScore(position, AbortCheck.NEVER);
+                    moveScore = searcher.getMoveScore(position);
                 } catch (SearchAbortedException e) {
                     // this can never happen because we used AbortCheck.NEVER
                     throw new IllegalStateException("Shouldn't be here.");
@@ -107,7 +107,7 @@ public class Ffo {
          * @param position position to evaluate
          * @return best move and score
          */
-        @NotNull MoveScore getMoveScore(Position position, AbortCheck abortCheck) throws SearchAbortedException;
+        @NotNull MoveScore getMoveScore(Position position) throws SearchAbortedException;
     }
 
     public static class Midgame implements Searcher {
@@ -121,8 +121,8 @@ public class Ffo {
             return searcher.getCounts();
         }
 
-        @NotNull @Override public MoveScore getMoveScore(Position position, AbortCheck abortCheck) throws SearchAbortedException {
-            return searcher.getMoveScore(position, position.calcMoves(), position.nEmpty(), abortCheck);
+        @NotNull @Override public MoveScore getMoveScore(Position position) throws SearchAbortedException {
+            return searcher.getMoveScore(position, position.calcMoves(), position.nEmpty(), AbortCheck.NEVER);
         }
 
         @Override public String toString() {
@@ -141,8 +141,8 @@ public class Ffo {
             return solver.getCounts();
         }
 
-        @NotNull @Override public MoveScore getMoveScore(Position position, AbortCheck abortCheck) throws SearchAbortedException {
-            final MoveScore moveScore = solver.getMoveScore(position.mover(), position.enemy(), abortCheck);
+        @NotNull @Override public MoveScore getMoveScore(Position position) throws SearchAbortedException {
+            final MoveScore moveScore = solver.getMoveScore(position.mover(), position.enemy(), AbortCheck.NEVER, StatsListener.NULL);
             return new MoveScore(moveScore.sq, moveScore.centidisks * CoefficientCalculator.DISK_VALUE);
         }
 
@@ -158,7 +158,7 @@ public class Ffo {
             return new Counts(0, 0);
         }
 
-        @NotNull @Override public MoveScore getMoveScore(Position position, AbortCheck abortCheck) {
+        @NotNull @Override public MoveScore getMoveScore(Position position) {
             return player.calcMove(position, null);
         }
 

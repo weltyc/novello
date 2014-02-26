@@ -10,6 +10,7 @@ import com.welty.novello.eval.Eval;
 import com.welty.novello.solver.MidgameSearcher;
 import com.welty.novello.solver.SearchAbortedException;
 import com.welty.novello.solver.Solver;
+import com.welty.novello.solver.StatsListener;
 import com.welty.ntestj.Heights;
 import com.welty.othello.api.AbortCheck;
 import com.welty.othello.gdk.COsBoard;
@@ -98,7 +99,7 @@ public class EvalSyncEngine implements SyncEngine {
                 if (searchDepth.isFullSolve()) {
                     listener.updateStatus("Solving...");
                     // full-width solve
-                    result = solver.getMoveScore(position.mover(), position.enemy(), abortCheck);
+                    result = solver.getMoveScore(position.mover(), position.enemy(), abortCheck, new MyStatsListener(listener, n0, t0, solver));
                 } else {
                     listener.updateStatus("Searching at " + searchDepth.humanString());
                     result = searcher.getMoveScore(position, moverMoves, searchDepth.depth, abortCheck);
@@ -262,7 +263,7 @@ public class EvalSyncEngine implements SyncEngine {
                 final Position subPos = position.play(sq);
                 final int score;
                 if (searchDepth.isFullSolve()) {
-                    score = -solver.solve(subPos.mover(), subPos.enemy(), abortCheck) * CoefficientCalculator.DISK_VALUE;
+                    score = -solver.solve(subPos.mover(), subPos.enemy(), abortCheck, new MyStatsListener(listener, n0, t0, solver)) * CoefficientCalculator.DISK_VALUE;
                 } else {
                     score = -searcher.calcScore(subPos, alpha, beta, searchDepth.depth - 1, abortCheck);
                 }
@@ -325,6 +326,24 @@ public class EvalSyncEngine implements SyncEngine {
          * @param eval       evaluation; positive numbers mean black is ahead.
          */
         void analysis(int moveNumber, double eval);
+    }
+
+    private class MyStatsListener implements StatsListener {
+        private final Listener listener;
+        private final long n0;
+        private final long t0;
+        private final Solver solver;
+
+        public MyStatsListener(Listener listener, long n0, long t0, Solver solver) {
+            this.listener = listener;
+            this.n0 = n0;
+            this.t0 = t0;
+            this.solver = solver;
+        }
+
+        @Override public void update() {
+            listener.updateNodeStats(solver.getCounts().nFlips - n0, System.currentTimeMillis() - t0);
+        }
     }
 }
 

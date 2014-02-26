@@ -4,7 +4,6 @@ import com.orbanova.common.misc.Logger;
 import com.welty.novello.core.Counts;
 import com.welty.novello.core.DefaultThreadLocal;
 import com.welty.novello.core.MeValue;
-import com.welty.othello.api.AbortCheck;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -102,7 +101,7 @@ public class DeepSolverTimer implements Tunable {
         @Override public Counts call() throws Exception {
             final Solver solver = solvers.getOrCreate();
             final Counts c0 = solver.getCounts();
-            final int score = solver.solve(pv.mover, pv.enemy, AbortCheck.NEVER);
+            final int score = solver.solve(pv.mover, pv.enemy);
             final Counts counts = solver.getCounts().minus(c0);
             if (logResults) {
                 final String msg = String.format("position %2d:   score %+3d %s", i, score, counts.toString(2));
