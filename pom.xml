@@ -4,7 +4,7 @@
 
     <groupId>com.welty</groupId>
     <artifactId>novello</artifactId>
-    <version>0.01-SNAPSHOT</version>
+    <version>0.01</version>
     <packaging>jar</packaging>
 
     <name>novello</name>
@@ -84,7 +84,7 @@
         <dependency>
             <groupId>com.orbanova</groupId>
             <artifactId>common</artifactId>
-            <version>0.07-SNAPSHOT</version>
+            <version>0.07</version>
         </dependency>
 
         <dependency>
@@ -103,7 +103,7 @@
         <dependency>
             <groupId>com.welty</groupId>
             <artifactId>othello</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0</version>
         </dependency>
 
 
