@@ -39,4 +39,8 @@ public class OpponentSelection {
     public int getMaxDepth() {
         return this.level;
     }
+
+    @Override public String toString() {
+        return engineSelector.name;
+    }
 }

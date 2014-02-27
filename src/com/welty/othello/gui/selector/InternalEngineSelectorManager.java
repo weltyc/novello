@@ -9,15 +9,17 @@ import static com.welty.othello.gui.selector.InternalEngineSelector.of;
 public class InternalEngineSelectorManager {
     final Collection<InternalEngineSelector> selectors;
 
+    public static final InternalEngineSelector ABIGAIL = of("Abigail", false, "NS", new SimpleEval() {
+        @Override public int eval(SimpleEval.Situation s) {
+            return s.netDisks();
+        }
+    });
+
     public static final InternalEngineSelectorManager instance = new InternalEngineSelectorManager();
 
     private InternalEngineSelectorManager() {
         final List<InternalEngineSelector> mutableSelectors = Arrays.asList(
-                of("Abigail", false, "NS", new SimpleEval() {
-                    @Override public int eval(Situation s) {
-                        return s.netDisks();
-                    }
-                }),
+                ABIGAIL,
                 of("Charlie", false, "NS", new SimpleEval() {
                     @Override public int eval(Situation s) {
                         return s.netDisks() + 9 * s.netCorners();
