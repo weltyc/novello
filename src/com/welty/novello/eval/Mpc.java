@@ -170,6 +170,13 @@ public class Mpc {
         }
 
         static double approximateSd(int nEmpty, int depth, int shallow) {
+            // adjust for the fact that, if nEmpty - depth < solverStartDepth, the search
+            // will be extended to the end of the game.
+
+//            if ((nEmpty - depth) < MidgameSearcher.SOLVER_START_DEPTH) {
+//                depth = nEmpty;
+//            }
+
             // approximate cut sd as
             // f(shallow) g(delta) h(nEmpty)
             // where delta = min(depth, nEmpty)-shallow
