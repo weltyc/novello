@@ -22,3 +22,11 @@ For reference, costs at all depths up to 10 using the final result:
      8  21,626
      9  45,693
     10  88,678
+
+Forced Moves
+------------
+If the player-to-move has one legal move, should he play it before evaluating?
+ntestJ-x plays the move before evaluating.
+
+ntestJ-x:10 vs ntestJ-:10:
+    3,216 matches: average result = +0.0211 +/-0.035. T ~   0.6.  368 ms vs 368 ms.

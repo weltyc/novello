@@ -424,7 +424,7 @@ public class MidgameSearcher {
         }
 
         final int nEmpty = BitBoardUtils.nEmpty(mover, enemy);
-        if (options.useSolver && nEmpty <= SOLVER_START_DEPTH) {
+        if (options.variableEndgame && nEmpty <= SOLVER_START_DEPTH) {
             final int solverAlpha = solverAlpha(alpha);
             final int solverBeta = solverBeta(beta);
             return ShallowSolver.solveNoParity(counter, mover, enemy, solverAlpha, solverBeta, nEmpty, moverMoves) * DISK_VALUE;
@@ -484,7 +484,7 @@ public class MidgameSearcher {
         Mpc.Cutter[] cutters = counter.mpcs.cutters(nEmpty, depth);
 
         for (Mpc.Cutter cutter : cutters) {
-            final int margin = (options.experimental && depth < 8 ? (int) (0.35 * (cutter.getSd())) : 0);
+            final int margin = 0;
             final int shallowAlpha = cutter.shallowAlpha(alpha) + margin;
             final int shallowBeta = cutter.shallowBeta(beta) - margin;
             final int shallowDepth = cutter.shallowDepth;
@@ -535,23 +535,22 @@ public class MidgameSearcher {
      * Options are characters interpreted as flags.
      * Current flags are:
      * <p/>
-     * w = use full-width search instead of mpc<br/>
-     * S = do not use solver in midgame search<br/>
-     * N = do not use NTest endgame search depths<br/>
+     * S = non-strong engine (don't use variable search depths)<br/>
+     * w = full-width search (don't use MPC)<br/>
      * x = experimental<br/>
      */
     public static class Options {
         final boolean mpc;
-        public final boolean useSolver;
+        public final boolean variableEndgame;
+        public final boolean variableMidgame;
         final boolean printSearch;
-        public final boolean useNtestSearchDepths;
-        final boolean experimental;
+        public final boolean experimental;
 
         public Options(String options) {
             mpc = !options.contains("w");
-            useSolver = !options.contains("S");
+            variableEndgame = !options.contains("S");
+            variableMidgame = !options.contains("V");
             printSearch = options.contains("p");
-            useNtestSearchDepths = !options.contains("N");
             experimental = options.contains("x");
         }
     }

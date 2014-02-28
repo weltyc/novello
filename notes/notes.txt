@@ -1598,3 +1598,28 @@ ntestJ:14x vs ntestJ:14   -2.29 +/-0.086. T ~ -26.6.  Time per game =   1.12  s 
     final int shallowBeta = cutter.shallowBeta(beta) - margin;
 ntestJ:8 vs ntestJ:8x     -0.00307 +/-0.059. T ~  -0.1.  Time per game =  45.11 ms vs  46.11 ms.
 (Interpolate to similar time: +0.3).
+
+Time Control
+------------
+Mimic time control by varying the depth by nEmpty.
+
+### ntestJ-x:8 vs ntestJ-:8 ###
+
+experimental version: if (nEmpty <=30) midgameDepth+=2
+    +5.52 +/-0.099. T ~  55.8.  174 ms vs 113 ms.
+Using the SR formula, expected rating diff was 4.0 so this is a slight improvement.
+
+if (nEmpty <= (experimental?40:30) midgameDepth +=2
+      +2.51 +/-0.16. T ~  15.7.  247 ms vs 180 ms.
+Using the SR formula, expected rating diff was 2.7 so this is a slight worsening.
+
+if (nEmpty <= (experimental?20:30) midgameDepth +=2
+      -2.62 +/-0.17. T ~ -15.9.  140 ms vs 179 ms.
+Using the SR formula, expected rating diff was -2.2 so this is a slight worsening.
+
+So use nEmpty<=30.
+
+### ntestJ-x:6 vs ntestJ-:6 ###
+experimental version: if (nEmpty <=30) midgameDepth+=2
+    +6.98 +/-0.090. T ~  77.9.  56.1 ms vs 34.9 ms.
+Using the SR formula, expected rating diff was 5.8 so again, a slight improvement.

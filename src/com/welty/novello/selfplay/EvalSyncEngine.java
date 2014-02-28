@@ -72,6 +72,9 @@ public class EvalSyncEngine implements SyncEngine {
             throw new IllegalArgumentException("Must have a legal move to call calcMove()");
         }
 
+        if (midgameOptions.variableMidgame && position.nEmpty() <= 30) {
+            maxMidgameDepth+=2;
+        }
         final AbortCheck abortCheck = clock == null ? baseAbortCheck : new TimeAbortCheck(baseAbortCheck, clock, position.nEmpty());
 
         final long n0 = searcher.getCounts().nFlips;
@@ -295,7 +298,7 @@ public class EvalSyncEngine implements SyncEngine {
     }
 
     private boolean shouldSolve(Position position, int maxDepth) {
-        return midgameOptions.useNtestSearchDepths && position.nEmpty() <= new Heights(maxDepth).getFullWidthHeight();
+        return midgameOptions.variableEndgame && position.nEmpty() <= new Heights(maxDepth).getFullWidthHeight();
     }
 
     public interface Listener {

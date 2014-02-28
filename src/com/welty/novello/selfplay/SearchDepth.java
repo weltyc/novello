@@ -62,12 +62,12 @@ final class SearchDepth {
      * @return max SearchDepth
      */
     public static SearchDepth maxDepth(int nEmpty, int maxMidgameDepth, MidgameSearcher.Options midgameOptions) {
-        final int solverStart = midgameOptions.useSolver ? MidgameSearcher.SOLVER_START_DEPTH - 1 : 0;
+        final int solverStart = midgameOptions.variableEndgame ? MidgameSearcher.SOLVER_START_DEPTH - 1 : 0;
 
         final int probableSolveNEmpty;
         final int solveNEmpty;
 
-        if (midgameOptions.useNtestSearchDepths) {
+        if (midgameOptions.variableEndgame) {
             final Heights heights = new Heights(maxMidgameDepth);
             probableSolveNEmpty = heights.getProbableSolveHeight();
             solveNEmpty = heights.getFullWidthHeight();
