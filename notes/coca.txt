@@ -197,3 +197,8 @@ f7:6 vs f8:6:  -0.171 +/-0.064. T ~  -2.7.    27.17 ms vs  26.82 ms.
 f8:6 vs f7:6:  +0.171 +/-0.064. T ~  -2.7.
 
 This is not a very big improvement. No plans to do this at 16 ply again!
+
+Add Logistello games (f9)
+-------------------------
+Logistello self-play games contain a large number of positions, including some very early lopsided
+positions (it includes at least one game for every possible opening up to move 7).

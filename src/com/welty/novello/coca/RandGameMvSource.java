@@ -47,7 +47,8 @@ public class RandGameMvSource implements MvSource {
 
         try {
             for (GgfMatch match : GgfMatch.readFromFile(Paths.get(filename))) {
-                final GgfGame game0 = match.getGames().get(0);
+                final List<GgfGame> games = match.getGames();
+                final GgfGame game0 = games.get(0);
 
                 if (game0.getBoardSize() == 8 && !game0.isAnti() && game0.blackRating > 2000 && game0.whiteRating > 2000) {
                     nSelected++;
@@ -57,12 +58,9 @@ public class RandGameMvSource implements MvSource {
                     if (game0.isKomi()) {
                         nSelectedKomi++;
                     }
-                    final MutableGame mg0 = MutableGame.ofGgf(game0.toString());
-                    meValues.addAll(mg0.calcPositionValues());
-                    if (match.getGames().size() > 1) {
-                        final GgfGame game1 = match.getGames().get(1);
-                        final MutableGame mg1 = MutableGame.ofGgf(game1.toString());
-                        meValues.addAll(mg1.calcPositionValues());
+                    for (GgfGame ggfGame : games) {
+                        final MutableGame mg = MutableGame.ofGgf(ggfGame.toString());
+                        meValues.addAll(mg.calcPositionValues());
                     }
                 }
                 nProcessed++;

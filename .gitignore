@@ -4,6 +4,8 @@ log.txt
 /Othello.*.bz2
 captured.pv
 captured2.me
+/logbook.gam
+/logbook.gam.gz
 
 # Intellij
 .idea

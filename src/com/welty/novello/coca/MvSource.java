@@ -5,6 +5,9 @@ import com.welty.novello.core.MeValue;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * Produces a list of MeValues suitable for coefficient calculation
+ */
 public interface MvSource {
     /**
      * Get a list of MeValues suitable for coefficient calculation

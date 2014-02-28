@@ -7,10 +7,12 @@ import com.orbanova.common.misc.Utils;
 import com.orbanova.common.misc.Vec;
 import com.welty.novello.coca.ConjugateGradientMethod;
 import com.welty.novello.coca.FunctionWithGradient;
-import com.welty.novello.core.*;
+import com.welty.novello.core.MeValue;
+import com.welty.novello.core.NovelloUtils;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  */
@@ -21,7 +23,7 @@ public class CoefficientCalculator {
      * 1 disk is worth how many evaluation points?
      */
     public static final int DISK_VALUE = 100;
-    private static final String target = "f8";
+    private static final String target = "f9";
     private static final String COEFF_SET_NAME = target.substring(1);
     private static final double PENALTY = .01;
 
@@ -76,8 +78,8 @@ public class CoefficientCalculator {
                 final long t0 = System.currentTimeMillis();
                 final double[] x = estimateCoefficients(elements, strategy.nCoefficientIndices(), strategy.nDenseWeights, PENALTY);
                 final double[] coefficients = strategy.unpack(x);
-                final long dt = (System.currentTimeMillis() - t0)/1000;
-                System.out.format("%d:%02d elapsed\n", dt/60, dt%60);
+                final long dt = (System.currentTimeMillis() - t0) / 1000;
+                System.out.format("%d:%02d elapsed\n", dt / 60, dt % 60);
                 System.out.format("sum of coefficients squared = %.3g\n", Vec.sumSq(coefficients));
                 System.out.println();
 
@@ -225,7 +227,7 @@ public class CoefficientCalculator {
         for (final MeValue pv : pvs) {
             final int diff = nEmpty - pv.nEmpty();
             if (!Utils.isOdd(diff) && diff >= -6 && diff <= 6) {
-                final int target = clamp(pv.value, -64*DISK_VALUE, 64*DISK_VALUE);
+                final int target = clamp(pv.value, -64 * DISK_VALUE, 64 * DISK_VALUE);
                 final PositionElement element = evalStrategy.coefficientIndices(pv.mover, pv.enemy, target);
                 res.add(element);
             }
@@ -234,10 +236,10 @@ public class CoefficientCalculator {
     }
 
     private static int clamp(int x, int min, int max) {
-        if (x<min) {
+        if (x < min) {
             return min;
         }
-        if (x>max) {
+        if (x > max) {
             return max;
         }
         return x;
