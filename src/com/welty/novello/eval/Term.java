@@ -425,3 +425,112 @@ class UldrTerm extends DiagonalTerm {
     }
 }
 
+/**
+ * Like an Edge2XTerm, but with an additional flag for the center 4 disks on the second line.
+ * <p/>
+ * The flag has three values: all white, all black, or neither of the above.
+ * <p/>
+ * trits look like this (0 is low trit, this pattern is along the top edge):
+ * 0  1  2  3  4  5  6  7
+ * 8  ----9----- 10
+ */
+@SuppressWarnings("OctalInteger") class Edge3XTerm extends Term {
+    private static final Feature feature = Edge3XFeature.instance;
+    static final Edge3XTerm[] terms = {new Edge3XTerm(0), new Edge3XTerm(1), new Edge3XTerm(2), new Edge3XTerm(3)};
+    private static final int[] secondRowValues = calcSecondRowValues();
+
+    /**
+     * Generate the mapping from second row bits to config bits
+     * <p/>
+     * second row bit 1 is mapped to bit 8
+     * second row bits 2-5 are mapped to bit 9
+     * second row bit 6 is mapped to bit 10.
+     *
+     * @return table containing second row bits
+     */
+    private static int[] calcSecondRowValues() {
+        final int[] values = new int[256];
+        for (int i = 0; i < 256; i++) {
+            int value = 0;
+            if (isBitSet(value, 1)) {
+                value += 1 << 8;
+            }
+            if ((i & 0x3C) == 0x3C) {
+                value += 1 << 9;
+            }
+            if (isBitSet(value, 6)) {
+                value += 1 << 10;
+            }
+            values[i] = value;
+        }
+        return values;
+    }
+
+    private final int direction;
+
+    Edge3XTerm(int direction) {
+        super(feature);
+        this.direction = direction;
+    }
+
+    @Override
+    public int instance(long mover, long enemy, long moverMoves, long enemyMoves) {
+        if (direction == 0) {
+            return instance0(mover, enemy);
+        } else if (direction == 1) {
+            return instance1(mover, enemy);
+        } else if (direction == 2) {
+            return instance2(mover, enemy);
+        } else if (direction == 3) {
+            return instance3(mover, enemy);
+        } else throw new IllegalStateException("not implemented");
+    }
+
+    static int instance0(long mover, long enemy) {
+        return Base3.base2ToBase3(extractBottom(mover), extractBottom(enemy));
+    }
+
+    static int instance1(long mover, long enemy) {
+        return Base3.base2ToBase3(extractTop(mover), extractTop(enemy));
+    }
+
+    static int instance2(long mover, long enemy) {
+        return Base3.base2ToBase3(extractLeft(mover), extractLeft(enemy));
+    }
+
+    static int instance3(long mover, long enemy) {
+        return Base3.base2ToBase3(extractRight(mover), extractRight(enemy));
+    }
+
+    static int extractBottom(long mover) {
+        return extract3X(BitBoardUtils.extractRow(mover, 0), BitBoardUtils.extractRow(mover, 1));
+    }
+
+    static int extractTop(long mover) {
+        return extract3X(BitBoardUtils.extractRow(mover, 7), BitBoardUtils.extractRow(mover, 6));
+    }
+
+    static int extractLeft(long mover) {
+        return extract3X(BitBoardUtils.extractCol(mover, 7), BitBoardUtils.extractCol(mover, 6));
+    }
+
+    static int extractRight(long mover) {
+        return extract3X(BitBoardUtils.extractCol(mover, 0), BitBoardUtils.extractCol(mover, 1));
+    }
+
+    /**
+     * Calculate the binary instance id for a single colour's disks
+     *
+     * @param row0 bits for the first colour's disks
+     * @param row1 bits for the second colour's disks
+     * @return binary instance
+     */
+    private static int extract3X(int row0, int row1) {
+        return row0 + secondRowValues[row1];
+    }
+
+    @Override String oridGen() {
+        return "Edge3XTerm.instance.orid(Edge3XTerm.instance" + direction + "(mover, enemy))";
+    }
+}
+

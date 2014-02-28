@@ -46,10 +46,12 @@ public class EvalStrategies {
 
 
     static {
+        // Create the eval strategies so they exist in the strategy store
         new EvalStrategyC();
         new EvalStrategyD();
         new EvalStrategyE();
         new EvalStrategyF();
+        new EvalStrategyG();
         new EvalStrategyJ();
     }
 
