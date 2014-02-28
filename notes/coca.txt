@@ -202,3 +202,24 @@ Add Logistello games (f9)
 -------------------------
 Logistello self-play games contain a large number of positions, including some very early lopsided
 positions (it includes at least one game for every possible opening up to move 7).
+
+These times are longer than previous statistics due to the introduction of variable midgame search depth,
+which increases search depth by 2 when there are <= 30 empties.
+
+f9-:6 vs f8-:6:  +0.363 +/-0.068. T ~   5.4.  47.0 ms vs 46.9 ms.
+
+Compare vs d2 (this was also done for f7 with the same search parameters, so it's an exact comparison):
+     f9-V:4 vs d2-V:4:  +0.0241 +/-0.13. T ~   0.2.  8.20 ms vs 8.58 ms.
+The time differential is worth about 0.7 disks, so f9 is stronger than d2 despite having weaker patterns.
+f9 has better coefficients.
+
+Calculate 'd' coefficients (d3)
+-------------------------------
+Evaluator D is stronger. Calculate coefficients for d3 using the same data as for f9, above.
+Using the new variable midgame for this; these nominally 4-ply programs will use 6-ply after move 30.
+
+    d3-:4 vs f9-:4: +1.64 +/-0.19. T ~   8.5.  19.7 ms vs 18.9 ms.
+The time difference is worth 0.6, so d3 is definitely stronger.
+    Starting d3-:4 vs ntestJ-:4: +0.976 +/-0.19. T ~   5.0.  20.3 ms vs 20.8 ms.
+The time difference is worth 0.3, so d3 is definitely stronger.
+
