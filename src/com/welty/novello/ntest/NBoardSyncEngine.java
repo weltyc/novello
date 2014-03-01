@@ -14,12 +14,15 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * An instance of the NTest othello program
+ * An instance of the NTest othello program.
+ * <p/>
+ * This class is not thread-safe.
  */
 public class NBoardSyncEngine implements SyncEngine {
     private final String program;
     private int ping = 0;
     private final ProcessLogger processLogger;
+    private int lastDepth = -1;
 
     private static final Logger log = Logger.logger(NBoardSyncEngine.class, Logger.Level.DEBUG);
 
@@ -67,6 +70,7 @@ public class NBoardSyncEngine implements SyncEngine {
     }
 
     @Override public MoveScore calcMove(@NotNull Position position, @Nullable OsClock clock, int maxDepth) {
+        Require.geq(maxDepth, "max depth", 0);
         try {
             pingPong();
             final GameClock gameClock;
@@ -78,8 +82,10 @@ public class NBoardSyncEngine implements SyncEngine {
                 gameClock = new GameClock((long) (clock.tCurrent * 1000), (long) (clock.getGraceTime() * 1000));
             }
             println("set game " + new MutableGame(position, "me", "you", "here", gameClock, gameClock).toGgf());
-            Require.geq(maxDepth, "max depth", 0);
-            println("set depth " + maxDepth);
+            if (maxDepth != lastDepth) {
+                println("set depth " + maxDepth);
+                lastDepth = maxDepth;
+            }
             println("go");
             String line;
             while (null != (line = readLine())) {
