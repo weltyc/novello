@@ -69,11 +69,12 @@ public class EvalTest extends TestCase {
      */
     public void test1Ply() {
 
-        if (ExternalEngineManager.instance.getXei("ntest") == null) {
+        final ExternalEngineManager.Xei xei = ExternalEngineManager.instance.getXei("ntest");
+        if (xei == null) {
             System.out.println("ntest not available on this machine, skipping test");
             return;
         }
-        final NBoardSyncEngine ntest = new NBoardSyncEngine("ntest", true);
+        final NBoardSyncEngine ntest = new NBoardSyncEngine(xei, true);
         final CEvaluatorJ eval = CEvaluatorJ.getInstance();
 
         test1Ply(ntest, eval, Position.START_POSITION);

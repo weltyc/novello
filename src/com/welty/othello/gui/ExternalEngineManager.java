@@ -2,6 +2,7 @@ package com.welty.othello.gui;
 
 import com.orbanova.common.misc.ListenerManager;
 import com.welty.othello.gui.prefs.PrefSet;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,9 +51,10 @@ public class ExternalEngineManager extends ListenerManager<ExternalEngineManager
      *
      * @return external engine info, or null if there is no info for the program.
      */
-    public Xei getXei(String program) {
+    public @Nullable Xei getXei(String program) {
         try {
-            final String value = externalEngines.getMap().get(program);
+            final Map<String, String> map = externalEngines.getMap();
+            final String value = map.get(program);
             if (value == null) {
                 return null;
             }

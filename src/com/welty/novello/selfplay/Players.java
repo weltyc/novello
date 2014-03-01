@@ -3,6 +3,7 @@ package com.welty.novello.selfplay;
 import com.welty.novello.eval.*;
 import com.welty.novello.ntest.NBoardSyncEngine;
 import com.welty.ntestj.CEvaluatorJ;
+import com.welty.othello.gui.ExternalEngineManager;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -59,8 +60,9 @@ public class Players {
         final int depth = Integer.parseInt(matcher.group(1));
 
         final String evalName = parts[0];
-        if (evalName.equals("ntest") || evalName.equals("edax") || evalName.equals("ntest-new")) {
-            return new SyncPlayer(new NBoardSyncEngine(evalName, false), depth);
+        final ExternalEngineManager.Xei xei = ExternalEngineManager.instance.getXei(evalName);
+        if (xei != null) {
+            return new SyncPlayer(new NBoardSyncEngine(xei, false), depth);
         } else {
             final Eval eval;
             eval = eval(evalName);

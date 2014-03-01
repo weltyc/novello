@@ -30,3 +30,19 @@ ntestJ-x plays the move before evaluating.
 
 ntestJ-x:10 vs ntestJ-:10:
     3,216 matches: average result = +0.0211 +/-0.035. T ~   0.6.  368 ms vs 368 ms.
+
+Not very useful, reverting.
+
+Fix MPC in solver
+-----------------
+Currently MPC widths are calculated assuming the midgame solver start depth is 0. In fact it's set to 6 for strong
+engines. Modify MPC so that coefficients are wider when hitting the terminal position, and evaluate the change
+by playing it vs ntest. Something is wrong with ntest, it is taking 1s/game even at 4 ply. Since it will take a long time
+anyway, play it at 12 ply:
+Original version:
+     d3-V:12 vs NTest:12: -1.95 +/-0.30. T ~  -6.5.  566 ms vs 1.91 s.
+Modified version:
+     d3-V:12 vs NTest:12: -1.73 +/-0.072. T ~ -23.9.  565 ms vs 1.86 s.
+
+Getting this far with the modified version required an overnight run.
+I will need to speed up the testing before drawing conclusions.

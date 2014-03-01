@@ -6,6 +6,7 @@ import com.welty.novello.ntest.NBoardSyncEngine;
 import com.welty.novello.selfplay.Players;
 import com.welty.novello.selfplay.SyncPlayer;
 import com.welty.othello.api.AbortCheck;
+import com.welty.othello.gui.ExternalEngineManager;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -152,7 +153,18 @@ public class Ffo {
     }
 
     public static class NtestSearcher implements Searcher {
-        private final SyncPlayer player = new SyncPlayer(new NBoardSyncEngine("ntest", false), 50);
+        private final SyncPlayer player = createNtest();
+
+        private static SyncPlayer createNtest() {
+            final ExternalEngineManager.Xei xei = ExternalEngineManager.instance.getXei("ntest");
+            if (xei == null) {
+                System.out.println("ntest not available on this machine, skipping test");
+                throw new IllegalStateException("ntest not available");
+            }
+            final NBoardSyncEngine ntest = new NBoardSyncEngine(xei, false);
+
+            return new SyncPlayer(ntest, 50);
+        }
 
         @NotNull @Override public Counts getCounts() {
             return new Counts(0, 0);

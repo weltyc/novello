@@ -8,6 +8,7 @@ import com.welty.othello.core.ProcessLogger;
 import com.welty.othello.gdk.OsClock;
 import com.welty.othello.gui.ExternalEngineManager;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,11 +24,7 @@ public class NBoardSyncEngine implements SyncEngine {
     private static final Logger log = Logger.logger(NBoardSyncEngine.class, Logger.Level.DEBUG);
 
 
-    public NBoardSyncEngine(String program, boolean debug) {
-        this(ExternalEngineManager.instance.getXei(program), debug);
-    }
-
-    private NBoardSyncEngine(ExternalEngineManager.Xei xei, boolean debug) {
+    public NBoardSyncEngine(@NotNull ExternalEngineManager.Xei xei, boolean debug) {
         this.program = xei.name;
         try {
             log.debug("wd  : " + xei.wd);
@@ -69,10 +66,17 @@ public class NBoardSyncEngine implements SyncEngine {
         }
     }
 
-    @Override public MoveScore calcMove(@NotNull Position position, OsClock clock, int maxDepth) {
+    @Override public MoveScore calcMove(@NotNull Position position, @Nullable OsClock clock, int maxDepth) {
         try {
             pingPong();
-            final GameClock gameClock = new GameClock((long) (clock.tCurrent * 1000), (long) (clock.getGraceTime() * 1000));
+            final GameClock gameClock;
+            if (clock == null) {
+                // player can take as long as it wants. 1 billion millis (~2 weeks) should be long enough.
+                gameClock = new GameClock((long) 1_000_000_000, (long) (120_000));
+
+            } else {
+                gameClock = new GameClock((long) (clock.tCurrent * 1000), (long) (clock.getGraceTime() * 1000));
+            }
             println("set game " + new MutableGame(position, "me", "you", "here", gameClock, gameClock).toGgf());
             Require.geq(maxDepth, "max depth", 0);
             println("set depth " + maxDepth);

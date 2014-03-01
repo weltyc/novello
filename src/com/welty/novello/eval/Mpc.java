@@ -3,6 +3,7 @@ package com.welty.novello.eval;
 import com.orbanova.common.misc.Logger;
 import com.orbanova.common.misc.Require;
 import com.welty.novello.core.NovelloUtils;
+import com.welty.novello.solver.MidgameSearcher;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedReader;
@@ -173,9 +174,9 @@ public class Mpc {
             // adjust for the fact that, if nEmpty - depth < solverStartDepth, the search
             // will be extended to the end of the game.
 
-//            if ((nEmpty - depth) < MidgameSearcher.SOLVER_START_DEPTH) {
-//                depth = nEmpty;
-//            }
+            if ((nEmpty - depth) < MidgameSearcher.SOLVER_START_DEPTH) {
+                depth = nEmpty;
+            }
 
             // approximate cut sd as
             // f(shallow) g(delta) h(nEmpty)
@@ -185,7 +186,7 @@ public class Mpc {
                 return 0;
             }
             final double f = 1. / (.71 + .1 * shallow);
-            final double[] gs = {.8, 1.0, 1.1, 1.16, 1.21, 1.25, 1.28, 1.30, 1.31};
+            final double[] gs = {.8, 1.0, 1.1, 1.16, 1.21, 1.25, 1.28, 1.30, 1.31, 1.32, 1.33, 1.34};
             final double g = gs[(delta - 1) / 2];
             double h;
             if (nEmpty >= 30) {
