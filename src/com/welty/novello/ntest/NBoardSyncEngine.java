@@ -100,8 +100,7 @@ public class NBoardSyncEngine implements SyncEngine {
     }
 
     @Override public void clear() {
-        // The NBoard protocol does not have this command
-        // todo add it
+        println("clear");
     }
 
     static MoveScore parseMoveScore(String line) {
