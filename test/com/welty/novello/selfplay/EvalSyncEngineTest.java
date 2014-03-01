@@ -13,7 +13,7 @@ import java.util.Arrays;
 public class EvalSyncEngineTest extends TestCase {
     public void test1PlySearch() throws Exception {
         final Eval eval = Players.currentEval();
-        final EvalSyncEngine engine = new EvalSyncEngine(eval, "");
+        final EvalSyncEngine engine = new EvalSyncEngine(eval, "", eval.toString());
 
         final Position prev = Position.of("--------\n" +
                 "--------\n" +
@@ -56,7 +56,7 @@ public class EvalSyncEngineTest extends TestCase {
      */
     public void testSolveValue() {
         final Eval eval = Players.currentEval();
-        final EvalSyncEngine player = new EvalSyncEngine(eval, "");
+        final EvalSyncEngine player = new EvalSyncEngine(eval, "", eval.toString());
 
         final Position prev = Position.of("OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO*. O");
 

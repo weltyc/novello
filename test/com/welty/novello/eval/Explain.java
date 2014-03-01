@@ -10,7 +10,7 @@ public class Explain {
     public static void main(String[] args) {
         final String evalName = "7B";
         final CoefficientEval eval = (CoefficientEval) Players.eval(evalName);
-        final EvalSyncEngine player = new EvalSyncEngine(eval, "");
+        final EvalSyncEngine player = new EvalSyncEngine(eval, "", evalName);
 
         final Position prev = Position.of("--------\n" +
                 "--------\n" +

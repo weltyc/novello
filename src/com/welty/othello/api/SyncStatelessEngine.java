@@ -47,7 +47,7 @@ public class SyncStatelessEngine implements StatelessEngine {
     public SyncStatelessEngine(String name, Eval eval, String options, @NotNull ResponseHandler responseHandler) {
         this.name = name;
         this.responseHandler = responseHandler;
-        evalSyncEngine = new EvalSyncEngine(eval, options);
+        evalSyncEngine = new EvalSyncEngine(eval, options, name);
         new Thread(new Runner(), getName()).start();
     }
 

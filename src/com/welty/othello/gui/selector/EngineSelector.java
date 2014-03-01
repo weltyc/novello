@@ -1,5 +1,6 @@
 package com.welty.othello.gui.selector;
 
+import com.welty.novello.selfplay.EvalSyncEngine;
 import com.welty.othello.api.StatelessEngine;
 import com.welty.othello.protocol.ResponseHandler;
 import org.jetbrains.annotations.NotNull;
@@ -33,5 +34,15 @@ public abstract class EngineSelector {
      * @throws IOException if one occurs while starting up an engine.
      */
     public abstract @NotNull StatelessEngine createPingEngine(int maxDepth, ResponseHandler handler) throws IOException;
+
+    /**
+     * Get a String containing a textual representation of the opponent's strength.
+     *
+     * The representation may include HTML tags if the representation starts with &lt;html> and ends with
+     * &lt;/html>
+     */
+    public abstract String strengthEstimate(int level);
+
+    public abstract EvalSyncEngine createEvalSyncEngine();
 }
 

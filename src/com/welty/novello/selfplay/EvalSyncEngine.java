@@ -34,10 +34,12 @@ public class EvalSyncEngine implements SyncEngine {
     private final String options;
     private final MidgameSearcher searcher;
     private final Solver solver;
+    private final @NotNull String name;
 
-    public EvalSyncEngine(@NotNull Eval eval, String options) {
+    public EvalSyncEngine(@NotNull Eval eval, String options, @NotNull String name) {
         this.eval = eval;
         this.options = options;
+        this.name = name;
         midgameOptions = new MidgameSearcher.Options(options);
         this.solver = new Solver(eval, midgameOptions);
         this.searcher = solver.midgameSearcher;
@@ -53,7 +55,7 @@ public class EvalSyncEngine implements SyncEngine {
     }
 
     @Override public String toString() {
-        return eval + "-" + options;
+        return name;
     }
 
     /**

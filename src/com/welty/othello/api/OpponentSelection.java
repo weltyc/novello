@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 
 public class OpponentSelection {
-    private final EngineSelector engineSelector;
+    private final @NotNull EngineSelector engineSelector;
     private final int level;
 
     public OpponentSelection(@NotNull EngineSelector engineSelector, int level) {
@@ -42,5 +42,15 @@ public class OpponentSelection {
 
     @Override public String toString() {
         return engineSelector.name;
+    }
+
+    /**
+     * Get a String containing a textual representation of the opponent's strength.
+     *
+     * The representation may include HTML tags if the representation starts with &lt;html> and ends with
+     * &lt;/html>
+     */
+    public String strengthEstimate() {
+        return engineSelector.strengthEstimate(level);
     }
 }
