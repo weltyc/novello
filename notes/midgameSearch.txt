@@ -46,3 +46,36 @@ Modified version:
 
 Getting this far with the modified version required an overnight run.
 I will need to speed up the testing before drawing conclusions.
+
+Fixed the speed issue. Ran all 50,777 games for this:
+d3-V:6 vs NTest:6: (original) +1.93 +/-0.078 @ 32.6 ms (modified) +2.39 +/-0.078 @ 34.5 ms
+The timing difference is worth  0.7, so the modification is not worth it.
+
+This is strange enough that I'll rerun at a higher depth.
+d3-V:8 vs NTest:8: (original) -0.372 +/-0.064 @ 102 ms (modified) +0.108 +/-0.064 @ 105 ms
+At 8 ply the disk differential is the same but the timing difference is 0.3 disks, so the modification is worth it.
+
+d3 seems to do worse as the depth increases. Let's try 10-ply:
+d3-V:10 vs NTest:10 (modified) 17,262 matches: -1.15 +/-0.093 @ 284 ms
+
+Going with the modified version.
+
+Investigate worsening at high depths
+-----------------------------------
+Is the worsening due to the search differences between NTest and d3, or is it due to the d3 evaluation
+performing worse at higher depths? Run NTestJ vs NTest to eliminate evaluation as a source of difference.
+We'll do this at 6, 8, and 10 ply.
+
+ntestJ-V:10 vs NTest:10: 10,235 matches: average result = +1.93 +/-0.11. T ~  17.4.  468 ms vs 299 ms.
+This is 3.08 disks better than d3-V:10 did against NTest:10, but the timing difference is worth 3.5, so d3 performed
+slightly better than ntestJ against NTest. By a larger margin, NTest outperformed ntestJ.
+
+Playing ntestJ vs d3 at various depths. + scores favour ntestJ.
+
+    depth  result     err   time-J time-d  SR    adjusted_result
+     6     +1.16 +/- 0.080   41.8    35.6 -2.0    -0.84
+     8     +2.32 +/- 0.099   146     101  -3.6    -1.28
+    10     +2.71 +/- 0.14    486     288  -3.7    -0.99
+
+So NTest's advantage is not due to its evaluation function; in fact Ntest's evaluation function appears to be about 1
+disk weaker than d3. NTest's advantage is probably in its search.
