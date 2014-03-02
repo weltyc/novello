@@ -549,7 +549,7 @@ public class MidgameSearcher {
         public Options(String options) {
             mpc = !options.contains("w");
             variableEndgame = !options.contains("S");
-            variableMidgame = !options.contains("V");
+            variableMidgame = options.contains("v");
             printSearch = options.contains("p");
             experimental = options.contains("x");
         }
