@@ -38,6 +38,7 @@ public class ExternalNBoardEngine extends NBoardEngine {
     }
 
     private static ProcessLogger createProcessLogger(String[] command, File wd, boolean debug) throws IOException {
+        command[0] = wd.toPath().resolve(command[0]).toString();
         if (debug) {
             log.info("Starting external process");
             log.info("command: " + Arrays.toString(command));
