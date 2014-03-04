@@ -23,7 +23,7 @@ public class CoefficientCalculator {
      * 1 disk is worth how many evaluation points?
      */
     public static final int DISK_VALUE = 100;
-    private static final String target = "d3";
+    private static final String target = "g1";
     private static final String COEFF_SET_NAME = target.substring(1);
     private static final double PENALTY = .01;
 

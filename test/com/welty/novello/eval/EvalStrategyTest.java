@@ -1,21 +1,23 @@
 package com.welty.novello.eval;
 
-import com.orbanova.common.misc.ArrayTestCase;
 import com.orbanova.common.misc.Vec;
 import com.orbanova.common.ramfs.RamFileSystem;
 import com.welty.novello.core.BitBoardUtils;
 import com.welty.novello.core.Me;
 import com.welty.novello.core.Position;
 import com.welty.novello.selfplay.Players;
+import junit.framework.TestCase;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Random;
 
+import static org.junit.Assert.assertArrayEquals;
+
 /**
  */
-public class EvalStrategyTest extends ArrayTestCase {
+public class EvalStrategyTest extends TestCase {
     public void testIndicesFromPosition() {
         final EvalStrategy strategy = EvalStrategies.eval1;
 
@@ -40,9 +42,9 @@ public class EvalStrategyTest extends ArrayTestCase {
         );
 
         assertEquals(2, strategy.nFeatures());
-        assertEquals(new int[]{3, 2}, strategy.nOridsByFeature());
+        assertArrayEquals("", new int[]{3, 2}, strategy.nOridsByFeature());
         assertEquals(TermTest.feature1.nOrids() + TermTest.feature2.nOrids(), strategy.nCoefficientIndices());
-        assertEquals(new int[]{2, 2, 3}, strategy.coefficientIndices(3, 0, 0).indices);
+        assertArrayEquals("", new int[]{2, 2, 3}, strategy.coefficientIndices(3, 0, 0).indices);
     }
 
     public void testWriteRead() throws IOException {

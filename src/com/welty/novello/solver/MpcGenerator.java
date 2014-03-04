@@ -3,7 +3,7 @@ package com.welty.novello.solver;
 import com.orbanova.common.misc.Logger;
 import com.welty.novello.core.DefaultThreadLocal;
 import com.welty.novello.core.MeValue;
-import com.welty.novello.core.ProgressUpdater;
+import com.orbanova.common.gui.ProgressUpdater;
 import com.welty.novello.eval.CoefficientEval;
 import com.welty.novello.eval.EvalStrategies;
 import com.welty.novello.eval.MvGenerator;

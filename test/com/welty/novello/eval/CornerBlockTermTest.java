@@ -1,17 +1,18 @@
 package com.welty.novello.eval;
 
-import com.orbanova.common.misc.ArrayTestCase;
 import com.welty.novello.core.Me;
 import com.welty.novello.core.Position;
+import junit.framework.TestCase;
 
 import java.util.Arrays;
 
 import static com.welty.novello.core.BitBoardUtils.reflectHorizontally;
 import static com.welty.novello.core.BitBoardUtils.reflectVertically;
+import static org.junit.Assert.assertArrayEquals;
 
 /**
  */
-public class CornerBlockTermTest extends ArrayTestCase {
+public class CornerBlockTermTest extends TestCase {
     public void testInstance() {
         testInstance(0, 0, 0);
         testInstance(1, 1, 0);
@@ -47,7 +48,7 @@ public class CornerBlockTermTest extends ArrayTestCase {
         final Position position = tp.toPosition();
         int[] expected = calcOrids(position, 0);
         for (int r=1; r<8; r++) {
-            assertEquals(""+r, expected, calcOrids(position, r));
+            assertArrayEquals(""+r, expected, calcOrids(position, r));
         }
     }
 

@@ -3,11 +3,10 @@ package com.welty.novello.coca;
 import com.orbanova.common.misc.Logger;
 import com.welty.novello.core.MeValue;
 import com.welty.novello.core.Mr;
-import com.welty.novello.core.ProgressUpdater;
+import com.orbanova.common.gui.ProgressUpdater;
 import com.welty.novello.eval.EvalStrategy;
 import com.welty.novello.eval.PositionElement;
 
-import javax.swing.*;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;

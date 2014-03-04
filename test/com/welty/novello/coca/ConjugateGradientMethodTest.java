@@ -1,12 +1,14 @@
 package com.welty.novello.coca;
 
-import com.orbanova.common.misc.ArrayTestCase;
 import com.orbanova.common.misc.Require;
 import com.orbanova.common.misc.Vec;
+import junit.framework.TestCase;
+
+import static org.junit.Assert.assertArrayEquals;
 
 /**
  */
-public class ConjugateGradientMethodTest extends ArrayTestCase {
+public class ConjugateGradientMethodTest extends TestCase {
     /**
      * Test function minimization.
      *
@@ -22,7 +24,7 @@ public class ConjugateGradientMethodTest extends ArrayTestCase {
 
         FunctionWithGradient f = new QForm(A, root);
         final double[] minimize = ConjugateGradientMethod.minimize(f, new double[]{2, 1});
-        assertEquals(root, minimize, 1e-10);
+        assertArrayEquals(root, minimize, 1e-10);
     }
 
     /**

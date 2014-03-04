@@ -1,5 +1,6 @@
 package com.welty.novello.coca;
 
+import com.orbanova.common.gui.Monitor;
 import com.orbanova.common.misc.Logger;
 import com.welty.novello.core.*;
 import com.welty.novello.selfplay.Players;
