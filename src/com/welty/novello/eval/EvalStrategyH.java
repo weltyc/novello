@@ -12,8 +12,6 @@ import java.util.Arrays;
  * Evaluation with all rows, columns, and corner blocks
  */
 @SuppressWarnings("OctalInteger") class EvalStrategyH extends EvalStrategy {
-    private static final int iDebugEval = 0;
-
     public EvalStrategyH() {
         super("h",
                 flatten(CornerTerm2.terms,
