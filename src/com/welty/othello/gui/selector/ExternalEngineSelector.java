@@ -1,6 +1,5 @@
 package com.welty.othello.gui.selector;
 
-import com.welty.novello.ntest.NBoardSyncEngine;
 import com.welty.novello.selfplay.EvalSyncEngine;
 import com.welty.othello.api.ParsedEngine;
 import com.welty.othello.api.StatelessEngine;
@@ -15,7 +14,7 @@ public class ExternalEngineSelector extends EngineSelector {
     private final String[] command;
 
     public ExternalEngineSelector(String name, String workingDirectory, String command) {
-        super(name, true);
+        super(name, true, true);
         this.workingDirectory = new File(workingDirectory);
         this.command = command.split("\\s+");
     }

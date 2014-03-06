@@ -13,9 +13,17 @@ public abstract class EngineSelector {
 
     static final Integer[] basicLevels = {1, 2, 3, 4};
     public static final Integer[] advancedLevels = {1, 2, 3, 4, 5, 6, 8, 10, 12, 16, 20, 24, 26, 30, 34, 38};
+    private final boolean external;
 
-    EngineSelector(String name, boolean isAdvanced) {
+    /**
+     *
+     * @param name Engine name
+     * @param isAdvanced true if the engine selection box should display advanced levels for this engine
+     * @param isExternal true if the engine is an external engine
+     */
+    EngineSelector(String name, boolean isAdvanced, boolean isExternal) {
         this.name = name;
+        this.external = isExternal;
         this.availableLevels = isAdvanced ? advancedLevels : basicLevels;
     }
 
@@ -44,5 +52,16 @@ public abstract class EngineSelector {
     public abstract String strengthEstimate(int level);
 
     public abstract EvalSyncEngine createEvalSyncEngine();
+
+    /**
+     * @return true if this is an external engine
+     */
+    public boolean isExternal() {
+        return external;
+    }
+
+    public String getName() {
+        return name;
+    }
 }
 

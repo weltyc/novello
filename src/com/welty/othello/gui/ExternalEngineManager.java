@@ -64,6 +64,13 @@ public class ExternalEngineManager extends ListenerManager<ExternalEngineManager
         }
     }
 
+    public void delete(String name) {
+        externalEngines.delete(name);
+        for (Listener listener : getListeners()) {
+            listener.engineDeleted(name);
+        }
+    }
+
     public static class Xei {
         public final String name;
         public final String wd;
@@ -77,6 +84,20 @@ public class ExternalEngineManager extends ListenerManager<ExternalEngineManager
     }
 
     public interface Listener {
+        /**
+         * An engine was added to this Manager.
+         *
+         * @param name    Engine name
+         * @param wd      Engine working directory
+         * @param command Engine command
+         */
         void engineAdded(String name, String wd, String command);
+
+        /**
+         * An engine was deleted from this Manager.
+         *
+         * @param name Engine name
+         */
+        void engineDeleted(String name);
     }
 }

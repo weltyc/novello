@@ -21,7 +21,7 @@ public class InternalEngineSelector extends EngineSelector {
      */
     private InternalEngineSelector(@NotNull String name, boolean isAdvanced, @NotNull String options, @NotNull Eval eval
     , @NotNull Mapper<Integer, String> strengthEstimator) {
-        super(name, isAdvanced);
+        super(name, isAdvanced, false);
         this.eval = eval;
         this.options = options;
         this.strengthEstimator = strengthEstimator;

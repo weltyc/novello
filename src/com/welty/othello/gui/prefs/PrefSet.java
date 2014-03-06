@@ -13,8 +13,7 @@ public class PrefSet {
     private final String key;
 
     /**
-     *
-     * @param c
+     * @param c   class. This class's package is used as a location to store preferences.
      * @param subnodeName name of subnode under which data will be stored
      */
     public PrefSet(Class<?> c, String subnodeName) {
@@ -48,5 +47,10 @@ public class PrefSet {
 
     public void removeAll() throws BackingStoreException {
         prefs().removeNode();
+    }
+
+    public void delete(String name) {
+        final Preferences prefs = prefs();
+        prefs.remove(name);
     }
 }
