@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 
-public abstract class EngineSelector {
+public abstract class EngineFactory {
     public final String name;
     public final Integer[] availableLevels;
 
@@ -21,7 +21,7 @@ public abstract class EngineSelector {
      * @param isAdvanced true if the engine selection box should display advanced levels for this engine
      * @param isExternal true if the engine is an external engine
      */
-    EngineSelector(String name, boolean isAdvanced, boolean isExternal) {
+    EngineFactory(String name, boolean isAdvanced, boolean isExternal) {
         this.name = name;
         this.external = isExternal;
         this.availableLevels = isAdvanced ? advancedLevels : basicLevels;

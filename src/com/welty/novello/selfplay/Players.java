@@ -4,8 +4,8 @@ import com.welty.novello.eval.*;
 import com.welty.novello.ntest.NBoardSyncEngine;
 import com.welty.ntestj.CEvaluatorJ;
 import com.welty.othello.gui.ExternalEngineManager;
-import com.welty.othello.gui.selector.EngineSelector;
-import com.welty.othello.gui.selector.InternalEngineSelectorManager;
+import com.welty.othello.gui.selector.EngineFactory;
+import com.welty.othello.gui.selector.InternalEngineFactoryManager;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -66,10 +66,10 @@ public class Players {
         if (xei != null) {
             return new SyncPlayer(new NBoardSyncEngine(xei, false), depth);
         } else {
-            final EngineSelector engineSelector = InternalEngineSelectorManager.instance.get(evalName);
+            final EngineFactory engineFactory = InternalEngineFactoryManager.instance.get(evalName);
             final EvalSyncEngine engine;
-            if (engineSelector != null) {
-                engine = engineSelector.createEvalSyncEngine();
+            if (engineFactory != null) {
+                engine = engineFactory.createEvalSyncEngine();
             } else {
                 final Eval eval;
                 eval = eval(evalName);

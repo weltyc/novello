@@ -1,18 +1,18 @@
 package com.welty.othello.api;
 
 import com.welty.othello.gui.StatelessEngineManager;
-import com.welty.othello.gui.selector.EngineSelector;
+import com.welty.othello.gui.selector.EngineFactory;
 import com.welty.othello.protocol.ResponseHandler;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 
 public class OpponentSelection {
-    private final @NotNull EngineSelector engineSelector;
+    private final @NotNull EngineFactory engineFactory;
     private final int level;
 
-    public OpponentSelection(@NotNull EngineSelector engineSelector, int level) {
-        this.engineSelector = engineSelector;
+    public OpponentSelection(@NotNull EngineFactory engineFactory, int level) {
+        this.engineFactory = engineFactory;
         this.level = level;
     }
 
@@ -26,7 +26,7 @@ public class OpponentSelection {
      * @throws IOException
      */
     public StatelessEngine getOrCreateEngine(ResponseHandler responseHandler) throws IOException {
-        return StatelessEngineManager.getInstance().getOrCreate(engineSelector, level, responseHandler);
+        return StatelessEngineManager.getInstance().getOrCreate(engineFactory, level, responseHandler);
     }
 
     /**
@@ -41,7 +41,7 @@ public class OpponentSelection {
     }
 
     @Override public String toString() {
-        return engineSelector.name;
+        return engineFactory.name;
     }
 
     /**
@@ -51,6 +51,6 @@ public class OpponentSelection {
      * &lt;/html>
      */
     public String strengthEstimate() {
-        return engineSelector.strengthEstimate(level);
+        return engineFactory.strengthEstimate(level);
     }
 }

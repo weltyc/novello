@@ -9,11 +9,11 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.io.IOException;
 
-public class ExternalEngineSelector extends EngineSelector {
+public class ExternalEngineFactory extends EngineFactory {
     private final File workingDirectory;
     private final String[] command;
 
-    public ExternalEngineSelector(String name, String workingDirectory, String command) {
+    public ExternalEngineFactory(String name, String workingDirectory, String command) {
         super(name, true, true);
         this.workingDirectory = new File(workingDirectory);
         this.command = command.split("\\s+");

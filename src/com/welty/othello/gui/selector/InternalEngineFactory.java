@@ -8,7 +8,7 @@ import com.welty.othello.api.SyncStatelessEngine;
 import com.welty.othello.protocol.ResponseHandler;
 import org.jetbrains.annotations.NotNull;
 
-public class InternalEngineSelector extends EngineSelector {
+public class InternalEngineFactory extends EngineFactory {
     private final @NotNull Eval eval;
     private final @NotNull String options;
     private final Mapper<Integer, String> strengthEstimator;
@@ -19,8 +19,8 @@ public class InternalEngineSelector extends EngineSelector {
      * @param options    MidgameSearch.Options
      * @param eval       eval code, e.g. "d2"
      */
-    private InternalEngineSelector(@NotNull String name, boolean isAdvanced, @NotNull String options, @NotNull Eval eval
-    , @NotNull Mapper<Integer, String> strengthEstimator) {
+    private InternalEngineFactory(@NotNull String name, boolean isAdvanced, @NotNull String options, @NotNull Eval eval
+            , @NotNull Mapper<Integer, String> strengthEstimator) {
         super(name, isAdvanced, false);
         this.eval = eval;
         this.options = options;
@@ -39,7 +39,7 @@ public class InternalEngineSelector extends EngineSelector {
         return new EvalSyncEngine(eval, options, name);
     }
 
-    static @NotNull InternalEngineSelector of(@NotNull String name, boolean isAdvanced, @NotNull String options
+    static @NotNull InternalEngineFactory of(@NotNull String name, boolean isAdvanced, @NotNull String options
             , @NotNull Eval eval, final @NotNull String strength) {
         final Mapper<Integer, String> mapper = new Mapper<Integer, String>() {
             @NotNull @Override public String y(Integer x) {
@@ -49,7 +49,7 @@ public class InternalEngineSelector extends EngineSelector {
         return of(name, isAdvanced, options, eval, mapper);
     }
 
-    static @NotNull InternalEngineSelector of(String name, boolean advanced, String options, Eval eval, Mapper<Integer, String> mapper) {
-        return new InternalEngineSelector(name, advanced, options, eval, mapper);
+    static @NotNull InternalEngineFactory of(String name, boolean advanced, String options, Eval eval, Mapper<Integer, String> mapper) {
+        return new InternalEngineFactory(name, advanced, options, eval, mapper);
     }
 }

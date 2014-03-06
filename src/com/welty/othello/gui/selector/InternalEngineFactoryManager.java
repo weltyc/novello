@@ -6,10 +6,10 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
-import static com.welty.othello.gui.selector.InternalEngineSelector.of;
+import static com.welty.othello.gui.selector.InternalEngineFactory.of;
 
-public class InternalEngineSelectorManager {
-    final Collection<InternalEngineSelector> weakSelectors;
+public class InternalEngineFactoryManager {
+    final Collection<InternalEngineFactory> weakFactories;
 
     // cutoffs:
     //  BEGINNER <
@@ -22,14 +22,14 @@ public class InternalEngineSelectorManager {
     private static final String MEDIUM = "<html>Strength: <span bgcolor='#FFFF00'>Medium</span></html>";
     private static final String ADVANCED = "<html>Strength: <span bgcolor='#FFC800'>Advanced</span></html>";
     private static final String HARD = "<html>Strength: <span bgcolor='#FF8888'>Hard</span></html>";
-    private static final InternalEngineSelector vegtblSelector = InternalEngineSelector.of("Vegtbl", true, "", Players.eval("ntestJ"), new Mapper<Integer, String>() {
+    private static final InternalEngineFactory vegtblFactory = InternalEngineFactory.of("Vegtbl", true, "", Players.eval("ntestJ"), new Mapper<Integer, String>() {
         @NotNull @Override public String y(Integer x) {
             return x <= 1 ? ADVANCED : HARD;
         }
     }
     );
 
-    public static final InternalEngineSelector ABIGAIL = of("Abigail", false, "NS", new SimpleEval() {
+    public static final InternalEngineFactory ABIGAIL = of("Abigail", false, "NS", new SimpleEval() {
         @Override public int eval(SimpleEval.Situation s) {
             return s.netDisks();
         }
@@ -37,10 +37,10 @@ public class InternalEngineSelectorManager {
             BEGINNER
     );
 
-    public static final InternalEngineSelectorManager instance = new InternalEngineSelectorManager();
+    public static final InternalEngineFactoryManager instance = new InternalEngineFactoryManager();
 
-    private InternalEngineSelectorManager() {
-        final List<InternalEngineSelector> mutableSelectors = Arrays.asList(
+    private InternalEngineFactoryManager() {
+        final List<InternalEngineFactory> mutableSelectors = Arrays.asList(
                 ABIGAIL,
                 of("Charlie", false, "NS", new SimpleEval() {
                             @Override public int eval(Situation s) {
@@ -82,33 +82,33 @@ public class InternalEngineSelectorManager {
                 }, ADVANCED)
 
         );
-        weakSelectors = Collections.unmodifiableCollection(mutableSelectors);
+        weakFactories = Collections.unmodifiableCollection(mutableSelectors);
     }
 
     /**
-     * Create a list of internal opponent weakSelectors
+     * Create a list of internal opponent factories
      *
      * @return the list
      */
-    public static List<EngineSelector> internalOpponentSelectors(boolean includeWeakEngines) {
-        final ArrayList<EngineSelector> selectors = new ArrayList<>();
+    public static List<EngineFactory> internalOpponentSelectors(boolean includeWeakEngines) {
+        final ArrayList<EngineFactory> selectors = new ArrayList<>();
 
         if (includeWeakEngines) {
-            selectors.addAll(instance.weakSelectors);
+            selectors.addAll(instance.weakFactories);
         }
-        selectors.add(vegtblSelector);
+        selectors.add(vegtblFactory);
 
         return selectors;
     }
 
     /**
-     * Get an EngineSelector by name
+     * Get an EngineFactory by name
      *
      * @param name engine name
-     * @return the EngineSelector with that name, or null if there is no such engine selector.
+     * @return the EngineFactory with that name, or null if there is no such engine selector.
      */
-    public EngineSelector get(@NotNull String name) {
-        for (EngineSelector selector : internalOpponentSelectors(true)) {
+    public EngineFactory get(@NotNull String name) {
+        for (EngineFactory selector : internalOpponentSelectors(true)) {
             if (selector.name.equals(name)) {
                 return selector;
             }
