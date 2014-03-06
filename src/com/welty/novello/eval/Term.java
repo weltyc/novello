@@ -530,7 +530,7 @@ class UldrTerm extends DiagonalTerm {
     }
 
     @Override String oridGen() {
-        return "Edge3XTerm.instance.orid(Edge3XTerm.instance" + direction + "(mover, enemy))";
+        return "Edge3XFeature.instance.orid(Edge3XTerm.instance" + direction + "(mover, enemy))";
     }
 }
 

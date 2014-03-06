@@ -9,7 +9,7 @@ class Edge3XFeature extends MultiFeature {
     public static Edge3XFeature instance = new Edge3XFeature(new OridCalc());
 
     private Edge3XFeature(OridCalc calc) {
-        super("Edge3X", calc.orids, calc.descriptions);
+        super("edge3X", calc.orids, calc.descriptions);
     }
 
     private static class OridCalc {

@@ -41,9 +41,6 @@ import java.util.Arrays;
                 + corner2Coeffs[CornerTerm2.orid(mover, enemy, moverMoves, enemyMoves, 7)]
                 + corner2Coeffs[CornerTerm2.orid(mover, enemy, moverMoves, enemyMoves, 56)]
                 + corner2Coeffs[CornerTerm2.orid(mover, enemy, moverMoves, enemyMoves, 63)];
-        if (iDebugEval > 1) {
-            System.out.println("Corners done (features <= 0). eval = " + eval);
-        }
         eval += slice[1][Long.bitCount(mover)];
         eval += slice[2][Long.bitCount(enemy)];
         eval += slice[3][Long.bitCount(moverMoves)];
@@ -55,9 +52,6 @@ import java.util.Arrays;
         eval += slice[7][Long.bitCount(BitBoardUtils.potMobs2(mover, empty))];
         eval += slice[8][Long.bitCount(BitBoardUtils.potMobs2(enemy, empty))];
 
-        if (iDebugEval > 1) {
-            System.out.println("Corners, disks, and mobility done (features <= 8). eval = " + eval);
-        }
         final short[] edge3XCoeffs = slice[9];
         eval += edge3XCoeffs[Edge3XFeature.instance.orid(Edge3XTerm.instance0(mover, enemy))]
                 + edge3XCoeffs[Edge3XFeature.instance.orid(Edge3XTerm.instance1(mover, enemy))]
@@ -161,25 +155,27 @@ import java.util.Arrays;
     String generateCode() {
         StringBuilder sb = new StringBuilder();
 
-        sb.append("assert moverMoves !=0;\n" +
-                "final short[][] slice = coefficientSet.slice(BitBoardUtils.nEmpty(mover, enemy));\n" +
+        sb.append(newline + "assert moverMoves != 0;" + newline +
+                "final short[][] slice = coefficientSet.slice(BitBoardUtils.nEmpty(mover, enemy));" + newline +
                 "int eval = 0;\n");
 
 
         for (int iFeature = 0; iFeature < nFeatures(); iFeature++) {
             if (iFeature == 5) {
                 if (!endsWithDoubleNewline(sb)) {
-                    sb.append("\n");
+                    sb.append(newline);
                 }
-                sb.append("final long empty = ~(mover|enemy);\n");
+                sb.append("final long empty = ~(mover | enemy);").append(newline);
             }
             generateCodeForFeature(sb, iFeature);
         }
 
-        sb.append("return eval;\n");
+        sb.append(newline.substring(1)).append("return eval;").append(newline);
 
         return sb.toString();
     }
+
+    static final String newline = "\n        ";
 
     private void generateCodeForFeature(StringBuilder sb, int iFeature) {
         final Feature feature = getFeature(iFeature);
@@ -194,19 +190,19 @@ import java.util.Arrays;
 
         if (featureTerms.size() > 1) {
             if (!endsWithDoubleNewline(sb)) {
-                sb.append('\n');
+                sb.append(newline);
             }
             final String coeffName = (feature.toString() + "Coeffs").replace(" ", "");
             if (!coeffName.matches("[a-zA-Z][a-zA-Z0-9]*")) {
                 throw new IllegalStateException("Coefficient name must be a valid java identifier");
             }
-            sb.append(String.format("final short[] %s = slice[%d];\n", coeffName, iFeature));
+            sb.append(String.format("final short[] %s = slice[%d];", coeffName, iFeature)).append(newline);
             if (feature.getClass() == Corner2x5Feature.class) {
                 for (int i : new int[]{0, 1, 6, 7}) {
-                    sb.append("final int moverRow").append(i).append(" = BitBoardUtils.extractRow(mover, ").append(i).append(");\n");
-                    sb.append("final int enemyRow").append(i).append(" = BitBoardUtils.extractRow(enemy, ").append(i).append(");\n");
-                    sb.append("final int moverCol").append(i).append(" = BitBoardUtils.extractCol(mover, ").append(i).append(");\n");
-                    sb.append("final int enemyCol").append(i).append(" = BitBoardUtils.extractCol(enemy, ").append(i).append(");\n");
+                    sb.append("final int moverRow").append(i).append(" = BitBoardUtils.extractRow(mover, ").append(i).append(");").append(newline);
+                    sb.append("final int enemyRow").append(i).append(" = BitBoardUtils.extractRow(enemy, ").append(i).append(");").append(newline);
+                    sb.append("final int moverCol").append(i).append(" = BitBoardUtils.extractCol(mover, ").append(i).append(");").append(newline);
+                    sb.append("final int enemyCol").append(i).append(" = BitBoardUtils.extractCol(enemy, ").append(i).append(");").append(newline);
                 }
             }
             sb.append("eval += ");
@@ -217,11 +213,11 @@ import java.util.Arrays;
                                     return coefficientCode(coeffName, term);
                                 }
                             })
-                            .join("\n     +  ")
+                            .join(newline + "        + ")
             );
             sb.append(";\n");
         } else if (featureTerms.size() != 0) {
-            sb.append(String.format("eval += slice[%d][%s];\n", iFeature, featureTerms.get(0).oridGen()));
+            sb.append(String.format("eval += slice[%d][%s];", iFeature, featureTerms.get(0).oridGen())).append(newline);
         } else {
             throw new IllegalStateException("messed up");
         }
@@ -237,6 +233,7 @@ import java.util.Arrays;
     }
 
     public static void main(String[] args) {
-        System.out.println(new EvalStrategyG().generateCode());
+        final EvalStrategyG g = (EvalStrategyG) EvalStrategies.strategy("g");
+        System.out.println(g.generateCode());
     }
 }
