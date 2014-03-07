@@ -451,19 +451,23 @@ class UldrTerm extends DiagonalTerm {
     private static int[] calcSecondRowValues() {
         final int[] values = new int[256];
         for (int i = 0; i < 256; i++) {
-            int value = 0;
-            if (isBitSet(value, 1)) {
-                value += 1 << 8;
-            }
-            if ((i & 0x3C) == 0x3C) {
-                value += 1 << 9;
-            }
-            if (isBitSet(value, 6)) {
-                value += 1 << 10;
-            }
-            values[i] = value;
+            values[i] = calcSecondRowValue(i);
         }
         return values;
+    }
+
+    static int calcSecondRowValue(int i) {
+        int value = 0;
+        if (isBitSet(i, 1)) {
+            value += 1 << 8;
+        }
+        if ((i & 0x3C) == 0x3C) {
+            value += 1 << 9;
+        }
+        if (isBitSet(i, 6)) {
+            value += 1 << 10;
+        }
+        return value;
     }
 
     private final int direction;
@@ -525,7 +529,7 @@ class UldrTerm extends DiagonalTerm {
      * @param row1 bits for the second colour's disks
      * @return binary instance
      */
-    private static int extract3X(int row0, int row1) {
+    static int extract3X(int row0, int row1) {
         return row0 + secondRowValues[row1];
     }
 

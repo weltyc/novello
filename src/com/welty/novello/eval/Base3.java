@@ -6,7 +6,7 @@ package com.welty.novello.eval;
 public class Base3 {
     public static final char[] output = ".*O".toCharArray();
 
-    private static final int[] base3FromBase2 = new int[1<<10];
+    private static final int[] base3FromBase2 = new int[1<<11];
     static {
         for (int mover = 0; mover<base3FromBase2.length; mover++) {
             int base3 = 0;
