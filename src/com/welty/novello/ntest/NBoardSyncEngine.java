@@ -35,7 +35,6 @@ public class NBoardSyncEngine implements SyncEngine {
             final String[] processArgs = xei.cmd.split("\\s+");
             final Process process = new ProcessBuilder(processArgs).directory(new File(xei.wd)).redirectErrorStream(true).start();
             processLogger = new ProcessLogger(process, debug);
-            processLogger.readLine();
             pingPong();
         } catch (IOException e) {
             throw new RuntimeException(e);

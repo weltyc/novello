@@ -27,6 +27,15 @@ public class Players {
     }
 
     /**
+     * Constructs a player with debug=false.
+     * <p/>
+     * See {@link #player(String, boolean)}
+     */
+    public static SyncPlayer player(String textString) {
+        return player(textString, false);
+    }
+
+    /**
      * Construct a SyncPlayer from a text string
      * <p/>
      * The text string has the format
@@ -45,9 +54,10 @@ public class Players {
      * This is because the SyncEngine may not be multithreaded.
      *
      * @param textString player text string
+     * @param debug      if true, constructs external engines with debug information.
      * @return a newly constructed SyncEngine.
      */
-    public static SyncPlayer player(String textString) {
+    public static SyncPlayer player(String textString, boolean debug) {
         final String[] parts = textString.split(":", 2);
         if (parts.length < 2) {
             throw new IllegalArgumentException("require an eval and a search depth, for instance 'a1:3w'; had " + textString);
@@ -64,7 +74,7 @@ public class Players {
         final String evalName = parts[0];
         final ExternalEngineManager.Xei xei = ExternalEngineManager.instance.getXei(evalName);
         if (xei != null) {
-            return new SyncPlayer(new NBoardSyncEngine(xei, false), depth);
+            return new SyncPlayer(new NBoardSyncEngine(xei, debug), depth);
         } else {
             final EngineFactory engineFactory = InternalEngineFactoryManager.instance.get(evalName);
             final EvalSyncEngine engine;

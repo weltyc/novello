@@ -27,7 +27,8 @@ public class SelfPlayGame implements Callable<MutableGame> {
      * @param place     location of the match (often, Props.getHostName())
      * @param gameFlags Sum of binary flags defined in SelfPlayGame (FLAG_PRINT_GAME, FLAG_MEASURE_TIME)
      */
-    public SelfPlayGame(@NotNull Position board, @NotNull SyncPlayer black, @NotNull SyncPlayer white, OsClock clock, String place, int gameFlags) {
+    public SelfPlayGame(@NotNull Position board, @NotNull SyncPlayer black, @NotNull SyncPlayer white, OsClock clock
+            , String place, int gameFlags) {
         this.game = new MutableGame(board, black.toString(), white.toString(), place, clock, clock);
         this.black = black;
         this.white = white;

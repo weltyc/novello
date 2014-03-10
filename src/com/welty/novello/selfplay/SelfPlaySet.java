@@ -21,12 +21,13 @@ public class SelfPlaySet {
 
     public static void main(String[] args) throws IOException {
         if (args.length < 2) {
-            System.err.println("usage: blackPlayerName whitePlayerName [time per game in seconds]");
+            System.err.println("usage: blackPlayerName whitePlayerName [time per game in seconds] [debug:boolean]");
             System.err.println(" for example a1:2 NTest:2 900");
             System.exit(-1);
         }
-        final SyncPlayer black = Players.player(args[0]);
-        final SyncPlayer white = Players.player(args[1]);
+        final boolean debug = args.length > 3 && Boolean.parseBoolean(args[3]);
+        final SyncPlayer black = Players.player(args[0], debug);
+        final SyncPlayer white = Players.player(args[1], debug);
         final OsClock clock = args.length > 2 ? new OsClock(Double.parseDouble(args[2])) : OsClock.LONG;
 
         final MatchResultListener[] listeners = {new MatchPrinter(2), new StatPrinter()};
