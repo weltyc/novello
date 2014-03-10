@@ -250,7 +250,11 @@ Use both the Edge2X and Edge3X Patterns because some Edge3X patterns are probabl
 Play h1 vs g1 at even depths:
 
     depth  result
+       2   +0.195 +/-0.098
+       4   +0.172 +/-0.075
       12   +0.0172 +/-0.035
       14   +0.0438 +/-0.030
 
 Note: timing was not considered because h1, though currently slower, can be sped up to match g1.
+
+Again, we find subpatterns are a very small advantage.
