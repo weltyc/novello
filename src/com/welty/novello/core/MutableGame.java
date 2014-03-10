@@ -179,7 +179,7 @@ public class MutableGame {
         OsPlayerInfo black = osGame.getBlackPlayer();
         final String blackName = black.name;
         final String whiteName = osGame.getWhitePlayer().name;
-        final COsBoardType bt = osGame.getStartPosition().board.getBoardType();
+        final OsBoardType bt = osGame.getStartPosition().board.getBoardType();
         if (bt.n != 8) {
             throw new IllegalArgumentException("MutableGame is required to be on an 8x8 board, but was " + bt + ".");
         }
