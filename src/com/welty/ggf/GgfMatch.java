@@ -4,6 +4,7 @@ import com.orbanova.common.feed.Feed;
 import com.orbanova.common.feed.Feeds;
 import com.orbanova.common.feed.NullableMapper;
 import com.orbanova.common.misc.Require;
+import com.welty.othello.gdk.COsGame;
 import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.compressors.CompressorStreamFactory;
@@ -29,10 +30,10 @@ public class GgfMatch {
             }
         }
     };
-    private final List<GgfGame> games;
+    private final List<COsGame> games;
 
-    private GgfMatch(List<GgfGame> mutableGames) {
-        this.games = Collections.unmodifiableList(new ArrayList<>(mutableGames));
+    private GgfMatch(List<COsGame> games) {
+        this.games = Collections.unmodifiableList(new ArrayList<>(games));
     }
 
     /**
@@ -40,7 +41,7 @@ public class GgfMatch {
      *
      * @return the games
      */
-    public List<GgfGame> getGames() {
+    public List<COsGame> getGames() {
         return games;
     }
 
@@ -55,14 +56,14 @@ public class GgfMatch {
         final int nGames = Integer.parseInt(parts[0]);
         final String ggfTexts = parts[1];
 
-        final List<GgfGame> games = new ArrayList<>(2);
+        final List<COsGame> games = new ArrayList<>(2);
         for (int loc = 0; ; ) {
             final int end = ggfTexts.indexOf(')', loc);
             if (end < 0) {
                 break;
             }
             final String ggfText = ggfTexts.substring(loc, end + 1);
-            games.add(GgfGame.of(ggfText));
+            games.add(new COsGame(ggfText));
             loc = end + 1;
         }
         Require.eq(nGames, "# games", games.size());

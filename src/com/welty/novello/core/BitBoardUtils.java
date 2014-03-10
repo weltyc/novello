@@ -502,6 +502,7 @@ public class BitBoardUtils {
      * Convert test, for example "D5", to a square index.
      *
      * @param squareText text of the square
+     * @throws IllegalArgumentException if the text does not represent an 8x8 square
      */
     public static int textToSq(String squareText) {
         Require.eq(squareText.length(), "# of chars in squareText", 2);

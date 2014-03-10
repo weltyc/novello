@@ -1,10 +1,11 @@
 package com.welty.novello.coca;
 
 import com.orbanova.common.misc.Logger;
-import com.welty.ggf.GgfGame;
 import com.welty.ggf.GgfMatch;
 import com.welty.novello.core.MeValue;
 import com.welty.novello.core.MutableGame;
+import com.welty.othello.gdk.COsGame;
+import com.welty.othello.gdk.OsMatchType;
 import org.apache.commons.compress.compressors.CompressorException;
 
 import java.io.IOException;
@@ -47,18 +48,19 @@ public class RandGameMvSource implements MvSource {
 
         try {
             for (GgfMatch match : GgfMatch.readFromFile(Paths.get(filename))) {
-                final List<GgfGame> games = match.getGames();
-                final GgfGame game0 = games.get(0);
+                final List<COsGame> games = match.getGames();
+                final COsGame game0 = games.get(0);
 
-                if (game0.getBoardSize() == 8 && !game0.isAnti() && game0.blackRating > 2000 && game0.whiteRating > 2000) {
+                final OsMatchType mt = game0.getMatchType();
+                if (game0.is8x8() && !mt.anti && game0.getBlackPlayer().rating > 2000 && game0.getWhitePlayer().rating > 2000) {
                     nSelected++;
-                    if (game0.isSynchro()) {
+                    if (mt.synch) {
                         nSelectedSynchro++;
                     }
-                    if (game0.isKomi()) {
+                    if (mt.komi) {
                         nSelectedKomi++;
                     }
-                    for (GgfGame ggfGame : games) {
+                    for (COsGame ggfGame : games) {
                         final MutableGame mg = MutableGame.ofGgf(ggfGame.toString());
                         meValues.addAll(mg.calcPositionValues());
                     }

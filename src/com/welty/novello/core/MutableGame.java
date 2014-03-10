@@ -1,10 +1,9 @@
 package com.welty.novello.core;
 
 import com.orbanova.common.misc.Require;
-import com.welty.ggf.GgfGame;
 import com.welty.ggf.Move;
 import com.welty.novello.eval.CoefficientCalculator;
-import com.welty.othello.gdk.OsClock;
+import com.welty.othello.gdk.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -162,47 +161,38 @@ public class MutableGame {
         if (!ggf.startsWith("(;") || !ggf.endsWith(";)")) {
             throw new IllegalArgumentException("not a GGF format game");
         }
-        ggf = ggf.substring(2, ggf.length() - 2);
-        final HashMap<String, String> tags = getGgfTags(ggf);
+        final COsGame osGame = new COsGame(ggf);
 
 
-        final String place = GgfGame.getRequiredTag(tags, "PC");
-        final String blackName = GgfGame.getRequiredTag(tags, "PB");
-        final String whiteName = GgfGame.getRequiredTag(tags, "PW");
-        final String bo = GgfGame.getRequiredTag(tags, "BO");
-        if (!bo.startsWith("8 ")) {
-            throw new IllegalArgumentException("We can only handle 8x8 boards.");
+        return of(osGame);
+    }
+
+
+    /**
+     * Creates a new MutableGame from the OsGame.
+     *
+     * @param osGame input.
+     * @throws IllegalArgumentException if the board is not 8x8.
+     */
+    public static MutableGame of(@NotNull COsGame osGame) {
+        final String place = osGame.sPlace;
+        OsPlayerInfo black = osGame.getBlackPlayer();
+        final String blackName = black.name;
+        final String whiteName = osGame.getWhitePlayer().name;
+        final COsBoardType bt = osGame.getStartPosition().board.getBoardType();
+        if (bt.n != 8) {
+            throw new IllegalArgumentException("MutableGame is required to be on an 8x8 board, but was " + bt + ".");
         }
-        final OsClock blackClock;
-        final OsClock whiteClock;
-        if (tags.containsKey("TI")) {
-            blackClock = whiteClock = new OsClock(tags.get("TI"));
-        } else {
-            blackClock = new OsClock(GgfGame.getRequiredTag(tags, "TB"));
-            whiteClock = new OsClock(GgfGame.getRequiredTag(tags, "TW"));
-        }
+        final OsClock blackClock = osGame.getStartPosition().getBlackClock();
+        final OsClock whiteClock = osGame.getStartPosition().getWhiteClock();
 
-        final Position startPosition = Position.of(bo.substring(2));
+        final Position startPosition = Position.of(osGame.posStart.board);
 
         final MutableGame game = new MutableGame(startPosition, blackName, whiteName, place, blackClock, whiteClock);
 
-        // add moves
-        int loc = 0;
-        for (; ; ) {
-            final int tagEnd = ggf.indexOf('[', loc);
-            if (tagEnd < 0) {
-                break;
-            }
-            final int valueEnd = ggf.indexOf(']', tagEnd);
-            if (valueEnd < 0) {
-                throw new IllegalArgumentException("malformed GGF game");
-            }
-            final String tag = ggf.substring(loc + 1, tagEnd).trim();
-            final String value = ggf.substring(tagEnd + 1, valueEnd).trim();
-            if (tag.equals("B") || tag.equals("W")) {
-                game.play(new Move8x8(value));
-            }
-            loc = valueEnd;
+        final COsMoveList moveList = osGame.getMoveList();
+        for (OsMoveListItem mli : moveList) {
+            game.play(new Move8x8(mli));
         }
 
         return game;
