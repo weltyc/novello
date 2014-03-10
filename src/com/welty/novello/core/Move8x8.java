@@ -2,12 +2,13 @@ package com.welty.novello.core;
 
 import com.welty.ggf.Move;
 import com.welty.novello.eval.CoefficientCalculator;
+import com.welty.othello.gdk.OsMove;
 import com.welty.othello.gdk.OsMoveListItem;
 import org.jetbrains.annotations.NotNull;
 
 /**
  */
-public class Move8x8 extends Move {
+public class Move8x8 extends OsMoveListItem {
     /**
      * Generic pass move
      * <p/>
@@ -35,7 +36,7 @@ public class Move8x8 extends Move {
      * @throws IllegalArgumentException if the move is not an 8x8 move.
      */
     public Move8x8(@NotNull MoveScore moveScore, double time) {
-        super(BitBoardUtils.sqToText(moveScore.sq), moveScore.centidisks / (double) CoefficientCalculator.DISK_VALUE, time);
+        super(moveScore.getOsMove(), moveScore.centidisks / (double) CoefficientCalculator.DISK_VALUE, time);
         getSq();
     }
 
@@ -46,7 +47,7 @@ public class Move8x8 extends Move {
      * @throws IllegalArgumentException if the move is not an 8x8 move.
      */
     public Move8x8(@NotNull OsMoveListItem mli) {
-        super(mli.move.toString(), mli.getEval(), mli.getElapsedTime());
+        super(mli.move, mli.getEval(), mli.getElapsedTime());
         getSq(); // throw exception if
     }
 
@@ -56,6 +57,6 @@ public class Move8x8 extends Move {
      * @throws IllegalArgumentException if this move does not represent an 8x8 board.
      */
     public int getSq() {
-        return isPass() ? -1 : BitBoardUtils.textToSq(getSquare());
+        return move.isPass() ? -1 : BitBoardUtils.textToSq(move.toString());
     }
 }

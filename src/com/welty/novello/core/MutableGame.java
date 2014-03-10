@@ -1,14 +1,12 @@
 package com.welty.novello.core;
 
 import com.orbanova.common.misc.Require;
-import com.welty.ggf.Move;
 import com.welty.novello.eval.CoefficientCalculator;
 import com.welty.othello.gdk.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -23,7 +21,7 @@ public class MutableGame {
     /**
      * A list of all moves played in the game, including passes.
      */
-    private final List<Move8x8> moves = new ArrayList<>();
+    private final List<Move8x8> mlis = new ArrayList<>();
     private boolean isOver = false;
     private Position lastPosition;
 
@@ -43,8 +41,8 @@ public class MutableGame {
     /**
      * @return a list of all moves played in the game, including passes
      */
-    public List<Move8x8> getMoves() {
-        return new ArrayList<>(moves);
+    public List<Move8x8> getMlis() {
+        return new ArrayList<>(mlis);
     }
 
     public String toGgf() {
@@ -64,9 +62,9 @@ public class MutableGame {
 
         sb.append("BO[8 ").append(startState.position.positionString()).append("]");
         Position cur = startState.position;
-        for (Move8x8 move : moves) {
+        for (Move8x8 move : mlis) {
             sb.append(cur.blackToMove ? "B[" : "W[");
-            move.appendTo(sb);
+            sb.append(move);
             sb.append(']');
             cur = cur.playOrPass(move.getSq());
         }
@@ -99,14 +97,14 @@ public class MutableGame {
     }
 
     public void finish() {
-        if (!moves.isEmpty() && moves.get(moves.size() - 1).isPass()) {
+        if (!mlis.isEmpty() && mlis.get(mlis.size() - 1).isPass()) {
             throw new IllegalArgumentException("Can't end on a pass");
         }
         this.isOver = true;
     }
 
     private void play(Move8x8 move) {
-        moves.add(move);
+        mlis.add(move);
         lastPosition = lastPosition.playOrPass(move.getSq());
     }
 
@@ -125,7 +123,7 @@ public class MutableGame {
         final int netScore = getLastPosition().terminalScore();
         final List<MeValue> pvs = new ArrayList<>();
         Position pos = getStartPosition();
-        for (Move8x8 move : moves) {
+        for (Move8x8 move : mlis) {
             if (move.isPass()) {
                 pos = pos.pass();
             } else {
@@ -198,27 +196,6 @@ public class MutableGame {
         return game;
     }
 
-    private static HashMap<String, String> getGgfTags(String ggf) {
-        // get tags from GGF
-        final HashMap<String, String> tags = new HashMap<>();
-        int loc = 0;
-        for (; ; ) {
-            final int tagEnd = ggf.indexOf('[', loc);
-            if (tagEnd < 0) {
-                break;
-            }
-            final int valueEnd = ggf.indexOf(']', tagEnd);
-            if (valueEnd < 0) {
-                throw new IllegalArgumentException("malformed GGF game");
-            }
-            final String tag = ggf.substring(loc + 1, tagEnd).trim();
-            final String value = ggf.substring(tagEnd + 1, valueEnd).trim();
-            tags.put(tag, value);
-            loc = valueEnd;
-        }
-        return tags;
-    }
-
     /**
      * Calculate the position with the given number of empties.
      * <p/>
@@ -230,7 +207,7 @@ public class MutableGame {
      */
     public @Nullable Position calcPositionAt(int nEmpty) {
         Position pos = getStartPosition();
-        for (Move8x8 move : moves) {
+        for (Move8x8 move : mlis) {
             if (move.isPass()) {
                 pos = pos.pass();
             } else {
@@ -281,9 +258,9 @@ public class MutableGame {
     public double time(boolean blackPlayer) {
         boolean counts = getStartPosition().blackToMove == blackPlayer;
         double time = 0;
-        for (Move move : moves) {
+        for (Move8x8 move : mlis) {
             if (counts) {
-                time += move.time;
+                time += move.getElapsedTime();
             }
             counts = !counts;
         }
@@ -301,11 +278,11 @@ public class MutableGame {
 
     public @NotNull State getStateAfter(int nMoves) {
         Require.geq(nMoves, 0);
-        Require.leq(nMoves, "nMove", moves.size(), "total moves in the game");
+        Require.leq(nMoves, "nMove", mlis.size(), "total moves in the game");
 
         State state = getStartState();
         for (int i = 0; i < nMoves; i++) {
-            state = state.playOrPass(moves.get(i));
+            state = state.playOrPass(mlis.get(i));
         }
         return state;
     }

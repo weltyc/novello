@@ -5,6 +5,7 @@ import com.welty.othello.gdk.OsMoveListItem;
 import com.welty.othello.protocol.Depth;
 import com.welty.othello.protocol.HintResponse;
 import com.welty.othello.protocol.Value;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * A move with an evaluation
@@ -59,9 +60,13 @@ public class MoveScore {
      * @return the OsMoveListItem
      */
     public OsMoveListItem toMli(long millis) {
-        final OsMove move = new OsMove(BitBoardUtils.sqToText(sq));
+        final OsMove move = getOsMove();
         final double eval = 0.01 * centidisks;
         return new OsMoveListItem(move, eval, 0.001*millis);
+    }
+
+    public @NotNull OsMove getOsMove() {
+        return new OsMove(BitBoardUtils.sqToText(sq));
     }
 
     public HintResponse toHintResponse(int pong, Depth depth) {

@@ -1,7 +1,6 @@
 package com.welty.novello.solver;
 
 import com.welty.novello.core.*;
-import com.welty.othello.api.AbortCheck;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -27,7 +26,7 @@ public class EndgameAnalyzer {
     private static void analyzeGame(MutableGame game) {
         final int[] dropped = new int[2];
 
-        final List<Move8x8> moves = game.getMoves();
+        final List<Move8x8> moves = game.getMlis();
         Position position = game.getStartPosition();
         for (Move8x8 move : moves) {
             final int nEmpty = position.nEmpty();

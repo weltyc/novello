@@ -22,9 +22,9 @@ public class State {
     public State playOrPass(Move8x8 move) {
         final Position nextPosition = position.playOrPass(move.getSq());
         if (position.blackToMove) {
-            return new State(nextPosition, blackClock.update(move.time), whiteClock);
+            return new State(nextPosition, blackClock.update(move.getElapsedTime()), whiteClock);
         } else {
-            return new State(nextPosition, blackClock, whiteClock.update(move.time));
+            return new State(nextPosition, blackClock, whiteClock.update(move.getElapsedTime()));
         }
     }
 }

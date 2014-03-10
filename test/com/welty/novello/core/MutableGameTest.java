@@ -45,8 +45,9 @@ public class MutableGameTest extends TestCase {
         game.play("F4");
         game.play("PASS");
         game.play("F6");
-        assertTrue(game.toGgf().contains("B[PASS]W[F4]B[PASS]W[F6]"));
-        assertFalse("no final pass", game.toGgf().contains("B[PASS]W[F4]B[PASS]W[F6]B["));
+        String ggf4 = game.toGgf();
+        assertTrue(ggf4.contains("B[PA]W[F4]B[PA]W[F6]"));
+        assertFalse("no final pass", game.toGgf().contains("B[PA]W[F4]B[PA]W[F6]B["));
 
         final List<MeValue> pvs = game.calcPositionValues();
         assertEquals(4, pvs.size());
