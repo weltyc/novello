@@ -1,6 +1,6 @@
 package com.welty.novello.eval;
 
-import com.welty.novello.core.Position;
+import com.welty.novello.core.Board;
 
 /**
  * Evaluates a position.
@@ -15,9 +15,9 @@ public abstract class Eval {
      * <p/>
      * This function will check for passes and return the terminal value if the game is over.
      *
-     * @param position@return value of position.
+     * @param board@return value of position.
      */
-    public int eval(Position position) {
-        return eval(position.mover(), position.enemy());
+    public int eval(Board board) {
+        return eval(board.mover(), board.enemy());
     }
 }

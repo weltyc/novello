@@ -9,22 +9,22 @@ import org.jetbrains.annotations.NotNull;
  * Immutable.
  */
 public class State {
-    public final @NotNull Position position;
+    public final @NotNull Board board;
     public final @NotNull OsClock blackClock;
     public final @NotNull OsClock whiteClock;
 
-    public State(@NotNull Position position, @NotNull OsClock blackClock, @NotNull OsClock whiteClock) {
-        this.position = position;
+    public State(@NotNull Board board, @NotNull OsClock blackClock, @NotNull OsClock whiteClock) {
+        this.board = board;
         this.blackClock = blackClock;
         this.whiteClock = whiteClock;
     }
 
     public State playOrPass(Move8x8 move) {
-        final Position nextPosition = position.playOrPass(move.getSq());
-        if (position.blackToMove) {
-            return new State(nextPosition, blackClock.update(move.getElapsedTime()), whiteClock);
+        final Board nextBoard = board.playOrPass(move.getSq());
+        if (board.blackToMove) {
+            return new State(nextBoard, blackClock.update(move.getElapsedTime()), whiteClock);
         } else {
-            return new State(nextPosition, blackClock, whiteClock.update(move.getElapsedTime()));
+            return new State(nextBoard, blackClock, whiteClock.update(move.getElapsedTime()));
         }
     }
 }

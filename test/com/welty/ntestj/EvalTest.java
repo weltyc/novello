@@ -1,8 +1,8 @@
 package com.welty.ntestj;
 
+import com.welty.novello.core.Board;
 import com.welty.novello.core.Me;
 import com.welty.novello.core.MoveScore;
-import com.welty.novello.core.Position;
 import com.welty.novello.ntest.NBoardSyncEngine;
 import com.welty.othello.gui.ExternalEngineManager;
 import junit.framework.TestCase;
@@ -77,16 +77,16 @@ public class EvalTest extends TestCase {
         final NBoardSyncEngine ntest = new NBoardSyncEngine(xei, true);
         final CEvaluatorJ eval = CEvaluatorJ.getInstance();
 
-        test1Ply(ntest, eval, Position.START_POSITION);
+        test1Ply(ntest, eval, Board.START_BOARD);
         test1Ply(ntest, eval, Me.early.toPosition());
 
         // don't test late position - ntest solves instead of giving an eval.
 //        test1Ply(ntest, eval, Me.late.toPosition());
     }
 
-    private static void test1Ply(NBoardSyncEngine ntest, CEvaluatorJ eval, Position pos) {
+    private static void test1Ply(NBoardSyncEngine ntest, CEvaluatorJ eval, Board pos) {
         final MoveScore moveScore = ntest.calcMove(pos, null, 1);
-        final Position next = pos.play(moveScore.sq);
+        final Board next = pos.play(moveScore.sq);
         final int value = eval.ValueJMobs(next.mover(), next.enemy(), next.calcMoves(), next.enemyMoves());
         assertEquals(-moveScore.centidisks, value);
     }

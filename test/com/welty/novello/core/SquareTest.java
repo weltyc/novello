@@ -16,9 +16,9 @@ public class SquareTest extends BitBoardTestCase {
     }
 
     private void testCalcFlips(String boardString, int sq, int expectedFlips) {
-        final Position position = new Position(boardString, false);
+        final Board board = new Board(boardString, false);
         final Square square = Square.of(sq);
-        long flips = square.calcFlips(position.white, position.black);
+        long flips = square.calcFlips(board.white, board.black);
         assertBitBoardEquals(expectedFlips, flips);
     }
 
@@ -51,7 +51,7 @@ public class SquareTest extends BitBoardTestCase {
 
     public void testCalcFlipsSamplePosition() {
         final String boardText = "OOOOOOO*OO******O*O*O**OO**O**OOO*O**O*OO***O*OOO*****O.OOOOOOOO";
-        Position bb = new Position(boardText, true);
+        Board bb = new Board(boardText, true);
         final long flips = Square.H7.calcFlips(bb.black, bb.white);
         assertBitBoardEquals(0x0000010105030200L, flips);
     }

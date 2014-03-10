@@ -54,7 +54,7 @@ public class Ffo {
         try (final DirectoryStream<Path> files = Files.newDirectoryStream(path)) {
             for (Path file : files) {
                 final List<String> strings = Files.readAllLines(file, Charset.defaultCharset());
-                final Position position = new Position(strings.get(0), strings.get(1).toLowerCase().startsWith("black"));
+                final Board board = new Board(strings.get(0), strings.get(1).toLowerCase().startsWith("black"));
 
                 final long t0 = System.currentTimeMillis();
 
@@ -62,7 +62,7 @@ public class Ffo {
 
                 final MoveScore moveScore;
                 try {
-                    moveScore = searcher.getMoveScore(position);
+                    moveScore = searcher.getMoveScore(board);
                 } catch (SearchAbortedException e) {
                     // this can never happen because we used AbortCheck.NEVER
                     throw new IllegalStateException("Shouldn't be here.");
@@ -86,7 +86,7 @@ public class Ffo {
                     nCorrectMoves++;
                 }
                 System.out.format("%s  %s %+6.2f  %6.1fs  %d empty  %7.1f Mn    %4.1f Mn/s  %s\n", strings.get(2).substring(18),
-                        BitBoardUtils.sqToText(moveScore.sq), score * 0.01, seconds, position.nEmpty(), mn, mn / seconds
+                        BitBoardUtils.sqToText(moveScore.sq), score * 0.01, seconds, board.nEmpty(), mn, mn / seconds
                         , !hasCorrectMove ? "WRONG MOVE" : "");
             }
         }
@@ -105,10 +105,10 @@ public class Ffo {
         /**
          * Get the best move, and the score in disks
          *
-         * @param position position to evaluate
+         * @param board position to evaluate
          * @return best move and score
          */
-        @NotNull MoveScore getMoveScore(Position position) throws SearchAbortedException;
+        @NotNull MoveScore getMoveScore(Board board) throws SearchAbortedException;
     }
 
     public static class Midgame implements Searcher {
@@ -122,8 +122,8 @@ public class Ffo {
             return searcher.getCounts();
         }
 
-        @NotNull @Override public MoveScore getMoveScore(Position position) throws SearchAbortedException {
-            return searcher.getMoveScore(position, position.calcMoves(), position.nEmpty(), AbortCheck.NEVER);
+        @NotNull @Override public MoveScore getMoveScore(Board board) throws SearchAbortedException {
+            return searcher.getMoveScore(board, board.calcMoves(), board.nEmpty(), AbortCheck.NEVER);
         }
 
         @Override public String toString() {
@@ -142,8 +142,8 @@ public class Ffo {
             return solver.getCounts();
         }
 
-        @NotNull @Override public MoveScore getMoveScore(Position position) throws SearchAbortedException {
-            final MoveScore moveScore = solver.getMoveScore(position.mover(), position.enemy(), AbortCheck.NEVER, StatsListener.NULL);
+        @NotNull @Override public MoveScore getMoveScore(Board board) throws SearchAbortedException {
+            final MoveScore moveScore = solver.getMoveScore(board.mover(), board.enemy(), AbortCheck.NEVER, StatsListener.NULL);
             return new MoveScore(moveScore.sq, moveScore.centidisks * CoefficientCalculator.DISK_VALUE);
         }
 
@@ -170,8 +170,8 @@ public class Ffo {
             return new Counts(0, 0);
         }
 
-        @NotNull @Override public MoveScore getMoveScore(Position position) {
-            return player.calcMove(position, null);
+        @NotNull @Override public MoveScore getMoveScore(Board board) {
+            return player.calcMove(board, null);
         }
 
         @Override public String toString() {

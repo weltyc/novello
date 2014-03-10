@@ -1,7 +1,7 @@
 package com.welty.novello.hash;
 
 import com.welty.novello.core.BitBoardUtils;
-import com.welty.novello.core.Position;
+import com.welty.novello.core.Board;
 import junit.framework.TestCase;
 
 import static com.welty.novello.core.NovelloUtils.NO_MOVE;
@@ -9,7 +9,7 @@ import static com.welty.novello.core.NovelloUtils.NO_MOVE;
 /**
  */
 public class MidgameHashTablesTest extends TestCase {
-    private static final Position pos = Position.START_POSITION;
+    private static final Board pos = Board.START_BOARD;
     private static final long mover = pos.mover();
     private static final long enemy = pos.enemy();
     private static final int f5 = BitBoardUtils.textToSq("F5");

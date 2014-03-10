@@ -3,9 +3,8 @@ package com.welty.novello.solver;
 import com.orbanova.common.misc.Logger;
 import com.welty.novello.core.Counts;
 import com.welty.novello.core.MutableGame;
-import com.welty.novello.core.Position;
+import com.welty.novello.core.Board;
 import com.welty.novello.selfplay.Players;
-import com.welty.othello.api.AbortCheck;
 
 import java.util.List;
 
@@ -29,11 +28,11 @@ public class NTestTimer {
         final List<MutableGame> games = SampleGames.saioGames();
         final long t0 = System.currentTimeMillis();
         for (MutableGame game : games) {
-            final Position position = game.calcPositionAt(nEmpty);
-            if (position == null) {
+            final Board board = game.calcBoardAt(nEmpty);
+            if (board == null) {
                 throw new IllegalStateException("ntest games file is messed up");
             }
-            log.info(solver.getMoveScore(position.mover(), position.enemy()));
+            log.info(solver.getMoveScore(board.mover(), board.enemy()));
         }
         final long dt = System.currentTimeMillis() - t0;
         final double s = dt / 1000.;
@@ -48,11 +47,11 @@ public class NTestTimer {
         final List<MutableGame> games = SampleGames.saioGames();
         final long t0 = System.currentTimeMillis();
         for (MutableGame game : games) {
-            final Position position = game.calcPositionAt(35);
-            if (position == null) {
+            final Board board = game.calcBoardAt(35);
+            if (board == null) {
                 throw new IllegalStateException("ntest games file is messed up");
             }
-            log.info(midgameSearcher.getMoveScore(position, position.calcMoves(), depth));
+            log.info(midgameSearcher.getMoveScore(board, board.calcMoves(), depth));
         }
         final long dt = System.currentTimeMillis() - t0;
         final double s = dt / 1000.;

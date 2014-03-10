@@ -3,7 +3,7 @@ package com.welty.ntestj;
 import com.orbanova.common.misc.Require;
 import com.welty.c.CBinaryReader;
 import com.welty.novello.core.BitBoardUtils;
-import com.welty.novello.core.Position;
+import com.welty.novello.core.Board;
 import com.welty.novello.eval.Eval;
 import com.welty.novello.eval.EvalStrategies;
 import com.welty.novello.eval.EvalStrategy;
@@ -447,7 +447,7 @@ public class CEvaluatorJ extends Eval {
 
         if (iDebugEval > 1) {
             System.out.println("----------------------------");
-            System.out.println(new Position(mover, enemy, true));
+            System.out.println(new Board(mover, enemy, true));
             System.out.format("mover = 0x%x, enemy = 0x%x\n", mover, enemy);
         }
 

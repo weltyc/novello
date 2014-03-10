@@ -1,8 +1,8 @@
 package com.welty.novello.selfplay;
 
 import com.welty.novello.core.BitBoardUtils;
+import com.welty.novello.core.Board;
 import com.welty.novello.core.MoveScore;
-import com.welty.novello.core.Position;
 import com.welty.novello.eval.Eval;
 import com.welty.othello.gdk.OsClock;
 import junit.framework.TestCase;
@@ -15,7 +15,7 @@ public class EvalSyncEngineTest extends TestCase {
         final Eval eval = Players.currentEval();
         final EvalSyncEngine engine = new EvalSyncEngine(eval, "", eval.toString());
 
-        final Position prev = Position.of("--------\n" +
+        final Board prev = Board.of("--------\n" +
                 "--------\n" +
                 "-----*--\n" +
                 "---***--\n" +
@@ -29,7 +29,7 @@ public class EvalSyncEngineTest extends TestCase {
         final MoveScore moveScore = engine.calcMove(prev, null, 1);
         assertTrue("must be a legal move", BitBoardUtils.isBitSet(moves, moveScore.sq));
 
-        final Position terminal = prev.play(moveScore.sq);
+        final Board terminal = prev.play(moveScore.sq);
         assertEquals(-eval.eval(terminal), moveScore.centidisks);
 
         int score = simpleSearch(eval, prev, moves);
@@ -37,12 +37,12 @@ public class EvalSyncEngineTest extends TestCase {
     }
 
     // do a simple 1-ply search without sorting.
-    private static int simpleSearch(Eval eval, Position prev, long moves) {
+    private static int simpleSearch(Eval eval, Board prev, long moves) {
         int score = Integer.MIN_VALUE;
         for (long m = moves; m != 0; ) {
             final int sq = Long.numberOfTrailingZeros(m);
             m &= ~(1L << sq);
-            final Position sub = prev.play(sq);
+            final Board sub = prev.play(sq);
             final int subScore = -eval.eval(sub);
             if (subScore > score) {
                 score = subScore;
@@ -58,7 +58,7 @@ public class EvalSyncEngineTest extends TestCase {
         final Eval eval = Players.currentEval();
         final EvalSyncEngine player = new EvalSyncEngine(eval, "", eval.toString());
 
-        final Position prev = Position.of("OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO*. O");
+        final Board prev = Board.of("OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO*. O");
 
         assertEquals(6400, player.calcMove(prev, null, 1).centidisks);
     }

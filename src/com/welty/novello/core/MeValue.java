@@ -75,7 +75,7 @@ public class MeValue {
     }
 
     @Override public String toString() {
-        return new Position(mover, enemy, true) + "\n" + value;
+        return new Board(mover, enemy, true) + "\n" + value;
     }
 
     /**

@@ -12,11 +12,11 @@ import java.util.List;
 public class MutableGameTest extends TestCase {
 
     public void testUpdates() {
-        final Position startPosition = Position.START_POSITION;
+        final Board startBoard = Board.START_BOARD;
         final OsClock clock = new OsClock("5:00");
-        final MutableGame game = new MutableGame(startPosition, "Boris", "William", "VistaNova", clock, clock);
-        assertEquals(Position.START_POSITION, game.getStartPosition());
-        assertEquals(Position.START_POSITION, game.getLastPosition());
+        final MutableGame game = new MutableGame(startBoard, "Boris", "William", "VistaNova", clock, clock);
+        assertEquals(Board.START_BOARD, game.getStartBoard());
+        assertEquals(Board.START_BOARD, game.getLastBoard());
         final String ggf = game.toGgf();
         assertTrue(ggf.contains("BO[8 -------- -------- -------- ---O*--- ---*O--- -------- -------- -------- *]"));
         assertTrue(ggf.contains("PC[VistaNova]"));
@@ -28,9 +28,9 @@ public class MutableGameTest extends TestCase {
         assertTrue(ggf.endsWith(";)"));
 
         game.play("F5");
-        final Position nextPosition = new Position(0x000000081C000000L, 0x0000001000000000L, false);
-        assertEquals(Position.START_POSITION, game.getStartPosition());
-        assertEquals(nextPosition, game.getLastPosition());
+        final Board nextBoard = new Board(0x000000081C000000L, 0x0000001000000000L, false);
+        assertEquals(Board.START_BOARD, game.getStartBoard());
+        assertEquals(nextBoard, game.getLastBoard());
         assertTrue(game.toGgf().contains("BO[8 -------- -------- -------- ---O*--- ---*O--- -------- -------- -------- *]"));
         assertTrue(game.toGgf().contains("B[F5]"));
 
@@ -60,8 +60,8 @@ public class MutableGameTest extends TestCase {
             final int netScore = blackToMove ? -expected : expected;
             assertEquals(netScore * CoefficientCalculator.DISK_VALUE, pv.value);
         }
-        assertEquals(pvs.get(0).mover, startPosition.mover());
-        assertEquals(pvs.get(0).enemy, startPosition.enemy());
+        assertEquals(pvs.get(0).mover, startBoard.mover());
+        assertEquals(pvs.get(0).enemy, startBoard.enemy());
     }
 
     public void testParseUnequalTimes() {
@@ -82,18 +82,18 @@ public class MutableGameTest extends TestCase {
         assertEquals("Saio1200", game.blackName);
         assertEquals("Saio3000", game.whiteName);
         assertEquals("GGS/os", game.place);
-        assertEquals("-------- -------- -------- ---O*--- ---*O--- -------- -------- -------- *", game.getStartPosition().positionString());
-        assertEquals(0, game.getLastPosition().nEmpty());
-        assertEquals(0, game.getLastPosition().terminalScore());
+        assertEquals("-------- -------- -------- ---O*--- ---*O--- -------- -------- -------- *", game.getStartBoard().positionString());
+        assertEquals(0, game.getLastBoard().nEmpty());
+        assertEquals(0, game.getLastBoard().terminalScore());
         assertEquals(5 * 60., game.getStartState().whiteClock.tCurrent);
         assertEquals(5 * 60., game.getStartState().blackClock.tCurrent);
     }
 
     public void testCalcPositionAt() {
         final MutableGame game = MutableGame.ofGgf(ggf);
-        assertEquals("-------- -------- -------- ---O*--- ---*O--- -------- -------- -------- *", game.calcPositionAt(60).positionString());
-        assertEquals("-------- -------- ---*---- ---**--- ---*O--- -------- -------- -------- O", game.calcPositionAt(59).positionString());
-        assertEquals(game.getLastPosition(), game.calcPositionAt(0));
+        assertEquals("-------- -------- -------- ---O*--- ---*O--- -------- -------- -------- *", game.calcBoardAt(60).positionString());
+        assertEquals("-------- -------- ---*---- ---**--- ---*O--- -------- -------- -------- O", game.calcBoardAt(59).positionString());
+        assertEquals(game.getLastBoard(), game.calcBoardAt(0));
     }
 
     public void testOfVong() {
@@ -102,7 +102,7 @@ public class MutableGameTest extends TestCase {
         assertEquals("WZebra", game.blackName);
         assertEquals("d16", game.whiteName);
         assertEquals(0, game.netScore());
-        assertEquals(0, game.getLastPosition().nEmpty());
+        assertEquals(0, game.getLastBoard().nEmpty());
 
         System.out.println(game.toGgf());
     }
@@ -112,4 +112,25 @@ public class MutableGameTest extends TestCase {
         assertEquals(game.getStartState(), game.getStateAfter(0));
     }
 
+    public void testGetTimeRemaining() {
+        OsClock blackClock = new OsClock(9);
+        OsClock whiteClock = new OsClock(8);
+
+        MutableGame game = new MutableGame(Board.START_BOARD, "foo", "bar", "baz", blackClock, whiteClock);
+        testGetTimeRemaining(game, 9, 8);
+
+        game.play(new MoveScore("F5", 2), 0.5);
+        testGetTimeRemaining(game, 8.5, 8);
+
+        game.play(new MoveScore("F6", -2), 1);
+        testGetTimeRemaining(game, 8.5, 7);
+
+        game.play(new MoveScore("E6", -2), 1);
+        testGetTimeRemaining(game, 7.5, 7);
+    }
+
+    private void testGetTimeRemaining(MutableGame game, double bt, double wt) {
+        assertEquals(new OsClock(bt), game.remainingClock(true));
+        assertEquals(new OsClock(wt), game.remainingClock(false));
+    }
 }

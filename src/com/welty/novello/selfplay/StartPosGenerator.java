@@ -4,7 +4,7 @@ import com.orbanova.common.feed.Feed;
 import com.orbanova.common.misc.Require;
 import com.orbanova.common.misc.Utils;
 import com.welty.novello.core.BitBoardUtils;
-import com.welty.novello.core.Position;
+import com.welty.novello.core.Board;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -13,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
  * This generates positions with a fixed number of disks, for instance 9.
  * All disks will be placed in the center 16 squares. It generates all such positions once each.
  */
-class StartPosGenerator extends Feed<Position> {
+class StartPosGenerator extends Feed<Board> {
     private int i = 0;
     private final int nDisks;
     private final static int I_MAX = 6561 * 6561; // 3^16
@@ -28,9 +28,9 @@ class StartPosGenerator extends Feed<Position> {
         this.nDisks = nDisks;
     }
 
-    @Nullable @Override public Position next() {
+    @Nullable @Override public Board next() {
         while (i < I_MAX) {
-            final Position board = genBoard(i);
+            final Board board = genBoard(i);
             i++;
             final long empty = board.empty();
             if ((empty & BitBoardUtils.CENTER_4) == 0 && Long.bitCount(~empty) == nDisks) {
@@ -50,7 +50,7 @@ class StartPosGenerator extends Feed<Position> {
      * @param i index of position
      * @return bitboard
      */
-    private Position genBoard(int i) {
+    private Board genBoard(int i) {
         long black = 0;
         long white = 0;
         for (int col = 2; col < 6; col++) {
@@ -67,6 +67,6 @@ class StartPosGenerator extends Feed<Position> {
             }
         }
         final boolean blackToMove = !Utils.isOdd(Long.bitCount(black | white));
-        return new Position(black, white, blackToMove);
+        return new Board(black, white, blackToMove);
     }
 }

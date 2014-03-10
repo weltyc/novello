@@ -77,15 +77,15 @@ public class Me {
         this.enemy = enemy;
     }
 
-    public Position toPosition() {
-        return new Position(mover, enemy, true);
+    public Board toPosition() {
+        return new Board(mover, enemy, true);
     }
 
     /**
      * @return subPositions of this position
      */
     public Collection<Me> subPositions() {
-        final Position pos = new Position(mover, enemy, true);
+        final Board pos = new Board(mover, enemy, true);
         final ArrayList<Me> subPositions = new ArrayList<>();
 
         long moves = calcMoves();
@@ -94,8 +94,8 @@ public class Me {
             final long placement = 1L << sq;
             moves &= ~placement;
 
-            final Position subPosition = pos.play(sq);
-            subPositions.add(new Me(subPosition.mover(), subPosition.enemy()));
+            final Board subBoard = pos.play(sq);
+            subPositions.add(new Me(subBoard.mover(), subBoard.enemy()));
         }
 
         return subPositions;

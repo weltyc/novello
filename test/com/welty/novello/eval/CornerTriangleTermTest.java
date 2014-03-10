@@ -1,7 +1,7 @@
 package com.welty.novello.eval;
 
 import com.welty.novello.core.Me;
-import com.welty.novello.core.Position;
+import com.welty.novello.core.Board;
 import junit.framework.TestCase;
 
 import java.util.Arrays;
@@ -48,14 +48,14 @@ public class CornerTriangleTermTest extends TestCase {
     }
 
     private static void testReflectionOrids(Me tp) {
-        final Position position = tp.toPosition();
-        int[] expected = calcOrids(position, 0);
+        final Board board = tp.toPosition();
+        int[] expected = calcOrids(board, 0);
         for (int r=1; r<8; r++) {
-            assertArrayEquals(""+r, expected, calcOrids(position, r));
+            assertArrayEquals(""+r, expected, calcOrids(board, r));
         }
     }
 
-    private static int[] calcOrids(Position position, int r) {
+    private static int[] calcOrids(Board board, int r) {
         int[] expected = new int[4];
         Term[] terms = {
                 new CornerBlockTerm(false, false),
@@ -63,7 +63,7 @@ public class CornerTriangleTermTest extends TestCase {
                 new CornerBlockTerm(true, false),
                 new CornerBlockTerm(true, true)
         };
-        final Position reflection = position.reflection(r);
+        final Board reflection = board.reflection(r);
         for (int i=0; i<4; i++) {
             expected[i]=terms[i].orid(reflection.mover(), reflection.enemy(), 0, 0);
         }

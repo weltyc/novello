@@ -1,9 +1,9 @@
 package com.welty.novello.selfplay;
 
 import com.orbanova.common.misc.Require;
+import com.welty.novello.core.Board;
 import com.welty.novello.core.MoveScore;
 import com.welty.novello.core.MutableGame;
-import com.welty.novello.core.Position;
 import com.welty.othello.gdk.OsClock;
 import org.jetbrains.annotations.NotNull;
 
@@ -27,7 +27,7 @@ public class SelfPlayGame implements Callable<MutableGame> {
      * @param place     location of the match (often, Props.getHostName())
      * @param gameFlags Sum of binary flags defined in SelfPlayGame (FLAG_PRINT_GAME, FLAG_MEASURE_TIME)
      */
-    public SelfPlayGame(@NotNull Position board, @NotNull SyncPlayer black, @NotNull SyncPlayer white, OsClock clock
+    public SelfPlayGame(@NotNull Board board, @NotNull SyncPlayer black, @NotNull SyncPlayer white, OsClock clock
             , String place, int gameFlags) {
         this.game = new MutableGame(board, black.toString(), white.toString(), place, clock, clock);
         this.black = black;
@@ -39,7 +39,7 @@ public class SelfPlayGame implements Callable<MutableGame> {
         black.clear();
         white.clear();
         while (true) {
-            Position board = game.getLastPosition();
+            Board board = game.getLastBoard();
             final long moverMoves = board.calcMoves();
             if (moverMoves != 0) {
                 move(moverMoves);
@@ -52,7 +52,7 @@ public class SelfPlayGame implements Callable<MutableGame> {
                     game.finish();
                     if (printGame()) {
                         System.out.println(game.toGgf());
-                        System.out.println("--- result : " + game.getLastPosition().terminalScore());
+                        System.out.println("--- result : " + game.getLastBoard().terminalScore());
                     }
                     return game;
                 }
@@ -69,7 +69,8 @@ public class SelfPlayGame implements Callable<MutableGame> {
     }
 
     private void move(long moves) {
-        final Position board = game.getLastPosition();
+        final Board board = game.getLastBoard();
+        OsClock remainingClock = game.remainingClock(board.blackToMove);
         Require.isTrue(moves != 0, "has a move");
         if (printGame()) {
             System.out.println(board.positionString());
@@ -78,7 +79,7 @@ public class SelfPlayGame implements Callable<MutableGame> {
             System.out.println(player(board.blackToMove) + " to move");
         }
         final long t0 = measuredTime();
-        final MoveScore moveScore = player(board.blackToMove).calcMove(board, null);
+        final MoveScore moveScore = player(board.blackToMove).calcMove(board, remainingClock);
         final long dt = measuredTime() - t0;
         game.play(moveScore, dt * .001);
         if (printGame()) {

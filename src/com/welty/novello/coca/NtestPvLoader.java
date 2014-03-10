@@ -2,9 +2,9 @@ package com.welty.novello.coca;
 
 import com.orbanova.common.misc.Require;
 import com.welty.novello.core.BitBoardUtils;
+import com.welty.novello.core.Board;
 import com.welty.novello.core.MeValue;
 import com.welty.novello.core.Mr;
-import com.welty.novello.core.Position;
 
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
@@ -156,7 +156,7 @@ public class NtestPvLoader {
         public void addTo(List<MeValue> pvs) {
             if (pass != 2) {
                 pvs.add(new MeValue(mover, enemy, value));
-                final Position next = new Position(mover, enemy, true).play(sq);
+                final Board next = new Board(mover, enemy, true).play(sq);
                 switch (next.calcPass()) {
                     case 0:
                         pvs.add(new MeValue(next.mover(), next.enemy(), -value));
@@ -177,7 +177,7 @@ public class NtestPvLoader {
             sb.append(String.format(" Position %,d\n", i));
             sb.append("pass = " + pass + ", sq=" + BitBoardUtils.sqToText(sq) + "\n");
             sb.append("value = " + value + "\n");
-            sb.append(new Position(mover, enemy, true));
+            sb.append(new Board(mover, enemy, true));
 
             return sb.toString();
         }

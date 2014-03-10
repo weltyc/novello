@@ -29,7 +29,7 @@ public class BitBoardUtilsTest extends BitBoardTestCase {
      * Test BitBoardUtils.calcMoves
      */
     public void testCalcMoves() {
-        Position board = new Position("---------------------------O*------*O---------------------------", true);
+        Board board = new Board("---------------------------O*------*O---------------------------", true);
         testCalcMoves(0x0000102004080000L, board.mover(), board.enemy());
         testCalcMoves(0x0000080420100000L, board.enemy(), board.mover());
 
@@ -55,8 +55,8 @@ public class BitBoardUtilsTest extends BitBoardTestCase {
     private static void generateRandomCalcMovesTest(Random random) {
         final Me tp = Me.early(random);
 
-        final Position position = new Position(tp.mover, tp.enemy, true);
-        System.out.format("testCalcMoves(0x%016XL, \"%s\");%n", calcMoves(position.mover(), position.enemy()), position.boardString());
+        final Board board = new Board(tp.mover, tp.enemy, true);
+        System.out.format("testCalcMoves(0x%016XL, \"%s\");%n", calcMoves(board.mover(), board.enemy()), board.boardString());
     }
 
     /**
@@ -66,7 +66,7 @@ public class BitBoardUtilsTest extends BitBoardTestCase {
      * @param boardString Board characters. Black to move.
      */
     private static void testCalcMoves(long expected, String boardString) {
-        Position board = new Position(boardString, true);
+        Board board = new Board(boardString, true);
         testCalcMoves(expected, board.mover(), board.enemy());
     }
 

@@ -1,9 +1,9 @@
 package com.welty.novello.solver;
 
 import com.welty.novello.core.BitBoardUtils;
+import com.welty.novello.core.Board;
 import com.welty.novello.core.Counts;
 import com.welty.novello.core.MoveScore;
-import com.welty.novello.core.Position;
 import com.welty.novello.eval.CoefficientCalculator;
 import com.welty.novello.eval.DiskEval;
 import com.welty.novello.eval.Eval;
@@ -21,7 +21,7 @@ public class MidgameSearcherTest extends TestCase {
         final Counter counter = new Counter(eval);
         final MidgameSearcher midgameSearcher = new MidgameSearcher(counter, "w");
 
-        final Position prev = Position.of("--------\n" +
+        final Board prev = Board.of("--------\n" +
                 "--------\n" +
                 "-----*--\n" +
                 "---***--\n" +
@@ -37,7 +37,7 @@ public class MidgameSearcherTest extends TestCase {
         assertTrue("must be a legal move", BitBoardUtils.isBitSet(moves, moveScore.sq));
         assertEquals(Long.bitCount(moves), counter.nFlips());
 
-        final Position terminal = prev.play(moveScore.sq);
+        final Board terminal = prev.play(moveScore.sq);
         assertEquals(-eval.eval(terminal), moveScore.centidisks);
 
         int score = simpleSearch(eval, prev, moves);
@@ -45,12 +45,12 @@ public class MidgameSearcherTest extends TestCase {
     }
 
     // do a simple 1-ply search without sorting.
-    private static int simpleSearch(Eval eval, Position prev, long moves) {
+    private static int simpleSearch(Eval eval, Board prev, long moves) {
         int score = Integer.MIN_VALUE;
         for (long m = moves; m != 0; ) {
             final int sq = Long.numberOfTrailingZeros(m);
             m &= ~(1L << sq);
-            final Position sub = prev.play(sq);
+            final Board sub = prev.play(sq);
             final int subScore = -eval.eval(sub);
             if (subScore > score) {
                 score = subScore;
@@ -63,7 +63,7 @@ public class MidgameSearcherTest extends TestCase {
         final Eval eval = Players.currentEval();
         final MidgameSearcher midgameSearcher = new MidgameSearcher(new Counter(eval), "w");
 
-        final Position root = Position.of("--OO-O-O\n" +
+        final Board root = Board.of("--OO-O-O\n" +
                 "--****OO\n" +
                 "*--*OOOO\n" +
                 "-***OOOO\n" +
@@ -75,7 +75,7 @@ public class MidgameSearcherTest extends TestCase {
         // g1  pass e1 is the best line
 
 //        player.calcMove(root, root.calcMoves(), -1);
-        final Position g1 = root.play("G1");
+        final Board g1 = root.play("G1");
         final int subScore = -midgameSearcher.calcScore(g1, 1);
         // had a bug where it was returning the terminal value (+6) if the opponent passes. This position is way
         // better than that!
@@ -85,10 +85,10 @@ public class MidgameSearcherTest extends TestCase {
     public void testTreeMove() throws SearchAbortedException {
         final Eval eval = new DiskEval();
         final MidgameSearcher midgameSearcher = new MidgameSearcher(new Counter(eval));
-        final Position position = Position.of("-------- -------- -------- --OO---- --*O*--- ----OO-- -------- -------- *");
-        final long mover = position.mover();
-        final long enemy = position.enemy();
-        final long moverMoves = position.calcMoves();
+        final Board board = Board.of("-------- -------- -------- --OO---- --*O*--- ----OO-- -------- -------- *");
+        final long mover = board.mover();
+        final long enemy = board.enemy();
+        final long moverMoves = board.calcMoves();
 
         // so the tests are readable
         final int c3 = BitBoardUtils.textToSq("C3");
@@ -124,10 +124,10 @@ public class MidgameSearcherTest extends TestCase {
             final Eval eval = Players.currentEval();
             final MidgameSearcher mpcSearcher = new MidgameSearcher(new Counter(eval));
             final MidgameSearcher fwSearcher = new MidgameSearcher(new Counter(eval), "w");
-            final Position position = Position.of("-------- -------- -------- --OOO--- --*O*--- ----OO-- -------- -------- *");
-            final int fwScore = fwSearcher.calcScore(position, depth);
+            final Board board = Board.of("-------- -------- -------- --OOO--- --*O*--- ----OO-- -------- -------- *");
+            final int fwScore = fwSearcher.calcScore(board, depth);
             final long n = fwSearcher.getCounts().nFlips;
-            final int mpcScore = mpcSearcher.calcScore(position, depth);
+            final int mpcScore = mpcSearcher.calcScore(board, depth);
             final long nMpc = mpcSearcher.getCounts().nFlips;
             assertTrue("scores should be similar", Math.abs(fwScore - mpcScore) < 100);
             System.out.println("MPC used " + nMpc + ", full-width used " + n);
@@ -140,8 +140,8 @@ public class MidgameSearcherTest extends TestCase {
         final MidgameSearcher midgameSearcher = new MidgameSearcher(new Counter(eval), "w");
         final int depth = 4;
 
-        Position position = Position.START_POSITION;
-        midgameSearcher.getMoveScore(position, position.calcMoves(), depth);
+        Board board = Board.START_BOARD;
+        midgameSearcher.getMoveScore(board, board.calcMoves(), depth);
         final Counts counts = midgameSearcher.getCounts();
         final long nFlips = counts.nFlips;
         final long nEvals = counts.nEvals;

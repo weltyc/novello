@@ -84,16 +84,16 @@ public class MidgameSearcher {
      * <p/>
      * Precondition: The mover has at least one legal move.
      *
-     * @param position   position to search
+     * @param board   position to search
      * @param moverMoves legal moves to check. If this is a subset of all legal moves, only the subset will
      *                   be checked.
      * @param depth      search depth
      * @return the best move from this position, and its score in centi-disks
      * @throws IllegalArgumentException if the position has no legal moves
      */
-    public MoveScore getMoveScore(Position position, long moverMoves, int depth)  {
+    public MoveScore getMoveScore(Board board, long moverMoves, int depth)  {
         try {
-            return getMoveScore(position, moverMoves, depth, AbortCheck.NEVER);
+            return getMoveScore(board, moverMoves, depth, AbortCheck.NEVER);
         } catch (SearchAbortedException e) {
             // this can never happen because we used AbortCheck.NEVER
             throw new IllegalStateException("Shouldn't be here.");
@@ -105,7 +105,7 @@ public class MidgameSearcher {
      * <p/>
      * Precondition: The mover has at least one legal move.
      *
-     * @param position   position to search
+     * @param board   position to search
      * @param moverMoves legal moves to check. If this is a subset of all legal moves, only the subset will
      *                   be checked.
      * @param depth      search depth
@@ -114,14 +114,14 @@ public class MidgameSearcher {
      * @throws IllegalArgumentException if the position has no legal moves
      * @throws SearchAbortedException   if the search was aborted
      */
-    public MoveScore getMoveScore(Position position, long moverMoves, int depth, AbortCheck abortCheck) throws SearchAbortedException {
+    public MoveScore getMoveScore(Board board, long moverMoves, int depth, AbortCheck abortCheck) throws SearchAbortedException {
         if (moverMoves == 0) {
             throw new IllegalArgumentException("must have a legal move");
         }
         this.rootDepth = depth;
         this.abortCheck = abortCheck;
 
-        final BA ba = hashMove(position.mover(), position.enemy(), moverMoves, NovelloUtils.NO_MOVE, -NovelloUtils.NO_MOVE, depth);
+        final BA ba = hashMove(board.mover(), board.enemy(), moverMoves, NovelloUtils.NO_MOVE, -NovelloUtils.NO_MOVE, depth);
         return new MoveScore(ba.bestMove, ba.score);
     }
 
@@ -130,7 +130,7 @@ public class MidgameSearcher {
      * <p/>
      * Precondition: The mover has at least one legal move.
      *
-     * @param position   position to search
+     * @param board   position to search
      * @param alpha      search alpha, in centi-disks
      * @param beta       search beta, in centi-disks
      * @param depth      search depth
@@ -138,8 +138,8 @@ public class MidgameSearcher {
      * @return the score of the position in centi-disks
      * @throws SearchAbortedException if the search was aborted
      */
-    public int calcScore(Position position, int alpha, int beta, int depth, AbortCheck abortCheck) throws SearchAbortedException {
-        return calcScore(position.mover(), position.enemy(), alpha, beta, depth, abortCheck);
+    public int calcScore(Board board, int alpha, int beta, int depth, AbortCheck abortCheck) throws SearchAbortedException {
+        return calcScore(board.mover(), board.enemy(), alpha, beta, depth, abortCheck);
     }
 
     /**
@@ -165,12 +165,12 @@ public class MidgameSearcher {
      * The mover does not need to have a legal move - if he doesn't this method will pass or return a terminal value as
      * necessary.
      *
-     * @param position position to evaluate
+     * @param board position to evaluate
      * @param depth    search depth. If &le; 0, returns the eval.
      * @return score of the move.
      */
-    public int calcScore(Position position, int depth) {
-        return calcScore(position.mover(), position.enemy(), depth);
+    public int calcScore(Board board, int depth) {
+        return calcScore(board.mover(), board.enemy(), depth);
     }
 
     /**

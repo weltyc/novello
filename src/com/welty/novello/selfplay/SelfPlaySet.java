@@ -1,10 +1,10 @@
 package com.welty.novello.selfplay;
 
 import com.orbanova.common.misc.Logger;
+import com.welty.novello.core.Board;
 import com.welty.novello.core.MeValue;
 import com.welty.novello.core.MutableGame;
 import com.welty.novello.core.NovelloUtils;
-import com.welty.novello.core.Position;
 import com.orbanova.common.misc.Engineering;
 import com.welty.othello.gdk.OsClock;
 import org.jetbrains.annotations.NotNull;
@@ -86,16 +86,16 @@ public class SelfPlaySet {
         log.info("Starting " + syncEngine1 + " vs " + syncEngine2);
 
         final String hostName = NovelloUtils.getHostName();
-        final List<Position> startPositions = generateStartPositions();
+        final List<Board> startBoards = generateStartPositions();
 
         int nComplete = 0;
         double sum = 0;
-        for (Position startPosition : startPositions) {
+        for (Board startBoard : startBoards) {
             final int netResult;
-            final MutableGame result = new SelfPlayGame(startPosition, syncEngine1, syncEngine2, clock, hostName, 0).call();
+            final MutableGame result = new SelfPlayGame(startBoard, syncEngine1, syncEngine2, clock, hostName, 0).call();
             final MutableGame result2;
             if (syncEngine2 != syncEngine1) {
-                result2 = new SelfPlayGame(startPosition, syncEngine2, syncEngine1, clock, hostName, 0).call();
+                result2 = new SelfPlayGame(startBoard, syncEngine2, syncEngine1, clock, hostName, 0).call();
                 netResult = (result.netScore() - result2.netScore());
             } else {
                 // if the same player plays both sides we don't need to play the return games
@@ -115,24 +115,24 @@ public class SelfPlaySet {
         return sum / nComplete;
     }
 
-    private static List<Position> generateStartPositions() {
-        final HashSet<Position> alreadySeen = new HashSet<>();
+    private static List<Board> generateStartPositions() {
+        final HashSet<Board> alreadySeen = new HashSet<>();
         final StartPosGenerator generator = new StartPosGenerator(9);
-        final List<Position> startPositions = new ArrayList<>();
+        final List<Board> startBoards = new ArrayList<>();
 
-        Position startPosition;
-        while (null != (startPosition = generator.next())) {
+        Board startBoard;
+        while (null != (startBoard = generator.next())) {
             // only play positions where we have not seen a reflection previously
             // this means we won't get 8 of each game.
-            if (alreadySeen.add(startPosition.minimalReflection()) && startPosition.hasLegalMove()) {
-                startPositions.add(startPosition);
+            if (alreadySeen.add(startBoard.minimalReflection()) && startBoard.hasLegalMove()) {
+                startBoards.add(startBoard);
             }
 
         }
 
-        Collections.shuffle(startPositions, new Random(1337));
+        Collections.shuffle(startBoards, new Random(1337));
 
-        return startPositions;
+        return startBoards;
     }
 
     public interface MatchResultListener {

@@ -4,7 +4,7 @@ import com.orbanova.common.feed.Feed;
 import com.orbanova.common.feed.Feeds;
 import com.welty.novello.core.MeValue;
 import com.welty.novello.core.MutableGame;
-import com.welty.novello.core.Position;
+import com.welty.novello.core.Board;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -61,14 +61,14 @@ public class SampleGames {
     public static List<MeValue> vongPositions(int nEmpty) {
         // it would be nice to keep these in the original order to track back to the original game.
         List<MeValue> pvs = new ArrayList<>();
-        final Set<Position> seen = new HashSet<>();
+        final Set<Board> seen = new HashSet<>();
 
         for (MutableGame game : vongGames()) {
-            final Position position = game.calcPositionAt(nEmpty);
-            if (position!=null && !seen.contains(position)) {
-                seen.add(position);
-                final int value = position.blackToMove? game.netScore() : -game.netScore();
-                final MeValue pv = new MeValue(position.mover(), position.enemy(), value);
+            final Board board = game.calcBoardAt(nEmpty);
+            if (board !=null && !seen.contains(board)) {
+                seen.add(board);
+                final int value = board.blackToMove? game.netScore() : -game.netScore();
+                final MeValue pv = new MeValue(board.mover(), board.enemy(), value);
                 pvs.add(pv);
             }
         }

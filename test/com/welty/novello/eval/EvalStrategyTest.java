@@ -3,8 +3,8 @@ package com.welty.novello.eval;
 import com.orbanova.common.misc.Vec;
 import com.orbanova.common.ramfs.RamFileSystem;
 import com.welty.novello.core.BitBoardUtils;
+import com.welty.novello.core.Board;
 import com.welty.novello.core.Me;
-import com.welty.novello.core.Position;
 import com.welty.novello.selfplay.Players;
 import junit.framework.TestCase;
 
@@ -96,10 +96,10 @@ public class EvalStrategyTest extends TestCase {
     }
 
     private void testAllReflectionsHaveTheSameEval(Eval eval, long mover, long enemy) {
-        final Position position = new Position(mover, enemy, true);
-        final int expected = eval.eval(position);
+        final Board board = new Board(mover, enemy, true);
+        final int expected = eval.eval(board);
         for (int r = 1; r < 8; r++) {
-            final Position reflection = position.reflection(r);
+            final Board reflection = board.reflection(r);
             assertEquals(expected, eval.eval(reflection));
         }
     }

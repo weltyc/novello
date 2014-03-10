@@ -68,7 +68,7 @@ public class NBoardSyncEngine implements SyncEngine {
         }
     }
 
-    @Override public MoveScore calcMove(@NotNull Position position, @Nullable OsClock clock, int maxDepth) {
+    @Override public MoveScore calcMove(@NotNull Board board, @Nullable OsClock clock, int maxDepth) {
         Require.geq(maxDepth, "max depth", 0);
         try {
             pingPong();
@@ -77,7 +77,7 @@ public class NBoardSyncEngine implements SyncEngine {
                 clock = OsClock.LONG;
 
             }
-            println("set game " + new MutableGame(position, "me", "you", "here", clock, clock).toGgf());
+            println("set game " + new MutableGame(board, "me", "you", "here", clock, clock).toGgf());
             if (maxDepth != lastDepth) {
                 println("set depth " + maxDepth);
                 lastDepth = maxDepth;

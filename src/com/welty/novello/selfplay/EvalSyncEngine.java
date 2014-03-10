@@ -3,8 +3,8 @@ package com.welty.novello.selfplay;
 import com.orbanova.common.misc.Require;
 import com.orbanova.common.misc.Utils;
 import com.welty.novello.core.BitBoardUtils;
+import com.welty.novello.core.Board;
 import com.welty.novello.core.MoveScore;
-import com.welty.novello.core.Position;
 import com.welty.novello.eval.CoefficientCalculator;
 import com.welty.novello.eval.Eval;
 import com.welty.novello.solver.MidgameSearcher;
@@ -45,8 +45,8 @@ public class EvalSyncEngine implements SyncEngine {
         this.searcher = solver.midgameSearcher;
     }
 
-    public MoveScore calcMove(@NotNull Position position, @Nullable OsClock clock, int maxDepth) {
-        return calcMove(position, clock, maxDepth, AbortCheck.NEVER, Listener.NULL);
+    public MoveScore calcMove(@NotNull Board board, @Nullable OsClock clock, int maxDepth) {
+        return calcMove(board, clock, maxDepth, AbortCheck.NEVER, Listener.NULL);
     }
 
     @Override public void clear() {
@@ -61,41 +61,41 @@ public class EvalSyncEngine implements SyncEngine {
     /**
      * Calc the move that the engine would like to play
      *
-     * @param position        position to search from
+     * @param board        position to search from
      * @param clock           amount of time remaining, or null if the player should ignore the clock
      * @param maxMidgameDepth maximum search depth, during midgame
      * @param baseAbortCheck  abort check (not including time caps, which are calculated inside this method)
      * @param listener        search status listener
      * @return the move the engine would like to play and its score.
      */
-    public MoveScore calcMove(Position position, @Nullable OsClock clock, int maxMidgameDepth, AbortCheck baseAbortCheck, Listener listener) {
-        final long moverMoves = position.calcMoves();
+    public MoveScore calcMove(Board board, @Nullable OsClock clock, int maxMidgameDepth, AbortCheck baseAbortCheck, Listener listener) {
+        final long moverMoves = board.calcMoves();
         if (moverMoves == 0) {
             throw new IllegalArgumentException("Must have a legal move to call calcMove()");
         }
 
-        if (midgameOptions.variableMidgame && position.nEmpty() <= 30) {
+        if (midgameOptions.variableMidgame && board.nEmpty() <= 30) {
             maxMidgameDepth+=2;
         }
-        final AbortCheck abortCheck = clock == null ? baseAbortCheck : new TimeAbortCheck(baseAbortCheck, clock, position.nEmpty());
+        final AbortCheck abortCheck = clock == null ? baseAbortCheck : new TimeAbortCheck(baseAbortCheck, clock, board.nEmpty());
 
         final long n0 = searcher.getCounts().nFlips;
         final long t0 = System.currentTimeMillis();
 
         // Make sure we have a legal move by calculating the first round without aborts
         MoveScore result;
-        if (shouldSolve(position, 1)) {
+        if (shouldSolve(board, 1)) {
             listener.updateStatus("Solving...");
             // full-width solve
-            return solver.getMoveScore(position.mover(), position.enemy());
+            return solver.getMoveScore(board.mover(), board.enemy());
         } else {
             listener.updateStatus("Searching at 1 ply");
-            result = searcher.getMoveScore(position, moverMoves, 1);
+            result = searcher.getMoveScore(board, moverMoves, 1);
         }
         listener.updateNodeStats(searcher.getCounts().nFlips - n0, System.currentTimeMillis() - t0);
 
         //  calculate further rounds with aborts enabled
-        final SearchDepth maxDepth = SearchDepth.maxDepth(position.nEmpty(), maxMidgameDepth, midgameOptions);
+        final SearchDepth maxDepth = SearchDepth.maxDepth(board.nEmpty(), maxMidgameDepth, midgameOptions);
         for (SearchDepth searchDepth : maxDepth.depthFeed()) {
             if (abortCheck.abortNextRound()) {
                 break;
@@ -104,10 +104,10 @@ public class EvalSyncEngine implements SyncEngine {
                 if (searchDepth.isFullSolve()) {
                     listener.updateStatus("Solving...");
                     // full-width solve
-                    result = solver.getMoveScore(position.mover(), position.enemy(), abortCheck, new MyStatsListener(listener, n0, t0, solver));
+                    result = solver.getMoveScore(board.mover(), board.enemy(), abortCheck, new MyStatsListener(listener, n0, t0, solver));
                 } else {
                     listener.updateStatus("Searching at " + searchDepth.humanString());
-                    result = searcher.getMoveScore(position, moverMoves, searchDepth.depth, abortCheck);
+                    result = searcher.getMoveScore(board, moverMoves, searchDepth.depth, abortCheck);
                 }
             } catch (SearchAbortedException e) {
                 listener.updateStatus("Round aborted");
@@ -187,7 +187,7 @@ public class EvalSyncEngine implements SyncEngine {
 
         for (int i = nMoves - 1; i >= 0; i--) {
             final COsBoard board = game.PosAtMove(i).board;
-            final Position position = Position.of(board);
+            final Board position = Board.of(board);
             final long moverMoves = position.calcMoves();
 
             if (Long.bitCount(moverMoves) > 1) {
@@ -211,7 +211,7 @@ public class EvalSyncEngine implements SyncEngine {
     }
 
     private double calcScoreToBlack(int maxDepth, COsBoard board, AbortCheck abortCheck) {
-        Position position = Position.of(board);
+        Board position = Board.of(board);
         final double scoreToBlack;
         final double moverSign = moverSign(board);
         if (position.hasLegalMove()) {
@@ -241,18 +241,18 @@ public class EvalSyncEngine implements SyncEngine {
      *
      * @param listener listener for intermediate results
      */
-    public void calcHints(Position position, int maxMidgameDepth, int nHints, AbortCheck abortCheck, Listener listener) throws SearchAbortedException {
-        final long moverMoves = position.calcMoves();
+    public void calcHints(Board board, int maxMidgameDepth, int nHints, AbortCheck abortCheck, Listener listener) throws SearchAbortedException {
+        final long moverMoves = board.calcMoves();
         if (moverMoves == 0) {
             throw new IllegalArgumentException("Must have a legal move to call calcHints()");
         }
         final long n0 = searcher.getCounts().nFlips;
         final long t0 = System.currentTimeMillis();
-        final SearchDepth maxDepth = SearchDepth.maxDepth(position.nEmpty(), maxMidgameDepth, midgameOptions);
+        final SearchDepth maxDepth = SearchDepth.maxDepth(board.nEmpty(), maxMidgameDepth, midgameOptions);
 
         // list of moveScores, sorted in descending order by score for at least the first nHints scores
         final ArrayList<MoveScore> moveScores = new ArrayList<>();
-        long moves = position.calcMoves();
+        long moves = board.calcMoves();
         while (moves != 0) {
             final int sq = Long.numberOfTrailingZeros(moves);
             moveScores.add(new MoveScore(sq, 0));
@@ -265,7 +265,7 @@ public class EvalSyncEngine implements SyncEngine {
                 final int beta = 64 * CoefficientCalculator.DISK_VALUE;
                 final int alpha = j < nHints ? -64 * CoefficientCalculator.DISK_VALUE : moveScores.get(nHints - 1).centidisks;
                 final int sq = moveScores.get(j).sq;
-                final Position subPos = position.play(sq);
+                final Board subPos = board.play(sq);
                 final int score;
                 if (searchDepth.isFullSolve()) {
                     score = -solver.solve(subPos.mover(), subPos.enemy(), abortCheck, new MyStatsListener(listener, n0, t0, solver)) * CoefficientCalculator.DISK_VALUE;
@@ -299,8 +299,8 @@ public class EvalSyncEngine implements SyncEngine {
         moveScores.set(k + 1, moveScore);
     }
 
-    private boolean shouldSolve(Position position, int maxDepth) {
-        return midgameOptions.variableEndgame && position.nEmpty() <= new Heights(maxDepth).getFullWidthHeight();
+    private boolean shouldSolve(Board board, int maxDepth) {
+        return midgameOptions.variableEndgame && board.nEmpty() <= new Heights(maxDepth).getFullWidthHeight();
     }
 
     public interface Listener {

@@ -1,9 +1,9 @@
 package com.welty.novello.solver;
 
+import com.welty.novello.core.Board;
 import com.welty.novello.core.Counts;
 import com.welty.novello.core.Move8x8;
 import com.welty.novello.core.MutableGame;
-import com.welty.novello.core.Position;
 import com.welty.novello.selfplay.Players;
 
 import java.util.List;
@@ -60,7 +60,7 @@ public class SearchTimer {
 
         final long t0 = System.currentTimeMillis();
         for (MutableGame game : games) {
-            Position pos = game.getStartPosition();
+            Board pos = game.getStartBoard();
             for (Move8x8 move : game.getMlis()) {
                 pos = pos.playOrPass(move.getSq());
                 final int nEmpty = pos.nEmpty();

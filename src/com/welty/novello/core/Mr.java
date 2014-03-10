@@ -30,8 +30,8 @@ public class Mr {
         this.enemy = minEnemy;
     }
 
-    public Position toPosition() {
-        return new Position(mover, enemy, true);
+    public Board toPosition() {
+        return new Board(mover, enemy, true);
     }
 
     /**
@@ -44,7 +44,7 @@ public class Mr {
      * @return subPositions of this position
      */
     public List<Mr> subPositions() {
-        final Position pos = new Position(mover, enemy, true);
+        final Board pos = new Board(mover, enemy, true);
         final List<Mr> subPositions = new ArrayList<>();
 
         long moves = calcMoves();
@@ -53,8 +53,8 @@ public class Mr {
             final long placement = 1L << sq;
             moves &= ~placement;
 
-            final Position subPosition = pos.play(sq);
-            subPositions.add(new Mr(subPosition.mover(), subPosition.enemy()));
+            final Board subBoard = pos.play(sq);
+            subPositions.add(new Mr(subBoard.mover(), subBoard.enemy()));
         }
 
         return subPositions;

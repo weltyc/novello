@@ -160,33 +160,33 @@ public class CachingMvSource implements MvSource {
      * This implementation values using a midgame search.
      *
      * @param syncPlayer syncPlayer to value a position.
-     * @param position   the position
+     * @param board   the position
      * @return The two pvs
      */
-    static List<MeValue> getFirstTwoPvsSearch(SyncPlayer syncPlayer, Position position) {
+    static List<MeValue> getFirstTwoPvsSearch(SyncPlayer syncPlayer, Board board) {
         // generate value using a midgame search
         List<MeValue> pvs = new ArrayList<>();
-        if (!position.hasLegalMove()) {
-            position = position.pass();
-            if (!position.hasLegalMove()) {
+        if (!board.hasLegalMove()) {
+            board = board.pass();
+            if (!board.hasLegalMove()) {
                 return pvs;
             }
         }
-        final MoveScore moveScore = syncPlayer.calcMove(position, null);
-        pvs.add(new MeValue(position.mover(), position.enemy(), moveScore.centidisks));
+        final MoveScore moveScore = syncPlayer.calcMove(board, null);
+        pvs.add(new MeValue(board.mover(), board.enemy(), moveScore.centidisks));
 
-        position = position.play(moveScore.sq);
+        board = board.play(moveScore.sq);
         int subScore = -moveScore.centidisks;
 
-        if (!position.hasLegalMove()) {
-            position = position.pass();
-            if (!position.hasLegalMove()) {
+        if (!board.hasLegalMove()) {
+            board = board.pass();
+            if (!board.hasLegalMove()) {
                 return pvs;
             }
             subScore = moveScore.centidisks;
         }
 
-        pvs.add(new MeValue(position.mover(), position.enemy(), subScore));
+        pvs.add(new MeValue(board.mover(), board.enemy(), subScore));
         return pvs;
     }
 
@@ -196,12 +196,12 @@ public class CachingMvSource implements MvSource {
      * This implementation values using a midgame search.
      *
      * @param syncPlayer syncPlayer to value a position.
-     * @param position   the position
+     * @param board   the position
      * @return The two pvs
      */
-    static List<MeValue> getFirstTwoPvsPlayout(SyncPlayer syncPlayer, Position position) {
+    static List<MeValue> getFirstTwoPvsPlayout(SyncPlayer syncPlayer, Board board) {
         // generate using playout
-        final MutableGame game = new SelfPlayGame(position, syncPlayer, syncPlayer, OsClock.LONG, "", 0).call();
+        final MutableGame game = new SelfPlayGame(board, syncPlayer, syncPlayer, OsClock.LONG, "", 0).call();
         final List<MeValue> gamePvs = game.calcPositionValues();
         return gamePvs.subList(0, Math.min(2, gamePvs.size()));
     }
@@ -214,7 +214,7 @@ public class CachingMvSource implements MvSource {
         }
 
         @Override public List<MeValue> call() throws Exception {
-            return getFirstTwoPvsSearch(players.get(), new Position(mr));
+            return getFirstTwoPvsSearch(players.get(), new Board(mr));
         }
     }
 

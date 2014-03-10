@@ -3,7 +3,7 @@ package com.welty.novello.eval;
 import com.orbanova.common.feed.Feeds;
 import com.orbanova.common.feed.Mapper;
 import com.welty.novello.core.BitBoardUtils;
-import com.welty.novello.core.Position;
+import com.welty.novello.core.Board;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -48,7 +48,7 @@ import java.util.Arrays;
 
         if (iDebugEval > 1) {
             System.out.println("----------------------------");
-            System.out.println(new Position(mover, enemy, true));
+            System.out.println(new Board(mover, enemy, true));
             System.out.format("mover = 0x%x, enemy = 0x%x\n", mover, enemy);
         }
 

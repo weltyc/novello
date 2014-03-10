@@ -1,7 +1,7 @@
 package com.welty.othello.api;
 
+import com.welty.novello.core.Board;
 import com.welty.novello.core.MoveScore;
-import com.welty.novello.core.Position;
 import com.welty.novello.eval.Eval;
 import com.welty.novello.selfplay.EvalSyncEngine;
 import com.welty.novello.solver.SearchAbortedException;
@@ -81,7 +81,7 @@ public class SyncStatelessEngine implements StatelessEngine {
         requests.add(new Runnable() {
             @Override public void run() {
                 final COsBoard board = state.getGame().getPos().board;
-                final Position position = Position.of(board);
+                final Board position = Board.of(board);
                 // calcMove() can't handle a pass. So we handle it right here.
                 if (position.hasLegalMove()) {
                     try {
@@ -143,7 +143,7 @@ public class SyncStatelessEngine implements StatelessEngine {
     @NotNull OsMoveListItem calcMli(NBoardState state, int pong) {
         final COsPosition pos = state.getGame().getPos();
         final COsBoard board = pos.board;
-        final Position position = Position.of(board);
+        final Board position = Board.of(board);
         // calcMove() can't handle a pass. So we handle it right here.
         if (position.hasLegalMove()) {
             final long t0 = System.currentTimeMillis();

@@ -1,6 +1,6 @@
 package com.welty.novello.eval;
 
-import com.welty.novello.core.Position;
+import com.welty.novello.core.Board;
 import com.welty.novello.selfplay.EvalSyncEngine;
 import com.welty.novello.selfplay.Players;
 
@@ -12,7 +12,7 @@ public class Explain {
         final CoefficientEval eval = (CoefficientEval) Players.eval(evalName);
         final EvalSyncEngine player = new EvalSyncEngine(eval, "", evalName);
 
-        final Position prev = Position.of("--------\n" +
+        final Board prev = Board.of("--------\n" +
                 "--------\n" +
                 "-----*--\n" +
                 "---***--\n" +
@@ -27,7 +27,7 @@ public class Explain {
         final String moves = "E3,G3";
         for (String move : moves.split(",")) {
             System.out.println("----- " + move + " -----");
-            final Position board = prev.play(move);
+            final Board board = prev.play(move);
             System.out.println(board);
 
             System.out.println("Explaining eval. eval() returns " + eval.eval(board) + ".\n\n");

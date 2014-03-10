@@ -7,7 +7,7 @@ import junit.framework.TestCase;
  */
 public class StateTest extends TestCase {
     public void testUpdate() {
-        final State state = new State(Position.START_POSITION, new OsClock(0.5), new OsClock(0.6));
+        final State state = new State(Board.START_BOARD, new OsClock(0.5), new OsClock(0.6));
         checkClocks(state, 0.5, 0.6);
         final State state1 = state.playOrPass(new Move8x8("F5//0.01"));
         checkClocks(state1, 0.49, 0.6);

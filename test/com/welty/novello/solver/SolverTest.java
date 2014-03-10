@@ -1,8 +1,8 @@
 package com.welty.novello.solver;
 
 import com.welty.novello.core.BitBoardUtils;
+import com.welty.novello.core.Board;
 import com.welty.novello.core.MoveScore;
-import com.welty.novello.core.Position;
 import com.welty.othello.api.AbortCheck;
 import junit.framework.TestCase;
 
@@ -194,9 +194,9 @@ public class SolverTest extends TestCase {
         solver.clear(nEmpties); // we use this for benchmarking. Don't cheat!
         int actual = solver.solve(white, black);
         if (expected != actual) {
-            final Position position = new Position(black, white, false);
-            System.out.println(position.positionString());
-            assertEquals(position.toString(), expected, actual);
+            final Board board = new Board(black, white, false);
+            System.out.println(board.positionString());
+            assertEquals(board.toString(), expected, actual);
         }
     }
 
@@ -205,7 +205,7 @@ public class SolverTest extends TestCase {
      * <p/>
      * This is used for testing solvers.
      */
-    private static class SolverTestCase extends Position {
+    private static class SolverTestCase extends Board {
         private final int nobodyGetsEmptiesValue;
         private final int winnerTakesEmptiesValue;
 
@@ -217,7 +217,7 @@ public class SolverTest extends TestCase {
          * Create a solver test case: A board and an expected value.
          * <p/>
          *
-         * @param boardString   Text of the board. White is to move. See {@link Position} for
+         * @param boardString   Text of the board. White is to move. See {@link com.welty.novello.core.Board} for
          *                      details on the format of the boardString.
          * @param expectedValue number of disks white will win by, given perfect play, with the winner NOT getting empty squares.
          * @throws IllegalArgumentException if the boardString is invalid
@@ -238,7 +238,7 @@ public class SolverTest extends TestCase {
     }
 
     public void testSolveWithMove() {
-        Position bb = testCases[2];
+        Board bb = testCases[2];
         final Solver solver = new Solver();
         // switch player to move because mover has no move.
         final MoveScore result = solver.getMoveScore(bb.enemy(), bb.mover());
@@ -246,7 +246,7 @@ public class SolverTest extends TestCase {
     }
 
     public void testSolveWithMove2() {
-        Position bb = new Position("********************O*****OO*O****-********O*****O.OOO**--O---**", true);
+        Board bb = new Board("********************O*****OO*O****-********O*****O.OOO**--O---**", true);
         final Solver solver = new Solver();
         final MoveScore result = solver.getMoveScore(bb.mover(), bb.enemy());
         // A8, F8, C5 all win by 64.
@@ -255,7 +255,7 @@ public class SolverTest extends TestCase {
     }
 
     public void testAborts() {
-        Position bb = new Position(0x00FFFFFF00000000L, 0xFFFFFF00L, true);
+        Board bb = new Board(0x00FFFFFF00000000L, 0xFFFFFF00L, true);
         System.out.println(bb.nEmpty());
         final Solver solver = new Solver();
         try {

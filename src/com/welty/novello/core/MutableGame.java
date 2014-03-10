@@ -23,16 +23,16 @@ public class MutableGame {
      */
     private final List<Move8x8> mlis = new ArrayList<>();
     private boolean isOver = false;
-    private Position lastPosition;
+    private @NotNull Board lastBoard;
 
-    public MutableGame(@NotNull Position startPosition, @NotNull String blackName, @NotNull String whiteName, @NotNull String place) {
-        this(startPosition, blackName, whiteName, place, OsClock.DEFAULT, OsClock.DEFAULT);
+    public MutableGame(@NotNull Board startBoard, @NotNull String blackName, @NotNull String whiteName, @NotNull String place) {
+        this(startBoard, blackName, whiteName, place, OsClock.DEFAULT, OsClock.DEFAULT);
     }
 
-    public MutableGame(@NotNull Position startPosition, @NotNull String blackName, @NotNull String whiteName
+    public MutableGame(@NotNull Board startBoard, @NotNull String blackName, @NotNull String whiteName
             , @NotNull String place, @NotNull OsClock blackClock, @NotNull OsClock whiteClock) {
-        this.startState = new State(startPosition, blackClock, whiteClock);
-        lastPosition = startPosition;
+        this.startState = new State(startBoard, blackClock, whiteClock);
+        lastBoard = startBoard;
         this.blackName = blackName;
         this.whiteName = whiteName;
         this.place = place;
@@ -58,11 +58,11 @@ public class MutableGame {
             sb.append("TB[").append(startState.blackClock).append("]");
             sb.append("TW[").append(startState.whiteClock).append("]");
         }
-        final int nRandDisks = 64-startState.position.nEmpty();
+        final int nRandDisks = 64-startState.board.nEmpty();
         sb.append("TY[8r").append(nRandDisks).append("]");
 
-        sb.append("BO[8 ").append(startState.position.positionString()).append("]");
-        Position cur = startState.position;
+        sb.append("BO[8 ").append(startState.board.positionString()).append("]");
+        Board cur = startState.board;
         for (Move8x8 move : mlis) {
             sb.append(cur.blackToMove ? "B[" : "W[");
             sb.append(move);
@@ -106,24 +106,24 @@ public class MutableGame {
 
     private void play(Move8x8 move) {
         mlis.add(move);
-        lastPosition = lastPosition.playOrPass(move.getSq());
+        lastBoard = lastBoard.playOrPass(move.getSq());
     }
 
-    public @NotNull Position getStartPosition() {
-        return startState.position;
+    public @NotNull Board getStartBoard() {
+        return startState.board;
     }
 
-    public Position getLastPosition() {
-        return lastPosition;
+    @NotNull public Board getLastBoard() {
+        return lastBoard;
     }
 
     /**
      * @return a list of PositionValues, but only those where the mover has a legal move.
      */
     public List<MeValue> calcPositionValues() {
-        final int netScore = getLastPosition().terminalScore();
+        final int netScore = getLastBoard().terminalScore();
         final List<MeValue> pvs = new ArrayList<>();
-        Position pos = getStartPosition();
+        Board pos = getStartBoard();
         for (Move8x8 move : mlis) {
             if (move.isPass()) {
                 pos = pos.pass();
@@ -135,7 +135,7 @@ public class MutableGame {
         return pvs;
     }
 
-    private static MeValue pv(Position pos, int netScore) {
+    private static MeValue pv(Board pos, int netScore) {
         final int centidisks = CoefficientCalculator.DISK_VALUE * (pos.blackToMove ? netScore : -netScore);
         return new MeValue(pos.mover(), pos.enemy(), centidisks);
     }
@@ -144,7 +144,7 @@ public class MutableGame {
      * @return number of black disks - number of white disks at the end of the game
      */
     public int netScore() {
-        return lastPosition.terminalScore();
+        return lastBoard.terminalScore();
     }
 
     /**
@@ -185,9 +185,9 @@ public class MutableGame {
         final OsClock blackClock = osGame.getStartPosition().getBlackClock();
         final OsClock whiteClock = osGame.getStartPosition().getWhiteClock();
 
-        final Position startPosition = Position.of(osGame.posStart.board);
+        final Board startBoard = Board.of(osGame.posStart.board);
 
-        final MutableGame game = new MutableGame(startPosition, blackName, whiteName, place, blackClock, whiteClock);
+        final MutableGame game = new MutableGame(startBoard, blackName, whiteName, place, blackClock, whiteClock);
 
         final COsMoveList moveList = osGame.getMoveList();
         for (OsMoveListItem mli : moveList) {
@@ -206,8 +206,8 @@ public class MutableGame {
      *
      * @param nEmpty number of empty disks in the position to find
      */
-    public @Nullable Position calcPositionAt(int nEmpty) {
-        Position pos = getStartPosition();
+    public @Nullable Board calcBoardAt(int nEmpty) {
+        Board pos = getStartBoard();
         for (Move8x8 move : mlis) {
             if (move.isPass()) {
                 pos = pos.pass();
@@ -237,11 +237,11 @@ public class MutableGame {
     public static MutableGame ofVong(String s) {
         final String blackName = s.substring(1, 9).trim();
         final String whiteName = s.substring(14, 22).trim();
-        final MutableGame game = new MutableGame(Position.START_POSITION, blackName, whiteName, "Vong");
+        final MutableGame game = new MutableGame(Board.START_BOARD, blackName, whiteName, "Vong");
 
         final char[] moves = s.substring(23).toCharArray();
         for (char c : moves) {
-            if (game.getLastPosition().calcMoves() == 0) {
+            if (game.getLastBoard().calcMoves() == 0) {
                 game.pass();
             }
             game.play(BitBoardUtils.sqToText(c - ' '));
@@ -257,7 +257,7 @@ public class MutableGame {
      * @return total time taken by a player in all recorded moves. Does not include any time taken since the last move.
      */
     public double time(boolean blackPlayer) {
-        boolean counts = getStartPosition().blackToMove == blackPlayer;
+        boolean counts = getStartBoard().blackToMove == blackPlayer;
         double time = 0;
         for (Move8x8 move : mlis) {
             if (counts) {
@@ -290,5 +290,19 @@ public class MutableGame {
 
     @Override public String toString() {
         return toGgf();
+    }
+
+    /**
+     * Calculate clock time remaining for the player to move.
+     *
+     * If this player is moving, the calculation does not include time taken since this move started.
+     *
+     * @param blackPlayer if true, calculate black's remaining time; else calculate white's remaining time.
+     * @return remaining clock time.
+     */
+    public OsClock remainingClock(boolean blackPlayer) {
+        @NotNull State ss = getStartState();
+        @NotNull OsClock startClock =  blackPlayer ? ss.blackClock : ss.whiteClock;
+        return startClock.update(time(blackPlayer));
     }
 }

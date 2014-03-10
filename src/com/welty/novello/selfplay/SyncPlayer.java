@@ -1,7 +1,7 @@
 package com.welty.novello.selfplay;
 
+import com.welty.novello.core.Board;
 import com.welty.novello.core.MoveScore;
-import com.welty.novello.core.Position;
 import com.welty.othello.gdk.OsClock;
 import org.jetbrains.annotations.Nullable;
 
@@ -26,7 +26,7 @@ public class SyncPlayer {
      * @param clock amount of time remaining, or null if the player should ignore the clock
      * @return square and value of the player's chosen move
      */
-    public MoveScore calcMove(Position board, @Nullable OsClock clock) {
+    public MoveScore calcMove(Board board, @Nullable OsClock clock) {
         return engine.calcMove(board, clock, maxDepth);
     }
 
