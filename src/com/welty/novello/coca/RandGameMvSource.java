@@ -54,10 +54,10 @@ public class RandGameMvSource implements MvSource {
                 final OsMatchType mt = game0.getMatchType();
                 if (game0.is8x8() && !mt.anti && game0.getBlackPlayer().rating > 2000 && game0.getWhitePlayer().rating > 2000) {
                     nSelected++;
-                    if (mt.synch) {
+                    if (mt.isSynch()) {
                         nSelectedSynchro++;
                     }
-                    if (mt.komi) {
+                    if (mt.isKomi()) {
                         nSelectedKomi++;
                     }
                     for (COsGame ggfGame : games) {
