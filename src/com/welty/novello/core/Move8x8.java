@@ -1,8 +1,6 @@
 package com.welty.novello.core;
 
-import com.welty.ggf.Move;
 import com.welty.novello.eval.CoefficientCalculator;
-import com.welty.othello.gdk.OsMove;
 import com.welty.othello.gdk.OsMoveListItem;
 import org.jetbrains.annotations.NotNull;
 
