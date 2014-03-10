@@ -20,7 +20,7 @@ public class MutableGameTest extends TestCase {
         final String ggf = game.toGgf();
         assertTrue(ggf.contains("BO[8 -------- -------- -------- ---O*--- ---*O--- -------- -------- -------- *]"));
         assertTrue(ggf.contains("PC[VistaNova]"));
-        assertTrue(ggf.contains("TY[8r]"));
+        assertTrue(ggf.contains("TY[8r4]"));
         assertTrue(ggf.contains("RE[?]"));
         assertTrue(ggf.contains("PB[Boris]"));
         assertTrue(ggf.contains("TI[5:00]"));

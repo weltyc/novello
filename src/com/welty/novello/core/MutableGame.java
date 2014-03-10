@@ -58,7 +58,8 @@ public class MutableGame {
             sb.append("TB[").append(startState.blackClock).append("]");
             sb.append("TW[").append(startState.whiteClock).append("]");
         }
-        sb.append("TY[8r]");
+        final int nRandDisks = 64-startState.position.nEmpty();
+        sb.append("TY[8r").append(nRandDisks).append("]");
 
         sb.append("BO[8 ").append(startState.position.positionString()).append("]");
         Position cur = startState.position;
