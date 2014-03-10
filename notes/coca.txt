@@ -229,12 +229,28 @@ Replace the Edge2X pattern with the Edge3X pattern. Edge3X combines the 4 center
 into a single "virtual disk" which is black if all 4 center disks are black, white if all 4 are white,
 and empty otherwise.
 
-Played g1 vs d3 at even depths from 2 to 8:
+Played g1 vs d3 at even depths from 2 to 14:
 
     depth  result                  timing           timing-SR
        2   +0.521 +/-0.10    5.55 ms vs 5.40 ms        0.5
        4   +0.575 +/-0.079   15.8 ms vs 15.5 ms        0.3
        6   +0.543 +/-0.063   56.7 ms vs 55.6 ms        0.2
+       8   +0.871 +/-0.053   141 ms vs 141 ms          0.0
+      10   +0.743 +/-0.045   289 ms vs 288             0.0
+      12   +0.418 +/-0.038   675 ms vs 670 ms          0.0
+      14   +0.523 +/-0.032  1.44 s vs 1.43 s           0.1
 
 Notes: g3 is listed first, and positive results are for g3. All 4 depths ran simultaneously, so timings are slower
      than they would be if running separately.
+
+With Subpattern (h1)
+--------------------
+Use both the Edge2X and Edge3X Patterns because some Edge3X patterns are probably very rare.
+
+Play h1 vs g1 at even depths:
+
+    depth  result
+      12   +0.0172 +/-0.035
+      14   +0.0438 +/-0.030
+
+Note: timing was not considered because h1, though currently slower, can be sped up to match g1.

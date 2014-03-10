@@ -8,6 +8,7 @@ import com.welty.novello.selfplay.EvalSyncEngine;
 import com.welty.novello.selfplay.Players;
 import com.welty.novello.selfplay.SelfPlaySet;
 import com.welty.novello.selfplay.SyncPlayer;
+import com.welty.othello.gdk.OsClock;
 
 import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
@@ -31,7 +32,7 @@ public class BaseMrSource implements MrSource {
             final Set<Mr> mrSet = new HashSet<>();
             Files.createDirectories(mrsPath.getParent());
             final SelfPlaySet.PvCollector pvCollector = new SelfPlaySet.PvCollector();
-            SelfPlaySet.run(playoutPlayer, playoutPlayer, pvCollector);
+            SelfPlaySet.run(playoutPlayer, playoutPlayer, OsClock.LONG, pvCollector);
             for (MeValue pv : pvCollector.pvs) {
                 mrSet.add(new Mr(pv.mover, pv.enemy));
             }

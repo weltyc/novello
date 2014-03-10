@@ -73,15 +73,12 @@ public class NBoardSyncEngine implements SyncEngine {
         Require.geq(maxDepth, "max depth", 0);
         try {
             pingPong();
-            final GameClock gameClock;
             if (clock == null) {
                 // player can take as long as it wants. 1 billion millis (~2 weeks) should be long enough.
-                gameClock = new GameClock((long) 1_000_000_000, (long) (120_000));
+                clock = OsClock.LONG;
 
-            } else {
-                gameClock = new GameClock((long) (clock.tCurrent * 1000), (long) (clock.getGraceTime() * 1000));
             }
-            println("set game " + new MutableGame(position, "me", "you", "here", gameClock, gameClock).toGgf());
+            println("set game " + new MutableGame(position, "me", "you", "here", clock, clock).toGgf());
             if (maxDepth != lastDepth) {
                 println("set depth " + maxDepth);
                 lastDepth = maxDepth;

@@ -1,7 +1,7 @@
 package com.welty.novello.core;
 
-import com.orbanova.common.date.Time;
 import com.welty.novello.eval.CoefficientCalculator;
+import com.welty.othello.gdk.OsClock;
 import junit.framework.TestCase;
 
 import java.util.List;
@@ -13,7 +13,7 @@ public class MutableGameTest extends TestCase {
 
     public void testUpdates() {
         final Position startPosition = Position.START_POSITION;
-        final GameClock clock = new GameClock("5:00");
+        final OsClock clock = new OsClock("5:00");
         final MutableGame game = new MutableGame(startPosition, "Boris", "William", "VistaNova", clock, clock);
         assertEquals(Position.START_POSITION, game.getStartPosition());
         assertEquals(Position.START_POSITION, game.getLastPosition());
@@ -23,7 +23,7 @@ public class MutableGameTest extends TestCase {
         assertTrue(ggf.contains("TY[8r]"));
         assertTrue(ggf.contains("RE[?]"));
         assertTrue(ggf.contains("PB[Boris]"));
-        assertTrue(ggf.contains("TI[05:00]"));
+        assertTrue(ggf.contains("TI[5:00]"));
         assertTrue(ggf.startsWith("(;GM[Othello]"));
         assertTrue(ggf.endsWith(";)"));
 
@@ -67,10 +67,11 @@ public class MutableGameTest extends TestCase {
         final String unequalClockText = "TB[05:00//02:00]TW[01:00//01:00]";
         final String unequal = ggf.replace("TI[05:00//02:00]", unequalClockText);
         final MutableGame game = MutableGame.ofGgf(unequal);
-        assertEquals("05:00//02:00", game.getStartState().blackClock.toString());
-        assertEquals("01:00//01:00", game.getStartState().whiteClock.toString());
+        assertEquals("5:00", game.getStartState().blackClock.toString());
+        assertEquals("1:00//1:00", game.getStartState().whiteClock.toString());
         final String out = game.toGgf();
-        assertTrue(out.contains(unequalClockText));
+        assertTrue(out.contains("TB[5:00]"));
+        assertTrue(out.contains("TW[1:00//1:00]"));
     }
 
     private static final String ggf = "(;GM[Othello]PC[GGS/os]DT[2003.12.15_13:24:03.MST]PB[Saio1200]PW[Saio3000]RB[2197.01]RW[2199.72]TI[05:00//02:00]TY[8]RE[+0.000]BO[8 -------- -------- -------- ---O*--- ---*O--- -------- -------- -------- *]B[d3//0.01]W[c5//0.01]B[e6//0.01]W[d2//0.01]B[c6//0.01]W[d6//0.01]B[b5//0.01]W[f5//0.01]B[e7//0.01]W[f6//0.01]B[f4//0.01]W[f3//0.01]B[g4//0.01]W[d7//0.01]B[g3//0.01]W[g5//0.01]B[h6//0.01]W[h5//0.01]B[h4//0.01]W[e8//0.01]B[c7//0.01]W[h3//0.01]B[c3//0.01]W[h7//0.01]B[e3//0.01]W[b6//0.01]B[g6//5.42]W[f7//0.01]B[d8//0.01]W[c2//0.01]B[d1//0.01]W[c4//0.01]B[b4//0.01]W[a5//0.01]B[f8//0.01]W[f2//0.01]B[e2//0.01]W[a4//17.38]B[a3//19.10]W[b3//0.01]B[f1//4.90]W[g7//0.01]B[b7//0.01]W[c8//0.01]B[a6//0.01]W[a7//0.01]B[c1//0.01]W[b2//0.01]B[a8//0.01]W[b8//0.01]B[a2//0.01]W[e1//0.01]B[h8//0.01]W[g8//0.01]B[h2//0.01]W[g1//0.01]B[h1//3.80]W[g2//0.01]B[pass]W[a1//0.01]B[b1//0.01];)";
@@ -83,8 +84,8 @@ public class MutableGameTest extends TestCase {
         assertEquals("-------- -------- -------- ---O*--- ---*O--- -------- -------- -------- *", game.getStartPosition().positionString());
         assertEquals(0, game.getLastPosition().nEmpty());
         assertEquals(0, game.getLastPosition().terminalScore());
-        assertEquals(5 * Time.MINUTE, game.getStartState().whiteClock.remaining);
-        assertEquals(5 * Time.MINUTE, game.getStartState().blackClock.remaining);
+        assertEquals(5 * 60., game.getStartState().whiteClock.tCurrent);
+        assertEquals(5 * 60., game.getStartState().blackClock.tCurrent);
     }
 
     public void testCalcPositionAt() {

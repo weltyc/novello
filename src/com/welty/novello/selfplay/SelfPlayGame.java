@@ -4,6 +4,7 @@ import com.orbanova.common.misc.Require;
 import com.welty.novello.core.MoveScore;
 import com.welty.novello.core.MutableGame;
 import com.welty.novello.core.Position;
+import com.welty.othello.gdk.OsClock;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.Callable;
@@ -22,11 +23,12 @@ public class SelfPlayGame implements Callable<MutableGame> {
      * @param board     start position
      * @param black     black player
      * @param white     white player
+     * @param clock
      * @param place     location of the match (often, Props.getHostName())
      * @param gameFlags Sum of binary flags defined in SelfPlayGame (FLAG_PRINT_GAME, FLAG_MEASURE_TIME)
      */
-    public SelfPlayGame(@NotNull Position board, @NotNull SyncPlayer black, @NotNull SyncPlayer white, String place, int gameFlags) {
-        this.game = new MutableGame(board, black.toString(), white.toString(), place);
+    public SelfPlayGame(@NotNull Position board, @NotNull SyncPlayer black, @NotNull SyncPlayer white, OsClock clock, String place, int gameFlags) {
+        this.game = new MutableGame(board, black.toString(), white.toString(), place, clock, clock);
         this.black = black;
         this.white = white;
         this.gameFlags = gameFlags;

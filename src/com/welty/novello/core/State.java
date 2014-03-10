@@ -1,5 +1,6 @@
 package com.welty.novello.core;
 
+import com.welty.othello.gdk.OsClock;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -9,10 +10,10 @@ import org.jetbrains.annotations.NotNull;
  */
 public class State {
     public final @NotNull Position position;
-    public final @NotNull GameClock blackClock;
-    public final @NotNull GameClock whiteClock;
+    public final @NotNull OsClock blackClock;
+    public final @NotNull OsClock whiteClock;
 
-    public State(@NotNull Position position, @NotNull GameClock blackClock, @NotNull GameClock whiteClock) {
+    public State(@NotNull Position position, @NotNull OsClock blackClock, @NotNull OsClock whiteClock) {
         this.position = position;
         this.blackClock = blackClock;
         this.whiteClock = whiteClock;

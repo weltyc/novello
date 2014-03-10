@@ -6,6 +6,7 @@ import com.orbanova.common.jsb.JSwingBuilder;
 import com.orbanova.common.jsb.JsbFrame;
 import com.orbanova.common.misc.Vec;
 import com.orbanova.common.misc.View;
+import com.welty.othello.gdk.OsClock;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -121,7 +122,7 @@ public class Tournament implements Runnable {
         @Override public Result call() throws Exception {
             final SyncPlayer black = Players.player(playerNames[i]);
             final SyncPlayer white = Players.player(playerNames[j]);
-            final double averageResult = SelfPlaySet.run(black, white, new SelfPlaySet.ProgressBarUpdater(progressBar));
+            final double averageResult = SelfPlaySet.run(black, white, OsClock.LONG, new SelfPlaySet.ProgressBarUpdater(progressBar));
             System.out.format("%+5.1f  %s vs %s%n", averageResult, black, white);
             return new Result(i, j, averageResult);
         }

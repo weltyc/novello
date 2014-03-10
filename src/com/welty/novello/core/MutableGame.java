@@ -4,6 +4,7 @@ import com.orbanova.common.misc.Require;
 import com.welty.ggf.GgfGame;
 import com.welty.ggf.Move;
 import com.welty.novello.eval.CoefficientCalculator;
+import com.welty.othello.gdk.OsClock;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,11 +29,11 @@ public class MutableGame {
     private Position lastPosition;
 
     public MutableGame(@NotNull Position startPosition, @NotNull String blackName, @NotNull String whiteName, @NotNull String place) {
-        this(startPosition, blackName, whiteName, place, new GameClock(0, 0), new GameClock(0, 0));
+        this(startPosition, blackName, whiteName, place, OsClock.DEFAULT, OsClock.DEFAULT);
     }
 
     public MutableGame(@NotNull Position startPosition, @NotNull String blackName, @NotNull String whiteName
-            , @NotNull String place, @NotNull GameClock blackClock, @NotNull GameClock whiteClock) {
+            , @NotNull String place, @NotNull OsClock blackClock, @NotNull OsClock whiteClock) {
         this.startState = new State(startPosition, blackClock, whiteClock);
         lastPosition = startPosition;
         this.blackName = blackName;
@@ -172,13 +173,13 @@ public class MutableGame {
         if (!bo.startsWith("8 ")) {
             throw new IllegalArgumentException("We can only handle 8x8 boards.");
         }
-        final GameClock blackClock;
-        final GameClock whiteClock;
+        final OsClock blackClock;
+        final OsClock whiteClock;
         if (tags.containsKey("TI")) {
-            blackClock = whiteClock = new GameClock(tags.get("TI"));
+            blackClock = whiteClock = new OsClock(tags.get("TI"));
         } else {
-            blackClock = new GameClock(GgfGame.getRequiredTag(tags, "TB"));
-            whiteClock = new GameClock(GgfGame.getRequiredTag(tags, "TW"));
+            blackClock = new OsClock(GgfGame.getRequiredTag(tags, "TB"));
+            whiteClock = new OsClock(GgfGame.getRequiredTag(tags, "TW"));
         }
 
         final Position startPosition = Position.of(bo.substring(2));
@@ -279,18 +280,6 @@ public class MutableGame {
         }
         return game;
 
-    }
-
-    /**
-     * Get the position after nMoves moves.
-     * <p/>
-     * Passes count as moves.
-     *
-     * @param nMoves number of moves to go forward.
-     * @return the position.
-     */
-    public @NotNull Position getPositionAfter(int nMoves) {
-        return getStateAfter(nMoves).position;
     }
 
     /**

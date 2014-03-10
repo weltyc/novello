@@ -7,6 +7,7 @@ import com.welty.novello.selfplay.Players;
 import com.welty.novello.selfplay.SelfPlayGame;
 import com.welty.novello.selfplay.SyncPlayer;
 import com.welty.othello.core.OperatingSystem;
+import com.welty.othello.gdk.OsClock;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedOutputStream;
@@ -200,7 +201,7 @@ public class CachingMvSource implements MvSource {
      */
     static List<MeValue> getFirstTwoPvsPlayout(SyncPlayer syncPlayer, Position position) {
         // generate using playout
-        final MutableGame game = new SelfPlayGame(position, syncPlayer, syncPlayer, "", 0).call();
+        final MutableGame game = new SelfPlayGame(position, syncPlayer, syncPlayer, OsClock.LONG, "", 0).call();
         final List<MeValue> gamePvs = game.calcPositionValues();
         return gamePvs.subList(0, Math.min(2, gamePvs.size()));
     }

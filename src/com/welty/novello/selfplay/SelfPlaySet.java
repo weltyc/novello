@@ -6,6 +6,7 @@ import com.welty.novello.core.MutableGame;
 import com.welty.novello.core.NovelloUtils;
 import com.welty.novello.core.Position;
 import com.orbanova.common.misc.Engineering;
+import com.welty.othello.gdk.OsClock;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -20,15 +21,16 @@ public class SelfPlaySet {
 
     public static void main(String[] args) throws IOException {
         if (args.length < 2) {
-            System.err.println("usage: blackPlayerName whitePlayerName [# games]");
-            System.err.println(" for example a1:2 ntest:2");
+            System.err.println("usage: blackPlayerName whitePlayerName [time per game in seconds]");
+            System.err.println(" for example a1:2 NTest:2 900");
             System.exit(-1);
         }
         final SyncPlayer black = Players.player(args[0]);
         final SyncPlayer white = Players.player(args[1]);
+        final OsClock clock = args.length > 2 ? new OsClock(Double.parseDouble(args[2])) : OsClock.LONG;
 
         final MatchResultListener[] listeners = {new MatchPrinter(2), new StatPrinter()};
-        final double result = run(black, white, listeners);
+        final double result = run(black, white, clock, listeners);
         System.out.format("%s vs %s: average result = %.1f\n", black, white, result);
     }
 
@@ -46,12 +48,13 @@ public class SelfPlaySet {
      * @param listeners   listeners to match result
      * @return average match result (player 1 disks - player 2 disks).
      */
-    public static double run(SyncPlayer syncEngine1, SyncPlayer syncEngine2, MatchResultListener... listeners) {
-        return new SelfPlaySet(syncEngine1, syncEngine2, listeners).call();
+    public static double run(SyncPlayer syncEngine1, SyncPlayer syncEngine2, OsClock clock, MatchResultListener... listeners) {
+        return new SelfPlaySet(syncEngine1, syncEngine2, clock, listeners).call();
     }
 
     private final @NotNull SyncPlayer syncEngine1;
     private final @NotNull SyncPlayer syncEngine2;
+    private final OsClock clock;
     private final @NotNull MatchResultListener[] matchResultListeners;
 
     /**
@@ -61,11 +64,13 @@ public class SelfPlaySet {
      *
      * @param syncEngine1          first player
      * @param syncEngine2          second player
+     * @param clock                starting time for each player
      * @param matchResultListeners listeners to results of each match
      */
-    private SelfPlaySet(@NotNull SyncPlayer syncEngine1, @NotNull SyncPlayer syncEngine2, @NotNull MatchResultListener... matchResultListeners) {
+    private SelfPlaySet(@NotNull SyncPlayer syncEngine1, @NotNull SyncPlayer syncEngine2, OsClock clock, @NotNull MatchResultListener... matchResultListeners) {
         this.syncEngine1 = syncEngine1;
         this.syncEngine2 = syncEngine2;
+        this.clock = clock;
         this.matchResultListeners = matchResultListeners;
     }
 
@@ -86,10 +91,10 @@ public class SelfPlaySet {
         double sum = 0;
         for (Position startPosition : startPositions) {
             final int netResult;
-            final MutableGame result = new SelfPlayGame(startPosition, syncEngine1, syncEngine2, hostName, 0).call();
+            final MutableGame result = new SelfPlayGame(startPosition, syncEngine1, syncEngine2, clock, hostName, 0).call();
             final MutableGame result2;
             if (syncEngine2 != syncEngine1) {
-                result2 = new SelfPlayGame(startPosition, syncEngine2, syncEngine1, hostName, 0).call();
+                result2 = new SelfPlayGame(startPosition, syncEngine2, syncEngine1, clock, hostName, 0).call();
                 netResult = (result.netScore() - result2.netScore());
             } else {
                 // if the same player plays both sides we don't need to play the return games
