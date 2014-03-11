@@ -3,8 +3,6 @@ package com.welty.novello.selfplay;
 import com.welty.novello.core.Board;
 import com.welty.novello.core.MoveScore;
 import com.welty.novello.core.MutableGame;
-import com.welty.othello.gdk.OsClock;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * A SyncEngine, but knows its search depth
@@ -23,12 +21,12 @@ public class SyncPlayer {
      * <p/>
      * Precondition: the board has a legal move
      *
+     *
      * @param board board to move on
-     * @param clock amount of time remaining, or null if the player should ignore the clock
      * @return square and value of the player's chosen move
      */
-    public MoveScore calcMove(Board board, @Nullable OsClock clock) {
-        return engine.calcMove(board, clock, maxDepth);
+    public MoveScore calcMove(Board board) {
+        return engine.calcMove(board, null, maxDepth);
     }
 
     /**

@@ -171,7 +171,7 @@ public class Ffo {
         }
 
         @NotNull @Override public MoveScore getMoveScore(Board board) {
-            return player.calcMove(board, null);
+            return player.calcMove(board);
         }
 
         @Override public String toString() {
