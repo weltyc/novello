@@ -13,7 +13,7 @@ import java.util.List;
  * Game history
  */
 public class MutableGame {
-    private final @NotNull State startState;
+    private final @NotNull Position startPosition;
     public final @NotNull String blackName;
     public final @NotNull String whiteName;
     public final @NotNull String place;
@@ -31,7 +31,7 @@ public class MutableGame {
 
     public MutableGame(@NotNull Board startBoard, @NotNull String blackName, @NotNull String whiteName
             , @NotNull String place, @NotNull OsClock blackClock, @NotNull OsClock whiteClock) {
-        this.startState = new State(startBoard, blackClock, whiteClock);
+        this.startPosition = new Position(startBoard, blackClock, whiteClock);
         lastBoard = startBoard;
         this.blackName = blackName;
         this.whiteName = whiteName;
@@ -52,17 +52,17 @@ public class MutableGame {
         sb.append("PB[").append(blackName).append("]");
         sb.append("PW[").append(whiteName).append("]");
         sb.append("RE[").append(isOver ? netScore() : "?").append("]");
-        if (startState.blackClock == startState.whiteClock) {
-            sb.append("TI[").append(startState.blackClock).append("]");
+        if (startPosition.blackClock == startPosition.whiteClock) {
+            sb.append("TI[").append(startPosition.blackClock).append("]");
         } else {
-            sb.append("TB[").append(startState.blackClock).append("]");
-            sb.append("TW[").append(startState.whiteClock).append("]");
+            sb.append("TB[").append(startPosition.blackClock).append("]");
+            sb.append("TW[").append(startPosition.whiteClock).append("]");
         }
-        final int nRandDisks = 64-startState.board.nEmpty();
+        final int nRandDisks = 64- startPosition.board.nEmpty();
         sb.append("TY[8r").append(nRandDisks).append("]");
 
-        sb.append("BO[8 ").append(startState.board.positionString()).append("]");
-        Board cur = startState.board;
+        sb.append("BO[8 ").append(startPosition.board.positionString()).append("]");
+        Board cur = startPosition.board;
         for (Move8x8 move : mlis) {
             sb.append(cur.blackToMove ? "B[" : "W[");
             sb.append(move);
@@ -110,7 +110,7 @@ public class MutableGame {
     }
 
     public @NotNull Board getStartBoard() {
-        return startState.board;
+        return startPosition.board;
     }
 
     @NotNull public Board getLastBoard() {
@@ -269,23 +269,23 @@ public class MutableGame {
     }
 
     /**
-     * Get the State at the beginning of the game.
+     * Get the Position at the beginning of the game.
      *
-     * @return game start State
+     * @return game start Position
      */
-    @NotNull public State getStartState() {
-        return startState;
+    public @NotNull Position getStartPosition() {
+        return startPosition;
     }
 
-    public @NotNull State getStateAfter(int nMoves) {
+    public @NotNull Position getStateAfter(int nMoves) {
         Require.geq(nMoves, 0);
         Require.leq(nMoves, "nMove", mlis.size(), "total moves in the game");
 
-        State state = getStartState();
+        Position position = getStartPosition();
         for (int i = 0; i < nMoves; i++) {
-            state = state.playOrPass(mlis.get(i));
+            position = position.playOrPass(mlis.get(i));
         }
-        return state;
+        return position;
     }
 
     @Override public String toString() {
@@ -301,7 +301,7 @@ public class MutableGame {
      * @return remaining clock time.
      */
     public OsClock remainingClock(boolean blackPlayer) {
-        @NotNull State ss = getStartState();
+        @NotNull Position ss = getStartPosition();
         @NotNull OsClock startClock =  blackPlayer ? ss.blackClock : ss.whiteClock;
         return startClock.update(time(blackPlayer));
     }

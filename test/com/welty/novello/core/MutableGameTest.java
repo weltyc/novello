@@ -68,8 +68,8 @@ public class MutableGameTest extends TestCase {
         final String unequalClockText = "TB[05:00//02:00]TW[01:00//01:00]";
         final String unequal = ggf.replace("TI[05:00//02:00]", unequalClockText);
         final MutableGame game = MutableGame.ofGgf(unequal);
-        assertEquals("5:00", game.getStartState().blackClock.toString());
-        assertEquals("1:00//1:00", game.getStartState().whiteClock.toString());
+        assertEquals("5:00", game.getStartPosition().blackClock.toString());
+        assertEquals("1:00//1:00", game.getStartPosition().whiteClock.toString());
         final String out = game.toGgf();
         assertTrue(out.contains("TB[5:00]"));
         assertTrue(out.contains("TW[1:00//1:00]"));
@@ -85,8 +85,8 @@ public class MutableGameTest extends TestCase {
         assertEquals("-------- -------- -------- ---O*--- ---*O--- -------- -------- -------- *", game.getStartBoard().positionString());
         assertEquals(0, game.getLastBoard().nEmpty());
         assertEquals(0, game.getLastBoard().terminalScore());
-        assertEquals(5 * 60., game.getStartState().whiteClock.tCurrent);
-        assertEquals(5 * 60., game.getStartState().blackClock.tCurrent);
+        assertEquals(5 * 60., game.getStartPosition().whiteClock.tCurrent);
+        assertEquals(5 * 60., game.getStartPosition().blackClock.tCurrent);
     }
 
     public void testCalcPositionAt() {
@@ -109,7 +109,7 @@ public class MutableGameTest extends TestCase {
 
     public void testGetStateAfter() {
         final MutableGame game = MutableGame.ofGgf(ggf);
-        assertEquals(game.getStartState(), game.getStateAfter(0));
+        assertEquals(game.getStartPosition(), game.getStateAfter(0));
     }
 
     public void testGetTimeRemaining() {
