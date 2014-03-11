@@ -16,7 +16,7 @@ public class Move8x8 extends OsMoveListItem {
     public static final Move8x8 PASS = new Move8x8("PASS");
 
     /**
-     * Create an 8x8 move
+     * Create an 8x8 move/pass
      *
      * @param text text of the move, e.g. "d5/1/1.2" or "pass"
      * @throws IllegalArgumentException if the move is not an 8x8 move.
@@ -27,7 +27,7 @@ public class Move8x8 extends OsMoveListItem {
     }
 
     /**
-     * Create an 8x8 move
+     * Create an 8x8 move/pass
      *
      * @param moveScore move text and score
      * @param time      elapsed time, in seconds
@@ -35,18 +35,18 @@ public class Move8x8 extends OsMoveListItem {
      */
     public Move8x8(@NotNull MoveScore moveScore, double time) {
         super(moveScore.getOsMove(), moveScore.centidisks / (double) CoefficientCalculator.DISK_VALUE, time);
-        getSq();
+        getSq(); // throw exception if not an 8x8 move
     }
 
     /**
-     * Create an 8x8 move
+     * Create an 8x8 move/pass
      *
      * @param mli move details.
      * @throws IllegalArgumentException if the move is not an 8x8 move.
      */
     public Move8x8(@NotNull OsMoveListItem mli) {
         super(mli.move, mli.getEval(), mli.getElapsedTime());
-        getSq(); // throw exception if
+        getSq(); // throw exception if not an 8x8 move
     }
 
     /**
