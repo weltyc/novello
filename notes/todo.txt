@@ -1,15 +1,15 @@
-* Coefficient Calculator
-  * Sub coefficients
-  * Deeper search for playouts
+Coefficient calculator
+----------------------
+CC1     diagonal control
 
-* Midgame Search
-  * Solve with <= 4 empties
-  * Hash table
+Midgame Search
+--------------
+MS1     Multiple probable solve widths
+MS2     Better move sorting
+MS3     Deeper cut pairs
+MS4     Tune MPC width
+MS4     Best move storage for iterative deepening
 
-* Gui
-  * Records: Fastest win, biggest win
-  * Get coins from winning
-  * Buy themes with coins
-  * Unlock harder difficulties
-  * Puzzles
-  * Easier opponents
+Solver
+------
+SV1     Try newer coefficients in FFO and VONG tests
