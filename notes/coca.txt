@@ -258,3 +258,10 @@ Play h1 vs g1 at even depths:
 Note: timing was not considered because h1, though currently slower, can be sped up to match g1.
 
 Again, we find subpatterns are a very small advantage.
+
+ntestJ vs g1
+------------
+
+    depth  result                  timing           timing-SR
+       6   +0.353 +/-0.073    48.8 ms vs 42.0 ms       1.8
+       8

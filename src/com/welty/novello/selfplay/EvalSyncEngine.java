@@ -149,11 +149,11 @@ public class EvalSyncEngine implements SyncEngine {
             final double tTarget = calcTargetTime(clock, nEmpty);
             tHardAbort = now + cap(tTarget * 2, clock.tCurrent);
             tNoMoreRounds = now + cap(tTarget * 0.5, clock.tCurrent);
-            System.out.println("now: " + now);
-            System.out.println("clock.tCurrent: " + clock.tCurrent);
-            System.out.println("nEmpty: " + nEmpty);
-            System.out.println("tHardAbort: +" + (tHardAbort - now));
-            System.out.println("tNoMoreRounds: +" + (tNoMoreRounds - now));
+//            System.out.println("now: " + now);
+//            System.out.println("clock.tCurrent: " + clock.tCurrent);
+//            System.out.println("nEmpty: " + nEmpty);
+//            System.out.println("tHardAbort: +" + (tHardAbort - now));
+//            System.out.println("tNoMoreRounds: +" + (tNoMoreRounds - now));
         }
 
         private static long cap(double t, double tCurrent) {
