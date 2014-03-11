@@ -2,9 +2,7 @@ package com.welty.novello.selfplay;
 
 import com.orbanova.common.misc.Require;
 import com.orbanova.common.misc.Utils;
-import com.welty.novello.core.BitBoardUtils;
-import com.welty.novello.core.Board;
-import com.welty.novello.core.MoveScore;
+import com.welty.novello.core.*;
 import com.welty.novello.eval.CoefficientCalculator;
 import com.welty.novello.eval.Eval;
 import com.welty.novello.solver.MidgameSearcher;
@@ -29,23 +27,24 @@ import java.util.ArrayList;
  * This implementation is NOT thread-safe.
  */
 public class EvalSyncEngine implements SyncEngine {
-    @NotNull private final Eval eval;
     private final MidgameSearcher.Options midgameOptions;
-    private final String options;
     private final MidgameSearcher searcher;
     private final Solver solver;
     private final @NotNull String name;
 
     public EvalSyncEngine(@NotNull Eval eval, String options, @NotNull String name) {
-        this.eval = eval;
-        this.options = options;
         this.name = name;
         midgameOptions = new MidgameSearcher.Options(options);
         this.solver = new Solver(eval, midgameOptions);
         this.searcher = solver.midgameSearcher;
     }
 
-    public MoveScore calcMove(@NotNull Board board, @Nullable OsClock clock, int maxDepth) {
+    @NotNull @Override public MoveScore calcMove(@NotNull MutableGame game, int maxDepth) {
+        final Position position = game.getLastPosition();
+        return calcMove(position.board, position.board.blackToMove ? position.blackClock : position.whiteClock, maxDepth);
+    }
+
+    @NotNull public MoveScore calcMove(@NotNull Board board, @Nullable OsClock clock, int maxDepth) {
         return calcMove(board, clock, maxDepth, AbortCheck.NEVER, Listener.NULL);
     }
 
@@ -234,6 +233,7 @@ public class EvalSyncEngine implements SyncEngine {
     }
 
     public void learn(COsGame game, int maxDepth, AbortCheck abortCheck, Listener listener) {
+        // not yet implemented.
     }
 
     /**

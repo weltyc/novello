@@ -109,7 +109,7 @@ public class MutableGameTest extends TestCase {
 
     public void testGetStateAfter() {
         final MutableGame game = MutableGame.ofGgf(ggf);
-        assertEquals(game.getStartPosition(), game.getStateAfter(0));
+        assertEquals(game.getStartPosition(), game.getPositionAfter(0));
     }
 
     public void testGetTimeRemaining() {

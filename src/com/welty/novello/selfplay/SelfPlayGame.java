@@ -23,7 +23,7 @@ public class SelfPlayGame implements Callable<MutableGame> {
      * @param board     start position
      * @param black     black player
      * @param white     white player
-     * @param clock
+     * @param clock     time per player
      * @param place     location of the match (often, Props.getHostName())
      * @param gameFlags Sum of binary flags defined in SelfPlayGame (FLAG_PRINT_GAME, FLAG_MEASURE_TIME)
      */
@@ -70,7 +70,6 @@ public class SelfPlayGame implements Callable<MutableGame> {
 
     private void move(long moves) {
         final Board board = game.getLastBoard();
-        OsClock remainingClock = game.remainingClock(board.blackToMove);
         Require.isTrue(moves != 0, "has a move");
         if (printGame()) {
             System.out.println(board.positionString());
@@ -79,7 +78,7 @@ public class SelfPlayGame implements Callable<MutableGame> {
             System.out.println(player(board.blackToMove) + " to move");
         }
         final long t0 = measuredTime();
-        final MoveScore moveScore = player(board.blackToMove).calcMove(board, remainingClock);
+        final MoveScore moveScore = player(board.blackToMove).calcMove(game);
         final long dt = measuredTime() - t0;
         game.play(moveScore, dt * .001);
         if (printGame()) {

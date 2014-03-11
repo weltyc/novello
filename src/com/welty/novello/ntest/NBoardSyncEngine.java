@@ -68,7 +68,29 @@ public class NBoardSyncEngine implements SyncEngine {
         }
     }
 
-    @Override public MoveScore calcMove(@NotNull Board board, @Nullable OsClock clock, int maxDepth) {
+    @NotNull @Override public MoveScore calcMove(@NotNull MutableGame game, int maxDepth) {
+        Require.geq(maxDepth, "max depth", 0);
+        try {
+            pingPong();
+            println("set game " + game.toGgf());
+            if (maxDepth != lastDepth) {
+                println("set depth " + maxDepth);
+                lastDepth = maxDepth;
+            }
+            println("go");
+            String line;
+            while (null != (line = readLine())) {
+                if (line.startsWith("===")) {
+                    return parseMoveScore(line);
+                }
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        throw new RuntimeException("NBoard connection to " + program + " failed");
+    }
+
+    @NotNull @Override public MoveScore calcMove(@NotNull Board board, @Nullable OsClock clock, int maxDepth) {
         Require.geq(maxDepth, "max depth", 0);
         try {
             pingPong();

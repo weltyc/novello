@@ -2,6 +2,7 @@ package com.welty.novello.selfplay;
 
 import com.welty.novello.core.Board;
 import com.welty.novello.core.MoveScore;
+import com.welty.novello.core.MutableGame;
 import com.welty.othello.gdk.OsClock;
 import org.jetbrains.annotations.Nullable;
 
@@ -41,5 +42,17 @@ public class SyncPlayer {
 
     @Override public String toString() {
         return engine + ":" + maxDepth;
+    }
+
+    /**
+     * Determine the player's next move.
+     * <p/>
+     * Precondition: the game's current position has a legal move
+     *
+     * @param game game to move in
+     * @return square and value of the player's chosen move
+     */
+    public MoveScore calcMove(MutableGame game) {
+        return engine.calcMove(game, maxDepth);
     }
 }

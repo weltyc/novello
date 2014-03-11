@@ -23,7 +23,7 @@ public class MutableGame {
      */
     private final List<Move8x8> mlis = new ArrayList<>();
     private boolean isOver = false;
-    private @NotNull Board lastBoard;
+    private @NotNull Position lastPosition;
 
     public MutableGame(@NotNull Board startBoard, @NotNull String blackName, @NotNull String whiteName, @NotNull String place) {
         this(startBoard, blackName, whiteName, place, OsClock.DEFAULT, OsClock.DEFAULT);
@@ -32,7 +32,7 @@ public class MutableGame {
     public MutableGame(@NotNull Board startBoard, @NotNull String blackName, @NotNull String whiteName
             , @NotNull String place, @NotNull OsClock blackClock, @NotNull OsClock whiteClock) {
         this.startPosition = new Position(startBoard, blackClock, whiteClock);
-        lastBoard = startBoard;
+        lastPosition = startPosition;
         this.blackName = blackName;
         this.whiteName = whiteName;
         this.place = place;
@@ -106,7 +106,7 @@ public class MutableGame {
 
     private void play(Move8x8 move) {
         mlis.add(move);
-        lastBoard = lastBoard.playOrPass(move.getSq());
+        lastPosition = lastPosition.playOrPass(move);
     }
 
     public @NotNull Board getStartBoard() {
@@ -114,7 +114,11 @@ public class MutableGame {
     }
 
     @NotNull public Board getLastBoard() {
-        return lastBoard;
+        return lastPosition.board;
+    }
+
+    public Position getLastPosition() {
+        return lastPosition;
     }
 
     /**
@@ -144,7 +148,7 @@ public class MutableGame {
      * @return number of black disks - number of white disks at the end of the game
      */
     public int netScore() {
-        return lastBoard.terminalScore();
+        return lastPosition.board.terminalScore();
     }
 
     /**
@@ -277,7 +281,7 @@ public class MutableGame {
         return startPosition;
     }
 
-    public @NotNull Position getStateAfter(int nMoves) {
+    public @NotNull Position getPositionAfter(int nMoves) {
         Require.geq(nMoves, 0);
         Require.leq(nMoves, "nMove", mlis.size(), "total moves in the game");
 
