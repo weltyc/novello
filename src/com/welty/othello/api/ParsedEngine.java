@@ -1,6 +1,7 @@
 package com.welty.othello.api;
 
 import com.welty.othello.engine.ExternalNBoardEngine;
+import com.welty.othello.gui.ExternalEngineManager;
 import com.welty.othello.protocol.ResponseHandler;
 import com.welty.othello.protocol.ResponseParser;
 import org.jetbrains.annotations.NotNull;
@@ -22,12 +23,12 @@ public class ParsedEngine implements StatelessEngine {
     private final @NotNull NBoardEngine engine;
     private final @NotNull ResponseParser responseParser;
 
-    public ParsedEngine(@NotNull String name, String[] command, File workingDirectory, boolean debug, @NotNull ResponseHandler responseHandler) throws IOException {
-        this(new ResponseParser(responseHandler, name), command, workingDirectory, debug);
+    public ParsedEngine(@NotNull ExternalEngineManager.Xei xei, boolean debug, @NotNull ResponseHandler responseHandler) throws IOException {
+        this(new ResponseParser(responseHandler, xei.name), xei , debug);
     }
 
-    private ParsedEngine(@NotNull ResponseParser responseParser, String[] command, File workingDirectory, boolean debug) throws IOException {
-        this(responseParser, new ExternalNBoardEngine(command, workingDirectory, debug, responseParser));
+    private ParsedEngine(@NotNull ResponseParser responseParser, @NotNull ExternalEngineManager.Xei xei, boolean debug) throws IOException {
+        this(responseParser, new ExternalNBoardEngine(xei, debug, responseParser));
     }
 
     ParsedEngine(@NotNull ResponseParser responseParser, @NotNull NBoardEngine engine) {

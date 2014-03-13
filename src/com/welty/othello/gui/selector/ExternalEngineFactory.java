@@ -3,6 +3,7 @@ package com.welty.othello.gui.selector;
 import com.welty.novello.selfplay.EvalSyncEngine;
 import com.welty.othello.api.ParsedEngine;
 import com.welty.othello.api.StatelessEngine;
+import com.welty.othello.gui.ExternalEngineManager;
 import com.welty.othello.protocol.ResponseHandler;
 import org.jetbrains.annotations.NotNull;
 
@@ -10,17 +11,15 @@ import java.io.File;
 import java.io.IOException;
 
 public class ExternalEngineFactory extends EngineFactory {
-    private final File workingDirectory;
-    private final String[] command;
+    @NotNull private final ExternalEngineManager.Xei xei;
 
-    public ExternalEngineFactory(String name, String workingDirectory, String command) {
-        super(name, true, true);
-        this.workingDirectory = new File(workingDirectory);
-        this.command = command.split("\\s+");
+    public ExternalEngineFactory(@NotNull ExternalEngineManager.Xei xei) {
+        super(xei.name, true, true);
+        this.xei = xei;
     }
 
     @NotNull @Override public StatelessEngine createPingEngine(int maxDepth, ResponseHandler responseHandler) throws IOException {
-        return new ParsedEngine(name, command, workingDirectory, true, responseHandler);
+        return new ParsedEngine(xei, true, responseHandler);
     }
 
     @Override public String strengthEstimate(int level) {

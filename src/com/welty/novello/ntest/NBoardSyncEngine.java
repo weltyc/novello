@@ -1,8 +1,10 @@
 package com.welty.novello.ntest;
 
-import com.orbanova.common.misc.Logger;
 import com.orbanova.common.misc.Require;
-import com.welty.novello.core.*;
+import com.welty.novello.core.BitBoardUtils;
+import com.welty.novello.core.Board;
+import com.welty.novello.core.MoveScore;
+import com.welty.novello.core.MutableGame;
 import com.welty.novello.selfplay.SyncEngine;
 import com.welty.othello.core.ProcessLogger;
 import com.welty.othello.gdk.OsClock;
@@ -10,7 +12,6 @@ import com.welty.othello.gui.ExternalEngineManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.File;
 import java.io.IOException;
 
 /**
@@ -24,17 +25,10 @@ public class NBoardSyncEngine implements SyncEngine {
     private final ProcessLogger processLogger;
     private int lastDepth = -1;
 
-    private static final Logger log = Logger.logger(NBoardSyncEngine.class, Logger.Level.DEBUG);
-
-
     public NBoardSyncEngine(@NotNull ExternalEngineManager.Xei xei, boolean debug) {
         this.program = xei.name;
         try {
-            log.debug("wd  : " + xei.wd);
-            log.debug("cmd : " + xei.cmd);
-            final String[] processArgs = xei.cmd.split("\\s+");
-            final Process process = new ProcessBuilder(processArgs).directory(new File(xei.wd)).redirectErrorStream(true).start();
-            processLogger = new ProcessLogger(process, debug);
+            processLogger = xei.createProcess(debug);
             pingPong();
         } catch (IOException e) {
             throw new RuntimeException(e);

@@ -1,23 +1,32 @@
 package com.welty.othello.gui;
 
 import com.orbanova.common.misc.ListenerManager;
+import com.orbanova.common.misc.Logger;
+import com.welty.othello.core.ProcessLogger;
+import com.welty.othello.engine.ExternalNBoardEngine;
 import com.welty.othello.gui.prefs.PrefSet;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.prefs.BackingStoreException;
 
 public class ExternalEngineManager extends ListenerManager<ExternalEngineManager.Listener> {
     public static final ExternalEngineManager instance = new ExternalEngineManager();
+    private static final Logger log = Logger.logger(ExternalEngineManager.class);
 
     private final PrefSet externalEngines = new PrefSet(ExternalEngineManager.class, "Engines");
 
     public void add(String name, String wd, String command) {
         externalEngines.add(name, wd + ";" + command);
+        Xei xei = new Xei(name, wd, command);
         for (Listener listener : getListeners()) {
-            listener.engineAdded(name, wd, command);
+            listener.engineAdded(xei);
         }
 
     }
@@ -35,7 +44,7 @@ public class ExternalEngineManager extends ListenerManager<ExternalEngineManager
         return xeis;
     }
 
-    private Xei makeXei(String name, String value) {
+    private @NotNull Xei makeXei(String name, String value) {
         final String[] split = value.split(";", 2);
         final String wd = split[0];
         final String cmd = split[1];
@@ -81,23 +90,34 @@ public class ExternalEngineManager extends ListenerManager<ExternalEngineManager
             this.wd = wd;
             this.cmd = cmd;
         }
+
+        @NotNull public ProcessLogger createProcess(boolean debug) throws IOException {
+            final String[] command = cmd.split("\\s+");
+            File wdFile = new File(wd);
+            command[0] = wdFile.toPath().resolve(command[0]).toString();
+            if (debug) {
+                log.info("Starting external process");
+                log.info("command: " + Arrays.toString(command));
+                log.info("wd     : " + wdFile);
+            }
+            Process process = new ProcessBuilder(command).directory(wdFile).redirectErrorStream(true).start();
+            return new ProcessLogger(process, debug);
+        }
     }
 
     public interface Listener {
         /**
          * An engine was added to this Manager.
          *
-         * @param name    Engine name
-         * @param wd      Engine working directory
-         * @param command Engine command
+         * @param xei information about the engine
          */
-        void engineAdded(String name, String wd, String command);
+        void engineAdded(@NotNull Xei xei);
 
         /**
          * An engine was deleted from this Manager.
          *
          * @param name Engine name
          */
-        void engineDeleted(String name);
+        void engineDeleted(@NotNull String name);
     }
 }

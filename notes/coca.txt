@@ -262,6 +262,11 @@ Again, we find subpatterns are a very small advantage.
 ntestJ vs g1
 ------------
 
-    depth  result                  timing           timing-SR
-       6   +0.353 +/-0.073    48.8 ms vs 42.0 ms       1.8
-       8
+    depth   result                  timing           timing-SR     net
+       6    +0.353 +/-0.073    48.8 ms vs 42.0 ms       1.8        -1.4
+       8    +1.66 +/-0.059     160 ms vs 113 ms         3.3        -1.6
+      10    +2.17 +/-0.050     455 ms vs 272 ms         3.7        -1.6
+      12    +2.44 +/-0.047     1.22 s vs 631 ms         3.2        -0.8
+      10/12 -4.79 +/-0.10      384 ms vs 580 ms        -2.6        -2.2
+      12/14 -2.60 +/-0.053     1.14 s vs 1.33 s        -0.6        -2.0
+      14/16 -0.573 +/-0.073    3.41 s vs 2.99 s        -0.2        -0.8
