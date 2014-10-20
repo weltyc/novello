@@ -16,6 +16,12 @@
 package com.welty.novello.eval;
 
 /**
+ * 3x3 corner disks
+ *
+ * Bit order:
+ * corner --> 0 1 2
+ *            3 4 5
+ *            6 7 8
  */
 class CornerBlockTerm extends Term {
     public static CornerBlockTerm[] terms = new CornerBlockTerm[]{new CornerBlockTerm(false, false), new CornerBlockTerm(false, true), new CornerBlockTerm(true, false), new CornerBlockTerm(true, true)};

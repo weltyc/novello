@@ -121,6 +121,19 @@ public class Mpc {
             {10}, {11}, // depth 26-27
             {12}, {13}, // depth 28-29
             {12}, {13}, // depth 30-31
+            {12}, {13}, // depth 32-33
+            {14}, {15}, // depth 34-35
+            {14}, {15}, // depth 36-37
+            {14}, {15}, // depth 38-39
+            {16}, {17}, // depth 40-41
+            {16}, {17}, // depth 42-43
+            {16}, {17}, // depth 44-45
+            {18}, {19}, // depth 46-47
+            {18}, {19}, // depth 47-48
+            {18}, {19}, // depth 48-49
+            {20}, {21}, // depth 50-51
+            {20}, {21}, // depth 52-53
+            {20}, {21}, // depth 54-55
     };
 
     static class Slice {
@@ -201,7 +214,7 @@ public class Mpc {
                 return 0;
             }
             final double f = 1. / (.71 + .1 * shallow);
-            final double[] gs = {.8, 1.0, 1.1, 1.16, 1.21, 1.25, 1.28, 1.30, 1.31, 1.32, 1.33, 1.34};
+            final double[] gs = {.8, 1.0, 1.1, 1.16, 1.21, 1.25, 1.28, 1.30, 1.31, 1.32, 1.33, 1.34, 1.35, 1.36, 1.37, 1.38, 1.39, 1.40, 1.41, 1.42, 1.43, 1.44};
             final double g = gs[(delta - 1) / 2];
             double h;
             if (nEmpty >= 30) {
@@ -211,7 +224,11 @@ public class Mpc {
             } else {
                 h = 1.15 - .02 * (15 - nEmpty);
             }
-            h *= (80 - nEmpty) / 14.;
+            // NTest's coefficients J are calculated differently than other coefficients
+            // so we need a narrower sd.
+            h *= (80 - nEmpty) / 17.5;
+            // for coefficients other than J, use
+            // h *= (80 - nEmpty) / 14.;
 
             return f * g * h * CoefficientCalculator.DISK_VALUE;
         }

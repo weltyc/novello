@@ -32,19 +32,30 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
-/**
- */
 public class Ffo {
     private static String[] answers = "A2;H4;G2;C7,G3;B8,D2;B2;B3;G2;F6;E1;D8;A3,E2;A3;D8;C7;G6,G4,B7,E2;H5;A6;G1;H4,E8,G8".split(";");
 
     /**
-     * Flags:
+     * Run the FFO test.
      * <p/>
-     * -m use midgame search
-     * -n use NTest
+     * This runs FFO test positions 40-59 and prints out timing and node count information.
+     * It also prints a message if the engine does not return an optimal move.
+     * <p/>
+     * Flags:
+     * <dl>
+     * <dt>-m</dt> <dd> use midgame search</dd>
+     * <dt>-n</dt> <dd> use NTest as the engine instead of Novello.</dd>
+     * </dl>
+     * <p/>
+     * If the -m flag is used, the engine is not required to return optimal moves for all positions.
+     * <p/>
+     * If -n is specified, the location of the NTest engine executable is retrieved from the
+     * ExternalEngineManager using the name "ntest". NBoard also uses the ExternalEngineManager, so
+     * it can be used to specify the executable location.
+     * <p/>
+     * The positions for the FFO test are taken from the directory "ffo/".
      *
      * @param args see flags, above
-     * @throws IOException
      */
     public static void main(String[] args) throws IOException {
         final Path path = Paths.get("ffo");
@@ -167,6 +178,12 @@ public class Ffo {
         }
     }
 
+    /**
+     * A Searcher based on an external instance of NTest.
+     * <p/>
+     * The location of the NTest executable is specified by the ExternalEngineManager using
+     * program name "ntest".
+     */
     public static class NtestSearcher implements Searcher {
         private final SyncPlayer player = createNtest();
 
