@@ -15,6 +15,8 @@
 
 package com.welty.novello.hash;
 
+import com.welty.novello.core.BitBoardUtils;
+import com.welty.novello.core.Board;
 import com.welty.novello.core.NovelloUtils;
 import com.welty.novello.solver.Solver;
 import org.jetbrains.annotations.Nullable;
@@ -69,6 +71,40 @@ public class HashTables {
         final int nEmpty = Long.bitCount(~(mover | enemy));
         final HashTable table = tables[nEmpty];
         return table.getEntry(mover, enemy);
+    }
+
+    /**
+     * Extract the PV from this HashTables.
+     * <p/>
+     * This function searches the bestMove, if available, for each node. If the resulting position
+     * is stored in this HashTables with score = +/- score, the move is appended to the PV.
+     *
+     * @param board position at root of search
+     * @param score score, from mover's point of view, in net disks.
+     */
+    public String extractPv(Board board, int score) {
+        final Entry entry = find(board.mover(), board.enemy());
+        final StringBuilder sb = new StringBuilder();
+        if (entry != null && entry.getMin() == score && entry.getMax() == score) {
+            appendPv(board, sb, -score);
+        }
+        return sb.toString();
+    }
+
+    void appendPv(Board board, StringBuilder sb, int score) {
+        long moves = board.calcMoves();
+        while (moves != 0) {
+            int sq = Long.numberOfTrailingZeros(moves);
+            long mask = 1L << sq;
+            moves ^= mask;
+            Board subBoard = board.play(sq);
+            Entry subEntry = find(subBoard.mover(), subBoard.enemy());
+            if (subEntry != null && subEntry.getMin()==score && subEntry.getMax()==score) {
+                sb.append(BitBoardUtils.sqToLowerText(sq)).append("-");
+                appendPv(subBoard, sb, -score);
+                return;
+            }
+        }
     }
 
     /**

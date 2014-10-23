@@ -15,10 +15,7 @@
 
 package com.welty.novello.solver;
 
-import com.welty.novello.core.BitBoardUtils;
-import com.welty.novello.core.Counts;
-import com.welty.novello.core.MoveScore;
-import com.welty.novello.core.Square;
+import com.welty.novello.core.*;
 import com.welty.novello.eval.CoefficientCalculator;
 import com.welty.novello.eval.Eval;
 import com.welty.novello.hash.HashTables;
@@ -469,6 +466,12 @@ public class Solver {
 
     public String getNodeCountsByDepth() {
         return nodeCounts.getNodeCountsByDepth();
+    }
+
+    public MoveScore calcSubMoveScore(int sq, Board subPos, int alpha, int beta, int subDepth, AbortCheck abortCheck, StatsListener statsListener) throws SearchAbortedException {
+        final int disks = solve(subPos.mover(), subPos.enemy(), abortCheck, statsListener);
+        String pv = BitBoardUtils.sqToLowerText(sq) + "-" + hashTables.extractPv(subPos, disks);
+        return new MoveScore(sq, -disks * CoefficientCalculator.DISK_VALUE, pv);
     }
 
 

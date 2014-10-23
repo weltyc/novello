@@ -137,7 +137,8 @@ public class MidgameSearcher {
         this.abortCheck = abortCheck;
 
         final BA ba = hashMove(board.mover(), board.enemy(), moverMoves, NovelloUtils.NO_MOVE, -NovelloUtils.NO_MOVE, depth);
-        return new MoveScore(ba.bestMove, ba.score);
+        String pv = midgameHashTables.extractPv(board, ba.score);
+        return new MoveScore(ba.bestMove, ba.score, pv);
     }
 
     /**
@@ -212,6 +213,25 @@ public class MidgameSearcher {
 
     public void clear() {
         midgameHashTables.clear(63);
+    }
+
+    /**
+     * calculate a MoveScore for a specific move.
+     *
+     *
+     * @param sq sq of move to check
+     * @param subPos position after sq has been played
+     * @param alpha (subPos POV)
+     * @param beta  (subPos POV)
+     * @param subDepth depth remaining from subPos
+     * @return MoveScore, POV original position (not subPos).
+     * @throws SearchAbortedException
+     */
+    public MoveScore calcSubMoveScore(int sq, Board subPos, int alpha, int beta, int subDepth, AbortCheck abortCheck) throws SearchAbortedException {
+        final int score;
+        score = -calcScore(subPos, alpha, beta, subDepth, abortCheck);
+        String pv = BitBoardUtils.sqToLowerText(sq) + "-" + midgameHashTables.extractPv(subPos, -score);
+        return new MoveScore(sq, score, pv);
     }
 
     static class BA {
@@ -488,7 +508,7 @@ public class MidgameSearcher {
                 ba.score = entry.getMin();
                 return ba;
             }
-            if (entry.getMax() <= alpha) {
+            if (entry.getMax() <= alpha || entry.isExact()) {
                 ba.bestMove = entry.getBestMove();
                 ba.score = entry.getMax();
                 return ba;
