@@ -16,6 +16,7 @@
 package com.welty.novello.selfplay;
 
 import com.orbanova.common.feed.Feed;
+import com.welty.novello.eval.Mpc;
 import com.welty.novello.solver.MidgameSearcher;
 import com.welty.ntestj.Heights;
 import com.welty.othello.protocol.Depth;
@@ -27,18 +28,27 @@ import org.jetbrains.annotations.Nullable;
  */
 @EqualsAndHashCode @ToString
 final class SearchDepth {
-    final boolean solve;
     final int depth;
+    /**
+     * MPC cut width index, or Integer.MAX_VALUE if MPC is not used.
+     */
+    final int width;
     final int probableSolveDepth;
 
-    SearchDepth(boolean solve, int depth, int probableSolveDepth) {
-        this.solve = solve;
+    /**
+     *
+     * @param depth search depth, in ply
+     * @param width search width index, or Integer.MAX_VALUE for a full-width search
+     * @param probableSolveDepth depth at which a search is a probable solve
+     */
+    SearchDepth(int depth, int width, int probableSolveDepth) {
         this.depth = depth;
+        this.width = width;
         this.probableSolveDepth = probableSolveDepth;
     }
 
     public boolean isFullSolve() {
-        return solve;
+        return width==Integer.MAX_VALUE;
     }
 
     /**
@@ -49,10 +59,10 @@ final class SearchDepth {
     }
 
     public String humanString() {
-        if (solve) {
+        if (isFullSolve()) {
             return "100%";
         } else if (depth == probableSolveDepth) {
-            return "60%";
+            return Mpc.widthString(width);
         } else {
             return depth + " ply";
         }
@@ -63,11 +73,12 @@ final class SearchDepth {
      */
     SearchDepth next() {
         if (depth < probableSolveDepth) {
-            return new SearchDepth(false, depth + 1, probableSolveDepth);
-        } else if (solve) {
+            return new SearchDepth(depth + 1, width, probableSolveDepth);
+        } else if (isFullSolve()) {
             return null;
         } else {
-            return new SearchDepth(true, depth, probableSolveDepth);
+            final int nextWidth = width < Mpc.maxWidth() ? width + 1 : Integer.MAX_VALUE;
+            return new SearchDepth(depth, nextWidth, probableSolveDepth);
         }
     }
 
@@ -91,17 +102,28 @@ final class SearchDepth {
             solveNEmpty = 0;
         }
 
-        final int maxDepth = nEmpty <= probableSolveNEmpty ? nEmpty - solverStart : maxMidgameDepth;
-        final boolean solve = nEmpty <= solveNEmpty;
+        final int solveDepth = nEmpty - solverStart;
+        final int maxDepth;
+        final int maxWidth;
 
-        return new SearchDepth(solve, maxDepth, nEmpty - solverStart);
+        if (nEmpty <= solveNEmpty) {
+            maxDepth = solveDepth;
+            maxWidth = Integer.MAX_VALUE;
+        } else if (nEmpty <= probableSolveNEmpty) {
+            maxDepth = solveDepth;
+            maxWidth = 1;
+        } else {
+            maxDepth = maxMidgameDepth;
+            maxWidth = 0;
+        }
+        return new SearchDepth(maxDepth, maxWidth, nEmpty - solverStart);
     }
 
     public Depth displayDepth() {
-        if (solve) {
+        if (isFullSolve()) {
             return new Depth("100%");
         } else if (isProbableSolve()) {
-            return new Depth("60%");
+            return new Depth(humanString());
         } else {
             return new Depth(depth);
         }
@@ -109,7 +131,7 @@ final class SearchDepth {
 
     public SearchDepth startDepth() {
         if (depth > 1) {
-            return new SearchDepth(false, 1, probableSolveDepth);
+            return new SearchDepth(1, 0, probableSolveDepth);
         } else {
             return this;
         }

@@ -149,7 +149,8 @@ public class Ffo {
         }
 
         @NotNull @Override public MoveScore getMoveScore(Board board) throws SearchAbortedException {
-            return searcher.getMoveScore(board, board.calcMoves(), board.nEmpty(), AbortCheck.NEVER);
+            final int width = 0;
+            return searcher.getMoveScore(board, board.calcMoves(), board.nEmpty(), width, AbortCheck.NEVER);
         }
 
         @Override public String toString() {

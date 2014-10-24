@@ -42,7 +42,7 @@ public class MidgameHashTablesTest extends TestCase {
         assertNull("nothing in there yet", ht.find(mover, enemy));
 
         // Store an exact value. We know it's exact because the alpha < score < beta.
-        ht.store(mover, enemy, NO_MOVE, -NO_MOVE, 1, f5, score);
+        ht.store(mover, enemy, NO_MOVE, -NO_MOVE, 1, 0, f5, score);
 
         final MidgameHashTables.Entry entry = ht.find(mover, enemy);
         assertNotNull(entry);
@@ -161,7 +161,7 @@ public class MidgameHashTablesTest extends TestCase {
 
     private void setDepth1() {
         entry.clear();
-        entry.update(mover, enemy, NO_MOVE, -NO_MOVE, 1, f5, score);
+        entry.update(mover, enemy, NO_MOVE, -NO_MOVE, 1, 0, f5, score);
     }
 
     public void testUpdatesFromSameDepthAll() {
@@ -208,7 +208,7 @@ public class MidgameHashTablesTest extends TestCase {
 
     private void setDepth1All() {
         entry.clear();
-        entry.update(mover, enemy, score, -NO_MOVE, 1, -1, score);
+        entry.update(mover, enemy, score, -NO_MOVE, 1, 0, -1, score);
     }
 
     public void testUpdatesFromSameDepthCut() {
@@ -255,7 +255,7 @@ public class MidgameHashTablesTest extends TestCase {
 
     private void setDepth1Cut() {
         entry.clear();
-        entry.update(mover, enemy, NO_MOVE, score, 1, f5, score);
+        entry.update(mover, enemy, NO_MOVE, score, 1, 0, f5, score);
     }
 
     public void testUpdatesFromHigherDepth() {
@@ -270,7 +270,7 @@ public class MidgameHashTablesTest extends TestCase {
     }
 
     private void update(int alpha, int beta, int depth, int bestMove, int score) {
-        entry.update(mover, enemy, alpha, beta, depth, bestMove, score);
+        entry.update(mover, enemy, alpha, beta, depth, 0, bestMove, score);
     }
 
     private void clear() {
@@ -288,5 +288,25 @@ public class MidgameHashTablesTest extends TestCase {
         assertEquals("max", max, entry.getMax());
         assertEquals("best move", bestMove, entry.getBestMove());
         assertEquals("depth", depth, entry.getDepth());
+    }
+
+    public void testIsDeepEnough() {
+        entry.clear();
+        entry.update(mover, enemy, NO_MOVE, -NO_MOVE, 1, 1, f5, score);
+        assertTrue(entry.deepEnoughToSearch(1, 1));
+        assertTrue(entry.deepEnoughToSearch(0, 1));
+        assertTrue(entry.deepEnoughToSearch(1, 0));
+        assertFalse(entry.deepEnoughToSearch(1, 2));
+        assertFalse(entry.deepEnoughToSearch(2, 1));
+    }
+
+    public void testWidthUpdating() {
+        entry.clear();
+        entry.update(mover, enemy, NO_MOVE, -NO_MOVE, 1, 1, f5, score);
+        // this update should fail because it's a narrower width
+        entry.update(mover, enemy, NO_MOVE, -NO_MOVE, 1, 0, c3, score-1);
+        assertEquals(f5, entry.getBestMove());
+        assertEquals(score, entry.getMin());
+        assertEquals(score, entry.getMax());
     }
 }

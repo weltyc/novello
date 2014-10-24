@@ -121,7 +121,7 @@ public class EvalSyncEngine implements SyncEngine {
                     result = solver.getMoveScore(board.mover(), board.enemy(), abortCheck, new MyStatsListener(listener, n0, t0, solver));
                 } else {
                     listener.updateStatus("Searching at " + searchDepth.humanString());
-                    result = searcher.getMoveScore(board, moverMoves, searchDepth.depth, abortCheck);
+                    result = searcher.getMoveScore(board, moverMoves, searchDepth.depth, searchDepth.width, abortCheck);
                 }
             } catch (SearchAbortedException e) {
                 listener.updateStatus("Round aborted");
@@ -285,7 +285,7 @@ public class EvalSyncEngine implements SyncEngine {
                 if (searchDepth.isFullSolve()) {
                     moveScore = solver.calcSubMoveScore(sq, subPos, alpha, beta, searchDepth.depth-1, abortCheck, new MyStatsListener(listener, n0, t0, solver));
                 } else {
-                    moveScore = searcher.calcSubMoveScore(sq, subPos, alpha, beta, searchDepth.depth-1, abortCheck);
+                    moveScore = searcher.calcSubMoveScore(sq, subPos, alpha, beta, searchDepth.depth-1, searchDepth.width, abortCheck);
                 }
                 if (moveScore.centidisks > alpha || moveScore.centidisks == -64 * CoefficientCalculator.DISK_VALUE) {
                     insertSorted(moveScores, j, moveScore);
@@ -373,4 +373,3 @@ public class EvalSyncEngine implements SyncEngine {
         }
     }
 }
-

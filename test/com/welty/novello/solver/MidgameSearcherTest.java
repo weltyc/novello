@@ -48,7 +48,8 @@ public class MidgameSearcherTest extends TestCase {
 
 
         final long moves = prev.calcMoves();
-        final MoveScore moveScore = midgameSearcher.getMoveScore(prev, moves, 1, AbortCheck.NEVER);
+        final int width = 0;
+        final MoveScore moveScore = midgameSearcher.getMoveScore(prev, moves, 1, width, AbortCheck.NEVER);
         assertTrue("must be a legal move", BitBoardUtils.isBitSet(moves, moveScore.sq));
         assertEquals(Long.bitCount(moves), counter.nFlips());
 

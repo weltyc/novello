@@ -52,6 +52,11 @@ public class MidgameSearcher {
     private int rootDepth;
 
     /**
+     * MPC width index passed to move() or score() by the client.
+     */
+    private int width;
+
+    /**
      * Search abort check
      */
     private AbortCheck abortCheck;
@@ -108,7 +113,7 @@ public class MidgameSearcher {
      */
     public MoveScore getMoveScore(Board board, long moverMoves, int depth)  {
         try {
-            return getMoveScore(board, moverMoves, depth, AbortCheck.NEVER);
+            return getMoveScore(board, moverMoves, depth, width, AbortCheck.NEVER);
         } catch (SearchAbortedException e) {
             // this can never happen because we used AbortCheck.NEVER
             throw new IllegalStateException("Shouldn't be here.");
@@ -129,11 +134,12 @@ public class MidgameSearcher {
      * @throws IllegalArgumentException if the position has no legal moves
      * @throws SearchAbortedException   if the search was aborted
      */
-    public MoveScore getMoveScore(Board board, long moverMoves, int depth, AbortCheck abortCheck) throws SearchAbortedException {
+    public MoveScore getMoveScore(Board board, long moverMoves, int depth, int width, AbortCheck abortCheck) throws SearchAbortedException {
         if (moverMoves == 0) {
             throw new IllegalArgumentException("must have a legal move");
         }
         this.rootDepth = depth;
+        this.width = width;
         this.abortCheck = abortCheck;
 
         final BA ba = hashMove(board.mover(), board.enemy(), moverMoves, NovelloUtils.NO_MOVE, -NovelloUtils.NO_MOVE, depth);
@@ -155,7 +161,7 @@ public class MidgameSearcher {
      * @throws SearchAbortedException if the search was aborted
      */
     public int calcScore(Board board, int alpha, int beta, int depth, AbortCheck abortCheck) throws SearchAbortedException {
-        return calcScore(board.mover(), board.enemy(), alpha, beta, depth, abortCheck);
+        return calcScore(board.mover(), board.enemy(), alpha, beta, depth, width, abortCheck);
     }
 
     /**
@@ -168,8 +174,9 @@ public class MidgameSearcher {
      * @return score of the position, in centidisks
      * @throws SearchAbortedException if the search was aborted
      */
-    private int calcScore(long mover, long enemy, int alpha, int beta, int depth, AbortCheck abortCheck) throws SearchAbortedException {
+    private int calcScore(long mover, long enemy, int alpha, int beta, int depth, int width, AbortCheck abortCheck) throws SearchAbortedException {
         this.rootDepth = depth;
+        this.width = width;
         this.abortCheck = abortCheck;
 
         return searchScore(mover, enemy, alpha, beta, depth);
@@ -204,7 +211,7 @@ public class MidgameSearcher {
      */
     public int calcScore(long mover, long enemy, int depth) {
         try {
-            return calcScore(mover, enemy, NovelloUtils.NO_MOVE, -NovelloUtils.NO_MOVE, depth, AbortCheck.NEVER);
+            return calcScore(mover, enemy, NovelloUtils.NO_MOVE, -NovelloUtils.NO_MOVE, depth, width, AbortCheck.NEVER);
         } catch (SearchAbortedException e) {
             // this can never happen because we used AbortCheck.NEVER
             throw new IllegalStateException("Shouldn't be here.");
@@ -227,7 +234,11 @@ public class MidgameSearcher {
      * @return MoveScore, POV original position (not subPos).
      * @throws SearchAbortedException
      */
-    public MoveScore calcSubMoveScore(int sq, Board subPos, int alpha, int beta, int subDepth, AbortCheck abortCheck) throws SearchAbortedException {
+    public MoveScore calcSubMoveScore(int sq, Board subPos, int alpha, int beta, int subDepth, int width, AbortCheck abortCheck) throws SearchAbortedException {
+        this.rootDepth = subDepth;
+        this.width = width;
+        this.abortCheck = abortCheck;
+
         final int score;
         score = -calcScore(subPos, alpha, beta, subDepth, abortCheck);
         String pv = BitBoardUtils.sqToLowerText(sq) + "-" + midgameHashTables.extractPv(subPos, -score);
@@ -267,7 +278,7 @@ public class MidgameSearcher {
 
         // see if it cuts off
         final MidgameHashTables.Entry entry = midgameHashTables.find(mover, enemy);
-        if (entry != null && entry.getDepth() >= depth) {
+        if (entry != null && entry.deepEnoughToSearch(depth, width)) {
             if (entry.getMin() >= beta) {
                 final BA ba = new BA();
                 ba.bestMove = entry.getBestMove();
@@ -284,7 +295,7 @@ public class MidgameSearcher {
 
         final int suggestedMove = getSuggestedMove(mover, enemy, moverMoves, alpha, beta, depth);
         final BA ba = treeMoveWithPossibleSuggestion(mover, enemy, moverMoves, alpha, beta, depth, suggestedMove);
-        midgameHashTables.store(mover, enemy, alpha, beta, depth, ba.bestMove, ba.score);
+        midgameHashTables.store(mover, enemy, alpha, beta, depth, width, ba.bestMove, ba.score);
 
         assert ba.isValid(alpha);
         return ba;
@@ -502,7 +513,7 @@ public class MidgameSearcher {
 
         // see if it cuts off
         final MidgameHashTables.Entry entry = midgameHashTables.find(mover, enemy);
-        if (entry != null && entry.getDepth() >= depth) {
+        if (entry != null && entry.deepEnoughToSearch(depth, width)) {
             if (entry.getMin() >= beta) {
                 ba.bestMove = entry.getBestMove();
                 ba.score = entry.getMin();
@@ -520,8 +531,8 @@ public class MidgameSearcher {
 
         for (Mpc.Cutter cutter : cutters) {
             final int margin = 0;
-            final int shallowAlpha = cutter.shallowAlpha(alpha) + margin;
-            final int shallowBeta = cutter.shallowBeta(beta) - margin;
+            final int shallowAlpha = cutter.shallowAlpha(alpha, width) + margin;
+            final int shallowBeta = cutter.shallowBeta(beta, width) - margin;
             final int shallowDepth = cutter.shallowDepth;
             if (shallowDepth <= 0) {
                 final int mpcScore = counter.eval(mover, enemy);
@@ -550,7 +561,7 @@ public class MidgameSearcher {
 
         final int suggestedMove = getSuggestedMove(mover, enemy, moverMoves, alpha, beta, depth);
         final BA ba1 = treeMoveWithPossibleSuggestion(mover, enemy, moverMoves, alpha, beta, depth, suggestedMove);
-        midgameHashTables.store(mover, enemy, alpha, beta, depth, ba1.bestMove, ba1.score);
+        midgameHashTables.store(mover, enemy, alpha, beta, depth, width, ba1.bestMove, ba1.score);
 
         assert ba1.isValid(alpha);
         return ba1;

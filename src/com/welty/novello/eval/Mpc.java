@@ -136,6 +136,33 @@ public class Mpc {
             {20}, {21}, // depth 54-55
     };
 
+    /**
+     * MPC solve widths.
+     *
+     * widthStrings are calculated using the Excel formula 2*normsdist(width)-1
+     */
+    private static final String[] widthStrings = {"68%", "79%", "87%", "92%", "95%", "98%", "99%", "99.4%", "99.7%"};
+    private static final double[] mpcWidths = { 1.0, 1.25, 1.5, 1.75, 2.0, 2.25, 2.5, 2.75, 3.0};
+
+    /**
+     * Get the display String for an MPC width index
+     *
+     * @param width width index
+     * @return display String (e.g. "60%")
+     */
+    public static String widthString(int width) {
+        return widthStrings[width];
+    }
+
+    /**
+     * Get maximum allowable width index
+     *
+     * @return max width index
+     */
+    public static int maxWidth() {
+        return widthStrings.length-1;
+    }
+
     static class Slice {
         final Cutter[][] cutters = new Cutter[64][];
 
@@ -286,14 +313,15 @@ public class Mpc {
          * Tells the shallow alpha that should be used as a cutoff for a deep alpha prediction.
          *
          * @param deepAlpha deepScore being predicted
+         * @param width     mpc width index
          * @return the shallow alpha that, if cut off, predicts at least a 2/3 chance of a deep alpha cutoff
          */
-        public int shallowAlpha(int deepAlpha) {
-            return deepAlpha == NovelloUtils.NO_MOVE ? NovelloUtils.NO_MOVE : (int) (a * deepAlpha + b - shallowSd);
+        public int shallowAlpha(int deepAlpha, int width) {
+            return deepAlpha == NovelloUtils.NO_MOVE ? NovelloUtils.NO_MOVE : (int) (a * deepAlpha + b - shallowSd*mpcWidths[width]);
         }
 
-        public int shallowBeta(int deepBeta) {
-            return deepBeta == -NovelloUtils.NO_MOVE ? -NovelloUtils.NO_MOVE : (int) (a * deepBeta + b + shallowSd);
+        public int shallowBeta(int deepBeta, int width) {
+            return deepBeta == -NovelloUtils.NO_MOVE ? -NovelloUtils.NO_MOVE : (int) (a * deepBeta + b + shallowSd*mpcWidths[width]);
         }
 
         @Override public String toString() {

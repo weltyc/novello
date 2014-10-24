@@ -112,13 +112,14 @@ public class MidgameHashTables {
      * @param alpha    original search alpha
      * @param beta     original search beta
      * @param depth    search depth that produced the result
+     * @param width    search width that produced the result
      * @param bestMove suggested move, or -1 if no suggestion
      * @param result   search result
      */
-    public void store(long mover, long enemy, int alpha, int beta, int depth, int bestMove, int result) {
+    public void store(long mover, long enemy, int alpha, int beta, int depth, int width, int bestMove, int result) {
         nStores++;
         final Entry entry = getEntry(mover, enemy);
-        entry.update(mover, enemy, alpha, beta, depth, bestMove, result);
+        entry.update(mover, enemy, alpha, beta, depth, width, bestMove, result);
 
     }
 
@@ -148,7 +149,7 @@ public class MidgameHashTables {
             moves ^= mask;
             Board subBoard = board.play(sq);
             Entry subEntry = find(subBoard.mover(), subBoard.enemy());
-            if (subEntry != null && subEntry.getMin()==score && subEntry.getMax()==score) {
+            if (subEntry != null && subEntry.getMin() == score && subEntry.getMax() == score) {
                 sb.append(BitBoardUtils.sqToLowerText(sq)).append("-");
                 appendPv(subBoard, sb, -score);
                 return;
@@ -177,7 +178,22 @@ public class MidgameHashTables {
         long enemy;
         private int min;
         private int max;
-        int depth;
+
+        /**
+         * Depth, in ply of the stored search.
+         */
+        private int depth;
+
+        /**
+         * index of width into MPC cut widths for the stored search.
+         * <p/>
+         * Higher widths are more precise. A stored result can't be used if it is narrower than the search.
+         */
+        private int width;
+
+        /**
+         * Suggested move for further plies
+         */
         private int bestMove;
 
         Entry() {
@@ -185,9 +201,17 @@ public class MidgameHashTables {
             min = NO_MOVE;
             max = -NO_MOVE;
             depth = -1;
+            width = -1;
             bestMove = -1;
         }
 
+        /**
+         * Does this Entry contain the given position (at any depth)?
+         *
+         * @param mover mover bitboard
+         * @param enemy enemy bitboard
+         * @return true if this Entry contains the position.
+         */
         boolean matches(long mover, long enemy) {
             return this.mover == mover && this.enemy == enemy;
         }
@@ -204,20 +228,24 @@ public class MidgameHashTables {
          * @param enemy  enemy bitboard
          * @param alpha  original search alpha
          * @param beta   original search beta
+         * @param searchDepth  search depth, in ply
+         * @param searchWidth  search width index
          * @param result search result
          */
-        public void update(long mover, long enemy, int alpha, int beta, int depth, int bestMove, int result) {
+        public void update(long mover, long enemy, int alpha, int beta, int searchDepth, int searchWidth, int bestMove, int result) {
             assert alpha < beta;
 
             final boolean matches = matches(mover, enemy);
             if (matches) {
-                if (depth >= this.depth) {
+                if (deepEnoughToStore(searchDepth, searchWidth)) {
                     if (bestMove >= 0) {
                         this.bestMove = bestMove;
                     }
 
-                    if (depth > this.depth) {
-                        overwriteScore(alpha, beta, depth, result);
+                    // The depth and width are deep enough. If the depth or width doesn't match, that means the search
+                    // is deeper than this Entry and we need to overwrite.
+                    if (depth!=searchDepth || width!= searchWidth) {
+                        overwriteScore(alpha, beta, searchDepth, searchWidth, result);
                     } else {
                         // depth == this.depth
                         if (result >= beta) {
@@ -243,14 +271,14 @@ public class MidgameHashTables {
                 // new position. overwrite.
                 this.mover = mover;
                 this.enemy = enemy;
-                overwriteScore(alpha, beta, depth, result);
+                overwriteScore(alpha, beta, searchDepth, searchWidth, result);
                 this.bestMove = bestMove;
             }
 
             assert min <= max;
         }
 
-        private void overwriteScore(int alpha, int beta, int depth, int result) {
+        private void overwriteScore(int alpha, int beta, int depth, int width, int result) {
             if (result >= beta) {
                 min = result;
                 max = -NO_MOVE;
@@ -261,6 +289,7 @@ public class MidgameHashTables {
                 max = min = result;
             }
             this.depth = depth;
+            this.width = width;
         }
 
         public void clear() {
@@ -297,8 +326,37 @@ public class MidgameHashTables {
             return max;
         }
 
-        public int getDepth() {
+        /**
+         * Get search depth.
+         *
+         * For testing only. Otherwise use deepEnoughToSearch().
+         *
+         * @return search depth, in ply
+         */
+        int getDepth() {
             return depth;
+        }
+
+        /**
+         * Is this entry deep enough to be used as a result for the current search?
+         *
+         * @param searchDepth depth of current search
+         * @param searchWidth depth of current width
+         * @return true if deep enough
+         */
+        public boolean deepEnoughToSearch(int searchDepth, int searchWidth) {
+            return depth >= searchDepth && width >= searchWidth;
+        }
+
+        /**
+         * Is a search deep enough to store its value?
+         *
+         * @param searchDepth depth of current search
+         * @param searchWidth depth of current width
+         * @return true if deep enough
+         */
+        public boolean deepEnoughToStore(int searchDepth, int searchWidth) {
+            return depth <= searchDepth && width <= searchWidth;
         }
 
         public int getBestMove() {
