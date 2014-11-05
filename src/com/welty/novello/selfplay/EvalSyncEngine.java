@@ -104,7 +104,7 @@ public class EvalSyncEngine implements SyncEngine {
             return solver.getMoveScore(board.mover(), board.enemy());
         } else {
             listener.updateStatus("Searching at 1 ply");
-            result = searcher.getMoveScore(board, moverMoves, 1);
+            result = searcher.getMoveScore(board, moverMoves, 1, 0);
         }
         listener.updateNodeStats(searcher.getCounts().nFlips - n0, System.currentTimeMillis() - t0);
 

@@ -17,6 +17,7 @@ package com.welty.novello.solver;
 
 import com.welty.novello.core.BitBoardUtils;
 import com.welty.novello.core.Square;
+import com.welty.novello.hash.Entry;
 import com.welty.novello.hash.HashTables;
 import org.jetbrains.annotations.NotNull;
 
@@ -256,7 +257,7 @@ final class MoveSorter {
         final int nMobs = Long.bitCount(nextMoverMoves);
 
         final int evalScore;
-        evalScore = sortMidgameSearcher.calcScore(nextMover, nextEnemy, searchDepth);
+        evalScore = sortMidgameSearcher.calcScore(nextMover, nextEnemy, searchDepth, 0);
 //        final long dFlips = sortSearch.nFlips();
 
         int margin = -evalScore - (beta + BETA_MARGIN) * DISK_VALUE;
@@ -270,8 +271,8 @@ final class MoveSorter {
         final int costPenalty = sortWeightFromMobility[nMobs] << fastestFirstWeight;
         int moverPotMob = Long.bitCount(BitBoardUtils.potMobs2(nextEnemy, ~(nextMover | nextEnemy)));
         int score = margin - costPenalty - (moverPotMob << DEEP_POT_MOB_WEIGHT);
-        final HashTables.Entry entry = hashTables.find(nextMover, nextEnemy);
-        if (entry != null && entry.cutsOff(-beta, -alpha)) {
+        final Entry entry = hashTables.getEntry(nextMover, nextEnemy);
+        if (entry.cutsOff(nextMover, nextEnemy, -beta, -alpha)) {
             score += 1 << ETC_WEIGHT;
         }
         return score;
@@ -315,8 +316,8 @@ final class MoveSorter {
     private static int scoreWithEtc(long parity, HashTables hashTables, int alpha, int beta, int sq, long nextEnemy
             , long nextMover, long nextMoverMoves) {
         int score = eval(parity, sq, nextMoverMoves, nextMover, nextEnemy);
-        final HashTables.Entry entry = hashTables.find(nextMover, nextEnemy);
-        if (entry != null && entry.cutsOff(-beta, -alpha)) {
+        final Entry entry = hashTables.getEntry(nextMover, nextEnemy);
+        if (entry.cutsOff(nextMover, nextEnemy, -beta, -alpha)) {
             score += 1 << ETC_WEIGHT;
         }
         return score;

@@ -86,7 +86,7 @@ public class MpcGenerator {
             final StringBuilder sb = new StringBuilder();
             sb.append(String.format("%2d ", pv.nEmpty()));
             for (int depth = 0; depth <= maxDepth; depth++) {
-                final int score = midgameSearcher.calcScore(pv.mover, pv.enemy, depth);
+                final int score = midgameSearcher.calcScore(pv.mover, pv.enemy, depth, 0);
                 sb.append(String.format("%+5d ", score));
             }
             sb.append('\n');

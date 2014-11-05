@@ -66,7 +66,7 @@ public class NTestTimer {
             if (board == null) {
                 throw new IllegalStateException("ntest games file is messed up");
             }
-            log.info(midgameSearcher.getMoveScore(board, board.calcMoves(), depth));
+            log.info(midgameSearcher.getMoveScore(board, board.calcMoves(), depth, 0));
         }
         final long dt = System.currentTimeMillis() - t0;
         final double s = dt / 1000.;

@@ -19,12 +19,10 @@ import com.orbanova.common.misc.Logger;
 import com.welty.novello.core.BitBoardUtils;
 import com.welty.novello.core.Board;
 import com.welty.novello.core.NovelloUtils;
+import com.welty.novello.solver.BA;
 import com.welty.novello.solver.Solver;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.atomic.AtomicInteger;
-
-import static com.welty.novello.core.NovelloUtils.NO_MOVE;
 
 /**
  */
@@ -34,7 +32,6 @@ public class MidgameHashTables {
     private final HashTable[] tables;
 
     // statistics
-    private long nFinds = 0;
     private long nStores = 0;
 
     // rely on the caller to update these.
@@ -44,11 +41,26 @@ public class MidgameHashTables {
     private long nUselessFind = 0;
 
     /**
+     * Check to see if a search result can be determined from the hash table
+     *
+     * @param mover mover bitboard
+     * @param enemy enemy bitboard
+     * @param depth search depth
+     * @param alpha search alpha
+     * @param beta  search beta
+     * @param width mpc cut width
+     * @return a BA containing the search result, or null if the search result can't be determined.
+     */
+    public BA checkForHashCutoff(long mover, long enemy, int depth, int alpha, int beta, int width) {
+        return getEntry(mover, enemy).getBa(mover, enemy, depth, alpha, beta, width);
+    }
+
+    /**
      * @return search statistics on the hash table
      */
     public String stats() {
-        return String.format("%,d finds and %,d stores. %,d / %,d / %,d alpha/beta/pv cuts. %,d useless finds."
-                , nFinds, nStores, nAlphaCuts, nBetaCuts, nPvCuts, nUselessFind);
+        return String.format("%,d stores. %,d / %,d / %,d alpha/beta/pv cuts. %,d useless finds."
+                , nStores, nAlphaCuts, nBetaCuts, nPvCuts, nUselessFind);
     }
 
     private static final AtomicInteger count = new AtomicInteger();
@@ -74,18 +86,17 @@ public class MidgameHashTables {
     }
 
     /**
-     * Find the hash entry for the position
+     * Get the Entry corresponding to a position.
+     * <p/>
+     * This returns the Entry that might contain the position;
+     * there is no guarantee that position stored in the Entry is actually the desired position.
      *
-     * @return hash entry for the position, or null if there is no entry
+     * Entry is used in multithreaded applications so usages may need to be synchronized;
+     * see {@link MidgameEntry} for details.
+     *
+     * @return Entry that might contain the position.
      */
-    public
-    @Nullable Entry find(long mover, long enemy) {
-        nFinds++;
-        final Entry entry = getEntry(mover, enemy);
-        return entry.matches(mover, enemy) ? entry : null;
-    }
-
-    private Entry getEntry(long mover, long enemy) {
+    public MidgameEntry getEntry(long mover, long enemy) {
         final int nEmpty = Long.bitCount(~(mover | enemy));
         final HashTable table = tables[nEmpty];
         return table.getEntry(mover, enemy);
@@ -118,8 +129,7 @@ public class MidgameHashTables {
      */
     public void store(long mover, long enemy, int alpha, int beta, int depth, int width, int bestMove, int result) {
         nStores++;
-        final Entry entry = getEntry(mover, enemy);
-        entry.update(mover, enemy, alpha, beta, depth, width, bestMove, result);
+        getEntry(mover, enemy).update(mover, enemy, alpha, beta, depth, width, bestMove, result);
 
     }
 
@@ -130,15 +140,20 @@ public class MidgameHashTables {
      * is stored in this HashTables with score = +/- score, the move is appended to the PV.
      *
      * @param board position at root of search
-     * @param score score, from mover's point of view, in net disks.
+     * @param score score, from mover's point of view, in net centi-disks.
      */
     public String extractPv(Board board, int score) {
-        final Entry entry = find(board.mover(), board.enemy());
         final StringBuilder sb = new StringBuilder();
-        if (entry != null && entry.getMin() == score && entry.getMax() == score) {
+        if (entryHasScore(board, score)) {
             appendPv(board, sb, -score);
         }
         return sb.toString();
+    }
+
+    private boolean entryHasScore(Board board, int score) {
+        long mover = board.mover();
+        long enemy = board.enemy();
+        return getEntry(mover, enemy).hasScore(mover, enemy, score);
     }
 
     void appendPv(Board board, StringBuilder sb, int score) {
@@ -148,8 +163,7 @@ public class MidgameHashTables {
             long mask = 1L << sq;
             moves ^= mask;
             Board subBoard = board.play(sq);
-            Entry subEntry = find(subBoard.mover(), subBoard.enemy());
-            if (subEntry != null && subEntry.getMin() == score && subEntry.getMax() == score) {
+            if (entryHasScore(board, score)) {
                 sb.append(BitBoardUtils.sqToLowerText(sq)).append("-");
                 appendPv(subBoard, sb, -score);
                 return;
@@ -173,211 +187,20 @@ public class MidgameHashTables {
         nUselessFind++;
     }
 
-    public static class Entry {
-        long mover;
-        long enemy;
-        private int min;
-        private int max;
-
-        /**
-         * Depth, in ply of the stored search.
-         */
-        private int depth;
-
-        /**
-         * index of width into MPC cut widths for the stored search.
-         * <p/>
-         * Higher widths are more precise. A stored result can't be used if it is narrower than the search.
-         */
-        private int width;
-
-        /**
-         * Suggested move for further plies
-         */
-        private int bestMove;
-
-        Entry() {
-            mover = enemy = -1L; // invalid position, so we won't get it by accident
-            min = NO_MOVE;
-            max = -NO_MOVE;
-            depth = -1;
-            width = -1;
-            bestMove = -1;
-        }
-
-        /**
-         * Does this Entry contain the given position (at any depth)?
-         *
-         * @param mover mover bitboard
-         * @param enemy enemy bitboard
-         * @return true if this Entry contains the position.
-         */
-        boolean matches(long mover, long enemy) {
-            return this.mover == mover && this.enemy == enemy;
-        }
-
-        /**
-         * Update the entry.
-         * <p/>
-         * Always overwrites existing positions.
-         * <p/>
-         * When overwriting, the move is always stored.
-         * When updating, the move is stored only if the min is increased.
-         *
-         * @param mover  mover bitboard
-         * @param enemy  enemy bitboard
-         * @param alpha  original search alpha
-         * @param beta   original search beta
-         * @param searchDepth  search depth, in ply
-         * @param searchWidth  search width index
-         * @param result search result
-         */
-        public void update(long mover, long enemy, int alpha, int beta, int searchDepth, int searchWidth, int bestMove, int result) {
-            assert alpha < beta;
-
-            final boolean matches = matches(mover, enemy);
-            if (matches) {
-                if (deepEnoughToStore(searchDepth, searchWidth)) {
-                    if (bestMove >= 0) {
-                        this.bestMove = bestMove;
-                    }
-
-                    // The depth and width are deep enough. If the depth or width doesn't match, that means the search
-                    // is deeper than this Entry and we need to overwrite.
-                    if (depth!=searchDepth || width!= searchWidth) {
-                        overwriteScore(alpha, beta, searchDepth, searchWidth, result);
-                    } else {
-                        // depth == this.depth
-                        if (result >= beta) {
-                            if (result > min) {
-                                min = result;
-                                if (result > max) {
-                                    max = result;
-                                }
-                            }
-                        } else if (result <= alpha) {
-                            if (result < max) {
-                                max = result;
-                                if (result < min) {
-                                    min = result;
-                                }
-                            }
-                        } else {
-                            max = min = result;
-                        }
-                    }
-                }
-            } else {
-                // new position. overwrite.
-                this.mover = mover;
-                this.enemy = enemy;
-                overwriteScore(alpha, beta, searchDepth, searchWidth, result);
-                this.bestMove = bestMove;
-            }
-
-            assert min <= max;
-        }
-
-        private void overwriteScore(int alpha, int beta, int depth, int width, int result) {
-            if (result >= beta) {
-                min = result;
-                max = -NO_MOVE;
-            } else if (result <= alpha) {
-                max = result;
-                min = NO_MOVE;
-            } else {
-                max = min = result;
-            }
-            this.depth = depth;
-            this.width = width;
-        }
-
-        public void clear() {
-            mover = enemy = -1;
-            depth = -1;
-        }
-
-        /**
-         * @return true if the value in this node would cause an immediate return due to alpha or beta cutoff
-         */
-        public boolean cutsOff(int alpha, int beta) {
-            return min >= beta || max <= alpha || min == max;
-        }
-
-        /**
-         * Get minimum value.
-         * <p/>
-         * A previous search found that value(depth) >= getMin()
-         *
-         * @return minimum value
-         */
-        public int getMin() {
-            return min;
-        }
-
-        /**
-         * Get maximum value.
-         * <p/>
-         * A previous search found that value(depth) &le; getMax()
-         *
-         * @return maximum value
-         */
-        public int getMax() {
-            return max;
-        }
-
-        /**
-         * Get search depth.
-         *
-         * For testing only. Otherwise use deepEnoughToSearch().
-         *
-         * @return search depth, in ply
-         */
-        int getDepth() {
-            return depth;
-        }
-
-        /**
-         * Is this entry deep enough to be used as a result for the current search?
-         *
-         * @param searchDepth depth of current search
-         * @param searchWidth depth of current width
-         * @return true if deep enough
-         */
-        public boolean deepEnoughToSearch(int searchDepth, int searchWidth) {
-            return depth >= searchDepth && width >= searchWidth;
-        }
-
-        /**
-         * Is a search deep enough to store its value?
-         *
-         * @param searchDepth depth of current search
-         * @param searchWidth depth of current width
-         * @return true if deep enough
-         */
-        public boolean deepEnoughToStore(int searchDepth, int searchWidth) {
-            return depth <= searchDepth && width <= searchWidth;
-        }
-
-        public int getBestMove() {
-            return bestMove;
-        }
-
-        /**
-         * @return true if the score is exact (min == max)
-         */
-        public boolean isExact() {
-            return min == max;
-        }
+    /**
+     * @return square of the best move, if it's available, or -1 if it's not
+     */
+    public int getSuggestedMove(long mover, long enemy) {
+        return getEntry(mover, enemy).getSuggestedMove(mover, enemy);
     }
 
     static class HashTable {
-        Entry[] entries;
+        MidgameEntry[] entries;
 
         public HashTable(int size) {
-            entries = new Entry[size];
+            entries = new MidgameEntry[size];
             for (int i = 0; i < entries.length; i++) {
-                entries[i] = new Entry();
+                entries[i] = new MidgameEntry();
             }
         }
 
@@ -390,13 +213,13 @@ public class MidgameHashTables {
          * @param enemy enemy bits
          * @return the Entry
          */
-        public Entry getEntry(long mover, long enemy) {
+        public MidgameEntry getEntry(long mover, long enemy) {
             final int hash = (entries.length - 1) & (int) NovelloUtils.hash(mover, enemy);
             return entries[hash];
         }
 
         public void clear() {
-            for (Entry entry : entries) {
+            for (MidgameEntry entry : entries) {
                 entry.clear();
             }
         }

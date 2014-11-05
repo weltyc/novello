@@ -28,25 +28,29 @@ import java.util.List;
  */
 public class SearchTimer {
     /**
-     * Time searches from all positions from 12 games with 10-40 empties (so 360 positions total).
+     * Time searches from all positions from 12 games with 10-40 empties (so 372 positions total).
+     *
+     * Note: the call to midgameSearcher.clear() takes a long time (> 4.4s on this machine) due
+     * to synchronization overhead.
      */
     public static void main(String[] args) {
 //        DeepSolverTimer.warmUpHotSpot();
 
         if (args.length < 2) {
-            System.err.println("usage: minDepth maxDepth");
+            System.err.println("usage: minDepth maxDepth (minEmpty)");
             System.exit(-1);
         }
 
         final int minDepth = Integer.parseInt(args[0]);
         final int maxDepth = Integer.parseInt(args[1]);
+        final int minEmpty = args.length >= 3 ? Integer.parseInt(args[2]) : 10;
 
 //        countNodes(true, depth, true);
 
-        generateTable(minDepth, maxDepth, false, true);
+        generateTable(minDepth, maxDepth, false, true, true, minEmpty);
     }
 
-    private static void generateTable(int minDepth, int maxDepth, boolean doFw, boolean doMpc) {
+    private static void generateTable(int minDepth, int maxDepth, boolean doFw, boolean doMpc, boolean printStats, int minEmpty) {
         final MidgameSearcher fwSearcher = new MidgameSearcher(new Counter(Players.eval("c1s")), "w");
         final MidgameSearcher mpcSearcher = new MidgameSearcher(new Counter(Players.eval("c1s")), "");
 
@@ -56,18 +60,20 @@ public class SearchTimer {
             final StringBuilder sb = new StringBuilder();
             sb.append(String.format("%2d", depth));
             if (doFw) {
-                final long fw = countNodes(false, depth, false, fwSearcher);
+                final long fw = countNodes(false, depth, printStats, fwSearcher, minEmpty);
                 sb.append(String.format(" %,7d", fw / 1000));
             }
             if (doMpc) {
-                final long mpc = countNodes(true, depth, false, mpcSearcher);
+                final long mpc = countNodes(true, depth, printStats, mpcSearcher, minEmpty);
                 sb.append(String.format(" %,7d", mpc / 1000));
             }
-            System.out.println(sb);
+            if (!printStats) {
+                System.out.println(sb);
+            }
         }
     }
 
-    private static long countNodes(boolean mpc, int depth, boolean printStats, MidgameSearcher midgameSearcher) {
+    private static long countNodes(boolean mpc, int depth, boolean printStats, MidgameSearcher midgameSearcher, int minEmpty) {
         midgameSearcher.clear();
         final Counts c0 = midgameSearcher.getCounts();
 
@@ -79,11 +85,10 @@ public class SearchTimer {
             for (Move8x8 move : game.getMlis()) {
                 pos = pos.playOrPass(move.getSq());
                 final int nEmpty = pos.nEmpty();
-                if (nEmpty >= 10 && nEmpty <= 40) {
+                if (nEmpty >= minEmpty && nEmpty <= 40) {
                     final long moves = pos.calcMoves();
                     if (moves != 0) {
-                        midgameSearcher.getMoveScore(pos, moves, depth);
-                        midgameSearcher.clear();
+                        midgameSearcher.getMoveScore(pos, moves, depth, 0);
                     }
                 }
             }

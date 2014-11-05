@@ -27,7 +27,6 @@ public class HashTables {
     private final HashTable[] tables;
 
     // statistics
-    private long nFinds = 0;
     private long nStores = 0;
 
     // rely on the caller to update these.
@@ -40,8 +39,8 @@ public class HashTables {
      * @return search statistics on the hash table
      */
     public String stats() {
-        return String.format("%,d finds and %,d stores. %,d / %,d / %,d alpha/beta/pv cuts. %,d useless finds."
-                , nFinds, nStores, nAlphaCuts, nBetaCuts, nPvCuts, nUselessFind);
+        return String.format("%,d stores. %,d / %,d / %,d alpha/beta/pv cuts. %,d useless finds."
+                , nStores, nAlphaCuts, nBetaCuts, nPvCuts, nUselessFind);
     }
 
     /**
@@ -55,19 +54,7 @@ public class HashTables {
         }
     }
 
-    /**
-     * Find the hash entry for the position
-     *
-     * @return hash entry for the position, or null if there is no entry
-     */
-    public
-    @Nullable Entry find(long mover, long enemy) {
-        nFinds++;
-        final Entry entry = getEntry(mover, enemy);
-        return entry.matches(mover, enemy) ? entry : null;
-    }
-
-    private Entry getEntry(long mover, long enemy) {
+    public Entry getEntry(long mover, long enemy) {
         final int nEmpty = Long.bitCount(~(mover | enemy));
         final HashTable table = tables[nEmpty];
         return table.getEntry(mover, enemy);
@@ -83,12 +70,17 @@ public class HashTables {
      * @param score score, from mover's point of view, in net disks.
      */
     public String extractPv(Board board, int score) {
-        final Entry entry = find(board.mover(), board.enemy());
         final StringBuilder sb = new StringBuilder();
-        if (entry != null && entry.getMin() == score && entry.getMax() == score) {
+        if (entryHasScore(board, score)) {
             appendPv(board, sb, -score);
         }
         return sb.toString();
+    }
+
+    private boolean entryHasScore(Board board, int score) {
+        long mover = board.mover();
+        long enemy = board.enemy();
+        return getEntry(mover, enemy).hasScore(mover, enemy, score);
     }
 
     void appendPv(Board board, StringBuilder sb, int score) {
@@ -98,8 +90,7 @@ public class HashTables {
             long mask = 1L << sq;
             moves ^= mask;
             Board subBoard = board.play(sq);
-            Entry subEntry = find(subBoard.mover(), subBoard.enemy());
-            if (subEntry != null && subEntry.getMin()==score && subEntry.getMax()==score) {
+            if (entryHasScore(board, score)) {
                 sb.append(BitBoardUtils.sqToLowerText(sq)).append("-");
                 appendPv(subBoard, sb, -score);
                 return;
@@ -151,85 +142,6 @@ public class HashTables {
 
     public void updateUselessFind() {
         nUselessFind++;
-    }
-
-    public static class Entry {
-        long mover;
-        long enemy;
-        private int min;
-        private int max;
-
-        Entry() {
-            mover = enemy = -1L; // invalid position, so we won't get it by accident
-            min = -64;
-            max = 64;
-        }
-
-        boolean matches(long mover, long enemy) {
-            return this.mover == mover && this.enemy == enemy;
-        }
-
-        /**
-         * Update the entry.
-         * <p/>
-         * Always overwrites existing positions.
-         * <p/>
-         * When overwriting, the move is always stored.
-         * When updating, the move is stored only if the min is increased.
-         *
-         * @param mover  mover bitboard
-         * @param enemy  enemy bitboard
-         * @param alpha  original search alpha
-         * @param beta   original search beta
-         * @param result search result
-         */
-        public void update(long mover, long enemy, int alpha, int beta, int result) {
-            if (matches(mover, enemy)) {
-                if (result >= beta) {
-                    if (result > min) {
-                        min = result;
-                    }
-                } else if (result <= alpha) {
-                    if (result < max) {
-                        max = result;
-                    }
-                } else {
-                    max = min = result;
-                }
-            } else {
-                // overwrite
-                this.mover = mover;
-                this.enemy = enemy;
-                if (result >= beta) {
-                    min = result;
-                    max = 64;
-                } else if (result <= alpha) {
-                    max = result;
-                    min = -64;
-                } else {
-                    max = min = result;
-                }
-            }
-        }
-
-        public void clear() {
-            mover = enemy = -1;
-        }
-
-        /**
-         * @return true if the value in this node would cause an immediate return due to alpha or beta cutoff
-         */
-        public boolean cutsOff(int alpha, int beta) {
-            return min >= beta || max <= alpha || min == max;
-        }
-
-        public int getMin() {
-            return min;
-        }
-
-        public int getMax() {
-            return max;
-        }
     }
 
     static class HashTable {

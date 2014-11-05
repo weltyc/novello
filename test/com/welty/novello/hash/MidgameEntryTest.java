@@ -23,7 +23,7 @@ import static com.welty.novello.core.NovelloUtils.NO_MOVE;
 
 /**
  */
-public class MidgameHashTablesTest extends TestCase {
+public class MidgameEntryTest extends TestCase {
     private static final Board pos = Board.START_BOARD;
     private static final long mover = pos.mover();
     private static final long enemy = pos.enemy();
@@ -31,21 +31,21 @@ public class MidgameHashTablesTest extends TestCase {
     private static final int c3 = BitBoardUtils.textToSq("C3");
     private static final int score = 13;
 
-    final MidgameHashTables.Entry entry = new MidgameHashTables.Entry();
+    final MidgameEntry entry = new MidgameEntry();
 
     @Override protected void setUp() throws Exception {
         clear();
     }
 
-    public void testFind() {
+    public void testIsExact() {
         final MidgameHashTables ht = new MidgameHashTables();
-        assertNull("nothing in there yet", ht.find(mover, enemy));
+        MidgameEntry entry = ht.getEntry(mover, enemy);
+        assertFalse("nothing in there yet", entry.matches(mover, enemy));
 
         // Store an exact value. We know it's exact because the alpha < score < beta.
         ht.store(mover, enemy, NO_MOVE, -NO_MOVE, 1, 0, f5, score);
 
-        final MidgameHashTables.Entry entry = ht.find(mover, enemy);
-        assertNotNull(entry);
+        assertTrue(entry.matches(mover, enemy));
         assertEquals(score, entry.getMin());
         assertEquals(score, entry.getMax());
         assertEquals(1, entry.getDepth());
@@ -124,7 +124,7 @@ public class MidgameHashTablesTest extends TestCase {
 
     public void testUpdatesFromSameDepthExact() {
         final int depth = 1;
-        final int oldScore = MidgameHashTablesTest.score; // 13
+        final int oldScore = MidgameEntryTest.score; // 13
         final int score = 16; // higher than the previously stored score of 13
 
         // pv
@@ -166,7 +166,7 @@ public class MidgameHashTablesTest extends TestCase {
 
     public void testUpdatesFromSameDepthAll() {
         final int depth = 1;
-        final int oldScore = MidgameHashTablesTest.score; // 13
+        final int oldScore = MidgameEntryTest.score; // 13
         final int score = 16; // higher than the previously stored score of 13
 
         // pv
@@ -213,7 +213,7 @@ public class MidgameHashTablesTest extends TestCase {
 
     public void testUpdatesFromSameDepthCut() {
         final int depth = 1;
-        final int oldScore = MidgameHashTablesTest.score; // 13
+        final int oldScore = MidgameEntryTest.score; // 13
         final int score = 16; // higher than the previously stored score of 13
 
         // pv
@@ -260,7 +260,7 @@ public class MidgameHashTablesTest extends TestCase {
 
     public void testUpdatesFromHigherDepth() {
         final int depth = 0;
-        final int oldScore = MidgameHashTablesTest.score; // 13
+        final int oldScore = MidgameEntryTest.score; // 13
         final int score = 16; // higher than the previously stored score of 13
 
         // lower depth should get totally ignored.
@@ -282,8 +282,7 @@ public class MidgameHashTablesTest extends TestCase {
     }
 
     private void checkEntry(long mover, long enemy, int min, int max, int bestMove, int depth) {
-        assertEquals(mover, entry.mover);
-        assertEquals(enemy, entry.enemy);
+        assertTrue(entry.matches(mover, enemy));
         assertEquals("min", min, entry.getMin());
         assertEquals("max", max, entry.getMax());
         assertEquals("best move", bestMove, entry.getBestMove());

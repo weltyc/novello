@@ -18,6 +18,7 @@ package com.welty.novello.solver;
 import com.welty.novello.core.*;
 import com.welty.novello.eval.CoefficientCalculator;
 import com.welty.novello.eval.Eval;
+import com.welty.novello.hash.Entry;
 import com.welty.novello.hash.HashTables;
 import com.welty.novello.selfplay.Players;
 import com.welty.othello.api.AbortCheck;
@@ -307,29 +308,34 @@ public class Solver {
         int searchAlpha = alpha;
         int searchBeta = beta;
         if (nEmpties >= MIN_HASH_DEPTH) {
-            HashTables.Entry entry = hashTables.find(mover, enemy);
-            if (entry != null) {
-                if (entry.getMin() >= beta) {
-                    hashTables.updateBetaCut();
-                    return entry.getMin();
+            Entry entry = hashTables.getEntry(mover, enemy);
+            synchronized(entry) {
+                if (entry.matches(mover, enemy)) {
+                    int min = entry.getMin();
+                    if (min >= beta) {
+                        hashTables.updateBetaCut();
+                        return min;
+                    }
+                    int max = entry.getMax();
+                    if (max <= alpha) {
+                        hashTables.updateAlphaCut();
+                        return max;
+                    }
+                    if (min == max) {
+                        hashTables.updatePvCut();
+                        return min;
+                    }
+                    if (min > searchAlpha) {
+                        searchAlpha = min;
+                    }
+                    if (max < searchBeta) {
+                        searchBeta = max;
+                    }
+                    hashTables.updateUselessFind();
                 }
-                if (entry.getMax() <= alpha) {
-                    hashTables.updateAlphaCut();
-                    return entry.getMax();
-                }
-                if (entry.getMin() == entry.getMax()) {
-                    hashTables.updatePvCut();
-                    return entry.getMin();
-                }
-                if (entry.getMin() > searchAlpha) {
-                    searchAlpha = entry.getMin();
-                }
-                if (entry.getMax() < searchBeta) {
-                    searchBeta = entry.getMax();
-                }
-                hashTables.updateUselessFind();
             }
         }
+
         if (nEmpties == 6) {
             // only do this expensive calculation if it has a chance of working
             // Estimate total stable disks at 2*edge stable disks and see if it cuts off -
