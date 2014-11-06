@@ -67,7 +67,7 @@ public class SelfPlayGame implements Callable<MutableGame> {
                     game.finish();
                     if (printGame()) {
                         System.out.println(game.toGgf());
-                        System.out.println("--- result : " + game.getLastBoard().terminalScore());
+                        System.out.println("--- result : " + game.getLastBoard().terminalScoreToBlack());
                     }
                     return game;
                 }

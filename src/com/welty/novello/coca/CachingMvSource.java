@@ -115,7 +115,7 @@ public class CachingMvSource implements MvSource {
      */
     private void createMvs(Path mvFile) throws IOException {
         log.info("Creating Pvs in " + mvFile + " ...");
-        final HashSet<Mr> subMrs = new HashSet<>(mrSource.getMrs());
+        final HashSet<MinimalReflection> subMrs = new HashSet<>(mrSource.getMrs());
         Files.createDirectories(mvFile.getParent());
         writePvs(mvFile, subMrs);
     }
@@ -127,7 +127,7 @@ public class CachingMvSource implements MvSource {
      * @param mrs  MRs to use to generate PV.
      * @throws IOException
      */
-    private void writePvs(Path file, Set<Mr> mrs) throws IOException {
+    private void writePvs(Path file, Set<MinimalReflection> mrs) throws IOException {
         log.info("Generating pvs for " + String.format("%,d", mrs.size()) + " mrs, each of which will generate 2 pvs (unless there is only one remaining move in the game)");
         try (final DataOutputStream out = new DataOutputStream(new BufferedOutputStream(Files.newOutputStream(file)))) {
             int nextMessage = 25000;
@@ -138,7 +138,7 @@ public class CachingMvSource implements MvSource {
             final ExecutorCompletionService<List<MeValue>> ecs = new ExecutorCompletionService<>(Executors.newFixedThreadPool(nThreads));
 
             log.info("Generating and writing pvs to " + file.getFileName() + " ...");
-            for (Mr mr : mrs) {
+            for (MinimalReflection mr : mrs) {
                 ecs.submit(new PvsTask(mr));
             }
 
@@ -222,9 +222,9 @@ public class CachingMvSource implements MvSource {
     }
 
     private class PvsTask implements Callable<List<MeValue>> {
-        private final @NotNull Mr mr;
+        private final @NotNull MinimalReflection mr;
 
-        public PvsTask(@NotNull Mr mr) {
+        public PvsTask(@NotNull MinimalReflection mr) {
             this.mr = mr;
         }
 

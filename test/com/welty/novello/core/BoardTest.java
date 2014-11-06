@@ -38,10 +38,9 @@ public class BoardTest extends BitBoardTestCase {
         final long white = 0x2718281828459045L & ~black;
 
         final Board bb = new Board(black, white, true);
-        final Board minimal = bb.minimalReflection();
+        final MinimalReflection minimal = bb.minimalReflection();
         for (int r = 0; r < 8; r++) {
-            final Board reflection = bb.reflection(r);
-            assertTrue(minimal.compareTo(reflection) < 0 || minimal.equals(reflection));
+            assertEquals(minimal, bb.reflection(r).minimalReflection());
         }
     }
 

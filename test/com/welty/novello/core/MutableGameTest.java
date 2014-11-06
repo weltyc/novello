@@ -99,7 +99,7 @@ public class MutableGameTest extends TestCase {
         assertEquals("GGS/os", game.place);
         assertEquals("-------- -------- -------- ---O*--- ---*O--- -------- -------- -------- *", game.getStartBoard().positionString());
         assertEquals(0, game.getLastBoard().nEmpty());
-        assertEquals(0, game.getLastBoard().terminalScore());
+        assertEquals(0, game.getLastBoard().terminalScoreToBlack());
         assertEquals(5 * 60., game.getStartPosition().whiteClock.tCurrent);
         assertEquals(5 * 60., game.getStartPosition().blackClock.tCurrent);
     }

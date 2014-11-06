@@ -144,6 +144,26 @@ public class MidgameHashTables {
      */
     public String extractPv(Board board, int score) {
         final StringBuilder sb = new StringBuilder();
+        return findAndAppend(board, score, sb);
+    }
+
+    /**
+     * Extract the PV from this HashTables.
+     * <p/>
+     * This function searches the bestMove, if available, for each node. If the resulting position
+     * is stored in this HashTables with score = +/- score, the move is appended to the PV.
+     *
+     * @param board position at root of search
+     * @param sq    square of first move
+     * @param score score, from mover's point of view, in net disks.
+     */
+    public String extractPv(Board board, int score, int sq) {
+        final StringBuilder sb = new StringBuilder();
+        sb.append(BitBoardUtils.sqToLowerText(sq)).append("-");
+        return findAndAppend(board.play(sq), -score, sb);
+    }
+
+    private String findAndAppend(Board board, int score, StringBuilder sb) {
         if (entryHasScore(board, score)) {
             appendPv(board, sb, -score);
         }

@@ -22,7 +22,11 @@ import org.jetbrains.annotations.Nullable;
 import static java.lang.Long.bitCount;
 
 /**
- * Bitboard representation of an Othello board
+ * Bitboard representation of an Othello board. Immutable.
+ * <p/>
+ * This includes the disks on the board and the player to move.
+ * <p/>
+ * For a stripped down representation containing only the mover and enemy disks, see {@link Me}.
  */
 public class Board implements Comparable<Board> {
     private static final String header = "  A B C D E F G H  \n";
@@ -98,7 +102,7 @@ public class Board implements Comparable<Board> {
         this.blackToMove = blackToMove;
     }
 
-    public Board(Mr mr) {
+    public Board(MinimalReflection mr) {
         this(mr.mover, mr.enemy, true);
     }
 
@@ -298,11 +302,31 @@ public class Board implements Comparable<Board> {
     }
 
     /**
+     * Net score, in disks, to black.
+     * <p/>
+     * Winner gets empties if {@link com.welty.novello.core.BitBoardUtils#WINNER_GETS_EMPTIES} is true.
+     *
      * @return black disks - white disks
      */
-    public int terminalScore() {
+    public int terminalScoreToBlack() {
         return BitBoardUtils.terminalScore(black, white);
     }
+
+    /**
+     * Net score, in disks, to black.
+     * <p/>
+     * Winner gets empties if {@link com.welty.novello.core.BitBoardUtils#WINNER_GETS_EMPTIES} is true.
+     *
+     * @return black disks - white disks
+     */
+    public int terminalScoreToMover() {
+        final int score = BitBoardUtils.terminalScore(black, white);
+        return blackToMove ? score : -score;
+    }
+
+    /**
+     *
+     */
 
     /**
      * Perform one of the 8 reflections of the position and return the result.
@@ -326,15 +350,8 @@ public class Board implements Comparable<Board> {
      *
      * @return minimal reflection of the bitboard.
      */
-    public Board minimalReflection() {
-        Board minimal = this;
-        for (int r = 1; r < 8; r++) {
-            Board reflection = reflection(r);
-            if (reflection.compareTo(minimal) < 0) {
-                minimal = reflection;
-            }
-        }
-        return minimal;
+    public MinimalReflection minimalReflection() {
+        return new MinimalReflection(mover(), enemy());
     }
 
     @Override public int compareTo(Board o) {
@@ -409,7 +426,7 @@ public class Board implements Comparable<Board> {
         return 2;
     }
 
-    public Mr toMr() {
-        return new Mr(mover(), enemy());
+    public MinimalReflection toMr() {
+        return new MinimalReflection(mover(), enemy());
     }
 }

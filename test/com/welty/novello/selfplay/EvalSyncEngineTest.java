@@ -15,12 +15,18 @@
 
 package com.welty.novello.selfplay;
 
+import com.welty.novello.book.Book;
+import com.welty.novello.book.BookTest;
 import com.welty.novello.core.BitBoardUtils;
 import com.welty.novello.core.Board;
 import com.welty.novello.core.MoveScore;
 import com.welty.novello.eval.Eval;
+import com.welty.novello.solver.SearchAbortedException;
+import com.welty.othello.api.AbortCheck;
 import com.welty.othello.gdk.OsClock;
+import com.welty.othello.protocol.Depth;
 import junit.framework.TestCase;
+import org.mockito.Mockito;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -127,5 +133,32 @@ public class EvalSyncEngineTest extends TestCase {
         final double seconds = EvalSyncEngine.calcTargetTime(clock, 2);
         assertTrue(seconds > 0.25);
         assertTrue(seconds < 1.62);
+    }
+
+    public void testBookSearch() throws SearchAbortedException {
+        final EvalSyncEngine engine = createBookEngine();
+        final Board f5 = Board.START_BOARD.play("F5");
+        final EvalSyncEngine.Listener listener = Mockito.mock(EvalSyncEngine.Listener.class);
+        engine.calcHints(f5, 6, 2, AbortCheck.NEVER, listener);
+        Mockito.verify(listener).hint(new MoveScore("d6", +200), new Depth(1), true);
+        Mockito.verify(listener).hint(new MoveScore("f4", -400), new Depth(0), true);
+        Mockito.verifyNoMoreInteractions(listener);
+    }
+
+    private static EvalSyncEngine createBookEngine() {
+        Book book = BookTest.sampleBook();
+
+        final Eval eval = Players.currentEval();
+        return new EvalSyncEngine(eval, "", eval.toString(), book);
+    }
+
+    public void testMoveFromBook() {
+        final EvalSyncEngine engine = createBookEngine();
+
+        // a move from book should be instant.
+        final EvalSyncEngine.Listener listener = Mockito.mock(EvalSyncEngine.Listener.class);
+        final MoveScore moveScore = engine.calcMove(Board.START_BOARD.play("F5"), new OsClock(10), 2, AbortCheck.NEVER, listener);
+        assertEquals(new MoveScore("d6", 200), moveScore);
+        Mockito.verifyNoMoreInteractions(listener);
     }
 }

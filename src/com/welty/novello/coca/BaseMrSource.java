@@ -17,7 +17,7 @@ package com.welty.novello.coca;
 
 import com.orbanova.common.misc.Logger;
 import com.welty.novello.core.MeValue;
-import com.welty.novello.core.Mr;
+import com.welty.novello.core.MinimalReflection;
 import com.welty.novello.core.ObjectFeed;
 import com.welty.novello.selfplay.EvalSyncEngine;
 import com.welty.novello.selfplay.Players;
@@ -38,21 +38,21 @@ public class BaseMrSource implements MrSource {
 
     public static final BaseMrSource instance = new BaseMrSource();
 
-    @Override public Set<Mr> getMrs() throws IOException {
+    @Override public Set<MinimalReflection> getMrs() throws IOException {
         final int maxDepth = 8;
         final EvalSyncEngine playoutEngine = new EvalSyncEngine(Players.currentEval(), "", Players.currentEval().toString());
         final SyncPlayer playoutPlayer = new SyncPlayer(playoutEngine, maxDepth);
         final Path mrsPath = CachingMvSource.getCacheDir().resolve("base.mrs");
         if (!Files.exists(mrsPath)) {
-            final Set<Mr> mrSet = new HashSet<>();
+            final Set<MinimalReflection> mrSet = new HashSet<>();
             Files.createDirectories(mrsPath.getParent());
             final SelfPlaySet.PvCollector pvCollector = new SelfPlaySet.PvCollector();
             SelfPlaySet.run(playoutPlayer, playoutPlayer, OsClock.LONG, pvCollector);
             for (MeValue pv : pvCollector.pvs) {
-                mrSet.add(new Mr(pv.mover, pv.enemy));
+                mrSet.add(new MinimalReflection(pv.mover, pv.enemy));
             }
             try (DataOutputStream out = new DataOutputStream(new BufferedOutputStream(Files.newOutputStream(mrsPath)))) {
-                for (Mr mr : mrSet) {
+                for (MinimalReflection mr : mrSet) {
                     mr.write(out);
                 }
             }
@@ -60,6 +60,6 @@ public class BaseMrSource implements MrSource {
         }
 
 
-        return new ObjectFeed<>(mrsPath, Mr.deserializer).asSet();
+        return new ObjectFeed<>(mrsPath, MinimalReflection.deserializer).asSet();
     }
 }

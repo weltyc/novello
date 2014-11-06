@@ -15,6 +15,7 @@
 
 package com.welty.novello.solver;
 
+import com.welty.novello.book.Book;
 import com.welty.novello.core.*;
 import com.welty.novello.eval.CoefficientCalculator;
 import com.welty.novello.eval.Eval;
@@ -23,6 +24,7 @@ import com.welty.novello.hash.HashTables;
 import com.welty.novello.selfplay.Players;
 import com.welty.othello.api.AbortCheck;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import static java.lang.Long.bitCount;
 
@@ -82,6 +84,7 @@ public class Solver {
 
     private final @NotNull Counter counter;
     public final @NotNull MidgameSearcher midgameSearcher;
+    @Nullable private final Book book;
 
     /**
      * Statistics on nodes, cutoffs, etc.
@@ -95,6 +98,7 @@ public class Solver {
      */
     final HashTables hashTables = new HashTables();
     private StatsListener statsListener;
+    private int minBookCheckEmpties;
 
     /**
      * Set up data structures for a Solver.
@@ -106,20 +110,21 @@ public class Solver {
     }
 
     public Solver(@NotNull Eval eval) {
-        this(new Counter(eval), new MidgameSearcher.Options(""));
+        this(new Counter(eval), new MidgameSearcher.Options(""), null);
     }
 
-    public Solver(@NotNull Eval eval, MidgameSearcher.Options options) {
-        this(new Counter(eval), options);
+    public Solver(@NotNull Eval eval, MidgameSearcher.Options options, @Nullable Book book) {
+        this(new Counter(eval), options, book);
     }
 
-    private Solver(Counter counter, MidgameSearcher.Options options) {
-        this(counter, new MidgameSearcher(counter, options));
+    private Solver(Counter counter, MidgameSearcher.Options options, Book book) {
+        this(counter, new MidgameSearcher(counter, options, book), book);
     }
 
-    private Solver(@NotNull Counter counter, @NotNull MidgameSearcher midgameSearcher) {
+    private Solver(@NotNull Counter counter, @NotNull MidgameSearcher midgameSearcher, @Nullable Book book) {
         this.counter = counter;
         this.midgameSearcher = midgameSearcher;
+        this.book = book;
         treeSearchResults = new TreeSearchResult[64];
         for (int i = 0; i < treeSearchResults.length; i++) {
             treeSearchResults[i] = new TreeSearchResult();
@@ -150,9 +155,38 @@ public class Solver {
         this.statsListener = statsListener;
         this.empties = ShallowSolver.createEmptiesList(mover, enemy);
         this.abortCheck = abortCheck;
+        setMinBookCheckEmpties(mover, enemy);
 
         return solve(mover, enemy, -64, 64);
     }
+
+    public MoveScore calcSubMoveScore(int sq, Board pos, int alpha, int beta, AbortCheck abortCheck, StatsListener statsListener) throws SearchAbortedException {
+        Board subPos = pos.play(sq);
+        String pv = BitBoardUtils.sqToLowerText(sq);
+
+        if (subPos.hasLegalMove()) {
+            final MoveScore subMoveScore = getMoveScore(subPos.mover(), subPos.enemy(), abortCheck, statsListener, -beta, -alpha);
+            if (subMoveScore.pv != null) {
+                pv += "-" + subMoveScore.pv;
+            }
+            return new MoveScore(sq, -subMoveScore.centidisks, pv);
+        }
+        else {
+            subPos = subPos.pass();
+            if (subPos.hasLegalMove()) {
+                final MoveScore subMoveScore = getMoveScore(subPos.mover(), subPos.enemy(), abortCheck, statsListener, alpha, beta);
+                if (subMoveScore.pv != null) {
+                    pv += "-pa-" + subMoveScore.pv;
+                }
+                return new MoveScore(sq, subMoveScore.centidisks, pv);
+            }
+            else {
+                return new MoveScore(sq, subPos.terminalScoreToBlack() * CoefficientCalculator.DISK_VALUE, pv);
+            }
+        }
+    }
+
+
 
     /**
      * Solve the game and return the best move.
@@ -184,18 +218,23 @@ public class Solver {
      * @throws SearchAbortedException if abortCheck returned true
      */
     public @NotNull MoveScore getMoveScore(long mover, long enemy, @NotNull AbortCheck abortCheck, @NotNull StatsListener statsListener) throws SearchAbortedException {
+        return getMoveScore(mover, enemy, abortCheck, statsListener, -64, 64);
+    }
+
+    public MoveScore getMoveScore(long mover, long enemy, AbortCheck abortCheck, StatsListener statsListener, int alpha, int beta) throws SearchAbortedException {
         if (BitBoardUtils.calcMoves(mover, enemy) == 0) {
             throw new IllegalArgumentException("mover must have a legal move");
         }
         this.empties = ShallowSolver.createEmptiesList(mover, enemy);
         this.abortCheck = abortCheck;
         this.statsListener = statsListener;
+        setMinBookCheckEmpties(mover, enemy);
 
         final int nEmpties = bitCount(~(mover | enemy));
         final TreeSearchResult result = treeSearchResults[nEmpties];
 
         final long parity = empties.calcParity();
-        moverResultWithSorting(result, mover, enemy, -64, 64, nEmpties, parity, PRED_PV, -1);
+        moverResultWithSorting(result, mover, enemy, alpha, beta, nEmpties, parity, PRED_PV, -1);
         final MoveSorter moveSorter = moveSorters.get(nEmpties);
         final int sq = moveSorter.sq(result.iBestMove);
         return new MoveScore(sq, result.score * CoefficientCalculator.DISK_VALUE);
@@ -237,6 +276,12 @@ public class Solver {
         return solveDeep(mover, enemy, alpha, beta, nEmpty, empties.calcParity(), PRED_PV, -1L);
     }
 
+    private void setMinBookCheckEmpties(long mover, long enemy) {
+        minBookCheckEmpties = BitBoardUtils.nEmpty(mover, enemy)-3;
+    }
+
+
+
     /*
      * Predicted node types
      */
@@ -265,6 +310,14 @@ public class Solver {
             }
             if (nEmpties >= 21) {
                 statsListener.update();
+            }
+            if (book!=null && BitBoardUtils.nEmpty(mover, enemy) >= minBookCheckEmpties) {
+                final Board board = new Board(mover, enemy, true);
+                final Book.Data data = book.getData(board);
+                // make sure we only use SOLVED book data when solving!
+                if (data!=null && data.getNodeType()== Book.NodeType.SOLVED) {
+                    return data.getScore();
+                }
             }
         }
         if (nEmpties < ShallowSolver.MIN_PARITY_DEPTH) {
@@ -472,12 +525,6 @@ public class Solver {
 
     public String getNodeCountsByDepth() {
         return nodeCounts.getNodeCountsByDepth();
-    }
-
-    public MoveScore calcSubMoveScore(int sq, Board subPos, int alpha, int beta, int subDepth, AbortCheck abortCheck, StatsListener statsListener) throws SearchAbortedException {
-        final int disks = solve(subPos.mover(), subPos.enemy(), abortCheck, statsListener);
-        String pv = BitBoardUtils.sqToLowerText(sq) + "-" + hashTables.extractPv(subPos, disks);
-        return new MoveScore(sq, -disks * CoefficientCalculator.DISK_VALUE, pv);
     }
 
 

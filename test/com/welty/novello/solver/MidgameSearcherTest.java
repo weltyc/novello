@@ -15,14 +15,13 @@
 
 package com.welty.novello.solver;
 
+import com.welty.novello.book.Book;
+import com.welty.novello.book.BookTest;
 import com.welty.novello.core.BitBoardUtils;
 import com.welty.novello.core.Board;
 import com.welty.novello.core.Counts;
 import com.welty.novello.core.MoveScore;
-import com.welty.novello.eval.CoefficientCalculator;
-import com.welty.novello.eval.DiskEval;
 import com.welty.novello.eval.Eval;
-import com.welty.novello.hash.MidgameHashTables;
 import com.welty.novello.selfplay.Players;
 import com.welty.othello.api.AbortCheck;
 import junit.framework.TestCase;
@@ -128,5 +127,17 @@ public class MidgameSearcherTest extends TestCase {
         final long nEvals = counts.nEvals;
         System.out.format("%,d flips and %,d evals", nFlips, nEvals);
         assertTrue(nFlips < nEvals * 2);
+    }
+
+    public void testLoadFromBook() {
+        // midgame searcher should use book values for the positions
+        final Eval eval = Players.currentEval();
+        final Book book = BookTest.sampleBook();
+        final MidgameSearcher midgameSearcher = new MidgameSearcher(new Counter(eval), "w", book);
+
+
+        final Board board = Board.START_BOARD.play("F5");
+        final MoveScore moveScore = midgameSearcher.getMoveScore(board, board.calcMoves(), 1, 1);
+        assertEquals(200, moveScore.centidisks);
     }
 }

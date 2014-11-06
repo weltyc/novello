@@ -27,9 +27,9 @@ public class MidgameSearchTest extends TestCase {
     public void testTreeMove() throws SearchAbortedException {
         final Eval eval = new DiskEval();
         final MidgameSearcher midgameSearcher = new MidgameSearcher(new Counter(eval));
-        final MidgameSearch search = midgameSearcher.createSearch(1, 0, AbortCheck.NEVER);
-
         final Board board = Board.of("-------- -------- -------- --OO---- --*O*--- ----OO-- -------- -------- *");
+        final MidgameSearch search = midgameSearcher.createSearch(board.nEmpty(), 1, 0, AbortCheck.NEVER);
+
         final long mover = board.mover();
         final long enemy = board.enemy();
         final long moverMoves = board.calcMoves();

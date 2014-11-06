@@ -16,10 +16,7 @@
 package com.welty.novello.selfplay;
 
 import com.orbanova.common.misc.Logger;
-import com.welty.novello.core.Board;
-import com.welty.novello.core.MeValue;
-import com.welty.novello.core.MutableGame;
-import com.welty.novello.core.NovelloUtils;
+import com.welty.novello.core.*;
 import com.orbanova.common.misc.Engineering;
 import com.welty.othello.gdk.OsClock;
 import org.jetbrains.annotations.NotNull;
@@ -131,7 +128,7 @@ public class SelfPlaySet {
     }
 
     private static List<Board> generateStartPositions() {
-        final HashSet<Board> alreadySeen = new HashSet<>();
+        final HashSet<MinimalReflection> alreadySeen = new HashSet<>();
         final StartPosGenerator generator = new StartPosGenerator(9);
         final List<Board> startBoards = new ArrayList<>();
 

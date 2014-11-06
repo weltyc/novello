@@ -15,10 +15,12 @@
 
 package com.welty.novello.solver;
 
+import com.welty.novello.book.Book;
 import com.welty.novello.core.*;
 import com.welty.novello.hash.MidgameHashTables;
 import com.welty.othello.api.AbortCheck;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.ForkJoinPool;
 
@@ -34,6 +36,7 @@ public class MidgameSearcher {
 
     private final @NotNull Options options;
     private final @NotNull Counter counter;
+    @Nullable private final Book book;
 
     //////////////////////////////////////////////////////////
     //
@@ -57,8 +60,7 @@ public class MidgameSearcher {
      * @param options search options
      */
     public MidgameSearcher(@NotNull Counter counter, @NotNull Options options) {
-        this.options = options;
-        this.counter = counter;
+        this(counter, options, null);
     }
 
     /**
@@ -68,7 +70,17 @@ public class MidgameSearcher {
      * @param options search options
      */
     public MidgameSearcher(Counter counter, String options) {
-        this(counter, new Options(options));
+        this(counter, new Options(options), null);
+    }
+
+    public MidgameSearcher(Counter counter, String options, @NotNull Book book) {
+        this(counter, new Options(options), book);
+    }
+
+    public MidgameSearcher(@NotNull Counter counter, @NotNull Options options, @Nullable Book book) {
+        this.options = options;
+        this.counter = counter;
+        this.book = book;
     }
 
     /**
@@ -119,15 +131,15 @@ public class MidgameSearcher {
             throw new IllegalArgumentException("must have a legal move");
         }
 
-        MidgameSearch search = createSearch(depth, width, abortCheck);
+        MidgameSearch search = createSearch(board.nEmpty(), depth, width, abortCheck);
         final BA ba = search.hashMove(board.mover(), board.enemy(), moverMoves, NovelloUtils.NO_MOVE, -NovelloUtils.NO_MOVE, depth);
         String pv = midgameHashTables.extractPv(board, ba.score);
-        return new MoveScore(ba.bestMove, ba.score, pv);
+        return new MoveScore(ba.bestMove, ba.score, pv.isEmpty() ? null : pv);
     }
 
-    MidgameSearch createSearch(int depth, int width, AbortCheck abortCheck) {
+    MidgameSearch createSearch(int nEmpty, int depth, int width, AbortCheck abortCheck) {
         ForkJoinPool pool = new ForkJoinPool();
-        return new MidgameSearch(midgameHashTables, options, counter, pool, depth, width, abortCheck);
+        return new MidgameSearch(nEmpty, midgameHashTables, options, counter, pool, depth, width, book, abortCheck);
     }
 
     /**
@@ -158,7 +170,7 @@ public class MidgameSearcher {
      * @throws SearchAbortedException if the search was aborted
      */
     private int calcScore(long mover, long enemy, int alpha, int beta, int depth, int width, AbortCheck abortCheck) throws SearchAbortedException {
-        MidgameSearch search = createSearch(depth, width, abortCheck);
+        MidgameSearch search = createSearch(BitBoardUtils.nEmpty(mover, enemy), depth, width, abortCheck);
 
         return search.searchScore(mover, enemy, alpha, beta, depth);
     }
@@ -209,16 +221,22 @@ public class MidgameSearcher {
      *
      *
      * @param sq sq of move to check
-     * @param subPos position after sq has been played
-     * @param alpha (subPos POV)
-     * @param beta  (subPos POV)
+     * @param pos position before sq has been played
+     * @param alpha pos POV
+     * @param beta  pos POV
      * @param subDepth depth remaining from subPos
      * @return MoveScore, POV original position (not subPos).
      * @throws SearchAbortedException
      */
-    public MoveScore calcSubMoveScore(int sq, Board subPos, int alpha, int beta, int subDepth, int width, AbortCheck abortCheck) throws SearchAbortedException {
-        final int score = -calcScore(subPos, alpha, beta, subDepth, width, abortCheck);
-        String pv = BitBoardUtils.sqToLowerText(sq) + "-" + midgameHashTables.extractPv(subPos, -score);
+    public MoveScore calcSubMoveScore(int sq, Board pos, int alpha, int beta, int subDepth, int width, AbortCheck abortCheck) throws SearchAbortedException {
+        final int score;
+        final Board subPos = pos.play(sq);
+        score = -calcScore(subPos, -beta, -alpha, subDepth, width, abortCheck);
+        final String subPv = midgameHashTables.extractPv(subPos, -score);
+        String pv = BitBoardUtils.sqToLowerText(sq);
+        if (subPv != null) {
+            pv += "-" + subPv;
+        }
         return new MoveScore(sq, score, pv);
     }
     /**

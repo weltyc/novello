@@ -15,10 +15,10 @@
 
 package com.welty.novello.solver;
 
+import com.orbanova.common.gui.ProgressUpdater;
 import com.orbanova.common.misc.Logger;
 import com.welty.novello.core.DefaultThreadLocal;
 import com.welty.novello.core.MeValue;
-import com.orbanova.common.gui.ProgressUpdater;
 import com.welty.novello.eval.CoefficientEval;
 import com.welty.novello.eval.EvalStrategies;
 import com.welty.novello.eval.MvGenerator;
@@ -31,7 +31,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class MpcGenerator {
     private static final Logger log = Logger.logger(MpcGenerator.class);

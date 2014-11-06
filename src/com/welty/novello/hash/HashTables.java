@@ -19,7 +19,6 @@ import com.welty.novello.core.BitBoardUtils;
 import com.welty.novello.core.Board;
 import com.welty.novello.core.NovelloUtils;
 import com.welty.novello.solver.Solver;
-import org.jetbrains.annotations.Nullable;
 
 /**
  */

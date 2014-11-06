@@ -19,7 +19,7 @@ import com.orbanova.common.misc.Vec;
 import com.welty.novello.coca.RarePositionMrSource;
 import com.welty.novello.core.Me;
 import com.welty.novello.core.MeValue;
-import com.welty.novello.core.Mr;
+import com.welty.novello.core.MinimalReflection;
 import junit.framework.TestCase;
 
 import java.util.Arrays;
@@ -190,14 +190,14 @@ public class CoefficientCalculatorTest extends TestCase {
         final MeValue pv = new MeValue(me.mover, me.enemy, 13);
 
         // check with 1 position in pv
-        final Set<Mr> subs = RarePositionMrSource.generateRareSubpositions(EvalStrategies.eval1, Arrays.asList(pv));
+        final Set<MinimalReflection> subs = RarePositionMrSource.generateRareSubpositions(EvalStrategies.eval1, Arrays.asList(pv));
         final int nMoves = Long.bitCount(me.calcMoves());
         assertEquals(nMoves, subs.size());
 
         // check with 2 positions in pv, one of which will also be a subposition
-        final Mr me2 = subs.iterator().next();
+        final MinimalReflection me2 = subs.iterator().next();
         final MeValue pv2 = new MeValue(me2.mover, me2.enemy, -13);
-        final Set<Mr> subs2 = RarePositionMrSource.generateRareSubpositions(EvalStrategies.eval1, Arrays.asList(pv, pv2));
+        final Set<MinimalReflection> subs2 = RarePositionMrSource.generateRareSubpositions(EvalStrategies.eval1, Arrays.asList(pv, pv2));
         final int nMoves2 = Long.bitCount(me2.calcMoves());
         assertEquals(nMoves + nMoves2 - 1, subs2.size());
     }

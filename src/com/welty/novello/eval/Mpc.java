@@ -155,6 +155,15 @@ public class Mpc {
     }
 
     /**
+     * Get the number of standard deviations used for an MPC width index.
+     * @param width width index
+     * @return number of standard deviations for that width
+     */
+    public static double widthSd(int width) {
+        return mpcWidths[width];
+
+    }
+    /**
      * Get maximum allowable width index
      *
      * @return max width index

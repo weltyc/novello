@@ -20,7 +20,13 @@ import java.util.Collection;
 import java.util.Random;
 
 /**
- * Random test positions, 'early' with about 16 disks and 'late' with about 48 disks
+ * A board representation containing only the mover and enemy disks.
+ *
+ * For a representation which also knows which color is to move, see {@link Board}.
+ * For a representation which also contains a value, see @{link MeValue}.
+ * For a representation which maps all reflections to a single value, see {@link MinimalReflection}.
+ *
+ * This also contains two random test positions, 'early' with about 16 disks and 'late' with about 48 disks
  */
 public class Me {
     public final long mover;

@@ -16,6 +16,7 @@
 package com.welty.othello.gui.selector;
 
 import com.orbanova.common.feed.Mapper;
+import com.welty.novello.book.Book;
 import com.welty.novello.eval.Eval;
 import com.welty.novello.selfplay.EvalSyncEngine;
 import com.welty.othello.api.StatelessEngine;
@@ -23,14 +24,20 @@ import com.welty.othello.api.SyncStatelessEngine;
 import com.welty.othello.protocol.ResponseHandler;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
 public class InternalEngineFactory extends EngineFactory {
     private final @NotNull Eval eval;
     private final @NotNull String options;
     private final Mapper<Integer, String> strengthEstimator;
+    private final Book book;
 
     /**
      * @param name       name of player in opponent selection window
-     * @param isAdvanced if true, offer levels > 4 in opponent selection window
+     * @param isAdvanced if true, offer levels > 4 in opponent selection window and use a book
      * @param options    MidgameSearch.Options
      * @param eval       eval code, e.g. "d2"
      */
@@ -40,10 +47,24 @@ public class InternalEngineFactory extends EngineFactory {
         this.eval = eval;
         this.options = options;
         this.strengthEstimator = strengthEstimator;
+        book = getBook(isAdvanced);
+    }
+
+    private Book getBook(boolean isAdvanced) {
+        if (isAdvanced) {
+            // todo GUI for this
+            final String bookFile = "C:/dev/mongo/book.nbb";
+            try (InputStream in = new BufferedInputStream(new FileInputStream(bookFile))) {
+                return Book.read(in);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return new Book();
     }
 
     @Override public @NotNull StatelessEngine createPingEngine(int initialMaxDepth, ResponseHandler responseHandler) {
-        return new SyncStatelessEngine(name, eval, options, responseHandler);
+        return new SyncStatelessEngine(name, eval, options, responseHandler, book);
     }
 
     @Override public String strengthEstimate(int level) {

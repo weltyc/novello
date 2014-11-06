@@ -19,7 +19,7 @@ import com.orbanova.common.misc.Require;
 import com.welty.novello.core.BitBoardUtils;
 import com.welty.novello.core.Board;
 import com.welty.novello.core.MeValue;
-import com.welty.novello.core.Mr;
+import com.welty.novello.core.MinimalReflection;
 
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
@@ -52,10 +52,10 @@ public class NtestPvLoader {
     } ;
 
     public static final MrSource mrSource = new MrSource() {
-        @Override public Set<Mr> getMrs() throws IOException {
-            final HashSet<Mr> mrs = new HashSet<>();
+        @Override public Set<MinimalReflection> getMrs() throws IOException {
+            final HashSet<MinimalReflection> mrs = new HashSet<>();
             for (Pv pv : loadPvs()) {
-                mrs.add(new Mr(pv.mover, pv.enemy));
+                mrs.add(new MinimalReflection(pv.mover, pv.enemy));
             }
             return mrs;
         }

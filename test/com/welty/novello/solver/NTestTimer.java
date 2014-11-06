@@ -16,9 +16,9 @@
 package com.welty.novello.solver;
 
 import com.orbanova.common.misc.Logger;
+import com.welty.novello.core.Board;
 import com.welty.novello.core.Counts;
 import com.welty.novello.core.MutableGame;
-import com.welty.novello.core.Board;
 import com.welty.novello.selfplay.Players;
 
 import java.util.List;

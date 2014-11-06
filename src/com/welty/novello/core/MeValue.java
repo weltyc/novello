@@ -96,7 +96,7 @@ public class MeValue {
     /**
      * @return Minimal reflection of the position
      */
-    public Mr toMr() {
-        return new Mr(mover, enemy);
+    public MinimalReflection toMr() {
+        return new MinimalReflection(mover, enemy);
     }
 }

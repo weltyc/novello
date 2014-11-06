@@ -22,13 +22,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Minimal reflection of a position
+ * Minimal reflection of a position. Immutable.
+ * <p/>
+ * All reflections of a {@link Board} map to the same Mr.
+ * This contains only mover and enemy disks, but not color-to-move.
  */
-public class Mr {
+public class MinimalReflection {
     public final long mover;
     public final long enemy;
 
-    public Mr(long mover, long enemy) {
+    public MinimalReflection(long mover, long enemy) {
         long minMover = mover;
         long minEnemy = enemy;
 
@@ -45,8 +48,21 @@ public class Mr {
         this.enemy = minEnemy;
     }
 
-    public Board toPosition() {
-        return new Board(mover, enemy, true);
+    /**
+     * Convert this minimal reflection to a nominal position with black to move
+     *
+     * @return the Board.
+     */
+    public Board toBoard() {
+        return toBoard(true);
+    }
+
+    public Board toBoard(boolean blackToMove) {
+        if (blackToMove) {
+            return new Board(mover, enemy, true);
+        } else {
+            return new Board(enemy, mover, false);
+        }
     }
 
     /**
@@ -58,9 +74,9 @@ public class Mr {
      *
      * @return subPositions of this position
      */
-    public List<Mr> subPositions() {
+    public List<MinimalReflection> subPositions() {
         final Board pos = new Board(mover, enemy, true);
-        final List<Mr> subPositions = new ArrayList<>();
+        final List<MinimalReflection> subPositions = new ArrayList<>();
 
         long moves = calcMoves();
         while (moves != 0) {
@@ -69,7 +85,7 @@ public class Mr {
             moves &= ~placement;
 
             final Board subBoard = pos.play(sq);
-            subPositions.add(new Mr(subBoard.mover(), subBoard.enemy()));
+            subPositions.add(new MinimalReflection(subBoard.mover(), subBoard.enemy()));
         }
 
         return subPositions;
@@ -81,7 +97,7 @@ public class Mr {
 
 
     @Override public String toString() {
-        return toPosition().toString();
+        return toBoard().toString();
     }
 
     @Override
@@ -89,7 +105,7 @@ public class Mr {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        Mr mr = (Mr) o;
+        MinimalReflection mr = (MinimalReflection) o;
 
         return enemy == mr.enemy && mover == mr.mover;
 
@@ -113,12 +129,12 @@ public class Mr {
         out.writeLong(enemy);
     }
 
-    public static final ObjectFeed.Deserializer<Mr> deserializer = new ObjectFeed.Deserializer<Mr>() {
-        @Override public Mr read(DataInputStream in) throws IOException {
+    public static final ObjectFeed.Deserializer<MinimalReflection> deserializer = new ObjectFeed.Deserializer<MinimalReflection>() {
+        @Override public MinimalReflection read(DataInputStream in) throws IOException {
             final long mover = in.readLong();
             final long enemy = in.readLong();
 
-            return new Mr(mover, enemy);
+            return new MinimalReflection(mover, enemy);
         }
     };
 }

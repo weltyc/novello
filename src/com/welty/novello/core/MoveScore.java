@@ -33,7 +33,7 @@ public class MoveScore {
     /**
      * Optional Principal variation string.
      * <p/>
-     * If the string is not null, it should contain no spaces.
+     * If the string is not null, it should contain no spaces and should start with the square.
      */
     public final @Nullable String pv;
 
@@ -49,8 +49,13 @@ public class MoveScore {
         this.sq = sq;
         this.centidisks = centidisks;
         this.pv = pv;
-        if (pv!=null) {
+        if (pv != null) {
             Require.isFalse(pv.contains(" "), "PV can't contain spaces but was " + pv);
+            final String sqText = BitBoardUtils.sqToLowerText(sq);
+            final boolean startsWith = pv.toLowerCase().startsWith(sqText);
+            if (!startsWith) {
+                throw new IllegalArgumentException("PV (" + pv + ") must start with square(" + sqText + ").");
+            }
         }
     }
 
@@ -100,8 +105,8 @@ public class MoveScore {
         return new OsMove(BitBoardUtils.sqToText(sq));
     }
 
-    public HintResponse toHintResponse(int pong, Depth depth) {
+    public HintResponse toHintResponse(int pong, Depth depth, boolean isBook) {
         final Value eval = new Value(0.01f * centidisks);
-        return new HintResponse(pong, false, pv == null ? BitBoardUtils.sqToText(sq) : pv, eval, 0, depth, "");
+        return new HintResponse(pong, isBook, pv == null ? BitBoardUtils.sqToText(sq) : pv, eval, 0, depth, "");
     }
 }

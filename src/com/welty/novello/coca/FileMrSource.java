@@ -15,7 +15,7 @@
 
 package com.welty.novello.coca;
 
-import com.welty.novello.core.Mr;
+import com.welty.novello.core.MinimalReflection;
 import com.welty.novello.core.ObjectFeed;
 import com.welty.novello.solver.Counter;
 
@@ -34,18 +34,18 @@ public class FileMrSource implements MrSource {
         }
     }
 
-    @Override public Set<Mr> getMrs() throws IOException {
-        return new ObjectFeed<>(path, Mr.deserializer).asSet();
+    @Override public Set<MinimalReflection> getMrs() throws IOException {
+        return new ObjectFeed<>(path, MinimalReflection.deserializer).asSet();
     }
 
     public static void main(String[] args) throws IOException {
         final Path filePath = Counter.capturePath;
         System.out.println("Stats for File " + filePath);
         final FileMrSource source = new FileMrSource(filePath);
-        final Set<Mr> mrs = source.getMrs();
+        final Set<MinimalReflection> mrs = source.getMrs();
         System.out.format("# mrs : %,2d\n\n", mrs.size());
         final int[] counts = new int[60];
-        for (Mr mr : mrs) {
+        for (MinimalReflection mr : mrs) {
             counts[mr.nEmpty()]++;
         }
         System.out.println("#empty  #mrs");

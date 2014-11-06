@@ -140,22 +140,22 @@ public class MutableGame {
      * @return a list of PositionValues, but only those where the mover has a legal move.
      */
     public List<MeValue> calcPositionValues() {
-        final int netScore = getLastBoard().terminalScore();
+        final int netScoreToBlack = getLastBoard().terminalScoreToBlack();
         final List<MeValue> pvs = new ArrayList<>();
         Board pos = getStartBoard();
         for (Move8x8 move : mlis) {
             if (move.isPass()) {
                 pos = pos.pass();
             } else {
-                pvs.add(pv(pos, netScore));
+                pvs.add(pv(pos, netScoreToBlack));
                 pos = pos.play(move.getSq());
             }
         }
         return pvs;
     }
 
-    private static MeValue pv(Board pos, int netScore) {
-        final int centidisks = CoefficientCalculator.DISK_VALUE * (pos.blackToMove ? netScore : -netScore);
+    private static MeValue pv(Board pos, int netScoreToBlack) {
+        final int centidisks = CoefficientCalculator.DISK_VALUE * (pos.blackToMove ? netScoreToBlack : -netScoreToBlack);
         return new MeValue(pos.mover(), pos.enemy(), centidisks);
     }
 
@@ -163,7 +163,7 @@ public class MutableGame {
      * @return number of black disks - number of white disks at the end of the game
      */
     public int netScore() {
-        return lastPosition.board.terminalScore();
+        return lastPosition.board.terminalScoreToBlack();
     }
 
     /**

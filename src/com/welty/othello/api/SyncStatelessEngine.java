@@ -15,6 +15,7 @@
 
 package com.welty.othello.api;
 
+import com.welty.novello.book.Book;
 import com.welty.novello.core.Board;
 import com.welty.novello.core.MoveScore;
 import com.welty.novello.eval.Eval;
@@ -25,6 +26,7 @@ import com.welty.othello.gdk.COsPosition;
 import com.welty.othello.gdk.OsMoveListItem;
 import com.welty.othello.protocol.*;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * A StatelessEngine that responds on the same thread it receives data on
@@ -59,10 +61,10 @@ public class SyncStatelessEngine implements StatelessEngine {
     public static final boolean debug = true;
     private String status = "";
 
-    public SyncStatelessEngine(String name, Eval eval, String options, @NotNull ResponseHandler responseHandler) {
+    public SyncStatelessEngine(String name, Eval eval, String options, @NotNull ResponseHandler responseHandler, @Nullable Book book) {
         this.name = name;
         this.responseHandler = responseHandler;
-        evalSyncEngine = new EvalSyncEngine(eval, options, name);
+        evalSyncEngine = new EvalSyncEngine(eval, options, name, book);
         new Thread(new Runner(), getName()).start();
     }
 
@@ -202,8 +204,8 @@ public class SyncStatelessEngine implements StatelessEngine {
             responseHandler.handle(new NodeStatsResponse(pong, nodeCount, millis * 0.001));
         }
 
-        @Override public void hint(MoveScore moveScore, Depth depth) {
-            responseHandler.handle(moveScore.toHintResponse(pong, depth));
+        @Override public void hint(MoveScore moveScore, Depth depth, boolean isBook) {
+            responseHandler.handle(moveScore.toHintResponse(pong, depth, isBook));
         }
 
         @Override public void analysis(int moveNumber, double eval) {

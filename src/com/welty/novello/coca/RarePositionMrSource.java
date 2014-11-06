@@ -17,7 +17,7 @@ package com.welty.novello.coca;
 
 import com.orbanova.common.misc.Logger;
 import com.welty.novello.core.MeValue;
-import com.welty.novello.core.Mr;
+import com.welty.novello.core.MinimalReflection;
 import com.orbanova.common.gui.ProgressUpdater;
 import com.welty.novello.eval.EvalStrategy;
 import com.welty.novello.eval.PositionElement;
@@ -48,7 +48,7 @@ public class RarePositionMrSource implements MrSource {
         this.pvs = pvs;
     }
 
-    @Override public Set<Mr> getMrs() throws IOException {
+    @Override public Set<MinimalReflection> getMrs() throws IOException {
         return generateRareSubpositions(strategy, pvs);
     }
 
@@ -60,29 +60,29 @@ public class RarePositionMrSource implements MrSource {
      *
      * @return set of minimal reflections
      */
-    public static Set<Mr> generateRareSubpositions(EvalStrategy strategy, List<MeValue> pvs) {
+    public static Set<MinimalReflection> generateRareSubpositions(EvalStrategy strategy, List<MeValue> pvs) {
         log.info("Starting generateRareSubpositions()");
 
         final int[][] countSlices = new int[64][strategy.nCoefficientIndices()];
 
-        final Set<Mr> original = new HashSet<>();
+        final Set<MinimalReflection> original = new HashSet<>();
         for (MeValue pv : pvs) {
-            original.add(new Mr(pv.mover, pv.enemy));
+            original.add(new MinimalReflection(pv.mover, pv.enemy));
         }
 
         log.info(String.format("collected source positions. %,d distinct positions from %,d pvs", original.size(), pvs.size()));
 
         final ProgressUpdater progressMonitor = new ProgressUpdater("Generate rare subpositions", pvs.size());
 
-        final HashSet<Mr> mrs = new HashSet<>();
+        final HashSet<MinimalReflection> mrs = new HashSet<>();
         int nextProgressReport = 25000;
 
         for (int i = 0; i < pvs.size(); i++) {
             final MeValue pv = pvs.get(i);
 
-            final Mr mr = new Mr(pv.mover, pv.enemy);
-            final Collection<Mr> subs = mr.subPositions();
-            for (Mr sub : subs) {
+            final MinimalReflection mr = new MinimalReflection(pv.mover, pv.enemy);
+            final Collection<MinimalReflection> subs = mr.subPositions();
+            for (MinimalReflection sub : subs) {
                 if (!original.contains(sub) && !mrs.contains(sub)) {
                     final PositionElement element = strategy.coefficientIndices(mr.mover, mr.enemy, 0);
                     final int[] counts = countSlices[mr.nEmpty()];

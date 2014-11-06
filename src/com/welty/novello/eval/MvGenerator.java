@@ -18,7 +18,7 @@ package com.welty.novello.eval;
 import com.orbanova.common.misc.Logger;
 import com.welty.novello.coca.*;
 import com.welty.novello.core.MeValue;
-import com.welty.novello.core.Mr;
+import com.welty.novello.core.MinimalReflection;
 import com.welty.novello.solver.Counter;
 
 import java.io.IOException;
@@ -57,11 +57,11 @@ public class MvGenerator {
         pvs.addAll(logbook);
 
         log.info("Selecting distinct pvs");
-        final Set<Mr> alreadySeen = new HashSet<>();
+        final Set<MinimalReflection> alreadySeen = new HashSet<>();
         final List<MeValue> distinctPvs = new ArrayList<>();
 
         for (MeValue pv : pvs) {
-            final Mr mr = new Mr(pv.mover, pv.enemy);
+            final MinimalReflection mr = new MinimalReflection(pv.mover, pv.enemy);
             if (alreadySeen.add(mr)) {
                 distinctPvs.add(pv);
             }

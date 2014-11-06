@@ -15,13 +15,16 @@
 
 package com.welty.novello.solver;
 
+import com.welty.novello.book.Book;
 import com.welty.novello.core.BitBoardUtils;
+import com.welty.novello.core.Board;
 import com.welty.novello.core.Square;
 import com.welty.novello.eval.CoefficientCalculator;
 import com.welty.novello.eval.Mpc;
 import com.welty.novello.hash.MidgameHashTables;
 import com.welty.othello.api.AbortCheck;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.concurrent.ForkJoinPool;
@@ -29,7 +32,7 @@ import java.util.concurrent.RecursiveTask;
 
 import static com.welty.novello.eval.CoefficientCalculator.DISK_VALUE;
 
-class MidgameSearch {
+public class MidgameSearch {
     public static final int LIMIT = 64 * CoefficientCalculator.DISK_VALUE;
 
     private final MidgameHashTables midgameHashTables;
@@ -50,18 +53,31 @@ class MidgameSearch {
     private final int width;
 
     /**
+     * Opening book, for use in searches.
+     */
+    @Nullable private final Book book;
+
+    /**
      * Search abort check
      */
     private final AbortCheck abortCheck;
 
-    MidgameSearch(MidgameHashTables midgameHashTables, @NotNull MidgameSearcher.Options options, @NotNull Counter counter, ForkJoinPool pool, int rootDepth, int width, AbortCheck abortCheck) {
+    /**
+     * Minimum number of empties at which the search will check in the book for a move
+     */
+    private final int minBookCheckEmpties;
+
+    MidgameSearch(int nEmpty, MidgameHashTables midgameHashTables, @NotNull MidgameSearcher.Options options,
+                  @NotNull Counter counter, ForkJoinPool pool, int rootDepth, int width, @Nullable Book book, AbortCheck abortCheck) {
         this.midgameHashTables = midgameHashTables;
         this.options = options;
         this.counter = counter;
         this.pool = pool;
         this.rootDepth = rootDepth;
         this.width = width;
+        this.book = book;
         this.abortCheck = abortCheck;
+        minBookCheckEmpties = nEmpty - 3;
     }
 
 
@@ -288,6 +304,14 @@ class MidgameSearch {
         if (depth >= 8 && abortCheck.shouldAbort()) {
             throw new SearchAbortedException();
         }
+        if (book!=null && BitBoardUtils.nEmpty(mover, enemy) >= minBookCheckEmpties) {
+            final Board board = new Board(mover, enemy, true);
+            final Book.Data data = book.getData(board);
+            if (data!=null) {
+                // right now, always use book data in the search.
+                return data.getScore() * CoefficientCalculator.DISK_VALUE;
+            }
+        }
         final long moverMoves = BitBoardUtils.calcMoves(mover, enemy);
         if (moverMoves != 0) {
             final int score = treeScore(mover, enemy, moverMoves, alpha, beta, depth);
@@ -303,7 +327,7 @@ class MidgameSearch {
         }
     }
 
-    static int solverBeta(int beta) {
+    public static int solverBeta(int beta) {
         assert beta >= -LIMIT;
 
         if (beta > LIMIT) {
@@ -312,7 +336,7 @@ class MidgameSearch {
         return (65 * DISK_VALUE + beta - 1) / DISK_VALUE - 64;
     }
 
-    static int solverAlpha(int alpha) {
+    public static int solverAlpha(int alpha) {
         assert alpha <= LIMIT;
 
         if (alpha < -LIMIT) {
