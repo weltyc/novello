@@ -362,6 +362,7 @@ public class Solver {
         int searchBeta = beta;
         if (nEmpties >= MIN_HASH_DEPTH) {
             Entry entry = hashTables.getEntry(mover, enemy);
+            //noinspection SynchronizationOnLocalVariableOrMethodParameter
             synchronized(entry) {
                 if (entry.matches(mover, enemy)) {
                     int min = entry.getMin();

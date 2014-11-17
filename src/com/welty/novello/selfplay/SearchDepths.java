@@ -14,8 +14,7 @@ public class SearchDepths {
     private static final List<SearchDepth> DEPTH_1 = Arrays.asList(new SearchDepth(1, Integer.MAX_VALUE, true));
 
     public static List<SearchDepth> calcSearchDepths(int nEmpty, int maxMidgameDepth) {
-        final int solverStart = MidgameSearcher.SOLVER_START_DEPTH - 1;
-        final int probableSolveDepth = nEmpty - solverStart;
+        final int probableSolveDepth = nEmpty - (MidgameSearcher.SOLVER_START_DEPTH - 1);
 
         if (probableSolveDepth <= 1) {
             return DEPTH_1;
@@ -26,37 +25,49 @@ public class SearchDepths {
 
         // add midgame searches and first probable solve
         final int maxProbDepth = Math.min(probableSolveDepth, maxMidgameDepth);
-        for (int depth=2; depth <= maxProbDepth; depth++) {
+        for (int depth = 2; depth <= maxProbDepth; depth++) {
             depths.add(new SearchDepth(depth, 0, probableSolveDepth));
         }
 
         // add probable solves, if we can
-        if (maxMidgameDepth >= probableSolveDepth) {
-            // subtract two from lnSolveTome to give a bonus for solves, which are more useful than probable solves.
-            final double lnSolveTime = calcLnSolveTime(nEmpty) - 2;
+//        if (maxMidgameDepth >= probableSolveDepth) {
+        // subtract two from lnSolveTime to give a bonus for solves, which are more useful than probable solves.
+        final double lnSolveTime = calcLnSolveTime(nEmpty) - 2;
 
-            final double lnMidgameTime = calcLnTime(maxMidgameDepth, 0);
-            // don't add probable solves that will take longer than this cutoff time:
-            final double lnCutoff = Math.min(lnSolveTime, lnMidgameTime);
+        final double lnMidgameTime = calcLnMidgameTime(maxMidgameDepth);
+        // don't add probable solves that will take longer than this cutoff time:
+        final double lnCutoff = Math.min(lnSolveTime, lnMidgameTime);
 
-            for (int width = 1; width <= Mpc.maxWidth(); width++) {
-                final double lnProbTime = calcLnTime(probableSolveDepth, width);
-                if (lnProbTime > lnCutoff) {
-                    break;
-                }
-                depths.add(new SearchDepth(probableSolveDepth, width, true));
+        // If we've already added the first probable solve, don't add it again:
+        final int startWidth = maxProbDepth >= probableSolveDepth ? 1 : 0;
+
+        for (int width = startWidth; width <= Mpc.maxWidth(); width++) {
+            final double lnProbTime = calcLnTime(nEmpty, width);
+            if (lnProbTime > lnCutoff) {
+                break;
             }
+            depths.add(new SearchDepth(probableSolveDepth, width, true));
+        }
 
-            if (lnSolveTime <= lnMidgameTime) {
-                depths.add(new SearchDepth(probableSolveDepth, Integer.MAX_VALUE, true));
-            }
+        if (lnSolveTime <= lnMidgameTime) {
+            depths.add(new SearchDepth(probableSolveDepth, Integer.MAX_VALUE, true));
+        }
+//        }
+        if (depths.size() == 0) {
+            throw new IllegalStateException("no depths in SearchDepths.calcDepths()");
         }
         return depths;
     }
 
+    private static double calcLnMidgameTime(int maxMidgameDepth) {
+        final int probSolveLimit = maxMidgameDepth + MidgameSearcher.SOLVER_START_DEPTH - 1;
+        double lnTime = calcLnTime(probSolveLimit, 0) + 0.1*maxMidgameDepth;
+        return lnTime;
+    }
+
     public static SearchDepth lastSearchDepth(int nEmpty, int maxMidgameDepth) {
         final List<SearchDepth> depths = calcSearchDepths(nEmpty, maxMidgameDepth);
-        return depths.get(depths.size()-1);
+        return depths.get(depths.size() - 1);
     }
 
     /**
@@ -66,10 +77,11 @@ public class SearchDepths {
      * @param width  search MPC width
      * @return natural log of expected time, in seconds.
      */
-    private static double calcLnTime(int nEmpty, int width) {
+    static double calcLnTime(int nEmpty, int width) {
         final double sd = Mpc.widthSd(width);
-        final double a = 0.52 - Math.max(0, 0.2*(2-sd));
-        final double d = 36 - 4 * sd;
+        final double low = Math.max(0, 2 - sd);
+        final double a = 0.52 - 0.2 * low;
+        final double d = 33 - 4 * sd + 2 * low;
         return a * (nEmpty - d);
     }
 
@@ -79,9 +91,9 @@ public class SearchDepths {
      * @param nEmpty number of empties
      * @return natural log of expected time, in seconds.
      */
-    private static double calcLnSolveTime(int nEmpty) {
-        final double a = 0.7;
-        final double d = 24;
+    static double calcLnSolveTime(int nEmpty) {
+        final double a = 0.84;
+        final double d = 21.6;
         return a * (nEmpty - d);
     }
 

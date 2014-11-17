@@ -18,6 +18,8 @@ package com.welty.novello.solver;
 import com.welty.novello.book.Book;
 import com.welty.novello.core.*;
 import com.welty.novello.hash.MidgameHashTables;
+import com.welty.novello.selfplay.SearchDepth;
+import com.welty.novello.selfplay.SearchDepths;
 import com.welty.othello.api.AbortCheck;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -92,9 +94,51 @@ public class MidgameSearcher {
 
 
     /**
+     * Calc the moveScore using an iterative search using successive depths.
+     *
+     * Need to test when this is faster/slower than just calling MoveScore with the desired final depth.
+     *
+     * This method does not look in the book for the root position, only for subpositions. This allows it to be used by
+     * the book generator.
+     *
+     * @param board           position to search from
+     * @param moverMoves      moves to search. Must not be empty.
+     *@param maxMidgameDepth maximum search depth, during midgame  @return the move the engine would like to play and its score.
+     */
+    public MoveScore calcMoveIterative(Board board, long moverMoves, int maxMidgameDepth) {
+        if (moverMoves==0) {
+            throw new IllegalArgumentException("moverMoves==0 in calcMoveIterative.");
+        }
+
+        MoveScore result = null;
+
+        //  calculate all rounds without aborts.
+        for (SearchDepth searchDepth : SearchDepths.calcSearchDepths(board.nEmpty(), maxMidgameDepth)) {
+            try {
+                if (searchDepth.isFullSolve()) {
+                    throw new IllegalArgumentException("This method doesn't do full solves");
+                } else {
+                    result = getMoveScore(board, moverMoves, searchDepth.getDepth(), searchDepth.getWidth(), AbortCheck.NEVER);
+                }
+            } catch (SearchAbortedException e) {
+                // can't happen since we used AbortCheck.NEVER
+                throw new IllegalStateException("Internal error in calcMoveIterative");
+            }
+        }
+        if (result==null) {
+            throw new IllegalStateException("no result in calcMoveIterative()");
+        }
+        return result;
+    }
+
+
+    /**
      * Select a move based on a midgame search.
      * <p/>
      * Precondition: The mover has at least one legal move.
+     *
+     * This method does not look in the book for the root position, only for subpositions. This allows it to be used by
+     * the book generator.
      *
      * @param board   position to search
      * @param moverMoves legal moves to check. If this is a subset of all legal moves, only the subset will
@@ -117,6 +161,9 @@ public class MidgameSearcher {
      * <p/>
      * Precondition: The mover has at least one legal move.
      *
+     * This method does not look in the book for the root position, only for subpositions. This allows it to be used by
+     * the book generator.
+     *
      * @param board   position to search
      * @param moverMoves legal moves to check. If this is a subset of all legal moves, only the subset will
      *                   be checked.
@@ -133,7 +180,7 @@ public class MidgameSearcher {
 
         MidgameSearch search = createSearch(board.nEmpty(), depth, width, abortCheck);
         final BA ba = search.hashMove(board.mover(), board.enemy(), moverMoves, NovelloUtils.NO_MOVE, -NovelloUtils.NO_MOVE, depth);
-        String pv = midgameHashTables.extractPv(board, ba.score);
+        String pv = midgameHashTables.extractPv(board, ba.score, ba.bestMove);
         return new MoveScore(ba.bestMove, ba.score, pv.isEmpty() ? null : pv);
     }
 

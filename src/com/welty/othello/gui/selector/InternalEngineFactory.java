@@ -24,11 +24,6 @@ import com.welty.othello.api.SyncStatelessEngine;
 import com.welty.othello.protocol.ResponseHandler;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-
 public class InternalEngineFactory extends EngineFactory {
     private final @NotNull Eval eval;
     private final @NotNull String options;
@@ -52,16 +47,11 @@ public class InternalEngineFactory extends EngineFactory {
 
     private Book getBook(boolean isAdvanced) {
         if (isAdvanced) {
-            // todo GUI for this
-            final String bookFile = "C:/dev/mongo/book.nbb";
-            try (InputStream in = new BufferedInputStream(new FileInputStream(bookFile))) {
-                return Book.read(in);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            return Book.load();
         }
         return new Book();
     }
+
 
     @Override public @NotNull StatelessEngine createPingEngine(int initialMaxDepth, ResponseHandler responseHandler) {
         return new SyncStatelessEngine(name, eval, options, responseHandler, book);

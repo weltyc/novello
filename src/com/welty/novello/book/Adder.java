@@ -4,6 +4,9 @@ import com.welty.novello.core.Board;
 import com.welty.novello.core.MoveScore;
 
 /**
+ * Class that does searches for book adds.
+ *
+ * Adders must be thread-safe.
 */
 public interface Adder {
     /**

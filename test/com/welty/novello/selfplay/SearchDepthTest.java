@@ -35,8 +35,8 @@ public class SearchDepthTest extends TestCase {
     }
 
     public void testFeed() {
-        final List<SearchDepth> expected = Arrays.asList(new SearchDepth(1, 0, 12), new SearchDepth(2, 0, 12));
-        assertEquals(expected, SearchDepths.calcSearchDepths(17, 2));
+        final List<SearchDepth> expected = Arrays.asList(new SearchDepth(1, 0, 15), new SearchDepth(2, 0, 15));
+        assertEquals(expected, SearchDepths.calcSearchDepths(20, 2));
     }
 
     public void test1PlySearchDepth() {
@@ -56,14 +56,11 @@ public class SearchDepthTest extends TestCase {
         // probable solves with multiple widths are created.
         final List<SearchDepth> expected = Arrays.asList(
                 new SearchDepth(15, 0, 16),
-                new SearchDepth(16, 0, 16),
-                new SearchDepth(16, 1, 16),
-                new SearchDepth(16, 2, 16),
-                new SearchDepth(16, 3, 16),
-                new SearchDepth(16, 4, 16),
-                new SearchDepth(16, 5, 16),
-                new SearchDepth(16, 6, 16),
-                new SearchDepth(16, 7, 16)
+                new SearchDepth(16, 0, true),
+                new SearchDepth(16, 1, true),
+                new SearchDepth(16, 2, true),
+                new SearchDepth(16, 3, true),
+                new SearchDepth(16, Integer.MAX_VALUE, true)
                 );
         final List<SearchDepth> actual = SearchDepths.calcSearchDepths(21, 18);
         assertEquals(expected, actual.subList(14, actual.size()));

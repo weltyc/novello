@@ -12,6 +12,7 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.welty.novello.book.Book.NodeType;
 import static com.welty.novello.book.Book.NodeType.*;
 
 /**
@@ -81,17 +82,20 @@ public class BookTest extends TestCase {
         assertEquals(new Book.Data(UBRANCH, 0, -1), book.getData(b));
 
         // overwrite UBRANCH is ignored.
+        book = new Book();
         final int F5 = BitBoardUtils.textToSq("F5");
         book.putPos(b, 10, UBRANCH, F5);
         book.addUnevaluatedPos(b);
         assertEquals(new Book.Data(UBRANCH, 10, F5), book.getData(b));
 
         // overwrite SOLVED is ignored.
+        book = new Book();
         book.putPos(b, 3, SOLVED);
         book.addUnevaluatedPos(b);
         assertEquals(new Book.Data(SOLVED, 3, -1), book.getData(b));
 
         // overwrite ULEAF is possible.
+        book = new Book();
         book.putPos(b, 3, ULEAF);
         book.addUnevaluatedPos(b);
         assertEquals(new Book.Data(UBRANCH, 0, -1), book.getData(b));
@@ -197,6 +201,13 @@ public class BookTest extends TestCase {
         assertFalse(book2.equals(book));
     }
 
+    public void testFoo() {
+        final Book sample = new Book().add(SampleGames.vongGames().get(0));
+        sample.add(gameWithPass);
+        sample.negamax(new TestAdder(), false);
+        testIO(sample);
+    }
+
     public void testReadWrite() {
         testIO(new Book());
         final Book sample = new Book().add(SampleGames.vongGames().get(0));
@@ -207,14 +218,16 @@ public class BookTest extends TestCase {
         testIO(sample);
     }
 
-
     private void testIO(Book book) {
         try {
+            // compressed write only works with valued version of the book
+            book.value();
+
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             book.write(baos);
 
             InputStream in = new ByteArrayInputStream(baos.toByteArray());
-            Book book2 = Book.read(in);
+            Book book2 = new Book(in);
             assertEquals(book, book2);
         } catch (IOException e) {
             // can't happen, because we're using ByteArray streams.
@@ -262,8 +275,58 @@ public class BookTest extends TestCase {
         return s(move, score, UBRANCH);
     }
 
-    private static Book.Successor s(String move, int score, Book.NodeType nodeType) {
+    private static Book.Successor s(String move, int score, NodeType nodeType) {
         return new Book.Successor(BitBoardUtils.textToSq(move), score, nodeType);
+    }
+
+    public void testValueWithoutPass() {
+        final Book book = new Book();
+        Board board = Board.START_BOARD.play("F5");
+        book.putPos(board, 0, UBRANCH);
+        book.putPos(board.play("D6"), 6, ULEAF);
+        book.putPos(board.play("F6"), 7, ULEAF);
+
+        // valuation should realize that the original position has value 64
+        book.value();
+        assertEquals(new Book.Data(UBRANCH, -6, -1), book.getData(board));
+
+    }
+
+    public void testValueWithPass() {
+        final Book book = new Book();
+        Board board = new Board("OOOO*--- *------- -------- -------- -------- -------- -------- --------", false);
+        book.putPos(board, 0, UBRANCH);
+        Board sub = board.play("F1").pass();
+        book.putPos(sub, 64, ULEAF);
+
+        // valuation should realize that the original position has value 64
+        book.value();
+        assertEquals(new Book.Data(UBRANCH, 64, -1), book.getData(board));
+        assertEquals(new Book.Data(ULEAF, 64, -1), book.getData(sub));
+    }
+
+    public void testValueWithAbortedGame() {
+        // if the game has been aborted, value the terminal node as 0.
+        // This should be replaced with a real value in Negamax, but if we don't have a real value
+        // then 0 seems the best default.
+        final Book book = new Book();
+        book.putPos(Board.START_BOARD, 0, UBRANCH);
+
+        book.value();
+
+        assertEquals(new Book.Data(UBRANCH, 0, -1), book.getData(Board.START_BOARD));
+    }
+
+    public void testValueWithTerminalPosition() {
+        // if a UBRANCH position leads to a terminal position, we should use the value of the terminal position.
+        final Book book = new Book();
+
+        Board board = new Board("OOOO*--- -------- -------- -------- -------- -------- -------- --------", false);
+        book.putPos(board, 0, UBRANCH);
+        assertEquals(64, book.bestSubScore(board));
+        book.value();
+
+        assertEquals(new Book.Data(UBRANCH, 64, -1), book.getData(board));
     }
 }
 

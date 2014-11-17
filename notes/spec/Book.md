@@ -74,8 +74,10 @@ As a consequence of the above rules, UBranch nodes with depth == minDepth must b
 To get to 'valued' state, any UBranch node with sq==-1 must be
 either solved (in which case it is changed to a Solved node) or have its best deviation calculated using
 a midgame search of unplayed moves (in which case the successor position is added to book as a ULeaf node).
-If no unplayed move exists, the sq is changed to -2. This process is typically performed from lowest #empties to highest,
-so that solves can be reused in the search.
+If no unplayed move exists, the sq is changed to -2. 
+ 
+The valuation process must be performed from lowest #empties to highest, so that when midgame searches encounter a book
+position they use the correct value. This also allows solves to be reused, speeding up the valuation process.
 
 ### Negamaxed
  
@@ -91,10 +93,41 @@ Adding to book
 A set of games is added to book by adding all positions with >= 20 empties to the book as ULeaf nodes with best
 unplayed move set to -1. This is a Consistent book. The book is then valued as described in 'Valued', above.
 
+Compression
+-----------
+The book is written in compressed format to disk, as follows:
+
+The write method maintains a set S of positions that have been written to book.
+The compressed format is a forest; a set of trees. Each tree writes a root position
+and a list of subtrees. Positions that have already been written (and are therefore in S)
+are not written again.
+
+The algorithm searches the book in order of nEmpty, from 60 down to 1. Any position found that is not in S
+is written as a tree:
+ 
+### Write a tree
+
++ mover/enemy bitboard, node data, subtree list. 
+
+Node data is stored as follows:
+
++  1 byte for node type (0=Solved, 1=ULeaf, 2=UBranch).
++  Solved, ULeaf: 1 byte for value.
++  UBranch : 1 byte for best unplayed deviation.  
+
+If nEmpty > minDepth, this is followed by the subtree list, which is written as:
+
++ 1 byte representing move, or -1 to indicate no more moves. Successor position passes if necessary.
++ Node data for the successor position, subtree list. 
+
+### Reading a tree
+
+This is the opposite of writing a tree, but the book needs to be valued on read (because UBranch nodes
+don't store values).
+
 To Do
 -----
 
-Multithreaded book generation
 Larger book
-Book location GUI
-Database - load from folder
+Automatically move book to AppData on startup
+Book learning
