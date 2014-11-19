@@ -396,6 +396,9 @@ public class Book {
         if (bookFile!=null) {
             try (InputStream in = new BufferedInputStream(new FileInputStream(bookFile))) {
                 return new Book(in);
+            } catch(FileNotFoundException e) {
+                System.out.println("No book at " + bookFile);
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
