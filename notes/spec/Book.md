@@ -128,6 +128,6 @@ don't store values).
 To Do
 -----
 
-Larger book
+Play some games vs ntest and add to book.
 Automatically move book to AppData on startup
 Book learning

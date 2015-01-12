@@ -333,7 +333,7 @@ public class Book {
         final int nThreads = Runtime.getRuntime().availableProcessors();
         final ExecutorService executorService = Executors.newFixedThreadPool(nThreads);
 
-        final int solveDepth = adder.solveDepth();
+        final int solveDepth = Math.max(minDepth(), adder.solveDepth());
         for (int nEmpty = minDepth(); nEmpty <= 60; nEmpty++) {
             final long t0 = System.currentTimeMillis();
             final List<MinimalReflection> mrs = getMrs(nEmpty);
@@ -386,6 +386,18 @@ public class Book {
         log.info(String.format("Negamax complete in %,.1f s", dt * 0.001));
     }
 
+    /**
+     * Add a game to book and add all deviations.
+     *
+     * This is like "negamax" except only the positions in the game are valued.
+     *
+     * @param game
+     * @param adder
+     */
+    public void learn(COsGame game, Adder adder) {
+        add(game);
+        negamax(adder, false);
+    }
     /**
      * Load a book from the default location.
      *

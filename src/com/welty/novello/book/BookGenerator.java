@@ -104,48 +104,5 @@ public class BookGenerator {
             System.out.format("%4d %s\n", tournaments.get(s), s);
         }
     }
-
-    private static class Searcher {
-        private final MidgameSearcher mid;
-        private final Solver end;
-
-        Searcher(Book book) {
-            final Eval eval = Players.currentEval();
-            final Counter counter = new Counter(eval);
-            final MidgameSearcher.Options options = new MidgameSearcher.Options("");
-            mid = new MidgameSearcher(counter, options, book);
-            end = new Solver(eval, options, book);
-        }
-    }
-
-    private static class MultithreadedAdder implements Adder {
-        @Nullable private final Book book;
-        private final int midgameDepth;
-        private final int solveDepth;
-        private final ThreadLocal<Searcher> searchers = new ThreadLocal<Searcher>() {
-            @Override protected Searcher initialValue() {
-                return new Searcher(book);
-            }
-        };
-
-        private MultithreadedAdder(@Nullable Book book, int midgameDepth) {
-            this.book = book;
-            this.midgameDepth = midgameDepth;
-            this.solveDepth = SearchDepths.calcSolveDepth(midgameDepth);
-        }
-
-        @Override public MoveScore calcDeviation(Board board, long moves) {
-//            System.out.print("d");
-            return searchers.get().mid.calcMoveIterative(board, moves, midgameDepth);
-        }
-
-        @Override public MoveScore solve(Board board) {
-//            System.out.print("s");
-            return searchers.get().end.getMoveScore(board.mover(), board.enemy());
-        }
-
-        @Override public int solveDepth() {
-            return solveDepth;
-        }
-    }
 }
+

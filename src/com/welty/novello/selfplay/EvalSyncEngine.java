@@ -18,6 +18,7 @@ package com.welty.novello.selfplay;
 import com.orbanova.common.misc.Require;
 import com.orbanova.common.misc.Utils;
 import com.welty.novello.book.Book;
+import com.welty.novello.book.MultithreadedAdder;
 import com.welty.novello.core.*;
 import com.welty.novello.eval.CoefficientCalculator;
 import com.welty.novello.eval.Eval;
@@ -283,7 +284,8 @@ public class EvalSyncEngine implements SyncEngine {
     }
 
     public void learn(COsGame game, int maxDepth, AbortCheck abortCheck, Listener listener) {
-        // not yet implemented.
+        MultithreadedAdder adder = new MultithreadedAdder(book, maxDepth);
+        book.learn(game, adder);
     }
 
     /**
