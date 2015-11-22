@@ -18,8 +18,7 @@ package com.welty.othello.gui;
 import com.orbanova.common.misc.ListenerManager;
 import com.orbanova.common.misc.Logger;
 import com.welty.othello.core.ProcessLogger;
-import com.welty.othello.engine.ExternalNBoardEngine;
-import com.welty.othello.gui.prefs.PrefSet;
+import com.orbanova.common.prefs.PrefSet;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
