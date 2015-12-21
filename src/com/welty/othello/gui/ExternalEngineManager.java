@@ -24,6 +24,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -36,7 +39,23 @@ public class ExternalEngineManager extends ListenerManager<ExternalEngineManager
 
     private final PrefSet externalEngines = new PrefSet(ExternalEngineManager.class, "Engines");
 
-    public void add(String name, String wd, String command) {
+    public void add(String name, String wd, String command) throws AddException {
+        if (!name.matches("[a-zA-Z0-9]+")) {
+            throw new AddException("Engine name must be alphanumeric (all characters must be a-z, A-Z, or 0-9)");
+        }
+        if (wd.contains(";")) {
+            throw new AddException("Working directory cannot contain a semicolon (;)");
+        }
+        if (wd.isEmpty()) {
+            throw new AddException("Working directory must not be empty");
+        }
+        if (command.isEmpty()) {
+            throw new AddException("Command must not be empty");
+        }
+        final Path executable = Paths.get(wd).resolve(command.split("\\s+")[0]);
+        if (!Files.exists(executable)) {
+            throw new AddException("Executable does not exist: " + executable);
+        }
         externalEngines.add(name, wd + ";" + command);
         Xei xei = new Xei(name, wd, command);
         for (Listener listener : getListeners()) {
@@ -133,5 +152,14 @@ public class ExternalEngineManager extends ListenerManager<ExternalEngineManager
          * @param name Engine name
          */
         void engineDeleted(@NotNull String name);
+    }
+
+    /**
+     * An Exception with a user-readable error message
+     */
+    public static class AddException extends Exception {
+        AddException(String userReadableMessage) {
+            super(userReadableMessage);
+        }
     }
 }
