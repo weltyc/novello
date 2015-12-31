@@ -19,7 +19,7 @@
 
     <groupId>com.welty</groupId>
     <artifactId>novello</artifactId>
-    <version>0.04-SNAPSHOT</version>
+    <version>0.04</version>
     <packaging>jar</packaging>
 
     <name>novello</name>
@@ -89,6 +89,15 @@
                 </configuration>
             </plugin>
         </plugins>
+
+        <extensions>
+            <extension>
+                <groupId>org.springframework.build</groupId>
+                <artifactId>aws-maven</artifactId>
+                <version>5.0.0.RELEASE</version>
+            </extension>
+        </extensions>
+
     </build>
 
     <repositories>
@@ -101,6 +110,14 @@
             <url>http://www.orbanova.com/maven2</url>
         </repository>
     </repositories>
+
+    <distributionManagement>
+        <repository>
+            <id>maven-s3-release-repo</id>
+            <name>S3 Release Repository</name>
+            <url>s3://www.orbanova.com/maven2</url>
+        </repository>
+    </distributionManagement>
 
     <dependencies>
         <dependency>
@@ -119,7 +136,7 @@
         <dependency>
             <groupId>com.orbanova</groupId>
             <artifactId>common</artifactId>
-            <version>0.09.04-SNAPSHOT</version>
+            <version>0.09.04</version>
         </dependency>
 
         <dependency>
@@ -138,7 +155,7 @@
         <dependency>
             <groupId>com.welty</groupId>
             <artifactId>othello</artifactId>
-            <version>1.1.02-SNAPSHOT</version>
+            <version>1.1.02</version>
         </dependency>
 
 
