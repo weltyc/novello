@@ -13,7 +13,7 @@
  * For the license, see <http://www.gnu.org/licenses/gpl.html>.
  */
 
-package com.welty.othello.gui;
+package com.welty.novello.external.gui;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;

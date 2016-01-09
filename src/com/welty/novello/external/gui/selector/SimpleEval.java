@@ -13,7 +13,7 @@
  * For the license, see <http://www.gnu.org/licenses/gpl.html>.
  */
 
-package com.welty.othello.gui.selector;
+package com.welty.novello.external.gui.selector;
 
 
 import com.welty.novello.core.BitBoardUtils;

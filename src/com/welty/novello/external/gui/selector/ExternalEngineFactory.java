@@ -13,16 +13,15 @@
  * For the license, see <http://www.gnu.org/licenses/gpl.html>.
  */
 
-package com.welty.othello.gui.selector;
+package com.welty.novello.external.gui.selector;
 
+import com.welty.novello.external.gui.ExternalEngineManager;
 import com.welty.novello.selfplay.EvalSyncEngine;
-import com.welty.othello.api.ParsedEngine;
-import com.welty.othello.api.StatelessEngine;
-import com.welty.othello.gui.ExternalEngineManager;
+import com.welty.novello.external.api.ParsedEngine;
+import com.welty.novello.external.api.StatelessEngine;
 import com.welty.othello.protocol.ResponseHandler;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
 import java.io.IOException;
 
 public class ExternalEngineFactory extends EngineFactory {

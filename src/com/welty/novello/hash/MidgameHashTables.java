@@ -71,7 +71,9 @@ public class MidgameHashTables {
     public MidgameHashTables() {
         tables = new HashTable[64];
         for (int nEmpty = 0; nEmpty < 64; nEmpty++) {
-            int size = 1 << (nEmpty < 8 ? 10 : nEmpty < 12 ? 12 : 14);
+            int lgSize = nEmpty < 8 ? 10 : nEmpty < 12 ? 12 : 14;
+            lgSize -= 3; // drop hash size so NBoard doesn't take up too much RAM. May need a way to adjust this in future.
+            int size = 1 << lgSize;
             tables[nEmpty] = new HashTable(size);
         }
         log.info(String.format("ouch: %d  (%,d entries)", count.incrementAndGet(), nEntries()));

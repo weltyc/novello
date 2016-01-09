@@ -20,8 +20,8 @@ import com.welty.novello.eval.CoefficientCalculator;
 import com.welty.novello.ntest.NBoardSyncEngine;
 import com.welty.novello.selfplay.Players;
 import com.welty.novello.selfplay.SyncPlayer;
-import com.welty.othello.api.AbortCheck;
-import com.welty.othello.gui.ExternalEngineManager;
+import com.welty.novello.external.api.AbortCheck;
+import com.welty.novello.external.gui.ExternalEngineManager;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;

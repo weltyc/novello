@@ -23,7 +23,7 @@ import com.welty.novello.core.*;
 import com.welty.novello.eval.CoefficientCalculator;
 import com.welty.novello.eval.Eval;
 import com.welty.novello.solver.*;
-import com.welty.othello.api.AbortCheck;
+import com.welty.novello.external.api.AbortCheck;
 import com.welty.othello.gdk.COsBoard;
 import com.welty.othello.gdk.COsGame;
 import com.welty.othello.gdk.OsClock;

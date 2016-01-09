@@ -48,7 +48,9 @@ public class HashTables {
     public HashTables() {
         tables = new HashTable[64];
         for (int nEmpty = 0; nEmpty < 64; nEmpty++) {
-            int size = 1 << (nEmpty < 8 ? 10 : nEmpty < 12 ? 12 : 14);
+            int lgSize = nEmpty < 8 ? 10 : nEmpty < 12 ? 12 : 14;
+            lgSize -= 3; // keep memory usage down for NBoard
+            int size = 1 << lgSize;
             tables[nEmpty] = new HashTable(size);
         }
     }

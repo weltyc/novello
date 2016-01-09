@@ -21,7 +21,7 @@ import com.welty.novello.core.*;
 import com.welty.novello.selfplay.Players;
 import com.welty.novello.selfplay.SelfPlayGame;
 import com.welty.novello.selfplay.SyncPlayer;
-import com.welty.othello.core.OperatingSystem;
+import com.orbanova.common.misc.OperatingSystem;
 import com.welty.othello.gdk.OsClock;
 import org.jetbrains.annotations.NotNull;
 

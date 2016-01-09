@@ -13,7 +13,7 @@
  * For the license, see <http://www.gnu.org/licenses/gpl.html>.
  */
 
-package com.welty.othello.api;
+package com.welty.novello.external.api;
 
 import com.welty.othello.gdk.COsGame;
 

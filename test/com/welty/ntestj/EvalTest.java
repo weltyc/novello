@@ -19,7 +19,7 @@ import com.welty.novello.core.Board;
 import com.welty.novello.core.Me;
 import com.welty.novello.core.MoveScore;
 import com.welty.novello.ntest.NBoardSyncEngine;
-import com.welty.othello.gui.ExternalEngineManager;
+import com.welty.novello.external.gui.ExternalEngineManager;
 import junit.framework.TestCase;
 
 /**

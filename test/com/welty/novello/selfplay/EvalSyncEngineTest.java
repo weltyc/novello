@@ -22,7 +22,7 @@ import com.welty.novello.core.Board;
 import com.welty.novello.core.MoveScore;
 import com.welty.novello.eval.Eval;
 import com.welty.novello.solver.SearchAbortedException;
-import com.welty.othello.api.AbortCheck;
+import com.welty.novello.external.api.AbortCheck;
 import com.welty.othello.gdk.OsClock;
 import com.welty.othello.protocol.Depth;
 import junit.framework.TestCase;

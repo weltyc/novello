@@ -13,14 +13,14 @@
  * For the license, see <http://www.gnu.org/licenses/gpl.html>.
  */
 
-package com.welty.othello.gui.selector;
+package com.welty.novello.external.gui.selector;
 
 import com.orbanova.common.feed.Mapper;
 import com.welty.novello.book.Book;
 import com.welty.novello.eval.Eval;
 import com.welty.novello.selfplay.EvalSyncEngine;
-import com.welty.othello.api.StatelessEngine;
-import com.welty.othello.api.SyncStatelessEngine;
+import com.welty.novello.external.api.StatelessEngine;
+import com.welty.novello.external.api.SyncStatelessEngine;
 import com.welty.othello.protocol.ResponseHandler;
 import org.jetbrains.annotations.NotNull;
 

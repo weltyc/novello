@@ -13,15 +13,14 @@
  * For the license, see <http://www.gnu.org/licenses/gpl.html>.
  */
 
-package com.welty.othello.api;
+package com.welty.novello.external.api;
 
-import com.welty.othello.engine.ExternalNBoardEngine;
-import com.welty.othello.gui.ExternalEngineManager;
+import com.welty.novello.external.engine.ExternalNBoardEngine;
+import com.welty.novello.external.gui.ExternalEngineManager;
 import com.welty.othello.protocol.ResponseHandler;
 import com.welty.othello.protocol.ResponseParser;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
 import java.io.IOException;
 
 /**

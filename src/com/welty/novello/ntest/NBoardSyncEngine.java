@@ -23,7 +23,7 @@ import com.welty.novello.core.MutableGame;
 import com.welty.novello.selfplay.SyncEngine;
 import com.welty.othello.core.ProcessLogger;
 import com.welty.othello.gdk.OsClock;
-import com.welty.othello.gui.ExternalEngineManager;
+import com.welty.novello.external.gui.ExternalEngineManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

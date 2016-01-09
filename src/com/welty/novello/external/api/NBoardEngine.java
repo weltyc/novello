@@ -13,19 +13,13 @@
  * For the license, see <http://www.gnu.org/licenses/gpl.html>.
  */
 
-package com.welty.othello.api;
+package com.welty.novello.external.api;
 
-import com.welty.othello.gdk.COsGame;
-import com.welty.othello.gdk.OsClock;
-import junit.framework.TestCase;
-
-public class NBoardStateTest extends TestCase {
-    public void testConstructor() {
-        final COsGame game = new COsGame();
-        game.Initialize("8", OsClock.DEFAULT, OsClock.DEFAULT);
-
-        final NBoardState NBoardState = new NBoardState(game, 1, 0);
-        assertEquals(0, NBoardState.getGame().getMoveList().size());
-        assertEquals(0, NBoardState.getGame().nMoves());
-    }
+public abstract class NBoardEngine {
+    /**
+     * Send a single line of text to the Engine
+     *
+     * @param command the text of the command
+     */
+    public abstract void sendCommand(String command);
 }

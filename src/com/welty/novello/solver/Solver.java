@@ -22,7 +22,7 @@ import com.welty.novello.eval.Eval;
 import com.welty.novello.hash.Entry;
 import com.welty.novello.hash.HashTables;
 import com.welty.novello.selfplay.Players;
-import com.welty.othello.api.AbortCheck;
+import com.welty.novello.external.api.AbortCheck;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

@@ -18,9 +18,9 @@ package com.welty.novello.selfplay;
 import com.welty.novello.eval.*;
 import com.welty.novello.ntest.NBoardSyncEngine;
 import com.welty.ntestj.CEvaluatorJ;
-import com.welty.othello.gui.ExternalEngineManager;
-import com.welty.othello.gui.selector.EngineFactory;
-import com.welty.othello.gui.selector.InternalEngineFactoryManager;
+import com.welty.novello.external.gui.ExternalEngineManager;
+import com.welty.novello.external.gui.selector.EngineFactory;
+import com.welty.novello.external.gui.selector.InternalEngineFactoryManager;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

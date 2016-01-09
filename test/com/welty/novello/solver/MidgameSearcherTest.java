@@ -23,7 +23,7 @@ import com.welty.novello.core.Counts;
 import com.welty.novello.core.MoveScore;
 import com.welty.novello.eval.Eval;
 import com.welty.novello.selfplay.Players;
-import com.welty.othello.api.AbortCheck;
+import com.welty.novello.external.api.AbortCheck;
 import junit.framework.TestCase;
 
 import static com.welty.novello.eval.CoefficientCalculator.DISK_VALUE;

@@ -33,7 +33,7 @@ import static com.welty.novello.eval.DiagonalTerm.diagonalInstance;
 /**
  * Ntest evaluation function
  */
-public class CEvaluatorJ extends Eval {
+@SuppressWarnings("ConstantConditions") public class CEvaluatorJ extends Eval {
     public static final int potMobAdd = 0;
     public static final int potMobShift = 1;
 
@@ -41,7 +41,7 @@ public class CEvaluatorJ extends Eval {
 
     public static CEvaluatorJ getInstance() {
         if (instance == null) {
-            instance = new CEvaluatorJ("coefficients/JA", 10);
+            instance = new CEvaluatorJ();
         }
         return instance;
     }
@@ -67,8 +67,8 @@ public class CEvaluatorJ extends Eval {
 
     /**
      * @return Coefficients in the array format used by Novello
-     *         <p/>
-     *         For each slice, the feature indices are in the order given by mapsJ.
+     * <p>
+     * For each slice, the feature indices are in the order given by mapsJ.
      */
     public short[][][] getNovelloCoeffs() {
         final short[][][] novelloCoeffs = new short[60][][];
@@ -84,7 +84,7 @@ public class CEvaluatorJ extends Eval {
      */
     private short[][] getSliceCoeffs(int nEmpty) {
         final EvalStrategy strategyJ = EvalStrategies.strategy("j");
-        final int[] ntestCoeffs = pcoeffs[nEmpty][1];
+        final int[] ntestCoeffs = pCoeffs[nEmpty];
         final short[][] sliceCoeffs = new short[mapsJ.length][];
 
         int offset = 0;
@@ -118,13 +118,13 @@ public class CEvaluatorJ extends Eval {
 
     /**
      * Conversion from ntest triangle trit ordering to novello triangle trit ordering
-     * <p/>
+     * <p>
      * Ntest ordering:
      * 0 4 3 2
      * 7 1 5
      * 8 6
      * 9
-     * <p/>
+     * <p>
      * Novello ordering:
      * 0 1 2 3
      * 4 5 6
@@ -154,8 +154,7 @@ public class CEvaluatorJ extends Eval {
                 }
                 System.arraycopy(novelloTrits, 0, trits, 0, trits.length);
             }
-            final int novelloInstance = PatternUtils.TritsToConfig(trits, map.size);
-            return novelloInstance;
+            return PatternUtils.TritsToConfig(trits, map.size);
         } else {
             return ntestConfig;
         }
@@ -222,12 +221,12 @@ public class CEvaluatorJ extends Eval {
     public static final int nMapsJ = mapsJ.length;
 
     /**
-     * pcoeffs[nEmpty][black?1:0] is the coefficient array for the particular nEmpty and color
+     * pCoeffs[nEmpty] is the coefficient array for the particular nEmpty with black to move
      */
-    public int[][][] pcoeffs = new int[60][2][];
+    public final int[][] pCoeffs = new int[60][];
 
     // pattern J info
-    static int[] coeffStartsJ = new int[nMapsJ];
+    static final int[] coeffStartsJ = new int[nMapsJ];
     static int nCoeffsJ;
 
     static {
@@ -246,176 +245,192 @@ public class CEvaluatorJ extends Eval {
 
     /**
      * Read in evaluator coefficients from an evaluator file
-     * <p/>
+     * <p>
      * If the file's fParams is 14, coefficients are stored as floats and are in units of stones
      * If the file's fParams is 100, coefficients are stored as chars and are in units of centistones.
      *
      * @throws IllegalArgumentException if error
      */
-    CEvaluatorJ(final String fnBase, int nFiles) {
-        int map, coeffStart, mover, packedCoeff;
-        int nIDs, nConfigs, id, wconfig, cid, wcid;
-        int configpm1, configpm2;
-        char mapsize;
-        short[] shortCoeffs;        //!< for use with converted (packed) coeffs
-        int coeff;
-        int iSubset, nSubsets, nEmpty;
+    CEvaluatorJ() {
+        // A single coefficient file is used at several different empties.
+        // For example, JAa.cof contains coefficients for 59-54 empties.
+        // JAb.cof contains coefficients for 53-48 empties.
+        // nSetWidth is the number of empties for which each file is used.
+        final int nSetWidth = 6;
 
-        // some parameters are set based on the evaluator version number
-        final int nSetWidth = 60 / nFiles;
-        final char cCoeffSet = fnBase.charAt(fnBase.length() - 1);
+        for (int iFile = 0; iFile < 10; iFile++) {
+            CBinaryReader fp = openCoefficientFile(iFile);
 
+            // Each coefficient file contains coefficients for both odd # of empties remaining (iParity=1)
+            // and even # of empties remaining (iParity=0).
+            // Each parity, for each file, is loaded into a coefficients array. This same array will be used
+            // at multiple empties; for example, JAa.cof with odd parity will be used at 59, 57, and 55 empties.
+            for (int iParity = 0; iParity < 2; iParity++) {
 
-        // read in sets
-        int nSets = 0;
-        for (int iFile = 0; iFile < nFiles; iFile++) {
-            final String fn = fnBase + (char) ('a' + (iFile % nFiles)) + ".cof";
+                // coeffs contains the coefficients for a specific coefficient set with black to move.
+                int[] coeffs = new int[nCoeffsJ];
 
-            // open file
-            final InputStream stream = getClass().getResourceAsStream(fn);
-            if (stream == null) {
-                throw new IllegalStateException("Input resource " + fn + " can't be found");
-            }
-            CBinaryReader fp = new CBinaryReader(new BufferedInputStream(stream));
-
-            // read in version and parameter info
-            final int iVersion = fp.readInt();
-            int fParams = fp.readInt();
-
-            if (iVersion == 1 && fParams == 14) {
-                fp = ConvertFile(fp, fn, iVersion);
-                fParams = 100;
-            }
-            if (iVersion != 1 || (fParams != 100)) {
-                throw new IllegalArgumentException("error reading from coefficients file " + fnBase);
-            }
-
-            // calculate the number of subsets
-            nSubsets = 2;
-
-            for (iSubset = 0; iSubset < nSubsets; iSubset++) {
-                // allocate memory for the black and white versions of the coefficients
-                int[][][] coeffs = new int[60][2][];
-                coeffs[nSets][0] = new int[nCoeffsJ];
-                coeffs[nSets][1] = new int[nCoeffsJ];
-
-                // put the coefficients in the proper place
-                for (map = 0; map < nMapsJ; map++) {
-
-                    // initial calculations
-                    nIDs = mapsJ[map].NIDs();
-                    nConfigs = mapsJ[map].NConfigs();
-                    mapsize = mapsJ[map].size;
-                    coeffStart = coeffStartsJ[map];
-
-                    // get raw coefficients from file
-                    shortCoeffs = new short[nIDs];
-                    for (int i = 0; i < nIDs; i++) {
-                        shortCoeffs[i] = fp.readShort();
-                    }
-
-                    // convert raw coefficients[id] to shorts[config]
-                    for (char config = 0; config < nConfigs; config++) {
-                        id = mapsJ[map].ConfigToID(config);
-
-                        coeff = shortCoeffs[id];
-
-                        cid = config + coeffStart;
-
-                        if (map == PARJ) {
-                            // odd-even correction, only in Parity coefficient.
-                            if (cCoeffSet >= 'A') {
-                                if (iFile >= 7)
-                                    coeff += (int) (Utils.kStoneValue * .65);
-                                else if (iFile == 6)
-                                    coeff += (int) (Utils.kStoneValue * .33);
-                            }
-                        }
-
-                        // coeff value has first 2 bytes=coeff, 3rd byte=potmob1, 4th byte=potmob2
-                        if (map < M1J) {    // pattern maps
-                            // restrict the coefficient to 2 bytes
-                            if (coeff > 0x3FFF)
-                                packedCoeff = 0x3FFF;
-                            if (coeff < -0x3FFF)
-                                packedCoeff = -0x3FFF;
-                            else
-                                packedCoeff = coeff;
-
-                            // get linear pot mob info
-                            if (map <= D5J) {    // straight-line maps
-                                // pack coefficient and pot mob together
-                                configpm1 = ConfigToPotMobTable.configToPotMob[0][mapsize][config];
-                                configpm2 = ConfigToPotMobTable.configToPotMob[1][mapsize][config];
-                                packedCoeff = (packedCoeff << 16) | (configpm1 << 8) | (configpm2);
-                            } else if (map == C4J) {    // corner triangle maps
-                                // pack coefficient and pot mob together
-                                configpm1 = ConfigToPotMobTable.configToPotMobTriangle[0][config];
-                                configpm2 = ConfigToPotMobTable.configToPotMobTriangle[1][config];
-                                packedCoeff = (packedCoeff << 16) | (configpm1 << 8) | (configpm2);
-                            }
-
-                            // calculate white config
-                            wconfig = nConfigs - 1 - config;
-                            wcid = wconfig + coeffStart;
-                            coeffs[nSets][0][wcid] = packedCoeff;
-                            coeffs[nSets][1][cid] = packedCoeff;
-                        } else {        // non-pattern maps
-                            coeffs[nSets][0][cid] = coeff;
-                            coeffs[nSets][1][cid] = coeff;
-                        }
-                    }
+                // load the coefficients from the file, pack them, and fold the 2x4 coefficients into the 2x5 coefficients.
+                for (int map = 0; map < nMapsJ; map++) {
+                    loadPackedCoefficients(fp, map, iFile, coeffs);
                 }
+                fold2x4(coeffs);
 
-                // fold 2x4 corner coefficients into 2x5 corner coefficients
-                // so we don't ever need to look up the 2x4 coefficients.
-                for (mover = 0; mover < 2; mover++) {
-                    final int[] coeffTable = coeffs[nSets][mover];
-                    int i2x4 = coeffStartsJ[C2x4J];
-                    int i2x5 = coeffStartsJ[C2x5J];
 
-                    // fold coefficients in
-                    for (int config = 0; config < 9 * 6561; config++) {
-                        final int c2x4 = Configs2x5To2x4Table.configs2x5To2x4[config];
-                        coeffTable[i2x5 + config] += coeffTable[i2x4 + c2x4];
-                    }
-                    // zero out 2x4 coefficients
-                    for (int config = 0; config < 6561; config++) {
-                        coeffTable[i2x4 + config] = 0;
-                    }
-                }
-
-                // Set the pcoeffs array and the fParameters
-                // todo fix this in the C code, lower bound was >= 50-nSetWidth*iFile
+                // Store the coefficients into the correct slots in pCoeffs.
                 final int upperBound = 59 - nSetWidth * iFile;
                 final int lowerBound = upperBound - nSetWidth;
-                for (nEmpty = upperBound; nEmpty > lowerBound; nEmpty--) {
-                    // if this is a set of the wrong parity, do nothing
-                    if ((nEmpty & 1) == iSubset)
-                        continue;
-                    for (mover = 0; mover < 2; mover++) {
-                        Require.geq(nEmpty, "nEmpty", 0);
-                        Require.geq(nSets, "nSets", 0);
-                        pcoeffs[nEmpty][mover] = coeffs[nSets][mover];
+                for (int nEmpty = upperBound; nEmpty > lowerBound; nEmpty--) {
+                    if ((nEmpty & 1) != iParity) {
+                        pCoeffs[nEmpty] = coeffs;
                     }
                 }
-
-                nSets++;
             }
             fp.close();
         }
     }
 
     /**
+     * fold 2x4 corner coefficients into 2x5 corner coefficients
+     * so we don't ever need to look up the 2x4 coefficients.
+     */
+    private static void fold2x4(int[] coeffSet) {
+        int i2x4 = coeffStartsJ[C2x4J];
+        int i2x5 = coeffStartsJ[C2x5J];
+
+        // fold coefficients in
+        for (int config = 0; config < 9 * 6561; config++) {
+            final int c2x4 = Configs2x5To2x4Table.configs2x5To2x4[config];
+            coeffSet[i2x5 + config] += coeffSet[i2x4 + c2x4];
+        }
+        // zero out 2x4 coefficients
+        for (int config = 0; config < 6561; config++) {
+            coeffSet[i2x4 + config] = 0;
+        }
+    }
+
+    private static void loadPackedCoefficients(CBinaryReader fp, int map, int iFile, int[] coeffSet) {
+        int nIDs;
+        int nConfigs;
+        char mapSize;
+        int coeffStart;
+        short[] shortCoeffs;
+        int id;
+        int coeff;
+        int cid;
+        nIDs = mapsJ[map].NIDs();
+        nConfigs = mapsJ[map].NConfigs();
+        mapSize = mapsJ[map].size;
+        coeffStart = coeffStartsJ[map];
+
+        // get raw coefficients from file
+        shortCoeffs = new short[nIDs];
+        for (int i = 0; i < nIDs; i++) {
+            shortCoeffs[i] = fp.readShort();
+        }
+
+        // convert raw coefficients[id] to shorts[config]
+        for (char config = 0; config < nConfigs; config++) {
+            id = mapsJ[map].ConfigToID(config);
+
+            coeff = shortCoeffs[id];
+
+            cid = config + coeffStart;
+
+            if (map == PARJ) {
+                // odd-even correction, only in Parity coefficient.
+                if (iFile >= 7)
+                    coeff += (int) (Utils.kStoneValue * .65);
+                else if (iFile == 6)
+                    coeff += (int) (Utils.kStoneValue * .33);
+            }
+
+            if (map < M1J) {    // pattern maps
+                // coeff value has first 2 bytes=coeff, 3rd byte=potMob1, 4th byte=potMob2
+                coeffSet[cid] = packCoefficient(map, mapSize, coeff, config);
+            } else {        // non-pattern maps
+                coeffSet[cid] = coeff;
+            }
+        }
+    }
+
+    /**
+     * Open the file containing the evaluation coefficients, converting it if it's in the old file format.
+     *
+     * @param iFile index of the specific coefficient file
+     * @return CBinaryReader open to the beginning of the coefficient file
+     */
+    private CBinaryReader openCoefficientFile(int iFile) {
+        final String fn = "coefficients/JA" + (char) ('a' + iFile) + ".cof";
+
+        // open file
+        final InputStream stream = getClass().getResourceAsStream(fn);
+        if (stream == null) {
+            throw new IllegalStateException("Input resource " + fn + " can't be found");
+        }
+        CBinaryReader fp = new CBinaryReader(new BufferedInputStream(stream));
+
+        // read in version and parameter info
+        final int iVersion = fp.readInt();
+        int fParams = fp.readInt();
+
+        if (iVersion == 1 && fParams == 14) {
+            fp = ConvertFile(fp, fn, iVersion);
+            fParams = 100;
+        }
+        if (iVersion != 1 || (fParams != 100)) {
+            throw new IllegalArgumentException("error reading from coefficients file " + "coefficients/JA");
+        }
+        return fp;
+    }
+
+    /**
+     * Stick the coefficient in the left 16 bytes and the potential mobilities in the bottom 16 bytes.
+     *
+     * @param map     index of the map (e.g. "edge" or "length-6 diagonal").
+     * @param mapSize For straight-line maps this is the number of disks. For other maps this is ignored.
+     * @param coeff   unpacked coefficient (i.e. unshifted, in centidisks)
+     * @param config  index of the configuration in the map.
+     * @return packed coefficient
+     */
+    private static int packCoefficient(int map, char mapSize, int coeff, char config) {
+        int packedCoeff;
+        int configpm1;
+        int configpm2;// restrict the coefficient to 2 bytes
+        if (coeff > 0x3FFF) {
+            packedCoeff = 0x3FFF;
+        } else if (coeff < -0x3FFF) {
+            packedCoeff = -0x3FFF;
+        } else {
+            packedCoeff = coeff;
+        }
+
+        // get linear pot mob info
+        if (map <= D5J) {    // straight-line maps
+            // pack coefficient and pot mob together
+            configpm1 = ConfigToPotMobTable.configToPotMob[0][mapSize][config];
+            configpm2 = ConfigToPotMobTable.configToPotMob[1][mapSize][config];
+            packedCoeff = (packedCoeff << 16) | (configpm1 << 8) | (configpm2);
+        } else if (map == C4J) {    // corner triangle maps
+            // pack coefficient and pot mob together
+            configpm1 = ConfigToPotMobTable.configToPotMobTriangle[0][config];
+            configpm2 = ConfigToPotMobTable.configToPotMobTriangle[1][config];
+            packedCoeff = (packedCoeff << 16) | (configpm1 << 8) | (configpm2);
+        }
+        return packedCoeff;
+    }
+
+    /**
      * Convert the file to short format
-     * <p/>
+     * <p>
      * read in the file (float format) and write it out in short format.
      * reopen the file and read the iVersion and fParams flags.
-     * <p/>
+     * <p>
      * Port note: the caller will need to set its iVersion and fParams flags, unlike in the C version.
      *
-     * @param fp
-     * @param fn
+     * @param fp       pointer to open file
+     * @param fn       filename (used when rewriting the file)
+     * @param iVersion version of open file
      * @return converted data input stream, pointing to the start of the coefficients (just after the version and params have been read)
      */
     static CBinaryReader ConvertFile(CBinaryReader fp, String fn, int iVersion) {
@@ -452,13 +467,10 @@ public class CEvaluatorJ extends Eval {
 
     int ValueJMobs(long mover, long enemy, long moverMoves, long enemyMoves) {
         final int nEmpty_ = BitBoardUtils.nEmpty(mover, enemy);
-        final int[][] sliceCoeffs = pcoeffs[nEmpty_];
+        final int[] pcmove = pCoeffs[nEmpty_];
 
 
-        int value;
-        int[] pcmove = sliceCoeffs[1];  // ntestJ always has black to move
-
-        value = 0;
+        int value = 0;
 
         if (iDebugEval > 1) {
             System.out.println("----------------------------");
@@ -470,6 +482,7 @@ public class CEvaluatorJ extends Eval {
         final long empty = ~(mover | enemy);
 
         final int configs0 = BitBoardUtils.rowInstance(empty, mover, 0);
+        //noinspection PointlessArithmeticExpression
         final int configs1 = BitBoardUtils.rowInstance(empty, mover, 1 * 8);
         final int configs2 = BitBoardUtils.rowInstance(empty, mover, 2 * 8);
         final int configs3 = BitBoardUtils.rowInstance(empty, mover, 3 * 8);
@@ -589,8 +602,8 @@ public class CEvaluatorJ extends Eval {
         final int configs2x5 = RowTo2x5Table.getConfigs(config1, config2);
         final int configXX = RowToXXTable.getConfig(config1, config2);
         int value = 0;
-        value += ConfigDisplayValue(pcmove, configs2x5 & 0xFFFF, C2x5J, offsetJC5);
-        value += ConfigDisplayValue(pcmove, configs2x5 >>> 16, C2x5J, offsetJC5);
+        value += ConfigDisplayValue(pcmove, configs2x5 & 0xFFFF);
+        value += ConfigDisplayValue(pcmove, configs2x5 >>> 16);
         value += ConfigValue(pcmove, configXX, CR1XXJ, offsetJEX);
 
         // in J-configs, the values are multiplied by 65536
@@ -607,8 +620,8 @@ public class CEvaluatorJ extends Eval {
     static int valueTrianglePatternsJFromConfigs(int[] pcmove, int config1, int config2, int config3, int config4) {
         final int configsTriangle = RowToTriangleTable.getConfigs(config1, config2, config3, config4);
         int value = 0;
-        value += ConfigPMValue(pcmove, configsTriangle & 0xFFFF, C4J, offsetJTriangle);
-        value += ConfigPMValue(pcmove, configsTriangle >>> 16, C4J, offsetJTriangle);
+        value += ConfigPMValue(pcmove, configsTriangle & 0xFFFF);
+        value += ConfigPMValue(pcmove, configsTriangle >>> 16);
 
         return value;
     }
@@ -620,21 +633,21 @@ public class CEvaluatorJ extends Eval {
         return value;
     }
 
-    static int ConfigDisplayValue(final int[] pcmove, int config, int map, int offset) {
-        int value = pcmove[config + offset];
+    static int ConfigDisplayValue(final int[] pcmove, int config) {
+        int value = pcmove[config + CEvaluatorJ.offsetJC5];
         if (iDebugEval > 1) {
             final String patternString = PatternUtils.PrintBase3((char) config, (char) 10);
-            final int id = mapsJ[map].ConfigToID((char) config);
+            final int id = mapsJ[CEvaluatorJ.C2x5J].ConfigToID((char) config);
             System.out.format("Config: %5d, (%s), Id: %5d, Value: %4d\n", config, patternString, id, value);
         }
         return value;
     }
 
-    static int ConfigPMValue(final int[] pcmove, int config, int map, int offset) {
-        int value = pcmove[config + offset];
+    static int ConfigPMValue(final int[] pcmove, int config) {
+        int value = pcmove[config + CEvaluatorJ.offsetJTriangle];
         if (iDebugEval > 1)
             System.out.format("Config: %5d, Id: %5d, Value: %4d (pms %2d, %2d)\n",
-                    (int) (char) config, (int) mapsJ[map].ConfigToID((char) config), value >> 16, (value >> 8) & 0xFF, value & 0xFF);
+                    (int) (char) config, (int) mapsJ[CEvaluatorJ.C4J].ConfigToID((char) config), value >> 16, (value >> 8) & 0xFF, value & 0xFF);
         return value;
     }
 

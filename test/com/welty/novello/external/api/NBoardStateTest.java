@@ -13,33 +13,19 @@
  * For the license, see <http://www.gnu.org/licenses/gpl.html>.
  */
 
-package com.welty.othello.api;
+package com.welty.novello.external.api;
 
-import java.util.concurrent.atomic.AtomicInteger;
+import com.welty.othello.gdk.COsGame;
+import com.welty.othello.gdk.OsClock;
+import junit.framework.TestCase;
 
-/**
- * Tracking for whether engines are up to date.
- * <p/>
- * Thread-safe.
- */
-public class PingPong {
-    private final AtomicInteger ping = new AtomicInteger();
+public class NBoardStateTest extends TestCase {
+    public void testConstructor() {
+        final COsGame game = new COsGame();
+        game.Initialize("8", OsClock.DEFAULT, OsClock.DEFAULT);
 
-    /**
-     * Increment the ping value and return it
-     *
-     * @return ping value
-     */
-    public int next() {
-        return ping.incrementAndGet();
-    }
-
-    /**
-     * Get the current ping value
-     *
-     * @return ping value
-     */
-    public int get() {
-        return ping.get();
+        final NBoardState NBoardState = new NBoardState(game, 1, 0);
+        assertEquals(0, NBoardState.getGame().getMoveList().size());
+        assertEquals(0, NBoardState.getGame().nMoves());
     }
 }

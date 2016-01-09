@@ -13,7 +13,7 @@
  * For the license, see <http://www.gnu.org/licenses/gpl.html>.
  */
 
-package com.welty.othello.gui;
+package com.welty.novello.external.gui;
 
 import com.orbanova.common.misc.ListenerManager;
 import com.orbanova.common.misc.Logger;

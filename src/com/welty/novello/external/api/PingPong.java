@@ -13,13 +13,33 @@
  * For the license, see <http://www.gnu.org/licenses/gpl.html>.
  */
 
-package com.welty.othello.api;
+package com.welty.novello.external.api;
 
-public abstract class NBoardEngine {
+import java.util.concurrent.atomic.AtomicInteger;
+
+/**
+ * Tracking for whether engines are up to date.
+ * <p/>
+ * Thread-safe.
+ */
+public class PingPong {
+    private final AtomicInteger ping = new AtomicInteger();
+
     /**
-     * Send a single line of text to the Engine
+     * Increment the ping value and return it
      *
-     * @param command the text of the command
+     * @return ping value
      */
-    public abstract void sendCommand(String command);
+    public int next() {
+        return ping.incrementAndGet();
+    }
+
+    /**
+     * Get the current ping value
+     *
+     * @return ping value
+     */
+    public int get() {
+        return ping.get();
+    }
 }

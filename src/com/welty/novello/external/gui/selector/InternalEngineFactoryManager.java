@@ -13,7 +13,7 @@
  * For the license, see <http://www.gnu.org/licenses/gpl.html>.
  */
 
-package com.welty.othello.gui.selector;
+package com.welty.novello.external.gui.selector;
 
 import com.orbanova.common.feed.Mapper;
 import com.welty.novello.selfplay.Players;
@@ -21,7 +21,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
-import static com.welty.othello.gui.selector.InternalEngineFactory.of;
+import static com.welty.novello.external.gui.selector.InternalEngineFactory.of;
 
 public class InternalEngineFactoryManager {
     final Collection<InternalEngineFactory> weakFactories;

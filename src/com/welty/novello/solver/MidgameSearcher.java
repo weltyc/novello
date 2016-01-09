@@ -20,7 +20,7 @@ import com.welty.novello.core.*;
 import com.welty.novello.hash.MidgameHashTables;
 import com.welty.novello.selfplay.SearchDepth;
 import com.welty.novello.selfplay.SearchDepths;
-import com.welty.othello.api.AbortCheck;
+import com.welty.novello.external.api.AbortCheck;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

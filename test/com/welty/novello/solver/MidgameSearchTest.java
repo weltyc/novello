@@ -20,7 +20,7 @@ import com.welty.novello.core.Board;
 import com.welty.novello.eval.CoefficientCalculator;
 import com.welty.novello.eval.DiskEval;
 import com.welty.novello.eval.Eval;
-import com.welty.othello.api.AbortCheck;
+import com.welty.novello.external.api.AbortCheck;
 import junit.framework.TestCase;
 
 public class MidgameSearchTest extends TestCase {
