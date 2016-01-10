@@ -31,13 +31,13 @@ public class InternalEngineFactoryManager {
     // Charlie 2 <= EASY <
     // Gertrude 1 <= MEDIUM <
     // Keiko 1 <= ADVANCED <
-    // Vegtbl 2 <= HARD
+    // Novello 2 <= HARD
     private static final String BEGINNER = "<html>Strength: <span bgcolor='#AAAAFF'>Beginner</span></html>";
     private static final String EASY = "<html>Strength: <span bgcolor='#44FF44'>Easy</span></html>";
     private static final String MEDIUM = "<html>Strength: <span bgcolor='#FFFF00'>Medium</span></html>";
     private static final String ADVANCED = "<html>Strength: <span bgcolor='#FFC800'>Advanced</span></html>";
     private static final String HARD = "<html>Strength: <span bgcolor='#FF8888'>Hard</span></html>";
-    private static final InternalEngineFactory vegtblFactory = InternalEngineFactory.of("Vegtbl", true, "", Players.eval("ntestJ"), new Mapper<Integer, String>() {
+    private static final InternalEngineFactory novelloFactory = InternalEngineFactory.of("Novello", true, "", Players.eval("ntestJ"), new Mapper<Integer, String>() {
         @NotNull @Override public String y(Integer x) {
             return x <= 1 ? ADVANCED : HARD;
         }
@@ -111,7 +111,7 @@ public class InternalEngineFactoryManager {
         if (includeWeakEngines) {
             selectors.addAll(instance.weakFactories);
         }
-        selectors.add(vegtblFactory);
+        selectors.add(novelloFactory);
 
         return selectors;
     }

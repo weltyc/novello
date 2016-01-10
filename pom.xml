@@ -19,7 +19,7 @@
 
     <groupId>com.welty</groupId>
     <artifactId>novello</artifactId>
-    <version>0.05</version>
+    <version>0.06</version>
     <packaging>jar</packaging>
 
     <name>novello</name>
