@@ -1,25 +1,13 @@
 package com.welty.novello.book;
 
-import com.welty.novello.core.Board;
-import com.welty.novello.core.MoveScore;
 import com.welty.novello.core.MutableGame;
-import com.welty.novello.eval.Eval;
-import com.welty.novello.selfplay.Players;
 import com.welty.novello.selfplay.SearchDepths;
-import com.welty.novello.solver.Counter;
-import com.welty.novello.solver.MidgameSearcher;
-import com.welty.novello.solver.Solver;
 import com.welty.othello.gdk.COsGame;
 import com.welty.othello.thor.DatabaseData;
 import com.welty.othello.thor.PrintingProgressTracker;
-import gnu.trove.map.TObjectIntMap;
-import gnu.trove.map.hash.TObjectIntHashMap;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
 
 /**
  */
@@ -84,25 +72,6 @@ public class BookGenerator {
             }
         }
         return false;
-    }
-
-    private static void printStatistics(DatabaseData dd) {
-        // print statistics about the database
-        final int n = dd.NGames();
-        System.out.println(n);
-
-        final TObjectIntMap<String> tournaments = new TObjectIntHashMap<>();
-
-        for (int i=0; i< n; i++) {
-            final COsGame game = dd.GameFromIndex(i);
-            tournaments.adjustOrPutValue(game.sPlace, 1, 1);
-        }
-
-        final ArrayList<String> sorted= new ArrayList<>(tournaments.keySet());
-        Collections.sort(sorted);
-        for (String s : sorted) {
-            System.out.format("%4d %s\n", tournaments.get(s), s);
-        }
     }
 }
 
