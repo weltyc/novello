@@ -105,3 +105,20 @@ Run on work machine (Dell 3020M) using version 3a10:
 With wider MPC:
 
     Total:       2388.9s               28.9 Gn    12.1 Mn/s   20/20 correct moves
+
+Running four threads at a time: approximately doubles the time taken.
+
+Edax ffo timings:
+
++ 1 instance using 4 threads: 498s
++ 1 instance using 2 threads: 578s
++ 1 instance using 1 thread : 1130s
++ 4 instances using 1 thread each: 1912s
+
+Conclusion: Edax is about 2.1x as fast at solves.
+
+More edax timings, all with 1 instance and 4 threads, comparing hash table size.
+
+-h 18 : 498s
+-h 21 : 479s
+-h 24 : 467s
