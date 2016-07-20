@@ -152,7 +152,7 @@ public class Utils {
             return row * N + col;
     }
 
-    static boolean isSet(long bits, int index) {
+    public static boolean isSet(long bits, int index) {
         return ((bits >>> index) & 1) != 0;
     }
 

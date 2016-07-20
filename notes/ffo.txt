@@ -97,3 +97,11 @@ After tuning using SolverTuner:
     #58  G1  +4.00   114.0s  30 empty   1644.5 Mn    14.4 Mn/s
     #59  G8 +64.00     0.4s  34 empty      1.6 Mn     4.2 Mn/s
     Total:       2143.4s               31.0 Gn    14.5 Mn/s   20/20 correct moves
+
+Run on work machine (Dell 3020M) using version 3a10:
+
+    Total:       2367.1s               28.9 Gn    12.2 Mn/s   20/20 correct moves
+
+With wider MPC:
+
+    Total:       2388.9s               28.9 Gn    12.1 Mn/s   20/20 correct moves
