@@ -29,7 +29,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.*;
 import java.util.prefs.BackingStoreException;
 
 public class Ffo {
@@ -56,10 +58,27 @@ public class Ffo {
      *
      * @param args see flags, above
      */
-    public static void main(String[] args) throws IOException {
-        final Path path = Paths.get("problem/fforum-20-39.obf");
+    public static void main(String[] args) throws IOException, ExecutionException, InterruptedException {
+        final Path path = Paths.get("problem/fforum-40-59.obf");
         final String options = NovelloUtils.getShortOptions(args);
+        final int nThreads = options.contains("t") ? Runtime.getRuntime().availableProcessors() : 1;
+        final List<Problem> problems = loadProblems(path);
+        System.out.println("Starting ffo test using options=" + options + " and " + nThreads + " thread" + (nThreads > 1 ? "s" : ""));
 
+        ExecutorService service = Executors.newFixedThreadPool(nThreads);
+        for (int i=0; i<nThreads; i++) {
+            Runnable runnable = new Runnable() {
+                @Override public void run() {
+                    solveProblems(options, problems);
+                }
+            };
+            service.submit(runnable);
+        }
+        service.shutdown();
+        service.awaitTermination(1, TimeUnit.DAYS);
+    }
+
+    private static void solveProblems(String options, List<Problem> problems) {
         double totalSeconds = 0;
         double totalMn = 0;
         int nCorrectMoves = 0;
@@ -74,11 +93,6 @@ public class Ffo {
             searcher = new Endgame(new Solver());
         }
 
-        final int nThreads = options.contains("t") ? Runtime.getRuntime().availableProcessors() : 1;
-
-        System.out.println("Starting ffo test using " + searcher + " and " + nThreads + " thread" + (nThreads > 1 ? "s" : ""));
-
-        final List<Problem> problems = loadProblems(path);
 
         for (Problem problem : problems) {
             final SolveResult result = SolveProblem(searcher, problem);
