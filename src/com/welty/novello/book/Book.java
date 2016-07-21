@@ -334,10 +334,12 @@ public class Book {
         final ExecutorService executorService = Executors.newFixedThreadPool(nThreads);
 
         final int solveDepth = Math.max(minDepth(), adder.solveDepth());
+        System.out.println("negamax adding to book. nThreads=" + nThreads + "; minDepth=" + minDepth());
+
         for (int nEmpty = minDepth(); nEmpty <= 60; nEmpty++) {
             final long t0 = System.currentTimeMillis();
             final List<MinimalReflection> mrs = getMrs(nEmpty);
-            try (ProgressUpdater progress = new ProgressUpdater("Calculating at " + nEmpty + " empties", mrs.size())) {
+            try (ProgressUpdater progress = new ProgressUpdater("Adding all games to book at  at " + nEmpty + " empties", mrs.size())) {
                 progress.setAutoNote("positions");
                 List<Future> futures = new ArrayList<>();
 

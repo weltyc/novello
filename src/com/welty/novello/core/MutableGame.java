@@ -29,8 +29,8 @@ import java.util.List;
  */
 public class MutableGame {
     private final @NotNull Position startPosition;
-    public final @NotNull String blackName;
-    public final @NotNull String whiteName;
+    final @NotNull String blackName;
+    final @NotNull String whiteName;
     public final @NotNull String place;
 
     /**
@@ -132,7 +132,7 @@ public class MutableGame {
         return lastPosition.board;
     }
 
-    public Position getLastPosition() {
+    @NotNull public Position getLastPosition() {
         return lastPosition;
     }
 
@@ -292,12 +292,12 @@ public class MutableGame {
      *
      * @return game start Position
      */
-    public @NotNull Position getStartPosition() {
+    @NotNull Position getStartPosition() {
         return startPosition;
     }
 
-    public @NotNull Position getPositionAfter(int nMoves) {
-        Require.geq(nMoves, 0);
+    @NotNull Position getPositionAfter(int nMoves) {
+        Require.geq(nMoves, "nMoves", 0);
         Require.leq(nMoves, "nMove", mlis.size(), "total moves in the game");
 
         Position position = getStartPosition();

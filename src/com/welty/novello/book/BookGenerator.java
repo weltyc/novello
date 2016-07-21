@@ -10,20 +10,34 @@ import java.io.File;
 import java.io.IOException;
 
 /**
+ * Generates a book from existing games
  */
 public class BookGenerator {
 
+    /**
+     * Generate a book from existing games using default values
+     *
+     * Interesting games are selected from the thor database and added to book.
+     *
+     * @param args must be empty
+     * @throws IOException
+     */
     public static void main(String[] args) throws IOException {
-        final int midgameDepth = 25;
-        System.out.println("Search depths: \n" + SearchDepths.maxes(midgameDepth));
-
         if (args.length > 0) {
             return;
         }
 
+        File bookLocation = Book.getBookLocation();
+        System.out.println("Creating book at " + bookLocation);
+
+        final int midgameDepth = 12;
+        System.out.println("Search depths: \n" + SearchDepths.maxes(midgameDepth));
+
+        final String thorDbLocation = "/home/chris/dev/mongo/npack/nboard/db/ffo";
+
         // add all WOC games to book.
         final DatabaseData dd = new DatabaseData();
-        dd.loadFromDirectory(new File("C:/dev/othNew/thor"), new PrintingProgressTracker("games"));
+        dd.loadFromDirectory(new File(thorDbLocation), new PrintingProgressTracker("games"));
 //        printStatistics(dd);
         final int n = dd.NGames();
 
@@ -58,7 +72,7 @@ public class BookGenerator {
         System.out.println("Size at 26 empty = " + book.sizeAtEmpty(26));
         System.out.println("# bot games = " + nBotGames);
 
-        book.negamax(new MultithreadedAdder(book, midgameDepth), true, Book.getBookLocation());
+        book.negamax(new MultithreadedAdder(book, midgameDepth), true, bookLocation);
 
     }
 
