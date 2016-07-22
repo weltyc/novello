@@ -17,6 +17,7 @@ package com.welty.novello.core;
 
 import com.orbanova.common.misc.Require;
 import com.welty.othello.gdk.COsBoard;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import static java.lang.Long.bitCount;
@@ -106,10 +107,33 @@ public class Board implements Comparable<Board> {
         this(mr.mover, mr.enemy, true);
     }
 
+    /**
+     * Create a board from text containing both the board position and the player-to-move.
+     *
+     * @param positionString 64 characters representing the board, ("oO0" for white, "xX*" for black, ".-_" for empty)
+     * followed by one character representing the player-to-move. Whitespace characters may occur anywhere in the
+     * positionString and are ignored.
+     * @return the board
+     */
     public static Board of(String positionString) {
         final String squished = positionString.replaceAll("\\s+", "");
         Require.eq(squished.length(), "position string length", 65);
-        final boolean blackToMove = "*Xx".contains(squished.substring(64));
+        char moverChar = squished.charAt(64);
+        final boolean blackToMove;
+        switch(moverChar) {
+            case 'x':
+            case '*':
+            case 'X':
+                blackToMove = true;
+                break;
+            case 'o':
+            case 'O':
+            case '0':
+                blackToMove = false;
+                break;
+            default:
+                throw new RuntimeException("Format error: '" + moverChar + "' is not a legal player-to-move character in board text " + positionString);
+        }
         return new Board(squished.substring(0, 64), blackToMove);
     }
 
@@ -354,7 +378,7 @@ public class Board implements Comparable<Board> {
         return new MinimalReflection(mover(), enemy());
     }
 
-    @Override public int compareTo(Board o) {
+    @Override public int compareTo(@NotNull Board o) {
         if (black != o.black) {
             return Long.compare(black, o.black);
         }

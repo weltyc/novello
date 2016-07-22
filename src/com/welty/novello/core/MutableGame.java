@@ -296,7 +296,7 @@ public class MutableGame {
         return startPosition;
     }
 
-    @NotNull Position getPositionAfter(int nMoves) {
+    public @NotNull Position getPositionAfter(int nMoves) {
         Require.geq(nMoves, "nMoves", 0);
         Require.leq(nMoves, "nMove", mlis.size(), "total moves in the game");
 

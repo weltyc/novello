@@ -20,7 +20,9 @@ import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 /**
- * An Othello opening book
+ * An Othello opening book.
+ *
+ * A description of the book is in `notes/spec/book.md`
  */
 @EqualsAndHashCode
 public class Book {
